@@ -129,13 +129,13 @@ const newer = around?.newer ?? null;
             <span class="post__adj-label"><Icon name="arrow-left" size={16} />{pick(L.newer, locale)}</span>
             <span class="post__adj-title">{newer.title}</span>
           </a>
-        ) : <span />}
+        ) : null}
         {older ? (
           <a class="card card--link post__adj post__adj--older" href={href(`/blog/${older.slug}`)} rel="next">
             <span class="post__adj-label">{pick(L.older, locale)}<Icon name="arrow-right" size={16} /></span>
             <span class="post__adj-title">{older.title}</span>
           </a>
-        ) : <span />}
+        ) : null}
       </nav>
     </section>
   )}
@@ -165,11 +165,12 @@ const newer = around?.newer ?? null;
   }
   .post__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
   .post__adj { display: grid; gap: var(--space-2); text-decoration: none; color: var(--ink); }
-  .post__adj--older { text-align: end; justify-items: end; }
+  /* The older post keeps the right-hand column even when there is no newer one beside it. */
+  .post__adj--older { grid-column: 2; text-align: end; justify-items: end; }
   .post__adj-label { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--step--1); color: var(--ink-3); }
   .post__adj-title { font-family: var(--font-display-stack); font-size: var(--step-1); line-height: var(--leading-tight); }
   @media (max-width: 640px) {
     .post__nav { grid-template-columns: minmax(0, 1fr); }
-    .post__adj--older { text-align: start; justify-items: start; }
+    .post__adj--older { grid-column: auto; text-align: start; justify-items: start; }
   }
 </style>

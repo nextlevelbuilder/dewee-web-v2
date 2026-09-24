@@ -168,6 +168,15 @@ function wire(root: HTMLElement) {
   });
   // Keep focus in the input while clicking a result; the link itself navigates.
   panel.addEventListener("mousedown", (e) => e.preventDefault());
+
+  // A search submitted from elsewhere (e.g. the 404 page) lands here as ?q=…: fill it in and show results.
+  if (root.dataset.fromUrl !== undefined) {
+    const q = new URLSearchParams(window.location.search).get("q")?.trim().slice(0, 200);
+    if (q) {
+      input.value = q;
+      input.focus();
+    }
+  }
 }
 
 const editable = (el: EventTarget | null) =>

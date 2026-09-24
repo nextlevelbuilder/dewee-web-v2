@@ -3,22 +3,22 @@
 -- releases as of 2026-09-24 (test functions counted under internal/, tests/, cmd/ and pkg/).
 -- Each post gets its version-1 revision snapshot so history and restore work like any other post.
 
-INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c01', 'post', 'en', 'introducing-dewee', 'Introducing dewee', 'dewee is the enterprise AI-agent platform from the team behind GoClaw. What it is, what an agent can do in it, and where it runs.', 'article', '[]', 'dewee puts AI agents to work inside your company: in the chat apps your team already uses, on the models you trust, behind security that starts closed.
+INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c01', 'post', 'en', 'introducing-dewee', 'Introducing dewee', 'dewee is the enterprise AI-agent platform from the team behind GoClaw. What it is, what an agent can do in it, and where it runs.', 'article', '[]', 'dewee puts AI agents to work inside your company: in the chat apps your team already uses, on the models you trust, behind a door that stays shut until you open it.
 
 It comes from the team behind [GoClaw](/story), the open agent gateway we started in February 2026. dewee forked off in June 2026 to carry what businesses kept asking for: stricter security, faster patches and a team to call.
 
 ## What an agent can do in dewee
 
-- **Talk where your team talks.** Telegram, Zalo, Slack, Lark, Discord, WhatsApp, Facebook and more: 10 chat channels, and no new app to roll out.
+- **Talk where your team talks.** Telegram, Zalo, Slack, Lark, Discord, WhatsApp, Facebook and more: 11 chat channels, and no new app to roll out.
 - **Remember what matters.** Three-tier memory and a knowledge vault, so an agent learns your business instead of asking twice.
 - **Work as a team.** Agents share task boards, delegate to each other and hand off to a human when it counts.
 - **Think on the models you trust.** More than 20 providers, from Anthropic, OpenAI and Gemini to a local Ollama, with automatic fallback per agent.
 - **Run on schedule.** Cron jobs and visual workflows turn one-off prompts into dependable routines.
 - **Show its work.** Every run is traced: which model, which tool, how long and how much.
 
-## Closed by default
+## Shut at the door
 
-Most agent stacks start wide open and hope for the best. dewee starts shut. Five defence layers sit between your data and the internet (transport, input, tools, output and isolation), stored secrets are encrypted with AES-256-GCM, and every capability an agent gets is one you granted. The [security page](/security) walks through each layer.
+Most agent stacks start wide open and hope for the best. dewee starts with the door shut: no token, no connection; no approval, no chat. Behind it, five defence layers sit between your data and the internet (transport, input, tools, output and isolation), stored credentials are encrypted with AES-256-GCM, and you decide what each agent may do. The [security page](/security) walks through each layer.
 
 ## Where it runs
 
@@ -28,22 +28,22 @@ The runtime is a single Go binary of about 25 MB that starts in under a second. 
 
 Every stable release lands in the [changelog](/changelog). If there is work your team would rather not do, [tell us about it](/contact): that is usually where the first agent starts.', '{}', NULL, '["launch", "product"]', NULL, 'published', 'introducing-dewee', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', 1);
 
-INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c02', 'post', 'vi', 'introducing-dewee', 'Giới thiệu dewee', 'dewee là nền tảng AI agent cho doanh nghiệp từ đội ngũ làm ra GoClaw. dewee là gì, agent làm được gì trong đó, và chạy ở đâu.', 'article', '[]', 'dewee đưa AI agent vào làm việc ngay trong công ty bạn: trong những ứng dụng chat đội ngũ đang dùng, trên các mô hình bạn tin tưởng, sau một lớp bảo mật đóng ngay từ đầu.
+INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c02', 'post', 'vi', 'introducing-dewee', 'Giới thiệu dewee', 'dewee là nền tảng AI agent cho doanh nghiệp từ đội ngũ làm ra GoClaw. dewee là gì, agent làm được gì trong đó, và chạy ở đâu.', 'article', '[]', 'dewee đưa AI agent vào làm việc ngay trong công ty bạn: trong những ứng dụng chat đội ngũ đang dùng, trên các mô hình bạn tin tưởng, sau cánh cửa chỉ mở khi bạn mở.
 
 dewee đến từ đội ngũ làm ra [GoClaw](/vi/story), agent gateway mã nguồn mở mà chúng tôi bắt đầu từ tháng 2/2026. Tháng 6/2026, dewee tách ra để gánh những gì doanh nghiệp liên tục yêu cầu: bảo mật chặt hơn, vá lỗi nhanh hơn và một đội ngũ để gọi khi cần.
 
 ## Agent trong dewee làm được gì
 
-- **Có mặt nơi đội ngũ bạn trò chuyện.** Telegram, Zalo, Slack, Lark, Discord, WhatsApp, Facebook và hơn thế: 10 kênh chat, không phải triển khai thêm ứng dụng mới nào.
+- **Có mặt nơi đội ngũ bạn trò chuyện.** Telegram, Zalo, Slack, Lark, Discord, WhatsApp, Facebook và hơn thế: 11 kênh chat, không phải triển khai thêm ứng dụng mới nào.
 - **Nhớ những điều quan trọng.** Bộ nhớ ba tầng và kho tri thức, để agent hiểu doanh nghiệp của bạn thay vì hỏi đi hỏi lại.
 - **Làm việc theo nhóm.** Các agent dùng chung bảng công việc, giao việc cho nhau và chuyển cho người thật khi cần.
 - **Suy nghĩ trên mô hình bạn tin tưởng.** Hơn 20 nhà cung cấp, từ Anthropic, OpenAI, Gemini đến Ollama chạy nội bộ, với cơ chế dự phòng tự động cho từng agent.
 - **Chạy theo lịch.** Cron job và workflow trực quan biến những câu lệnh rời rạc thành quy trình đáng tin cậy.
 - **Minh bạch mọi bước.** Mỗi lần chạy đều được trace: mô hình nào, công cụ nào, mất bao lâu, tốn bao nhiêu.
 
-## Đóng mặc định
+## Đóng từ cửa
 
-Phần lớn các hệ thống agent mở toang từ đầu rồi hy vọng mọi chuyện ổn. dewee thì bắt đầu ở trạng thái đóng. Năm lớp phòng thủ nằm giữa dữ liệu của bạn và internet (truyền tải, đầu vào, công cụ, đầu ra và cô lập), mọi secret lưu trữ đều được mã hoá AES-256-GCM, và mỗi quyền agent có được đều do chính bạn cấp. [Trang bảo mật](/vi/security) đi qua từng lớp.
+Phần lớn các hệ thống agent mở toang từ đầu rồi hy vọng mọi chuyện ổn. dewee thì bắt đầu với cửa đóng: không token thì không kết nối, chưa duyệt thì không chat. Phía sau là năm lớp phòng thủ nằm giữa dữ liệu của bạn và internet (truyền tải, đầu vào, công cụ, đầu ra và cô lập), credential lưu trữ được mã hoá AES-256-GCM, và bạn quyết định mỗi agent được làm gì. [Trang bảo mật](/vi/security) đi qua từng lớp.
 
 ## Chạy ở đâu
 
@@ -53,7 +53,7 @@ Runtime là một file Go duy nhất khoảng 25 MB, khởi động dưới mộ
 
 Mọi bản phát hành stable đều được ghi trong [nhật ký thay đổi](/vi/changelog). Nếu đội ngũ bạn có việc gì không muốn làm, [kể cho chúng tôi nghe](/vi/contact): agent đầu tiên thường bắt đầu từ đó.', '{}', NULL, '["ra mắt", "sản phẩm"]', NULL, 'published', 'introducing-dewee', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', 1);
 
-INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c03', 'post', 'en', 'from-goclaw-to-dewee', 'From GoClaw to dewee: why we closed the source', 'GoClaw stays open for the community; dewee carries the enterprise weight. The short version of why.', 'article', '[]', 'GoClaw started in February 2026 as an open agent gateway: inspired by OpenClaw, rebuilt from scratch in Go, and secure by default from day one. Versions 1 and 2 shipped in public in March, and v3 brought multi-tenancy, agent teams and five-layer security in April.
+INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c03', 'post', 'en', 'from-goclaw-to-dewee', 'From GoClaw to dewee: why we closed the source', 'GoClaw stays open for the community; dewee carries the enterprise weight. The short version of why.', 'article', '[]', 'GoClaw started in February 2026 as an open agent gateway: inspired by OpenClaw, rebuilt from scratch in Go, and with security in the design from day one. Versions 1 and 2 shipped in public in March, and v3 brought multi-tenancy, agent teams and five-layer security in April.
 
 Then businesses came asking for more: stricter security, faster patches, someone to call. An open codebase meant a bigger attack surface than a small team could guard while also moving fast for enterprise customers.
 
@@ -66,7 +66,7 @@ So in June 2026 we split the work:
 
 That is the short version. [The whole story](/story) covers the people, the timeline and what changed along the way.', '{}', NULL, '["story"]', NULL, 'published', 'from-goclaw-to-dewee', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', 1);
 
-INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c04', 'post', 'vi', 'from-goclaw-to-dewee', 'Từ GoClaw đến dewee: vì sao chúng tôi đóng mã nguồn', 'GoClaw vẫn mở cho cộng đồng; dewee gánh phần doanh nghiệp. Phiên bản ngắn của câu chuyện.', 'article', '[]', 'GoClaw ra đời vào tháng 2/2026 như một agent gateway mã nguồn mở: lấy cảm hứng từ OpenClaw, viết lại từ đầu bằng Go, và bảo mật mặc định ngay từ ngày đầu tiên. Phiên bản 1 và 2 ra mắt công khai trong tháng 3, rồi v3 mang đến đa người thuê, đội agent và bảo mật 5 lớp vào tháng 4.
+INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c04', 'post', 'vi', 'from-goclaw-to-dewee', 'Từ GoClaw đến dewee: vì sao chúng tôi đóng mã nguồn', 'GoClaw vẫn mở cho cộng đồng; dewee gánh phần doanh nghiệp. Phiên bản ngắn của câu chuyện.', 'article', '[]', 'GoClaw ra đời vào tháng 2/2026 như một agent gateway mã nguồn mở: lấy cảm hứng từ OpenClaw, viết lại từ đầu bằng Go, và bảo mật nằm trong bản thiết kế ngay từ ngày đầu tiên. Phiên bản 1 và 2 ra mắt công khai trong tháng 3, rồi v3 mang đến đa người thuê, đội agent và bảo mật 5 lớp vào tháng 4.
 
 Sau đó các doanh nghiệp tìm đến và cần nhiều hơn: bảo mật chặt hơn, vá lỗi nhanh hơn, có người để gọi khi cần. Một codebase mở đồng nghĩa với bề mặt tấn công lớn hơn mức một đội nhỏ có thể canh giữ, trong khi vẫn phải chạy nhanh cho khách hàng doanh nghiệp.
 

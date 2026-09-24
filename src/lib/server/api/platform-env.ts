@@ -5,13 +5,8 @@
  */
 import { env as workerEnv } from "cloudflare:workers";
 
-/** `Env` plus the optional vars this platform reads that are not declared in src/env.d.ts yet. */
-export type PlatformEnv = Env & {
-  /** Cloudflare Access team domain, e.g. `nextlevelbuilder.cloudflareaccess.com` (optional). */
-  CF_ACCESS_TEAM_DOMAIN?: string;
-  /** Cloudflare Access application audience tag (optional). */
-  CF_ACCESS_AUD?: string;
-};
+/** The worker bindings the platform reads (declared in src/env.d.ts). */
+export type PlatformEnv = Env;
 
 export function platformEnv(): PlatformEnv {
   return workerEnv as unknown as PlatformEnv;
