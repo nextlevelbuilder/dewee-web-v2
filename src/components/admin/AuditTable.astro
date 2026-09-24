@@ -1,0 +1,37 @@
+---
+/** Audit rows as a table (dashboard and the audit log page). `detail` is shown as compact JSON text. */
+import type { AuditRow } from "~/lib/server/auth/audit-log";
+import { ADMIN } from "./admin-strings";
+
+interface Props { rows: AuditRow[] }
+const { rows } = Astro.props;
+const A = ADMIN.audit;
+const when = (iso: string) => iso.replace("T", " ").slice(0, 19);
+---
+
+{rows.length === 0 ? (
+  <p class="adm-empty">{A.empty}</p>
+) : (
+  <div class="adm-table-wrap">
+    <table class="adm-table">
+      <thead>
+        <tr><th scope="col">{A.when}</th><th scope="col">{A.actor}</th><th scope="col">{A.action}</th><th scope="col">{A.target}</th><th scope="col">{A.detail}</th></tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <td class="adm-mono"><time datetime={r.at}>{when(r.at)}</time></td>
+            <td>{r.actor}</td>
+            <td><code>{r.action}</code></td>
+            <td class="adm-mono">{r.target ?? "—"}</td>
+            <td class="adm-audit__detail adm-mono">{r.detail ?? ""}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+<style>
+  .adm-audit__detail { max-inline-size: 36rem; overflow-wrap: anywhere; color: var(--ink-3); }
+</style>

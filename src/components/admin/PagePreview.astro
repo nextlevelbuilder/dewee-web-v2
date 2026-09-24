@@ -1,0 +1,66 @@
+---
+/**
+ * Renders a page or post exactly as the public site would (BaseLayout, BlockRenderer, safe
+ * Markdown), with a preview banner. Used by /admin/preview/<id> (saved drafts) and the editor's
+ * live preview (unsaved form state). Never indexed, never cached.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import BlockRenderer from "~/components/blocks/BlockRenderer.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { formatDate } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import type { StoredBlock } from "~/lib/blocks/registry";
+import { readingMinutes, renderMarkdown } from "~/lib/blocks/safe-markdown";
+import { ADMIN } from "./admin-strings";
+
+export type PreviewDoc = {
+  kind: "page" | "post";
+  locale: "en" | "vi";
+  title: string;
+  description: string;
+  layout: "default" | "landing" | "article";
+  blocks: StoredBlock[];
+  body_md: string | null;
+  cover: string | null;
+  tags: string[];
+  author: string | null;
+  updated_at: string;
+};
+interface Props { doc: PreviewDoc }
+const { doc } = Astro.props;
+const body = doc.kind === "post" ? renderMarkdown(doc.body_md ?? "") : "";
+---
+
+<BaseLayout title={`${ADMIN.preview.banner}: ${doc.title}`} description={doc.description || doc.title} locale={doc.locale} path="/admin/preview" bilingual={false} noindex chat={false}>
+  <p class="pv-banner" role="note"><Icon name="eye" size={16} /><strong>{ADMIN.preview.banner}</strong> {ADMIN.preview.draft}</p>
+  {doc.kind === "page" ? (
+    <BlockRenderer blocks={doc.blocks} layout={doc.layout} intro={{ title: doc.title, lede: doc.description || undefined }} />
+  ) : (
+    <>
+      <PageHero title={doc.title} lede={doc.description || undefined} mascot={false} />
+      <section class="section pv-post">
+        <div class="container container--narrow pv-post__wrap">
+          <p class="pv-post__meta">
+            {doc.author ?? "dewee"} · {formatDate(doc.updated_at, doc.locale)} · {readingMinutes(doc.body_md ?? "")} {t(doc.locale, "minutesRead")}
+          </p>
+          {doc.cover && <img class="pv-post__cover" src={doc.cover} alt="" />}
+          <article class="prose" set:html={body} />
+          {doc.tags.length > 0 && <p class="pv-post__tags">{doc.tags.map((tag) => <span class="chip">{tag}</span>)}</p>}
+        </div>
+      </section>
+    </>
+  )}
+</BaseLayout>
+
+<style>
+  .pv-banner {
+    position: sticky; inset-block-start: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+    padding: var(--space-2) var(--space-4); background: var(--warning-soft); color: var(--ink); font-size: var(--step--1); text-align: center;
+  }
+  .pv-post { padding-block-start: 0; }
+  .pv-post__wrap { display: grid; gap: var(--space-5); }
+  .pv-post__meta { color: var(--ink-3); font-size: var(--step--1); }
+  .pv-post__cover { inline-size: 100%; border-radius: var(--radius-3); border: 1px solid var(--rule); }
+  .pv-post__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+</style>

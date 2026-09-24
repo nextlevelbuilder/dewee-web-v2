@@ -1,0 +1,77 @@
+---
+/** Admin dashboard: content counts by status, recent leads and keys, and the latest audit rows. */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import AuditTable from "~/components/admin/AuditTable.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { listAudit } from "~/lib/server/auth/audit-log";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const db = platformEnv().DB;
+const now = new Date();
+const since = new Date(now.getTime() - 30 * 86_400_000).toISOString();
+
+const [counts, leads, keys] = await db.batch([
+  db.prepare("SELECT kind, status, COUNT(*) AS n FROM pages GROUP BY kind, status"),
+  db.prepare("SELECT COUNT(*) AS n FROM leads WHERE created_at >= ?").bind(since),
+  db.prepare("SELECT COUNT(*) AS n FROM api_keys WHERE revoked_at IS NULL AND (expires_at IS NULL OR expires_at > ?)").bind(now.toISOString()),
+]);
+const tally = (kind: string, status: string) =>
+  Number((counts.results as { kind: string; status: string; n: number }[]).find((r) => r.kind === kind && r.status === status)?.n ?? 0);
+const single = (r: D1Result) => Number((r.results[0] as { n?: number } | undefined)?.n ?? 0);
+const recent = await listAudit(db, { limit: 12 });
+const D = ADMIN.dashboard;
+const kinds = [
+  { kind: "page", label: ADMIN.nav.pages, href: "/admin/pages" },
+  { kind: "post", label: ADMIN.nav.posts, href: "/admin/posts" },
+];
+---
+
+<AdminLayout title={D.title} current="dashboard" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{D.title}</h1>
+      <p>{D.lede}</p>
+    </div>
+  </div>
+
+  <div class="adm-stats">
+    {kinds.map((k) => (
+      <div class="adm-panel adm-stat">
+        <a href={k.href}>{k.label}</a>
+        <strong>{tally(k.kind, "published")}</strong>
+        <span>{D.published} · {tally(k.kind, "draft")} {D.drafts} · {tally(k.kind, "archived")} {D.archived}</span>
+      </div>
+    ))}
+    <div class="adm-panel adm-stat">
+      <a href="/admin/leads">{ADMIN.nav.leads}</a>
+      <strong>{single(leads)}</strong>
+      <span>{D.leads30}</span>
+    </div>
+    <div class="adm-panel adm-stat">
+      <a href="/admin/keys">{ADMIN.nav.keys}</a>
+      <strong>{single(keys)}</strong>
+      <span>{D.activeKeys}</span>
+    </div>
+  </div>
+
+  <div class="adm-panel">
+    <h2>{D.quick}</h2>
+    <div class="adm-toolbar">
+      <a class="btn btn--primary" href="/admin/pages/new"><Icon name="plus" />{D.newPage}</a>
+      <a class="btn" href="/admin/posts/new"><Icon name="pen-line" />{D.newPost}</a>
+      <a class="btn" href="/admin/keys"><Icon name="key" />{D.newKey}</a>
+      <a class="btn btn--ghost" href="/developers"><Icon name="code" />{ADMIN.nav.developers}</a>
+    </div>
+  </div>
+
+  <div class="adm-panel">
+    <h2>{D.recent}</h2>
+    <AuditTable rows={recent} />
+  </div>
+</AdminLayout>

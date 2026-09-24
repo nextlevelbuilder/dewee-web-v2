@@ -1,0 +1,25 @@
+---
+/** Two or three columns of Markdown (sanitised by safe-markdown), each with an optional title. */
+import { renderMarkdown } from "~/lib/blocks/safe-markdown";
+interface Props { columns: { title?: string; markdown: string }[] }
+const { columns } = Astro.props;
+---
+
+<div class:list={["cols", `cols--${columns.length}`]} data-reveal-group>
+  {columns.map((c) => (
+    <div class="cols__col" data-reveal>
+      {c.title && <h3 class="cols__title">{c.title}</h3>}
+      <div class="prose cols__body" set:html={renderMarkdown(c.markdown)} />
+    </div>
+  ))}
+</div>
+
+<style>
+  .cols { display: grid; gap: clamp(1.5rem, 1rem + 2vw, 3rem); }
+  .cols--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cols--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cols__col { padding-block-start: var(--space-4); border-block-start: 2px solid var(--ink); }
+  .cols__title { font-size: var(--step-2); margin-block-end: var(--space-3); }
+  .cols__body { max-inline-size: none; }
+  @media (max-width: 800px) { .cols--2, .cols--3 { grid-template-columns: minmax(0, 1fr); } }
+</style>

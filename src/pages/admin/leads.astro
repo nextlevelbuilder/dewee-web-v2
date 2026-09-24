@@ -1,0 +1,102 @@
+---
+/** Leads from the contact and partner forms: filter by kind, search, and page through. */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { leadsQuerySchema, listLeads } from "~/lib/server/api/leads-query";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const L = ADMIN.leads;
+const raw = Object.fromEntries([...Astro.url.searchParams].filter(([k, v]) => ["kind", "q", "offset"].includes(k) && v !== ""));
+const parsed = leadsQuerySchema.safeParse({ ...raw, limit: 50 });
+if (!parsed.success) return Astro.redirect("/admin/leads", 303);
+const query = parsed.data;
+const db = platformEnv().DB;
+const [{ data, pagination }, kindsRes] = await Promise.all([
+  listLeads(db, query),
+  db.prepare("SELECT DISTINCT kind FROM leads ORDER BY kind LIMIT 50").all<{ kind: string }>(),
+]);
+const kinds = kindsRes.results.map((r) => r.kind);
+const pageHref = (offset: number) => {
+  const q = new URLSearchParams();
+  if (query.kind) q.set("kind", query.kind);
+  if (query.q) q.set("q", query.q);
+  if (offset > 0) q.set("offset", String(offset));
+  const s = q.toString();
+  return `/admin/leads${s ? `?${s}` : ""}`;
+};
+const when = (iso: string) => iso.replace("T", " ").slice(0, 16);
+const summary = (payload: Record<string, unknown>) =>
+  Object.entries(payload)
+    .filter(([, v]) => v !== null && v !== "" && typeof v !== "object")
+    .map(([k, v]) => `${k}: ${String(v)}`)
+    .join(" · ")
+    .slice(0, 400);
+---
+
+<AdminLayout title={L.title} current="leads" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{L.title}</h1>
+      <p>{L.lede}</p>
+    </div>
+  </div>
+
+  <form class="adm-toolbar" method="get" role="search">
+    <div class="field">
+      <label for="lf-kind">{L.kind}</label>
+      <select id="lf-kind" name="kind">
+        <option value="">{ADMIN.list.any}</option>
+        {kinds.map((k) => <option value={k} selected={k === query.kind}>{k}</option>)}
+      </select>
+    </div>
+    <div class="field field--grow">
+      <label for="lf-q">{L.search}</label>
+      <input id="lf-q" name="q" type="search" value={query.q ?? ""} maxlength="100" />
+    </div>
+    <button class="btn" type="submit"><Icon name="filter" />{ADMIN.list.filter}</button>
+  </form>
+
+  {data.length === 0 ? (
+    <p class="adm-empty">{L.empty}</p>
+  ) : (
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr><th scope="col">{L.when}</th><th scope="col">{L.kind}</th><th scope="col">{L.who}</th><th scope="col">{L.details}</th></tr>
+        </thead>
+        <tbody>
+          {data.map((lead) => (
+            <tr>
+              <td class="adm-mono"><time datetime={lead.created_at}>{when(lead.created_at)}</time></td>
+              <td><span class="chip">{lead.kind}</span></td>
+              <td>
+                <strong>{lead.name ?? "—"}</strong>
+                {lead.company && <div>{lead.company}</div>}
+                {lead.email && <div><a href={`mailto:${lead.email}`}>{lead.email}</a></div>}
+                {(lead.locale || lead.source) && <div class="adm-lead__meta">{[lead.locale, lead.source].filter(Boolean).join(" · ")}</div>}
+              </td>
+              <td class="adm-lead__payload">{summary(lead.payload)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  <div class="adm-pager">
+    {query.offset > 0 ? <a class="btn" href={pageHref(Math.max(0, query.offset - query.limit))}><Icon name="arrow-left" />{ADMIN.list.newer}</a> : <span />}
+    <span>{ADMIN.list.showing} {data.length ? query.offset + 1 : 0}–{query.offset + data.length} {ADMIN.list.of} {pagination.total}</span>
+    {query.offset + data.length < pagination.total ? <a class="btn" href={pageHref(query.offset + query.limit)}>{ADMIN.list.older}<Icon name="arrow-right" /></a> : <span />}
+  </div>
+</AdminLayout>
+
+<style>
+  .adm-lead__meta { color: var(--ink-3); font-size: var(--step--2); }
+  .adm-lead__payload { max-inline-size: 40rem; overflow-wrap: anywhere; color: var(--ink-2); }
+</style>

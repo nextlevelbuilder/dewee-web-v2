@@ -1,0 +1,76 @@
+---
+/**
+ * Not found, in the visitor's language (read from the URL: /vi/... is Vietnamese).
+ * Rendered on request for every miss, including SSR routes that return a bare 404.
+ * A sleepy mascot, a docs search box and a short list of useful pages.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import TocIndex from "~/components/blocks/TocIndex.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { localePath, pick, splitLocale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { NOT_FOUND } from "~/content/pages/not-found";
+
+export const prerender = false;
+
+const { locale, path } = splitLocale(Astro.url.pathname);
+const href = (p: string) => localePath(locale, p);
+Astro.response.status = 404;
+Astro.response.headers.set("cache-control", "no-store");
+---
+
+<BaseLayout title={t(locale, "notFoundTitle")} description={t(locale, "notFoundBody")} locale={locale} path={path} bilingual={false} noindex>
+  <section class="page-hero nf">
+    <div class="nf__bg paper-grid paper-grid--fade" aria-hidden="true"></div>
+    <div class="container nf__grid">
+      <div class="nf__copy">
+        <p class="eyebrow">{pick(NOT_FOUND.eyebrow, locale)}</p>
+        <h1 class="nf__title">{t(locale, "notFoundTitle")}</h1>
+        <p class="lede">{t(locale, "notFoundBody")}</p>
+        <form class="nf__search" action={href("/docs")} method="get" role="search">
+          <label class="sr-only" for="nf-q">{pick(NOT_FOUND.searchLabel, locale)}</label>
+          <input id="nf-q" name="q" type="search" placeholder={pick(NOT_FOUND.searchPlaceholder, locale)} autocomplete="off" />
+          <button class="btn btn--primary" type="submit"><Icon name="search" />{pick(NOT_FOUND.searchButton, locale)}</button>
+        </form>
+        <div class="nf__actions">
+          <a class="btn btn--ink" href={href("/")}><Icon name="arrow-left" />{t(locale, "backHome")}</a>
+          <button class="btn btn--ghost" type="button" data-open-chat><Icon name="message-circle" />{pick(NOT_FOUND.chat, locale)}</button>
+        </div>
+        <p class="note nf__note" aria-hidden="true">{pick(NOT_FOUND.note, locale)}</p>
+      </div>
+      <div class="nf__mascot"><DeweeMascot size={200} mood="sleepy" interactive /></div>
+    </div>
+  </section>
+
+  <section class="section band section--tight">
+    <div class="container nf__links">
+      <h2 class="nf__links-title">{pick(NOT_FOUND.linksTitle, locale)}</h2>
+      <TocIndex items={NOT_FOUND.links.map((l) => ({ title: pick(l.label, locale), meta: pick(l.meta, locale), href: href(l.href), icon: l.icon }))} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { overflow: hidden; }
+  .nf__bg { position: absolute; inset: 0; z-index: -1; }
+  .nf__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-8); align-items: center; }
+  .nf__copy { max-inline-size: 40rem; }
+  .nf__title { font-size: var(--step-6); line-height: var(--leading-tight); max-inline-size: 14ch; }
+  .nf__search { display: flex; gap: var(--space-2); margin-block-start: var(--space-6); max-inline-size: 32rem; }
+  .nf__search input { flex: 1; }
+  .nf__search .btn { flex: none; }
+  .nf__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-4); }
+  .nf__note { margin-block-start: var(--space-5); font-size: var(--step-0); transform: rotate(-1.5deg); transform-origin: 0 50%; }
+  .nf__mascot { padding-inline-end: var(--space-6); }
+  .nf__links { display: grid; gap: var(--space-6); }
+  .nf__links-title { font-size: var(--step-3); }
+  @media (max-width: 800px) {
+    .nf__grid { grid-template-columns: minmax(0, 1fr); }
+    .nf__mascot { order: -1; padding: 0; }
+    .nf__mascot :global(.mascot) { inline-size: 120px !important; }
+  }
+  @media (max-width: 480px) {
+    .nf__search { flex-direction: column; }
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+/**
+ * Page-builder pages, rendered on request from D1: /p/<slug> (English) and /vi/p/<slug>.
+ *
+ * Why a /p/ prefix and not a root catch-all: with Astro's router a root `[...path]` SSR route is
+ * tried whenever a prerendered route with params does not match exactly, and it captured `/` and
+ * `/vi` in testing. The prefix keeps every hand-built page static and fast, keeps custom slugs
+ * from shadowing site routes, and makes the page-builder surface obvious in URLs and logs.
+ * Only published pages render; drafts are visible in /admin/preview/<id>. Misses return the 404 page.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import BlockRenderer from "~/components/blocks/BlockRenderer.astro";
+import PageActions from "~/components/layout/PageActions.astro";
+import { formatDate, localePath } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { faqJsonLd } from "~/lib/json-ld";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { getPublished, getPublishedTranslation } from "~/lib/server/pages/page-queries";
+import { slugError } from "~/lib/server/pages/slug-rules";
+
+export const prerender = false;
+
+const { lang, slug = "" } = Astro.params;
+if (lang !== undefined && lang !== "vi") return new Response(null, { status: 404 });
+const locale = lang === "vi" ? "vi" : "en";
+if (slugError(slug, "page")) return new Response(null, { status: 404 });
+
+let page;
+let translation;
+try {
+  const db = platformEnv().DB;
+  page = await getPublished(db, "page", locale, slug);
+  translation = page ? await getPublishedTranslation(db, page) : null;
+} catch (err) {
+  console.error("custom page: lookup failed", err instanceof Error ? err.message : err);
+  return new Response(null, { status: 503, headers: { "retry-after": "30" } });
+}
+if (!page) return new Response(null, { status: 404 });
+
+Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, stale-while-revalidate=86400");
+
+const path = `/p/${page.slug}`;
+const sameSlug = translation?.slug === page.slug;
+const altHref = translation ? translation.url : localePath(locale === "en" ? "vi" : "en", "/");
+const faqs = page.blocks.filter((b) => b.type === "Faq").flatMap((b) => (b.props as { items: { q: string; a: string }[] }).items);
+const jsonLd = faqs.length ? [faqJsonLd(faqs)] : [];
+---
+
+<BaseLayout
+  title={page.seo.title || page.title}
+  description={page.seo.description || page.description || page.title}
+  locale={locale}
+  path={path}
+  altHref={altHref}
+  bilingual={sameSlug}
+  ogImage={page.seo.ogImage || page.cover || `/og/${locale}/index.png`}
+  noindex={page.seo.noindex}
+  modified={page.updated_at}
+  jsonLd={jsonLd}
+>
+  <BlockRenderer blocks={page.blocks} layout={page.layout} intro={{ title: page.title, lede: page.description || undefined }}>
+    {page.layout !== "landing" && (
+      <Fragment slot="after-hero">
+        <PageActions locale={locale} path={path} title={page.title} />
+        <p class="cp-updated">{t(locale, "updated")} <time datetime={page.updated_at}>{formatDate(page.updated_at, locale)}</time></p>
+      </Fragment>
+    )}
+  </BlockRenderer>
+</BaseLayout>
+
+<style>
+  .cp-updated { font-size: var(--step--1); color: var(--ink-3); }
+</style>
