@@ -22,8 +22,8 @@ export function llmsTxt(opts: { locale: Locale; siteUrl: string; name: string; i
   const site = opts.siteUrl.replace(/\/$/, "");
   const { locale } = opts;
   const lines = [`# ${opts.name}`, "", `> ${oneLine(pick(opts.intro.summary, locale), 400)}`, "", pick(opts.intro.note, locale)
-    .replace("{site}", site)
-    .replace("{email}", opts.email), ""];
+    .replaceAll("{site}", site)
+    .replaceAll("{email}", opts.email), ""];
 
   const seen = new Set<string>();
   for (const group of LLMS_GROUPS) {

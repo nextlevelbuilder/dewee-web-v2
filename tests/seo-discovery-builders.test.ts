@@ -77,13 +77,13 @@ describe("llms.txt", () => {
     locale: "en",
     siteUrl: "https://dewee.sh/",
     name: "dewee",
-    intro: { summary: { en: "Summary.", vi: "Tóm tắt." }, note: { en: "See {site}/llms-full.txt or write to {email}.", vi: "" } },
+    intro: { summary: { en: "Summary.", vi: "Tóm tắt." }, note: { en: "See {site}/index.md and {site}/llms-full.txt or write to {email}.", vi: "" } },
     email: "hi@nextlevelbuilder.io",
     links,
   });
 
   it("follows the llmstxt.org shape: H1, blockquote, note, H2 link sections", () => {
-    expect(txt.startsWith("# dewee\n\n> Summary.\n\nSee https://dewee.sh/llms-full.txt or write to hi@nextlevelbuilder.io.\n\n## Product\n\n")).toBe(true);
+    expect(txt.startsWith("# dewee\n\n> Summary.\n\nSee https://dewee.sh/index.md and https://dewee.sh/llms-full.txt or write to hi@nextlevelbuilder.io.\n\n## Product\n\n")).toBe(true);
     expect(txt).toContain("- [dewee home](https://dewee.sh/index.md): Enterprise AI agents, on your terms.\n- [Security](https://dewee.sh/security.md)\n");
     expect(txt).toContain("## Pricing & legal\n\n- [Pricing](https://dewee.sh/pricing.md): Plans");
     expect(txt.indexOf("## Optional")).toBeGreaterThan(txt.indexOf("## Pricing & legal"));
