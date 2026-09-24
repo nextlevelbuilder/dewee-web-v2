@@ -21,7 +21,7 @@ const { label, text } = Astro.props;
 <style>
   .lsv {
     --cell: 7px;
-    position: relative; display: grid; gap: var(--space-1);
+    position: relative; display: grid; gap: var(--space-2);
     padding: var(--space-4) var(--space-5) var(--space-4) calc(var(--space-5) + 1.5rem);
     background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-2);
     box-shadow: var(--shadow-1);
@@ -37,4 +37,8 @@ const { label, text } = Astro.props;
   }
   .lsv__text { font-size: var(--step-0); line-height: 1.6; color: var(--ink); max-inline-size: 60ch; }
   .lsv__text :global(a) { color: var(--accent-ink); }
+  @media (max-width: 560px) {
+    .lsv { padding-inline: calc(var(--space-4) + 1.1rem) var(--space-4); }
+    .lsv::before { inset-inline-start: 0.75rem; }
+  }
 </style>
