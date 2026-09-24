@@ -175,11 +175,8 @@ function block(el: HTMLElement, ctx: Ctx): string {
       if (md) out.push(md);
     } else if (tag === "dl") {
       flush();
-      for (const item of child.childNodes.filter(isEl)) {
-        const t = headingText(item, ctx);
-        if (!t) continue;
-        out.push(item.tagName.toLowerCase() === "dt" ? `**${t}**` : t);
-      }
+      const md = definitionList(child, ctx);
+      if (md) out.push(md);
     } else if (tag === "summary") {
       flush();
       const t = headingText(child, ctx);
@@ -207,6 +204,36 @@ function codeBlock(pre: HTMLElement): string {
   const longestRun = Math.max(0, ...(code.match(/`+/g) ?? []).map((r) => r.length));
   const fence = "`".repeat(Math.max(3, longestRun + 1));
   return `${fence}${lang === "plaintext" ? "" : lang}\n${code}\n${fence}`;
+}
+
+/**
+ * `<dl>` as `- **term**: definition` lines. Terms and definitions may sit directly in the list or
+ * in `<div>` wrappers (the grouping HTML allows); several definitions of one term join with "; ".
+ */
+function definitionList(el: HTMLElement, ctx: Ctx): string {
+  const visible = (parent: HTMLElement) => parent.childNodes.filter(isEl).filter((c) => !skipped(c));
+  const items = visible(el).flatMap((c) => (c.tagName.toLowerCase() === "div" ? visible(c) : [c]));
+  const entries: { term: string; defs: string[] }[] = [];
+  for (const item of items) {
+    const tag = item.tagName.toLowerCase();
+    if (tag === "dt") {
+      const term = headingText(item, ctx);
+      if (term) entries.push({ term, defs: [] });
+    } else if (tag === "dd") {
+      const def = block(item, { ...ctx, inListItem: true }).replace(/\n{2,}/g, "\n");
+      if (!def) continue;
+      const last = entries.at(-1);
+      if (last) last.defs.push(def);
+      else entries.push({ term: "", defs: [def] });
+    }
+  }
+  return entries
+    .map(({ term, defs }) => {
+      const body = defs.join("; ");
+      const line = term ? (body ? `**${term}**: ${body}` : `**${term}**`) : body;
+      return `- ${line.split("\n").join("\n  ")}`;
+    })
+    .join("\n");
 }
 
 /** Each item's first block sits on the marker line; later blocks are indented under it. */

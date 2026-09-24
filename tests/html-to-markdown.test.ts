@@ -77,6 +77,32 @@ describe("htmlToMarkdown", () => {
     expect(markdown).toContain("| Plan | Price |\n| --- | --- |\n| SaaS | $500 \\| year |");
   });
 
+  it("turns highlighted and scoped code blocks into clean fences", () => {
+    const { markdown } = htmlToMarkdown(
+      page(`<h1>T</h1>
+        <pre class="astro-code github-dark" data-language="bash" tabindex="0"><code data-astro-cid-x1y2z3><span class="line"><span style="color:#B392F0">claude</span><span> mcp add</span></span>
+<span class="line"><span>echo</span><span> "a &amp;&amp; b"</span></span></code></pre>
+        <pre data-astro-cid-abc><code data-astro-cid-abc class="language-json">{"a": 1}</code></pre>
+        <pre><code class="language-plaintext">Use \`\`\` fences</code></pre>`),
+      origin,
+    );
+    expect(markdown).toContain('```bash\nclaude mcp add\necho "a && b"\n```');
+    expect(markdown).toContain('```json\n{"a": 1}\n```');
+    expect(markdown).toContain("````\nUse ``` fences\n````");
+    expect(markdown).not.toMatch(/<span|<code|data-astro-cid/);
+  });
+
+  it("writes definition lists as term and definition, with or without <div> groups", () => {
+    const { markdown } = htmlToMarkdown(
+      page(`<h1>T</h1>
+        <dl><div class="proof__item"><dt>Runtime</dt><dd>Go</dd></div><div><dt>Channels</dt><dd>Telegram</dd><dd>Zalo</dd></div></dl>
+        <dl><dt>Licence</dt><dd><p>Yearly</p><ul><li>Renews</li></ul></dd><dt>Empty</dt></dl>`),
+      origin,
+    );
+    expect(markdown).toContain("- **Runtime**: Go\n- **Channels**: Telegram; Zalo");
+    expect(markdown).toContain("- **Licence**: Yearly\n  - Renews\n- **Empty**");
+  });
+
   it("keeps words apart when Astro removed the whitespace between elements", () => {
     const { markdown } = htmlToMarkdown(page("<h1>T</h1><p><b>$500</b><span>per year</span></p>"), origin);
     expect(markdown).toContain("**$500** per year");
