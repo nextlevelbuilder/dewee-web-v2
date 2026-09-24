@@ -1,0 +1,55 @@
+---
+/**
+ * Who does the work and what they use: agent roles as name tags, dewee capabilities as chips.
+ * Plain strings only; headings default to h3 so it sits under a section heading.
+ */
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  agentsTitle: string;
+  agents: string[];
+  capabilitiesTitle: string;
+  capabilities: string[];
+  level?: 2 | 3;
+}
+const { agentsTitle, agents, capabilitiesTitle, capabilities, level = 3 } = Astro.props;
+const Tag = `h${level}` as "h2" | "h3";
+---
+
+<div class="crew">
+  <div class="crew__group" data-reveal>
+    <Tag class="crew__title">{agentsTitle}</Tag>
+    <ul class="crew__agents" role="list">
+      {agents.map((a) => (
+        <li class="crew__agent"><span class="crew__badge" aria-hidden="true"><Icon name="bot" size={18} /></span>{a}</li>
+      ))}
+    </ul>
+  </div>
+  <div class="crew__group" data-reveal>
+    <Tag class="crew__title">{capabilitiesTitle}</Tag>
+    <ul class="crew__tools" role="list">
+      {capabilities.map((c) => <li class="chip">{c}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .crew { display: grid; gap: var(--space-6); }
+  .crew__group { display: grid; gap: var(--space-3); align-content: start; }
+  .crew__title {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .crew__agents { display: grid; gap: var(--space-2); }
+  .crew__agent {
+    display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    background: var(--surface); border: 1px solid var(--rule); border-inline-start: 3px solid var(--accent); border-radius: var(--radius-2);
+    font-weight: 600; color: var(--ink);
+  }
+  .crew__badge {
+    display: grid; place-items: center; flex: none; inline-size: 2rem; block-size: 2rem; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent-ink);
+  }
+  .crew__tools { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .crew__tools .chip { white-space: normal; font-size: var(--step--1); padding: 0.35rem 0.8rem; }
+</style>

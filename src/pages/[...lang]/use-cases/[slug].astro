@@ -1,0 +1,204 @@
+---
+/**
+ * /use-cases/[slug] (EN) and /vi/use-cases/[slug] (VI): one use case told as a short case story.
+ * Problem (pull quote) → how it works (plus the console screen, when the case names one) → the chat and the crew → where people stay in charge
+ * (the page's one blackboard) → what changes → related cases → call to action.
+ * Copy: src/content/use-cases/<slug>.ts and src/content/pages/use-cases.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { SITE } from "~/content/site";
+import { LOCALE_META, langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { USE_CASE_DETAIL_UI } from "~/content/pages/use-cases";
+import { CHANNEL_MARKS, USE_CASES, USE_CASES_REVIEWED, areaLabel, useCaseBySlug } from "~/content/use-cases";
+import { articleJsonLd } from "~/lib/json-ld";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Quote from "~/components/blocks/Quote.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import NotebookLabel from "~/components/blocks/use-cases/NotebookLabel.astro";
+import FlowSteps from "~/components/blocks/use-cases/FlowSteps.astro";
+import ChatTranscript from "~/components/blocks/use-cases/ChatTranscript.astro";
+import CrewAndTools from "~/components/blocks/use-cases/CrewAndTools.astro";
+import Guardrails from "~/components/blocks/use-cases/Guardrails.astro";
+import CaseOutcome from "~/components/blocks/use-cases/CaseOutcome.astro";
+import UseCaseGrid from "~/components/blocks/use-cases/UseCaseGrid.astro";
+import CcpShot from "~/components/blocks/CcpShot.astro";
+import { ccpShotProps } from "~/content/ccp-screens";
+import { areaStyle, exerciseNo } from "~/components/blocks/use-cases/area-accent";
+
+export const prerender = true;
+export const getStaticPaths = () =>
+  langPaths<{ slug: string }>(() => USE_CASES.map((u) => ({ params: { slug: u.slug }, props: { slug: u.slug } })));
+
+const { locale, slug } = Astro.props as { locale: Locale; slug: string };
+const uc = useCaseBySlug(slug);
+if (!uc) throw new Error(`Unknown use case: ${slug}`);
+
+const d = uc.detail;
+const ui = pick(USE_CASE_DETAIL_UI, locale);
+const href = (p: string) => localePath(locale, p);
+const path = `/use-cases/${uc.slug}`;
+const title = pick(uc.title, locale);
+const team = pick(uc.team, locale);
+const description = pick(d.description, locale);
+const channels = uc.channels.map((c) => CHANNEL_MARKS[c]);
+const agents = pick(d.agents, locale);
+const accent = areaStyle(uc.area);
+const position = USE_CASES.findIndex((u) => u.slug === uc.slug) + 1;
+const contactHref = href("/contact?topic=use-case");
+
+const related = d.related.map((relatedSlug) => {
+  const r = useCaseBySlug(relatedSlug);
+  if (!r) throw new Error(`${uc.slug} links an unknown related use case: ${relatedSlug}`);
+  return {
+    href: href(`/use-cases/${r.slug}`),
+    icon: r.icon,
+    team: pick(r.team, locale),
+    title: pick(r.title, locale),
+    summary: pick(r.summary, locale),
+    channels: r.channels.map((c) => CHANNEL_MARKS[c]),
+    area: r.area,
+    accent: areaStyle(r.area),
+    no: exerciseNo(USE_CASES.indexOf(r) + 1),
+  };
+});
+
+const jsonLd = [
+  {
+    ...articleJsonLd({ title, description, url: `${SITE.url}${href(path)}`, published: USE_CASES_REVIEWED, modified: USE_CASES_REVIEWED }),
+    "@type": "Article",
+    inLanguage: LOCALE_META[locale].htmlLang,
+    articleSection: team,
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  path={path}
+  type="article"
+  published={USE_CASES_REVIEWED}
+  modified={USE_CASES_REVIEWED}
+  jsonLd={jsonLd}
+  breadcrumbs={[
+    { name: ui.crumb, path: "/use-cases" },
+    { name: title, path },
+  ]}
+>
+  <PageHero
+    back={{ label: ui.back, href: href("/use-cases") }}
+    eyebrow={team}
+    title={title}
+    lede={pick(uc.summary, locale)}
+    actions={[{ label: ui.build, href: contactHref }]}
+  >
+    <NotebookLabel
+      slot="aside"
+      kicker={ui.label.kicker}
+      no={{ label: ui.label.no, value: `${exerciseNo(position)} / ${exerciseNo(USE_CASES.length)}` }}
+      icon={uc.icon}
+      rows={[
+        { label: ui.label.subject, value: team },
+        { label: ui.label.name, value: agents.join(", ") },
+        { label: ui.label.class, value: pick(areaLabel(uc.area), locale) },
+        { label: ui.label.school, value: ui.label.schoolValue },
+      ]}
+      channels={channels}
+      channelsLabel={ui.label.runsOn}
+      accent={accent}
+    />
+  </PageHero>
+
+  <section class="section section--tight">
+    <div class="container">
+      <Quote text={pick(d.problem, locale)} cite={ui.problem.cite} role={team} />
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="uc-flow">
+    <div class="container ucd-split">
+      <div class="ucd-split__head">
+        <SectionHead eyebrow={ui.flow.eyebrow} title={ui.flow.title} id="uc-flow" />
+      </div>
+      <div class="ucd-flow">
+        <FlowSteps steps={pick(d.flow, locale)} label={ui.flow.step} />
+        {d.console && (
+          <div class="ucd-console">
+            <p class="eyebrow">{ui.flow.console}</p>
+            <CcpShot {...ccpShotProps(d.console, locale)} sizes="(min-width: 1200px) 42rem, (min-width: 901px) 55vw, 94vw" />
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="uc-chat">
+    <div class="container ucd-stack">
+      <SectionHead eyebrow={ui.crew.eyebrow} title={ui.crew.title} id="uc-chat" />
+      <div class="ucd-chat">
+        <ChatTranscript
+          room={pick(d.chat.room, locale)}
+          channel={CHANNEL_MARKS[d.chat.channel]}
+          label={ui.crew.chatLabel(pick(d.chat.room, locale))}
+          lines={pick(d.transcript, locale)}
+          caption={ui.crew.caption}
+        />
+        <CrewAndTools agentsTitle={ui.crew.agents} agents={agents} capabilitiesTitle={ui.crew.capabilities} capabilities={pick(d.capabilities, locale)} />
+      </div>
+    </div>
+  </section>
+
+  <Guardrails
+    eyebrow={ui.guardrails.eyebrow}
+    title={ui.guardrails.title}
+    lede={ui.guardrails.lede}
+    note={ui.guardrails.note}
+    items={pick(d.guardrails, locale)}
+    id="uc-guardrails"
+  />
+
+  <section class="section" aria-labelledby="uc-outcome">
+    <div class="container">
+      <CaseOutcome
+        eyebrow={ui.outcome.eyebrow}
+        remark={ui.outcome.remark}
+        text={pick(d.outcome, locale)}
+        runsOn={ui.outcome.runsOn}
+        channels={channels}
+        more={{ label: ui.outcome.integrations, href: href("/integrations") }}
+        id="uc-outcome"
+      />
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="uc-related">
+    <div class="container ucd-stack">
+      <SectionHead eyebrow={ui.related.eyebrow} title={ui.related.title} id="uc-related" />
+      <UseCaseGrid items={related} channelsLabel={ui.label.runsOn} readLabel={ui.read} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={ui.cta.title}
+    body={ui.cta.body}
+    primary={{ label: ui.cta.primary, href: contactHref }}
+    secondary={{ label: ui.cta.secondary, chat: true }}
+    note={ui.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .ucd-stack { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); }
+  .ucd-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .ucd-split__head { position: sticky; inset-block-start: calc(var(--header-h, 4.5rem) + var(--space-5)); }
+  .ucd-flow { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); min-inline-size: 0; }
+  .ucd-console { display: grid; gap: var(--space-4); }
+  .ucd-chat { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 4.5rem); align-items: start; }
+
+  @media (max-width: 900px) {
+    .ucd-split, .ucd-chat { grid-template-columns: minmax(0, 1fr); }
+    .ucd-split__head { position: static; }
+  }
+</style>
