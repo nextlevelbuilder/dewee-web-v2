@@ -37,10 +37,24 @@ pnpm dev            # astro dev on :4388 (no worker bindings)
 pnpm build          # production build into dist/
 pnpm preview        # wrangler dev on :4389 with local D1/KV/R2/DO
 pnpm check          # astro check (types)
-pnpm test           # vitest
+pnpm test           # vitest (tests/**, src/**/*.test.ts)
+pnpm build:staging  # build with the flattened staging config (CLOUDFLARE_ENV=staging)
+pnpm exec wrangler d1 migrations apply DB --local   # before `pnpm preview` if you use D1
 ```
 
 Use `pnpm preview` for anything that touches the worker (chat, API, MCP, redirects, `.md` twins).
+`astro build` writes the deploy config to `dist/server/wrangler.json` (staging when
+`CLOUDFLARE_ENV=staging`), so a plain `wrangler deploy` after a build deploys the right worker;
+`pnpm deploy:staging` / `pnpm deploy:production` do build → remote migrations → deploy.
+
+### Toolchain notes
+
+- **TypeScript stays on 6.x**: `astro check` does not support TypeScript 7 yet.
+- **Worker types shadow some DOM types** (`@cloudflare/workers-types` is global). In client
+  islands use `appendChild` instead of `append`, and treat `el.hidden` as `boolean | "until-found"`
+  (compare with `!== false`).
+- `env` from `"cloudflare:workers"` is typed by the global `Env` in `src/env.d.ts`; add new
+  bindings or vars there and in `wrangler.jsonc` together.
 
 ## Conventions
 
@@ -71,6 +85,13 @@ Use `pnpm preview` for anything that touches the worker (chat, API, MCP, redirec
 | `main` (protected) | `dewee.sh`, `www.dewee.sh` | GitHub Actions on push; PRs only |
 
 Work on a feature branch, open a PR into `dev`, and promote `dev` to `main` with a PR.
+
+CI (`.github/workflows/ci-deploy.yml`) runs `pnpm test`, `pnpm check` and `pnpm build` on every
+PR and push. Deploy steps (remote D1 migrations → `wrangler deploy` → smoke test of `/`, `/vi`,
+`/index.md`) run only on pushes to `dev`/`main` when the repository variable
+`DEPLOY_ENABLED=true` and the secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (the
+account that owns dewee.sh) are set. Worker secrets (`DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`,
+`GITHUB_TOKEN`, …) are set once per environment with `wrangler secret put [--env staging]`.
 
 ## Definition of done
 
