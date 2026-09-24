@@ -49,8 +49,9 @@ async function chatSocket(request: Request, env: Env, url: URL): Promise<Respons
   if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
     return new Response("Expected a WebSocket upgrade", { status: 426 });
   }
+  // Browsers always send Origin; "null" (sandboxed frames, file://) or another host is refused.
   const origin = request.headers.get("origin");
-  if (origin && new URL(origin).host !== url.host) return new Response("Forbidden origin", { status: 403 });
+  if (origin && URL.parse(origin)?.host !== url.host) return new Response("Forbidden origin", { status: 403 });
   const sid = url.searchParams.get("sid") ?? "";
   if (!SID_RE.test(sid)) return new Response("Bad session id", { status: 400 });
   const stub = env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName(sid));
