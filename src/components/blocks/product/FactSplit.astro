@@ -1,0 +1,42 @@
+---
+/**
+ * A heading and a short list of ticked facts on one side, any visual on the other (default
+ * slot). `reverse` puts the visual first on wide screens; on phones the copy always comes first.
+ */
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  points: string[];
+  reverse?: boolean;
+  id?: string;
+}
+const { eyebrow, title, lede, points, reverse = false, id } = Astro.props;
+---
+
+<div class:list={["fs", { "fs--reverse": reverse }]} id={id}>
+  <div class="fs__copy">
+    <SectionHead eyebrow={eyebrow} title={title} lede={lede} />
+    <ul class="fs__points" role="list" data-reveal-group>
+      {points.map((p) => (
+        <li data-reveal><Icon name="check" size={18} stroke={2.25} class="fs__tick" /><span>{p}</span></li>
+      ))}
+    </ul>
+  </div>
+  <div class="fs__visual" data-reveal><slot /></div>
+</div>
+
+<style>
+  .fs { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .fs--reverse .fs__copy { order: 2; }
+  .fs__points { display: grid; gap: var(--space-3); margin-block-start: var(--space-6); max-inline-size: var(--measure-narrow); }
+  .fs__points li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: var(--space-2); align-items: baseline; color: var(--ink-2); }
+  .fs__points :global(.fs__tick) { color: var(--success); translate: 0 0.2em; }
+  @media (max-width: 960px) {
+    .fs { grid-template-columns: minmax(0, 1fr); }
+    .fs--reverse .fs__copy { order: 0; }
+  }
+</style>

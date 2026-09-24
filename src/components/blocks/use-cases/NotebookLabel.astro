@@ -1,0 +1,88 @@
+---
+/**
+ * "Nhãn vở": the name label stuck on a Vietnamese school notebook, reused as the hero aside of
+ * a use-case page. Printed field names (Subject, Name, Class, School) with handwritten values on
+ * dotted lines, the exercise number and the channels it runs on. The frame colour follows the
+ * kind of work through the `--area` token set by area-accent.ts. Static: no motion.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import BrandMark from "~/components/ui/BrandMark.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+
+interface Props {
+  kicker: string;
+  /** e.g. { label: "No.", value: "07 / 14" } */
+  no: { label: string; value: string };
+  icon: IconName;
+  rows: { label: string; value: string }[];
+  channels: { brand: string; name: string }[];
+  channelsLabel: string;
+  /** Inline `--area: var(--token)` style */
+  accent?: string;
+}
+const { kicker, no, icon, rows, channels, channelsLabel, accent } = Astro.props;
+---
+
+<div class="nl" style={accent}>
+  <div class="nl__inner">
+    <div class="nl__top">
+      <span class="nl__icon" aria-hidden="true"><Icon name={icon} size={22} /></span>
+      <span class="nl__kicker">{kicker}</span>
+      <span class="nl__no mono">{no.label} {no.value}</span>
+    </div>
+    <dl class="nl__rows">
+      {rows.map((r) => (
+        <div class="nl__row"><dt>{r.label}</dt><dd class="hand">{r.value}</dd></div>
+      ))}
+    </dl>
+    <div class="nl__foot">
+      <span class="nl__foot-label">{channelsLabel}</span>
+      <ul class="nl__channels" role="list" aria-label={channelsLabel}>
+        {channels.map((c) => (
+          <li title={c.name}><BrandMark brand={c.brand} name={c.name} size={20} /><span class="sr-only">{c.name}</span></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nl {
+    --area: var(--accent);
+    max-inline-size: 26rem; margin-inline: auto; padding: 6px;
+    background: var(--surface); border: 2px solid color-mix(in oklch, var(--area) 75%, var(--ink));
+    border-radius: 1.75rem; box-shadow: var(--shadow-2); transform: rotate(1.5deg);
+  }
+  .nl__inner {
+    display: grid; gap: var(--space-4); padding: var(--space-5) var(--space-5) var(--space-4);
+    border: 1.5px dashed color-mix(in oklch, var(--area) 55%, transparent); border-radius: calc(1.75rem - 6px);
+    background:
+      radial-gradient(circle at 0 0, color-mix(in oklch, var(--area) 10%, transparent), transparent 60%),
+      var(--surface);
+  }
+  .nl__top { display: flex; align-items: center; gap: var(--space-2); }
+  .nl__icon {
+    display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: 50%;
+    background: color-mix(in oklch, var(--area) 16%, var(--surface)); color: color-mix(in oklch, var(--area) 70%, var(--ink));
+  }
+  .nl__kicker {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .nl__no { margin-inline-start: auto; font-size: var(--step--1); color: var(--ink-2); }
+  .nl__rows { display: grid; gap: var(--space-3); }
+  .nl__row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: end; gap: var(--space-2); }
+  .nl__row dt { font-size: var(--step--1); color: var(--ink-3); padding-block-end: 0.2rem; }
+  .nl__row dd {
+    min-block-size: 1.9rem; padding-inline: var(--space-1); border-block-end: 1.5px dotted var(--rule-strong);
+    font-size: var(--step-1); line-height: 1.3; color: var(--accent-ink);
+  }
+  .nl__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-block-start: var(--space-3); border-block-start: 1px solid var(--rule); }
+  .nl__foot-label { font-size: var(--step--2); color: var(--ink-3); }
+  .nl__channels { display: flex; flex-wrap: wrap; gap: var(--space-2); color: var(--ink-2); }
+  .nl__channels li { display: inline-flex; }
+
+  @media (max-width: 900px) {
+    .nl { transform: none; }
+  }
+</style>

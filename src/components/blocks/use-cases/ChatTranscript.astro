@@ -1,0 +1,123 @@
+---
+/**
+ * A use-case conversation rendered as a chat card, matching the homepage hero chat: surface card,
+ * paper-2 header with the room name, dewee lines in accent-soft bubbles, @mentions and ✓ ticks.
+ * Lines arrive one by one (CSS only) once the card scrolls in; they are fully visible without
+ * JS and with reduced motion. `caption` is the "illustrative conversation" disclaimer.
+ */
+import { escapeHtml } from "~/lib/inline-markup";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import BrandMark from "~/components/ui/BrandMark.astro";
+
+type Line = { who: string; role?: string; text: string; me?: boolean };
+interface Props {
+  /** Room or conversation name, e.g. "#eng-nightly" or "Zalo OA · Go Moc Furniture" */
+  room: string;
+  /** Channel the room lives on, rendered as a brand mark in the header */
+  channel: { brand: string; name: string };
+  /** Accessible name for the whole conversation */
+  label: string;
+  lines: Line[];
+  caption?: string;
+}
+const { room, channel, label, lines, caption } = Astro.props;
+
+const initials = (name: string) => (name.trim().split(/\s+/).slice(-1)[0] ?? "").slice(0, 1).toUpperCase();
+// Highlight @mentions and ✓ like a real chat client would.
+const richText = (text: string) =>
+  escapeHtml(text)
+    .replace(/(^|\s)(@[\p{L}\d_]+)/gu, '$1<span class="mention">$2</span>')
+    .replace(/✓/g, '<span class="tick">✓</span>');
+const people = [...new Set(lines.filter((l) => !l.me).map((l) => l.who))].slice(0, 2);
+const lastMe = lines.map((l) => !!l.me).lastIndexOf(true);
+const hasHash = room.startsWith("#");
+---
+
+<figure class="ct" aria-label={label}>
+  <div class="chat-card" data-reveal>
+    <div class="chat-card__head">
+      <span class="chat-card__via" title={channel.name}><BrandMark brand={channel.brand} name={channel.name} size={16} /><span class="sr-only">{channel.name}</span></span>
+      {hasHash && <span class="chat-card__hash" aria-hidden="true">#</span>}
+      <span class="chat-card__name">{hasHash ? room.slice(1) : room}</span>
+      <span class="chat-card__avatars" aria-hidden="true">
+        {people.map((p) => <span>{initials(p)}</span>)}
+        <span class="is-dewee"><DeweeMascot size={18} motion="still" /></span>
+      </span>
+    </div>
+    <ol class="chat-card__list" role="list">
+      {lines.map((l, i) => (
+        <li class:list={["line", { "line--me": l.me }]} style={`--i:${i}`}>
+          <span class="line__avatar" aria-hidden="true">
+            {l.me ? <DeweeMascot size={26} motion="still" mood={i === lastMe ? "wink" : "happy"} /> : initials(l.who)}
+          </span>
+          <div class="line__body">
+            <p class="line__meta"><b>{l.who}</b>{l.role && <span>{l.role}</span>}</p>
+            <p class="line__text" set:html={richText(l.text)} />
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+  {caption && <figcaption class="ct__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .ct { display: grid; gap: var(--space-3); margin: 0; }
+  .ct__caption { font-size: var(--step--2); color: var(--ink-3); text-align: center; }
+
+  .chat-card {
+    position: relative;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-4);
+    box-shadow: var(--shadow-3); overflow: hidden;
+  }
+  .chat-card__head {
+    display: flex; align-items: center; gap: var(--space-2); min-inline-size: 0;
+    padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--rule);
+    font-weight: 600; font-size: var(--step--1); background: var(--paper-2);
+  }
+  .chat-card__via { display: inline-flex; color: var(--ink-3); }
+  .chat-card__hash { color: var(--ink-3); font-family: var(--font-mono-stack); margin-inline-end: -0.25rem; }
+  .chat-card__name { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-card__avatars { margin-inline-start: auto; display: flex; flex: none; }
+  .chat-card__avatars > span {
+    display: grid; place-items: center; inline-size: 26px; block-size: 26px; border-radius: 50%;
+    background: var(--paper-3); border: 2px solid var(--paper-2); font-size: 0.7rem; color: var(--ink-2);
+  }
+  .chat-card__avatars > span + span { margin-inline-start: -8px; }
+  .chat-card__avatars > .is-dewee { background: var(--accent-soft); }
+
+  .chat-card__list { display: grid; gap: var(--space-4); padding: var(--space-5) var(--space-4) var(--space-6); }
+  .line { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-3); align-items: start; }
+  .line__avatar {
+    display: grid; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 50%;
+    background: var(--paper-3); color: var(--ink-2); font-size: var(--step--2); font-weight: 600;
+  }
+  .line--me .line__avatar { background: var(--accent-soft); }
+  .line__meta { display: flex; flex-wrap: wrap; gap: 0 var(--space-2); align-items: baseline; font-size: var(--step--2); color: var(--ink-3); }
+  .line__meta b { color: var(--ink); font-size: var(--step--1); }
+  .line--me .line__meta b { color: var(--accent-ink); }
+  .line__text { font-size: var(--step--1); line-height: 1.55; color: var(--ink-2); }
+  .line--me .line__text {
+    margin-block-start: var(--space-1); padding: var(--space-2) var(--space-3);
+    background: var(--accent-soft); border-radius: 4px var(--radius-3) var(--radius-3) var(--radius-3); color: var(--ink);
+  }
+  .line__text :global(.mention) { color: var(--accent-ink); font-weight: 600; background: var(--accent-soft); border-radius: 4px; padding-inline: 0.2em; }
+  .line--me .line__text :global(.mention) { background: var(--surface); }
+  .line__text :global(.tick) { color: var(--success); font-weight: 700; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .chat-card .line { opacity: 0; transform: translateY(10px); }
+    :global(html.js) .chat-card.is-in .line {
+      animation: line-in var(--dur-4) var(--ease-out) forwards;
+      animation-delay: calc(400ms + var(--i) * 800ms);
+    }
+    @keyframes line-in { to { opacity: 1; transform: none; } }
+  }
+
+  @media (max-width: 560px) {
+    .chat-card__list { padding-inline: var(--space-3); }
+  }
+  @media print {
+    .chat-card .line { opacity: 1 !important; transform: none !important; animation: none !important; }
+  }
+</style>

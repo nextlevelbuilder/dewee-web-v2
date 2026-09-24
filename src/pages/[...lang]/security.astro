@@ -1,0 +1,187 @@
+---
+/**
+ * /security: the five defence layers, each mechanism in detail, an honest open-vs-closed
+ * comparison, why dewee is closed source, how to report a vulnerability, and a FAQ.
+ * Copy lives in src/content/pages/security.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { SECURITY_PAGE } from "~/content/pages/security";
+import { faqJsonLd } from "~/lib/json-ld";
+import Icon from "~/components/ui/Icon.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import SecurityLayers from "~/components/blocks/SecurityLayers.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import CapabilityCatalogue from "~/components/blocks/product/CapabilityCatalogue.astro";
+import DefaultsComparison from "~/components/blocks/product/DefaultsComparison.astro";
+import ConsoleShots from "~/components/blocks/product/ConsoleShots.astro";
+import { ccpShotProps } from "~/content/ccp-screens";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(SECURITY_PAGE, locale);
+const href = (p: string) => localePath(locale, p);
+const url = `${SITE.url}${href("/security")}`;
+const CONTACT_EMAIL = "hi@nextlevelbuilder.io";
+
+const groups = t.detail.groups.map((g) => ({
+  ...g,
+  meta: t.detail.count(g.items.length),
+  items: g.items.map((it) => ({ ...it, since: it.since ? `${t.detail.since} v${it.since}` : undefined })),
+}));
+
+const jsonLd = [
+  {
+    "@type": "WebPage",
+    name: t.meta.title,
+    description: t.meta.description,
+    url,
+    inLanguage: locale === "vi" ? "vi-VN" : "en-US",
+    about: { "@type": "SoftwareApplication", name: "dewee", applicationCategory: "BusinessApplication" },
+    publisher: { "@id": `${SITE.ownerUrl}#org` },
+  },
+  faqJsonLd(t.faq.items),
+];
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/security"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/security" }]}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: "#layers" },
+      { label: t.hero.secondary, href: "#disclosure" },
+    ]}
+    mascot={{ mood: "awake" }}
+  />
+
+  <div id="layers" class="sec-anchor">
+    <SecurityLayers
+      eyebrow={t.layers.eyebrow}
+      title={t.layers.title}
+      lede={t.layers.lede}
+      layers={t.layers.items}
+      core={t.layers.core}
+      stamp={t.layers.stamp}
+      stampNote={t.layers.stampNote}
+    />
+  </div>
+
+  <section class="section" id="detail">
+    <div class="container sec-stack">
+      <SectionHead eyebrow={t.detail.eyebrow} title={t.detail.title} lede={t.detail.lede} />
+      <CapabilityCatalogue groups={groups} indexLabel={t.detail.indexLabel} />
+    </div>
+  </section>
+
+  <section class="section band" id="console">
+    <div class="container">
+      <ConsoleShots
+        eyebrow={t.console.eyebrow}
+        title={t.console.title}
+        lede={t.console.lede}
+        shots={[ccpShotProps("activity", locale), ccpShotProps("api-keys", locale)]}
+      />
+    </div>
+  </section>
+
+  <section class="section" id="defaults">
+    <div class="container sec-stack">
+      <SectionHead eyebrow={t.defaults.eyebrow} title={t.defaults.title} lede={t.defaults.lede} />
+      <DefaultsComparison
+        label={t.defaults.label}
+        topicLabel={t.defaults.topicLabel}
+        open={t.defaults.open}
+        closed={t.defaults.closed}
+        rows={t.defaults.rows}
+        footnoteTitle={t.defaults.footnoteTitle}
+        footnote={t.defaults.footnote}
+      />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="container sec-split">
+      <div class="sec-closed">
+        <SectionHead eyebrow={t.closedSource.eyebrow} title={t.closedSource.title} />
+        {t.closedSource.body.map((p) => <p class="sec-closed__p">{p}</p>)}
+        <a class="btn btn--ghost sec-closed__cta" href={href("/story")}>{t.closedSource.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+
+      <article class="card sec-disclose paper-grid" id="disclosure" aria-labelledby="disclosure-title" data-reveal>
+        <p class="sec-disclose__eyebrow"><Icon name="bug" size={16} />{t.disclosure.eyebrow}</p>
+        <SectionHead title={t.disclosure.title} size="m" id="disclosure-title" />
+        <p class="sec-disclose__body">{t.disclosure.body}</p>
+        <p class="sec-disclose__label">{t.disclosure.includeLabel}</p>
+        <ul class="sec-disclose__list" role="list">
+          {t.disclosure.include.map((it) => <li><Icon name="check" size={16} stroke={2.25} />{it}</li>)}
+        </ul>
+        <a class="btn btn--primary sec-disclose__cta" href={`mailto:${CONTACT_EMAIL}`}><Icon name="mail" size={18} />{t.disclosure.cta}</a>
+        <p class="note note--red sec-disclose__note">{t.disclosure.note}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="faq">
+    <div class="container sec-faq">
+      <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} />
+      <Faq items={t.faq.items} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .sec-anchor { scroll-margin-block-start: 4.25rem; }
+  .sec-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+
+  .sec-split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .sec-closed { display: grid; gap: var(--space-4); align-content: start; }
+  .sec-closed__p { max-inline-size: var(--measure-narrow, 60ch); color: var(--ink-2); line-height: 1.7; }
+  .sec-closed__cta { justify-self: start; margin-block-start: var(--space-2); }
+
+  .sec-disclose {
+    --cell: 10px;
+    display: grid; gap: var(--space-3); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border: 1.5px solid var(--rule-strong); scroll-margin-block-start: 6rem; transform: rotate(0.6deg);
+  }
+  .sec-disclose__eyebrow {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--redpen);
+  }
+  .sec-disclose__body { color: var(--ink-2); line-height: 1.65; }
+  .sec-disclose__label { margin-block-start: var(--space-2); font-weight: 600; font-size: var(--step--1); color: var(--ink); }
+  .sec-disclose__list { display: grid; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-2); }
+  .sec-disclose__list li { display: flex; align-items: baseline; gap: var(--space-2); }
+  .sec-disclose__list :global(svg) { flex: none; color: var(--success); translate: 0 0.15em; }
+  .sec-disclose__cta { justify-self: start; margin-block-start: var(--space-3); max-inline-size: 100%; overflow-wrap: anywhere; }
+  .sec-disclose__note { justify-self: end; transform: rotate(-3deg); }
+
+  .sec-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+
+  @media (max-width: 900px) {
+    .sec-split, .sec-faq { grid-template-columns: minmax(0, 1fr); }
+    .sec-disclose { transform: none; }
+  }
+</style>

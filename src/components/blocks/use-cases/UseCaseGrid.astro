@@ -1,0 +1,191 @@
+---
+/**
+ * Grid of use-case cards with an optional filter by kind of work.
+ * Every card is in the HTML and visible without JS. The filter bar ships `hidden` and a small
+ * vanilla island reveals it: toggle buttons (aria-pressed) inside a labelled group, cards hidden
+ * with the `hidden` attribute, and a polite live region announcing "{shown} of {total}".
+ */
+import UseCaseCard from "./UseCaseCard.astro";
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+
+type Item = {
+  href: string;
+  icon: IconName;
+  team: string;
+  title: string;
+  summary: string;
+  channels: { brand: string; name: string }[];
+  area: string;
+  accent?: string;
+  no?: string;
+};
+interface Props {
+  items: Item[];
+  channelsLabel: string;
+  readLabel: string;
+  /** Omit to render a plain grid (e.g. related use cases) */
+  filters?: {
+    label: string;
+    all: string;
+    /** Live-region template with `{shown}` and `{total}` */
+    status: string;
+    areas: { id: string; label: string }[];
+  };
+  /** A dashed closing card inviting visitors to bring their own use case; never filtered out */
+  invite?: { no: string; title: string; body: string; label: string; href: string };
+  columns?: 2 | 3;
+  level?: 2 | 3;
+}
+const { items, channelsLabel, readLabel, filters, invite, columns = 3, level = 3 } = Astro.props;
+const Tag = `h${level}` as "h2" | "h3";
+// One filter bar per page at most, so a fixed id keeps the prerendered HTML stable between builds.
+const groupId = "use-case-filter-label";
+const countFor = (id: string) => items.filter((it) => it.area === id).length;
+---
+
+<div class:list={["ucg", `ucg--${columns}`]} data-ucg data-status={filters?.status}>
+  {filters && (
+    <div class="ucg__filters" role="group" aria-labelledby={groupId} data-ucg-filters hidden>
+      <span class="ucg__filters-label" id={groupId}>{filters.label}</span>
+      <button type="button" class="ucg__chip" data-filter="all" aria-pressed="true">
+        {filters.all}<span class="ucg__count" aria-hidden="true">{items.length}</span>
+      </button>
+      {filters.areas.filter((a) => countFor(a.id) > 0).map((a) => (
+        <button type="button" class="ucg__chip" data-filter={a.id} aria-pressed="false">
+          {a.label}<span class="ucg__count" aria-hidden="true">{countFor(a.id)}</span>
+        </button>
+      ))}
+    </div>
+  )}
+  {filters && <p class="sr-only" aria-live="polite" data-ucg-status></p>}
+  <ul class="ucg__list" role="list" data-reveal-group>
+    {items.map((it) => (
+      <li data-area={it.area} data-reveal>
+        <UseCaseCard
+          href={it.href}
+          icon={it.icon}
+          team={it.team}
+          title={it.title}
+          summary={it.summary}
+          channels={it.channels}
+          channelsLabel={channelsLabel}
+          readLabel={readLabel}
+          no={it.no}
+          accent={it.accent}
+          level={level}
+        />
+      </li>
+    ))}
+    {invite && (
+      <li class="ucg__invite-item" data-reveal>
+        <article class="ucg__invite">
+          <header class="ucg__invite-top">
+            <span class="ucg__invite-icon" aria-hidden="true"><Icon name="pen-line" size={20} /></span>
+            <span class="ucg__invite-no mono" aria-hidden="true">{invite.no}</span>
+          </header>
+          <Tag class="ucg__invite-title">{invite.title}</Tag>
+          <p class="ucg__invite-body">{invite.body}</p>
+          <a class="ucg__invite-link" href={invite.href}>{invite.label}<Icon name="arrow-right" size={16} class="arrow" /></a>
+        </article>
+      </li>
+    )}
+  </ul>
+</div>
+
+<script>
+  /** Progressive filter: runs once per grid that has a filter bar. */
+  function initUseCaseFilters() {
+    document.querySelectorAll<HTMLElement>("[data-ucg]").forEach((root) => {
+      const bar = root.querySelector<HTMLElement>("[data-ucg-filters]");
+      if (!bar || root.dataset.ucgReady) return;
+      root.dataset.ucgReady = "1";
+      const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>("button[data-filter]"));
+      const cards = Array.from(root.querySelectorAll<HTMLElement>(".ucg__list > li[data-area]"));
+      const status = root.querySelector<HTMLElement>("[data-ucg-status]");
+      const template = root.dataset.status ?? "";
+
+      const apply = (filter: string) => {
+        let shown = 0;
+        for (const card of cards) {
+          const on = filter === "all" || card.dataset.area === filter;
+          card.hidden = !on;
+          // A card revealed by filtering should never wait for the scroll observer.
+          if (on) card.classList.add("is-in");
+          shown += on ? 1 : 0;
+        }
+        for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.filter === filter));
+        if (status) status.textContent = template.replace("{shown}", String(shown)).replace("{total}", String(cards.length));
+      };
+
+      bar.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button[data-filter]") : null;
+        if (target) apply(target.dataset.filter ?? "all");
+      });
+      bar.hidden = false;
+    });
+  }
+  initUseCaseFilters();
+</script>
+
+<style>
+  .ucg { display: grid; gap: var(--space-6); }
+  .ucg__filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .ucg__filters[hidden] { display: none; }
+  .ucg__filters-label {
+    inline-size: 100%; margin-block-end: var(--space-1);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .ucg__chip {
+    display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem;
+    padding: 0.4rem 0.95rem; border-radius: var(--radius-round); border: 1px solid var(--rule-strong);
+    background: var(--surface); color: var(--ink-2); font: inherit; font-size: var(--step--1); font-weight: 500;
+    cursor: pointer; transition: background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+  }
+  .ucg__chip:hover { border-color: var(--ink-3); color: var(--ink); }
+  .ucg__chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .ucg__count {
+    min-inline-size: 1.5em; padding: 0.05em 0.4em; border-radius: var(--radius-round);
+    background: var(--paper-3); color: var(--ink-2); font-family: var(--font-mono-stack); font-size: var(--step--2); text-align: center;
+  }
+  .ucg__chip[aria-pressed="true"] .ucg__count { background: color-mix(in oklch, var(--paper) 22%, transparent); color: var(--paper); }
+
+  .ucg__list { display: grid; gap: var(--space-5); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ucg--2 .ucg__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ucg__list > li { display: grid; }
+  .ucg__list > li[hidden] { display: none; }
+
+  /* The fifteenth card: a blank, dashed page waiting for the visitor's own job */
+  .ucg__invite {
+    position: relative; display: grid; grid-template-rows: auto auto 1fr auto; gap: var(--space-3);
+    padding: var(--space-5) var(--space-5) var(--space-4); border: 1.5px dashed var(--rule-strong); border-radius: var(--radius-3);
+    background: color-mix(in oklch, var(--highlight) 18%, transparent);
+  }
+  .ucg__invite-top { display: flex; align-items: center; }
+  .ucg__invite-icon {
+    display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; border-radius: var(--radius-2);
+    background: var(--accent-soft); color: var(--accent-ink);
+  }
+  .ucg__invite-no { margin-inline-start: auto; font-size: var(--step--2); color: var(--ink-3); }
+  .ucg__invite-title { font-size: var(--step-1); line-height: 1.25; color: var(--accent-ink); text-wrap: balance; }
+  .ucg__invite-body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); }
+  .ucg__invite-link {
+    display: inline-flex; align-items: center; gap: 0.3rem; min-block-size: 2.75rem; justify-self: start;
+    font-weight: 600; font-size: var(--step--1); color: var(--accent-ink); text-decoration: none;
+  }
+  .ucg__invite-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .ucg__invite-link :global(.arrow) { transition: transform var(--dur-2) var(--ease-out); }
+  .ucg__invite:hover { border-color: var(--accent); }
+  .ucg__invite:hover .ucg__invite-link :global(.arrow) { transform: translateX(3px); }
+
+  @media (max-width: 1024px) {
+    .ucg__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .ucg__list, .ucg--2 .ucg__list { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ucg__invite:hover .ucg__invite-link :global(.arrow) { transform: none; }
+  }
+</style>

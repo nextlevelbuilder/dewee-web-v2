@@ -1,0 +1,87 @@
+---
+/**
+ * /about: NextLevelBuilder.io, the founders, how we work and the product family.
+ * Copy lives in src/content/pages/about.ts; founders and ecosystem come from their shared content
+ * files. Signature visual: the self-assessed report card ("học bạ") of our working habits.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { ABOUT } from "~/content/pages/about";
+import { FOUNDERS } from "~/content/founders";
+import { ECOSYSTEM } from "~/content/ecosystem";
+import PageHero from "~/components/blocks/PageHero.astro";
+import ProofStrip from "~/components/blocks/ProofStrip.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Quote from "~/components/blocks/Quote.astro";
+import FounderCards from "~/components/blocks/FounderCards.astro";
+import EcosystemGrid from "~/components/blocks/EcosystemGrid.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import ReportCard from "~/components/blocks/company/ReportCard.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(ABOUT, locale);
+const href = (p: string) => localePath(locale, p);
+const founders = FOUNDERS.map((f) => ({
+  name: f.name,
+  photo: f.photo,
+  role: pick(f.role, locale),
+  bio: pick(f.bio, locale),
+  facts: pick(f.facts, locale),
+  company: f.company,
+  links: f.links,
+}));
+const products = ECOSYSTEM.map((p) => ({ id: p.id, name: p.name, url: p.url, icon: p.icon, tagline: pick(p.tagline, locale), role: pick(p.role, locale) }));
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/about" breadcrumbs={[{ name: t.meta.crumb, path: "/about" }]}>
+  <PageHero eyebrow={t.hero.eyebrow} title={t.hero.title} lede={t.hero.lede} mascot={{ mood: "happy", accessory: "cap" }} />
+
+  <ProofStrip items={t.proof} label={t.proofLabel} />
+
+  <section class="section band">
+    <div class="container about-mission">
+      <SectionHead eyebrow={t.mission.eyebrow} title={t.mission.title} lede={t.mission.lede} />
+      <Quote text={t.mission.quote} cite={t.mission.cite} />
+    </div>
+  </section>
+
+  <section class="section" id="founders">
+    <div class="container about-stack">
+      <SectionHead eyebrow={t.founders.eyebrow} title={t.founders.title} lede={t.founders.lede} />
+      <FounderCards founders={founders} />
+    </div>
+  </section>
+
+  <section class="section band" id="how-we-work">
+    <div class="container about-stack">
+      <SectionHead eyebrow={t.work.eyebrow} title={t.work.title} lede={t.work.lede} />
+      <ReportCard {...t.work.card} />
+    </div>
+  </section>
+
+  <section class="section" id="ecosystem">
+    <div class="container about-stack">
+      <SectionHead eyebrow={t.ecosystem.eyebrow} title={t.ecosystem.title} lede={t.ecosystem.lede} />
+      <EcosystemGrid products={products} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .about-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .about-mission { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  @media (max-width: 900px) {
+    .about-mission { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

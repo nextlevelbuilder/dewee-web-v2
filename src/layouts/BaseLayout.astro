@@ -37,7 +37,6 @@ interface Props {
 }
 
 const { locale, path, altHref, grid = false, chat = true, bodyClass, ...seo } = Astro.props;
-const env = import.meta.env;
 const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
 ---
 

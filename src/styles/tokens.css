@@ -91,6 +91,7 @@
   --space-11: 10rem;
   --section-y: clamp(4.5rem, 3rem + 7vw, 9rem);   /* 72px → 144px section rhythm */
   --gutter: clamp(1rem, 0.6rem + 2vw, 2rem);
+  --header-h: 4.25rem;                             /* sticky site header height */
   --page-max: 78rem;                               /* 1248px */
   --page-wide: 88rem;
   --margin-col: clamp(0rem, -6rem + 12vw, 7.5rem); /* notebook margin column, 0 on phones */

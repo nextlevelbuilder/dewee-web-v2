@@ -1,0 +1,145 @@
+---
+/**
+ * /architecture: a readable tour of how dewee works, from the gateway to the agent loop,
+ * memory, teams, multi-tenancy and deployment. Copy lives in src/content/pages/architecture.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { ARCHITECTURE_PAGE } from "~/content/pages/architecture";
+import { CHANNELS, PROVIDERS } from "~/content/integrations";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import ArchitectureSketch from "~/components/blocks/ArchitectureSketch.astro";
+import ProofStrip from "~/components/blocks/ProofStrip.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import AgentLoopPipeline from "~/components/blocks/product/AgentLoopPipeline.astro";
+import MemoryTiers from "~/components/blocks/product/MemoryTiers.astro";
+import FactSplit from "~/components/blocks/product/FactSplit.astro";
+import TeamBoard from "~/components/blocks/product/TeamBoard.astro";
+import DeployTopology from "~/components/blocks/product/DeployTopology.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(ARCHITECTURE_PAGE, locale);
+const href = (p: string) => localePath(locale, p);
+const url = `${SITE.url}${href("/architecture")}`;
+
+const jsonLd = [
+  {
+    "@type": "TechArticle",
+    headline: t.meta.title,
+    description: t.meta.description,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: locale === "vi" ? "vi-VN" : "en-US",
+    proficiencyLevel: "Expert",
+    about: { "@type": "SoftwareApplication", name: "dewee", applicationCategory: "BusinessApplication" },
+    author: { "@id": `${SITE.ownerUrl}#org` },
+    publisher: { "@id": `${SITE.ownerUrl}#org` },
+  },
+];
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/architecture"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/architecture" }]}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: "#loop" },
+      { label: t.hero.secondary, href: href("/contact") },
+    ]}
+    mascot={{ mood: "focused", accessory: "glasses" }}
+  />
+
+  <section class="section">
+    <div class="container arch-stack">
+      <SectionHead eyebrow={t.overview.eyebrow} title={t.overview.title} lede={t.overview.lede} />
+      <ArchitectureSketch
+        labels={{ ...t.overview.labels, stages: t.loop.stages.map((s) => s.name.toLowerCase()).join(" · ") }}
+        channels={CHANNELS}
+        providers={PROVIDERS}
+        more={t.overview.more}
+        label={t.overview.sketchLabel}
+      />
+    </div>
+    <div class="arch-proof">
+      <ProofStrip items={t.overview.proof} label={t.overview.proofLabel} />
+    </div>
+  </section>
+
+  <section class="section band" id="loop">
+    <div class="container arch-stack">
+      <SectionHead eyebrow={t.loop.eyebrow} title={t.loop.title} lede={t.loop.lede} />
+      <AgentLoopPipeline label={t.loop.label} phases={t.loop.phases} again={t.loop.again} stages={t.loop.stages} />
+    </div>
+  </section>
+
+  <section class="section" id="memory">
+    <div class="container arch-stack">
+      <SectionHead eyebrow={t.memory.eyebrow} title={t.memory.title} lede={t.memory.lede} />
+      <MemoryTiers label={t.memory.label} tiers={t.memory.tiers} recall={t.memory.recall} flow={t.memory.flow} vault={t.memory.vault} />
+    </div>
+  </section>
+
+  <section class="section band" id="teams">
+    <div class="container">
+      <FactSplit eyebrow={t.teams.eyebrow} title={t.teams.title} lede={t.teams.lede} points={t.teams.points}>
+        <TeamBoard {...t.teams.board} />
+      </FactSplit>
+    </div>
+  </section>
+
+  <section class="section" id="platform">
+    <div class="container arch-stack">
+      <SectionHead eyebrow={t.platform.eyebrow} title={t.platform.title} lede={t.platform.lede} />
+      <FeatureGrid items={t.platform.items} />
+    </div>
+  </section>
+
+  <section class="section board arch-board" id="deploy">
+    <div class="arch-board__grain paper-grid" aria-hidden="true"></div>
+    <div class="container">
+      <DeployTopology
+        eyebrow={t.deploy.eyebrow}
+        title={t.deploy.title}
+        lede={t.deploy.lede}
+        label={t.deploy.label}
+        runtime={t.deploy.runtime}
+        link={t.deploy.link}
+        ccp={t.deploy.ccp}
+        guard={t.deploy.guard}
+        terminalLabel={t.deploy.terminalLabel}
+        terminal={t.deploy.terminal}
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .arch-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .arch-proof { margin-block-start: clamp(3rem, 2rem + 3vw, 5rem); }
+  .arch-board { overflow: hidden; }
+  .arch-board__grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.8; }
+  .arch-board > .container { position: relative; }
+</style>

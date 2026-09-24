@@ -110,7 +110,7 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
     display: flex;
     align-items: center;
     gap: var(--space-5);
-    block-size: 4.25rem;
+    block-size: var(--header-h);
   }
   .brand { display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; flex: none; }
   .brand :global(.brand__mascot) { transition: transform var(--dur-3) var(--ease-spring); }

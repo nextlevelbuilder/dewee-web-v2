@@ -1,0 +1,37 @@
+---
+/**
+ * "See it in the console": a section heading and two real control-plane screenshots pinned
+ * side by side (one tilted each way, taped). Build each shot with `ccpShotProps(id, locale)`.
+ * On narrow screens the shots stack.
+ */
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import CcpShot from "~/components/blocks/CcpShot.astro";
+import type { CcpScreenId } from "~/content/ccp-screens";
+
+type Shot = { id: CcpScreenId; title: string; caption?: string; path?: string };
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  shots: Shot[];
+}
+const { eyebrow, title, lede, shots } = Astro.props;
+const tilts = ["left", "right"] as const;
+---
+
+<div class="cs">
+  <SectionHead eyebrow={eyebrow} title={title} lede={lede} size="m" />
+  <div class="cs__shots">
+    {shots.map((s, i) => (
+      <CcpShot {...s} tape tilt={tilts[i % tilts.length]} sizes="(min-width: 1200px) 560px, (min-width: 900px) 46vw, 94vw" />
+    ))}
+  </div>
+</div>
+
+<style>
+  .cs { display: grid; gap: clamp(2rem, 1.25rem + 2.5vw, 3.5rem); }
+  .cs__shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 1rem + 2vw, 3rem); align-items: start; }
+  @media (max-width: 900px) {
+    .cs__shots { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
+  }
+</style>

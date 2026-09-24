@@ -22,6 +22,12 @@ interface Env {
   CHAT_AGENT_WEBHOOK_URL?: string;
 }
 
+/** Types `env` from "cloudflare:workers" with the same bindings. */
+type WorkerEnv = Env;
+declare namespace Cloudflare {
+  interface Env extends WorkerEnv {}
+}
+
 declare namespace App {
   interface Locals {
     cfContext?: ExecutionContext;

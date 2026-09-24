@@ -1,0 +1,55 @@
+---
+/**
+ * "How it works" for a use case: a vertical, numbered timeline of 4–6 steps joined by a ruled
+ * line, like exercises down a notebook page. Plain strings in, an ordered list out.
+ * Steps stagger in with the shared reveal; everything is visible without JS or with reduced motion.
+ */
+interface Props {
+  steps: string[];
+  /** Visible label before each number, e.g. "Step" / "Bước" */
+  label: string;
+}
+const { steps, label } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<ol class="flow" role="list" data-reveal-group>
+  {steps.map((s, i) => (
+    <li class="flow__step" data-reveal>
+      <span class="flow__dot mono" aria-hidden="true">{pad(i + 1)}</span>
+      <div class="flow__body">
+        <p class="flow__label">{label} {pad(i + 1)}</p>
+        <p class="flow__text">{s}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .flow { display: grid; gap: 0; list-style: none; padding: 0; margin: 0; counter-reset: none; }
+  .flow__step { position: relative; display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: var(--space-4); padding-block-end: var(--space-6); }
+  .flow__step:last-child { padding-block-end: 0; }
+  /* The ruled line joining one step to the next */
+  .flow__step:not(:last-child)::before {
+    content: ""; position: absolute; inset-block: 3rem 0; inset-inline-start: calc(1.5rem - 1px);
+    border-inline-start: 2px dotted var(--rule-strong);
+  }
+  .flow__dot {
+    display: grid; place-items: center; inline-size: 3rem; block-size: 3rem; border-radius: 50%;
+    background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent-ink);
+    font-size: var(--step--1); font-weight: 600;
+  }
+  .flow__step:first-child .flow__dot { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+  .flow__body { padding-block-start: 0.2rem; }
+  .flow__label {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .flow__text { margin-block-start: var(--space-1); font-size: var(--step-0); line-height: 1.6; color: var(--ink); max-inline-size: 40rem; }
+
+  @media (max-width: 560px) {
+    .flow__step { grid-template-columns: 2.5rem minmax(0, 1fr); gap: var(--space-3); padding-block-end: var(--space-5); }
+    .flow__dot { inline-size: 2.5rem; block-size: 2.5rem; }
+    .flow__step:not(:last-child)::before { inset-block-start: 2.5rem; inset-inline-start: calc(1.25rem - 1px); }
+  }
+</style>
