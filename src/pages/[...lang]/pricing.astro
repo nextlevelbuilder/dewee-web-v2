@@ -2,7 +2,7 @@
 /**
  * Pricing & deployment. Plans and prices come from src/content/plans.ts (`plansFor` keeps the
  * VI locale On-Premises only); the words around them live in src/content/pages/pricing.ts.
- * Other pages deep-link to /pricing#saas, #dedicated and #on-premises (see PlanAnchors).
+ * Other pages deep-link to /pricing#saas, #dedicated and #on-premises.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
@@ -15,7 +15,6 @@ import SectionHead from "~/components/blocks/SectionHead.astro";
 import DeployPlans from "~/components/blocks/DeployPlans.astro";
 import Faq from "~/components/blocks/Faq.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
-import PlanAnchors from "~/components/blocks/pricing/PlanAnchors.astro";
 import PlanComparison from "~/components/blocks/pricing/PlanComparison.astro";
 import DeploymentTopology from "~/components/blocks/pricing/DeploymentTopology.astro";
 import RefundNote from "~/components/blocks/pricing/RefundNote.astro";
@@ -74,9 +73,7 @@ const jsonLd = [product, faqJsonLd(t.faq.items)];
   <section class="section band" id="plans">
     <div class="container pr-stack">
       <SectionHead eyebrow={t.plans.eyebrow} title={t.plans.title} lede={t.plans.lede} />
-      <PlanAnchors ids={plans.map((p) => p.id)}>
-        <DeployPlans plans={plans} includesLabel={t.plans.includes} tradeoffsLabel={t.plans.tradeoffs} badge={t.plans.badge} />
-      </PlanAnchors>
+      <DeployPlans plans={plans} includesLabel={t.plans.includes} tradeoffsLabel={t.plans.tradeoffs} badge={t.plans.badge} />
     </div>
   </section>
 

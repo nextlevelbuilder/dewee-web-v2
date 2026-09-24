@@ -51,7 +51,7 @@ const plans = plansFor(locale).map((p) => ({
   highlight: p.highlight,
 }));
 const jsonLd = [
-  productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: p.price.replace(/[^\d.]/g, "") })) }),
+  productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: String(p.priceUsd) })) }),
   faqJsonLd(t.faq.items),
 ];
 ---
