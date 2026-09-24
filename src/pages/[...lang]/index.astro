@@ -49,6 +49,7 @@ const plans = plansFor(locale).map((p) => ({
   tradeoffs: pick(p.tradeoffs, locale),
   cta: { label: pick(p.cta, locale), href: href(`/pricing#${p.id}`) },
   highlight: p.highlight,
+  priceUsd: p.priceUsd,
 }));
 const jsonLd = [
   productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: String(p.priceUsd) })) }),
