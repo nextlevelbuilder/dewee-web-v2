@@ -22,6 +22,7 @@ let doc: PreviewDoc | null = null;
 let problems: string[] = [];
 const form = await adminForm(Astro, auth.session);
 if (!form) {
+  Astro.response.status = 403;
   problems = [ADMIN.errors.csrf];
 } else {
   const kind = field(form, "kind") === "post" ? "post" : "page";

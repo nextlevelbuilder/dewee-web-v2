@@ -24,6 +24,7 @@ let message: { kind: "error" | "success"; text: string } | null = null;
 if (Astro.request.method === "POST") {
   const form = await adminForm(Astro, auth.session);
   if (!form) {
+    Astro.response.status = 403;
     message = { kind: "error", text: ADMIN.errors.csrf };
   } else if (field(form, "action") === "create") {
     const name = field(form, "name");
