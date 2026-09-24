@@ -12,7 +12,9 @@
     "test": "vitest run",
     "deploy:staging": "pnpm build:staging && wrangler d1 migrations apply DB --remote && wrangler deploy",
     "deploy:production": "pnpm build && wrangler d1 migrations apply DB --remote && wrangler deploy",
-    "build:staging": "CLOUDFLARE_ENV=staging SITE_URL=https://staging.dewee.sh astro build"
+    "build:staging": "CLOUDFLARE_ENV=staging SITE_URL=https://staging.dewee.sh astro build",
+    "changelog:snapshot": "node scripts/snapshot-releases.ts",
+    "seo:postbuild": "node scripts/postbuild-markdown-and-og.ts"
   },
   "engines": {
     "node": ">=22"
@@ -28,6 +30,7 @@
     "@astrojs/check": "^0.9.10",
     "@cloudflare/workers-types": "^5.20260923.1",
     "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^24.13.6",
     "lucide-static": "^1.47.0",
     "satori": "^0.33.5",
     "sharp": "^0.35.4",

@@ -26,6 +26,8 @@ interface Props {
   type?: "website" | "article";
   noindex?: boolean;
   bilingual?: boolean;
+  /** Each locale's URL when the translation has a different path (forwarded to SeoHead for hreflang) */
+  alternates?: Partial<Record<Locale, string>>;
   jsonLd?: Record<string, unknown>[];
   breadcrumbs?: { name: string; path: string }[];
   published?: string;

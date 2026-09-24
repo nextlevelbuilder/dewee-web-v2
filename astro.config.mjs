@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
+import seoPostbuild from "./scripts/astro-seo-postbuild.mjs";
 
 // Public origin used for canonical URLs, sitemap and social cards.
 // Staging overrides it through the SITE_URL build env so canonical tags stay truthful.
@@ -15,6 +16,8 @@ export default defineConfig({
     imageService: "passthrough",
     sessionKVBindingName: "SESSION",
   }),
+  // After the build: Markdown twins, social cards, the page manifest and llms-full (see the script).
+  integrations: [seoPostbuild()],
   i18n: {
     locales: ["en", "vi"],
     defaultLocale: "en",

@@ -82,9 +82,9 @@ export class ChatRoom extends DurableObject<Env> {
       const ok = await this.forwardToAgent(text);
       if (ok) return;
     }
-    const answer = answerFromFaq(text, this.locale());
+    const answer = answerFromFaq(text, this.locale(), Boolean(this.getMeta("email")));
     const reply = this.insert("agent", answer.text);
-    ws.send(JSON.stringify({ type: "message", msg: reply, askEmail: answer.askEmail && !this.getMeta("email") }));
+    ws.send(JSON.stringify({ type: "message", msg: reply, askEmail: answer.askEmail }));
   }
 
   async webSocketClose(ws: WebSocket, code: number) {

@@ -5,6 +5,7 @@
  *  - /api/chat/ws → the visitor's ChatRoom Durable Object (WebSocket)
  *  - /media/<key> → R2 bucket MEDIA
  *  - <any page>.md → the page's Markdown twin
+ *  - /_seo/* (build manifest for the discovery routes) → 404
  */
 import { BRAND_REDIRECTS } from "../../content/site";
 import { markdownTwin } from "./markdown-twin";
@@ -26,6 +27,11 @@ export async function handleEdge(request: Request, env: Env, _ctx: ExecutionCont
     return withSecurityHeaders(new Response(null, { status: 302, headers: { location: brand, "cache-control": "public, max-age=3600" } }), env);
   }
 
+  // Build artefacts the discovery routes read through the ASSETS binding; not public URLs.
+  if (url.pathname.startsWith("/_seo/")) {
+    return withSecurityHeaders(new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } }), env);
+  }
+
   if (url.pathname === "/api/chat/ws") return chatSocket(request, env, url);
 
   if (url.pathname.startsWith("/media/") && (request.method === "GET" || request.method === "HEAD")) {
@@ -43,8 +49,9 @@ async function chatSocket(request: Request, env: Env, url: URL): Promise<Respons
   if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
     return new Response("Expected a WebSocket upgrade", { status: 426 });
   }
+  // Browsers always send Origin; "null" (sandboxed frames, file://) or another host is refused.
   const origin = request.headers.get("origin");
-  if (origin && new URL(origin).host !== url.host) return new Response("Forbidden origin", { status: 403 });
+  if (origin && URL.parse(origin)?.host !== url.host) return new Response("Forbidden origin", { status: 403 });
   const sid = url.searchParams.get("sid") ?? "";
   if (!SID_RE.test(sid)) return new Response("Bad session id", { status: 400 });
   const stub = env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName(sid));

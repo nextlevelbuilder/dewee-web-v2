@@ -1,0 +1,135 @@
+---
+/**
+ * /changelog and /vi/changelog: every dewee release from D1 `releases` (seeded by migration,
+ * refreshed hourly by the cron in src/worker.ts). Server-rendered so new releases appear without
+ * a deploy. `?channel=stable|beta|all` filters (stable by default) and `?from=<minor>` pages by
+ * minor version. Copy lives in src/content/pages/changelog.ts.
+ */
+import { env } from "cloudflare:workers";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { localePath, pick, type Locale } from "~/i18n/config";
+import { CHANGELOG, fill } from "~/content/pages/changelog";
+import PageHero from "~/components/blocks/PageHero.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import PageActions from "~/components/layout/PageActions.astro";
+import ChangelogChannelNav from "~/components/blocks/changelog/ChangelogChannelNav.astro";
+import ChangelogGroup from "~/components/blocks/changelog/ChangelogGroup.astro";
+import ChangelogPager from "~/components/blocks/changelog/ChangelogPager.astro";
+import { loadChangelog, type ChangelogView } from "~/lib/server/seo/changelog/changelog-view";
+import { CHANNEL_FILTERS, changelogHref, parseChannel } from "~/lib/server/seo/changelog/release-groups";
+import { ogImagePath } from "~/lib/server/seo/seo-paths";
+import { inlineMarkup } from "~/lib/inline-markup";
+
+export const prerender = false;
+
+const lang = Astro.params.lang;
+if (lang !== undefined && lang !== "vi") {
+  // A null body lets Astro render the site's 404 page.
+  return new Response(null, { status: 404 });
+}
+
+const locale: Locale = lang === "vi" ? "vi" : "en";
+const t = pick(CHANGELOG, locale);
+const basePath = localePath(locale, "/changelog");
+const channel = parseChannel(Astro.url.searchParams.get("channel"));
+const from = Astro.url.searchParams.get("from");
+const FEED_PATH = "/changelog/feed.xml";
+
+let view: ChangelogView | null = null;
+try {
+  view = await loadChangelog(env.DB, { channel, from, repo: env.CHANGELOG_REPO, basePath });
+  Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, stale-while-revalidate=86400");
+} catch (err) {
+  console.error("changelog: releases query failed", err instanceof Error ? err.message : err);
+  Astro.response.status = 503;
+  Astro.response.headers.set("retry-after", "60");
+  Astro.response.headers.set("cache-control", "no-store");
+}
+
+const counts = view?.counts ?? { stable: 0, beta: 0 };
+const note = counts.stable + counts.beta > 0 ? fill(t.hero.note, counts) : undefined;
+const channels = CHANNEL_FILTERS.map((id) => ({ id, label: t.channels[id].label, hint: t.channels[id].hint, href: changelogHref(basePath, id) }));
+const groups = view?.groups ?? [];
+const labels = { ...t.release };
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/changelog"
+  ogImage={ogImagePath(locale, "/changelog")}
+  breadcrumbs={[{ name: t.meta.crumb, path: "/changelog" }]}
+>
+  <link slot="head" rel="alternate" type="application/atom+xml" title={pick(CHANGELOG, "en").feed.title} href={FEED_PATH} />
+
+  <PageHero eyebrow={t.hero.eyebrow} title={t.hero.title} lede={t.hero.lede} note={note} mascot={{ mood: "awake", accessory: "glasses" }} />
+
+  <section class="section section--tight changelog" id="releases">
+    <div class="container">
+      <ChangelogChannelNav
+        label={t.channels.label}
+        channels={channels}
+        current={channel}
+        feed={{ label: t.hero.feed, href: FEED_PATH }}
+        timeZone={t.release.timeZone}
+        notesLanguage={t.release.notesLanguage}
+      >
+        <PageActions locale={locale} path="/changelog" title={t.meta.title} />
+      </ChangelogChannelNav>
+
+      {groups.length > 0 ? (
+        <div class="changelog__groups">
+          {groups.map((g) => <ChangelogGroup group={g} channel={channel} locale={locale} labels={labels} />)}
+        </div>
+      ) : (
+        <div class="changelog__empty paper-grid" role="status">
+          <h2 class="changelog__empty-title" set:html={inlineMarkup(t.empty.title)} />
+          <p class="lede">{t.empty.body}</p>
+          {channel !== "all" && (
+            <a class="btn btn--ink" href={changelogHref(basePath, "all")}>{t.empty.action}</a>
+          )}
+        </div>
+      )}
+
+      <ChangelogPager
+        label={t.pager.label}
+        newer={view?.newer ? { label: t.pager.newer, href: changelogHref(basePath, channel, view.newer) } : undefined}
+        older={view?.older ? { label: t.pager.older, href: changelogHref(basePath, channel, view.older) } : undefined}
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: localePath(locale, "/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<script>
+  // A permalink to a beta folded under its stable release opens the fold and scrolls to it.
+  function revealTarget() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    const fold = target?.closest("details");
+    if (target && fold && !fold.open) {
+      fold.open = true;
+      target.scrollIntoView();
+    }
+  }
+  revealTarget();
+  window.addEventListener("hashchange", revealTarget);
+</script>
+
+<style>
+  .changelog__groups { display: grid; }
+  .changelog__empty {
+    --cell: 10px;
+    display: grid; justify-items: start; gap: var(--space-4); padding: clamp(2rem, 1rem + 4vw, 4rem);
+    border: 1px dashed var(--rule-strong); border-radius: var(--radius-3);
+  }
+  .changelog__empty-title { font-size: var(--step-3); }
+</style>

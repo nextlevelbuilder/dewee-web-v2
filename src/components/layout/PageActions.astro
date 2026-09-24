@@ -19,7 +19,7 @@ const q = encodeURIComponent(prompt);
 const strings = { copied: t(locale, "copied"), failed: t(locale, "copyFailed"), gemini: t(locale, "geminiHint") };
 ---
 
-<div class:list={["pa", className]} data-page-actions data-md={md} data-url={url} data-title={title} data-prompt={prompt} data-strings={JSON.stringify(strings)}>
+<div class:list={["pa", className]} data-page-actions data-md-skip data-md={md} data-url={url} data-title={title} data-prompt={prompt} data-strings={JSON.stringify(strings)}>
   <button type="button" class="pa__main" data-pa="copy-md">
     <Icon name="copy" size={16} /><span data-pa-label>{t(locale, "copyMarkdown")}</span>
   </button>
