@@ -25,9 +25,33 @@ opening a pull request.
 | `src/i18n/` | locale helpers (`langPaths`, `localePath`, `pick`) and UI strings |
 | `src/lib/` | shared helpers; `lib/server/` runs only in the worker |
 | `src/styles/` | `tokens.css` (design tokens), `global.css` (utilities) |
+| `src/lib/blocks/`, `src/lib/server/{api,auth,mcp,pages,media}/` | content platform (see below) |
+| `cli/` | the `dewee-web` CLI |
 | `migrations/` | D1 SQL migrations, applied in order |
 | `public/` | static files served as-is |
 | `plans/` | plans and reports (not shipped) |
+
+## Content platform (API, MCP, CLI, WebMCP)
+
+Pages at `/p/<slug>` and blog posts at `/blog/<slug>` are rows in D1, built from the registered
+blocks. Everything else is code. `/developers` is the public guide.
+
+| Surface | Where | Notes |
+|---|---|---|
+| Blocks | `src/lib/blocks/registry.ts` | the only block types the builder accepts; each has a schema |
+| Page service | `src/lib/server/pages/` | validation, slugs, versions (stale writes get 409), revisions |
+| REST | `/api/v1/*`, spec at `/api/v1/openapi.json` | one route table drives both dispatch and the spec (`src/lib/server/api/`) |
+| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key only; `tools/list` shows only what the key's scopes allow |
+| CLI | `cli/` (`dewee-web`) | REST client plus an MCP stdio bridge (`dewee-web mcp`) |
+| WebMCP | `src/components/webmcp/` | public tools on every page (read as Markdown, language, theme, chat); admin tools in `/admin` |
+| Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, pages, posts, leads, audit log |
+
+- **Scopes:** `pages:read`, `pages:write`, `posts:read`, `posts:write`, `media:write`,
+  `leads:read`. Keys are shown once, stored hashed, and only super-admins can create them.
+- **Writes are idempotent** with an `Idempotency-Key` header. Admin browser calls send the session
+  plus `X-CSRF-Token`; API keys never reach the browser.
+- Local run: `pnpm build && pnpm exec wrangler d1 migrations apply DB --local && pnpm exec wrangler dev --port 4389 --var ENVIRONMENT:development`.
+  Outside production the sign-in code is logged to the console when `RESEND_API_KEY` is unset.
 
 ## Commands
 
