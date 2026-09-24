@@ -5,6 +5,7 @@
  *  - /api/chat/ws → the visitor's ChatRoom Durable Object (WebSocket)
  *  - /media/<key> → R2 bucket MEDIA
  *  - <any page>.md → the page's Markdown twin
+ *  - /_seo/* (build manifest for the discovery routes) → 404
  */
 import { BRAND_REDIRECTS } from "../../content/site";
 import { markdownTwin } from "./markdown-twin";
@@ -24,6 +25,11 @@ export async function handleEdge(request: Request, env: Env, _ctx: ExecutionCont
   const brand = BRAND_REDIRECTS[url.pathname.replace(/\/$/, "")];
   if (brand) {
     return withSecurityHeaders(new Response(null, { status: 302, headers: { location: brand, "cache-control": "public, max-age=3600" } }), env);
+  }
+
+  // Build artefacts the discovery routes read through the ASSETS binding; not public URLs.
+  if (url.pathname.startsWith("/_seo/")) {
+    return withSecurityHeaders(new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } }), env);
   }
 
   if (url.pathname === "/api/chat/ws") return chatSocket(request, env, url);
