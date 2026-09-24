@@ -136,7 +136,7 @@ const jsonLd = [
       <LogoWall
         groups={[
           { label: t.integrations.channels, size: "l", items: CHANNELS.map((c) => ({ brand: c.brand, name: c.name, note: c.note ? pick(c.note, locale) : undefined })) },
-          { label: t.integrations.providers, size: "s", items: PROVIDERS },
+          { label: t.integrations.providers, size: "s", items: PROVIDERS.map((p) => ({ brand: p.brand, name: p.name })) },
         ]}
       />
       <div class="home-foot" data-reveal>

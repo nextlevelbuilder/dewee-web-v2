@@ -16,7 +16,7 @@ const SCRIBBLE = '<svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidd
 
 export function inlineMarkup(input: string): string {
   let s = escapeHtml(input);
-  s = s.replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:|\/)[^)\s]*)\)/g, (_m, text, href) => `<a href="${href}">${text}</a>`);
+  s = s.replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:|\/(?!\/))[^)\s]*)\)/g, (_m, text, href) => `<a href="${href}">${text}</a>`);
   s = s.replace(/==(.+?)==/g, '<span class="mark">$1</span>');
   s = s.replace(/~~(.+?)~~/g, `<span class="scribble">$1${SCRIBBLE}</span>`);
   s = s.replace(/(^|[\s(“"'>])\*(?!\s)(.+?)(?<!\s)\*(?=$|[\s.,;:!?)”"'<])/g, "$1<em>$2</em>");

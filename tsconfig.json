@@ -1,11 +1,27 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*", "worker-configuration.d.ts"],
-  "exclude": ["dist", "node_modules", "cli/node_modules"],
+  "include": [
+    ".astro/types.d.ts",
+    "**/*",
+    "worker-configuration.d.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "cli/node_modules",
+    ".claude",
+    "plans"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": { "~/*": ["src/*"] },
-    "types": ["@cloudflare/workers-types"],
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    },
+    "types": [
+      "@cloudflare/workers-types"
+    ],
     "verbatimModuleSyntax": true
   }
 }
