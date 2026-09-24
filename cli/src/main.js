@@ -1,4 +1,3 @@
-// @ts-check
 /** Entry point: parse argv, load config, dispatch, and turn API errors into readable output. */
 import { parseArgs } from "./args.js";
 import { authCommand } from "./commands/auth.js";

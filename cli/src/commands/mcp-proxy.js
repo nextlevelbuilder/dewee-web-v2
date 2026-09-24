@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * `dewee-web mcp`: a stdio MCP server for clients that only speak stdio (Claude Desktop, Cursor via
  * npx). Each newline-delimited JSON-RPC message on stdin is POSTed to <site>/mcp with the API key;

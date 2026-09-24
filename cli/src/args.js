@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Minimal argv parser: positionals, `--flag value`, `--flag=value` and boolean `--flag`.
  * Repeated flags keep the last value. `--` ends flag parsing.

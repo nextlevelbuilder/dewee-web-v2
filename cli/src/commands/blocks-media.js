@@ -1,4 +1,3 @@
-// @ts-check
 /** `blocks list|schema` and `media upload`. */
 import { readFile, stat } from "node:fs/promises";
 import { basename, extname } from "node:path";

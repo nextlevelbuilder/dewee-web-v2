@@ -1,4 +1,3 @@
-// @ts-check
 /** `auth login` (verify a key against /api/v1/me, then store it) and `auth status`. */
 import { stringFlag } from "../args.js";
 import { configPath, isApiKey, loadConfig, normalizeUrl, saveConfig } from "../config.js";

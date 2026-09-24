@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * `pages …` and `posts …`: list, get, create, update, publish, unpublish. Pages take JSON (a
  * fields file and/or flags); posts take a Markdown file whose front matter holds the metadata.

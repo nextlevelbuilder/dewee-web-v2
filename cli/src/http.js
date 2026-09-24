@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * REST client for /api/v1. Writes always send `content-type: application/json` (the server's
  * origin check rejects body-less or form-typed writes from non-browser clients).

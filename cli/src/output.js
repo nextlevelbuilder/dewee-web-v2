@@ -1,5 +1,4 @@
-// @ts-check
-/** Terminal output: JSON when asked (or when stdout is not a TTY for data commands), tables otherwise. */
+/** Terminal output: raw JSON with --json, aligned tables otherwise; messages go to stderr. */
 
 /** @param {unknown} value */
 export function printJson(value) {

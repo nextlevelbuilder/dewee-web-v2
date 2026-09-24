@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Front matter for Markdown posts: a `---` fenced block of simple YAML at the top of the file.
  * Supported (enough for post metadata, no dependency): `key: value` scalars (plain, "double" or

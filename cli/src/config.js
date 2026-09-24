@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Credentials: DEWEE_WEB_API_KEY / DEWEE_WEB_URL win; otherwise ~/.config/dewee-web/config.json
  * (or $XDG_CONFIG_HOME/dewee-web/config.json), written with mode 600 inside a 700 directory.
