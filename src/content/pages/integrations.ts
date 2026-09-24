@@ -26,22 +26,22 @@ export const INTEGRATIONS_PAGE: Bi<{
 }> = {
   en: {
     meta: {
-      title: "Integrations: 10 channels, 21 model providers",
+      title: "Integrations: 11 channels, 21 model providers",
       description:
-        "Connect dewee to Telegram, Zalo, Slack, Lark, WhatsApp and five more channels, 21 model providers, five voice engines and any MCP server. Missing one? Ask us.",
+        "Connect dewee to 11 chat channels (Telegram, Zalo, Slack, Lark, WhatsApp and more), 21 model providers, five voice engines and any MCP server. Missing one? Ask us.",
       crumb: "Integrations",
     },
     hero: {
       eyebrow: "Integrations",
       title: "Works where your team *already* talks.",
-      lede: "Ten chat channels, 21 model providers, five voice engines and any MCP server. Switching models is one setting, and a fallback steps in when a provider fails.",
+      lede: "Eleven chat channels, 21 model providers, five voice engines and any MCP server. Switching models is one setting, and a fallback steps in when a provider fails.",
       note: "no new app to roll out",
       primary: "See every channel",
       secondary: "Missing one? Ask us",
     },
     channels: {
       eyebrow: "Channels",
-      title: "Ten channels, *graded* honestly.",
+      title: "Eleven channels, *graded* honestly.",
       lede: "What each channel does today, from how it connects to whether replies stream. On every one of them, a stranger can be asked for a pairing code before the agent answers.",
       label: "What each chat channel supports: connection, conversations, streaming, voice notes, files and notes",
       columns: {
@@ -109,22 +109,22 @@ export const INTEGRATIONS_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: "Tích hợp: 10 kênh chat, 21 nhà cung cấp model",
+      title: "Tích hợp: 11 kênh chat, 21 nhà cung cấp model",
       description:
-        "Kết nối dewee với Telegram, Zalo, Slack, Lark, WhatsApp và năm kênh khác, 21 nhà cung cấp model, năm engine giọng nói, mọi MCP server. Còn thiếu? Hỏi chúng tôi.",
+        "Kết nối dewee với 11 kênh chat (Telegram, Zalo, Slack, Lark, WhatsApp và nhiều hơn), 21 nhà cung cấp model, năm engine giọng nói, mọi MCP server. Còn thiếu? Hỏi chúng tôi.",
       crumb: "Tích hợp",
     },
     hero: {
       eyebrow: "Tích hợp",
       title: "Làm việc ngay nơi đội ngũ *đang* trò chuyện.",
-      lede: "Mười kênh chat, 21 nhà cung cấp model, năm engine giọng nói và mọi MCP server. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.",
+      lede: "Mười một kênh chat, 21 nhà cung cấp model, năm engine giọng nói và mọi MCP server. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.",
       note: "không cần cài thêm app mới",
       primary: "Xem mọi kênh",
       secondary: "Còn thiếu? Hỏi chúng tôi",
     },
     channels: {
       eyebrow: "Kênh chat",
-      title: "Mười kênh, *chấm điểm* thật lòng.",
+      title: "Mười một kênh, *chấm điểm* thật lòng.",
       lede: "Mỗi kênh làm được gì hôm nay, từ cách kết nối tới việc câu trả lời có stream hay không. Ở kênh nào, người lạ cũng có thể bị hỏi mã ghép cặp trước khi agent trả lời.",
       label: "Khả năng của từng kênh chat: kết nối, hội thoại, stream, tin thoại, gửi file và ghi chú",
       columns: {

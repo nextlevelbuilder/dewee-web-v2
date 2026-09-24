@@ -18,8 +18,8 @@ const ENTRIES: Entry[] = [
   },
   {
     match: /secur|safe|privacy|data|encrypt|gdpr|bảo mật|an toàn|dữ liệu|mã hoá/i,
-    en: "dewee is closed by default: five defence layers (transport, input, tool policy, output scrubbing, isolation), AES-256-GCM for every stored secret, per-tenant isolation and credential redaction before anything reaches a model. https://dewee.sh/security",
-    vi: "dewee đóng mặc định: 5 lớp phòng thủ (transport, input, chính sách tool, lọc output, cô lập), mã hoá AES-256-GCM cho mọi bí mật lưu trữ, cô lập từng tenant và che thông tin nhạy cảm trước khi gửi tới model. https://dewee.sh/vi/security",
+    en: "dewee keeps the door shut: a token to connect, approval before a stranger can chat, then five defence layers (transport, input, tool policy, output scrubbing, isolation), AES-256-GCM for stored credentials, per-tenant isolation and secrets scrubbed from every reply. https://dewee.sh/security",
+    vi: "dewee đóng từ cửa: có token mới kết nối, người lạ phải được duyệt mới chat, rồi 5 lớp phòng thủ (transport, input, chính sách tool, lọc output, cô lập), mã hoá AES-256-GCM cho credential lưu trữ, cô lập từng tenant và che secret khỏi mọi câu trả lời. https://dewee.sh/vi/security",
   },
   {
     match: /channel|telegram|zalo|slack|discord|whatsapp|lark|feishu|kênh/i,

@@ -54,7 +54,7 @@ export const STORY: Bi<StoryPage> = {
         "We first came across Clawdbot, the assistant that later became OpenClaw, around December 2025. We loved the idea of an AI that does real work. But we did not dare bring it into a company: there were too many risks in security, control and operations.",
         "In February 2026 the risk got a paper of its own. In *Agents of Chaos* (arXiv 2602.20021), 38 researchers from Harvard, MIT and CMU let five agents run for two weeks. One destroyed a mail server. One leaked a social security number. Two kept talking to each other in a loop for nine days.",
         "Their diagnosis matched ours: the failures came from the system around the model, not the model itself. No permissions, no isolation, no audit trail, credentials in plain text.",
-        "So on 22 February 2026 we made the first commit of GoClaw: inspired by OpenClaw, designed from scratch in Go, and closed by default from day one. We built it in public, and v3 shipped less than seven weeks later.",
+        "So on 22 February 2026 we made the first commit of GoClaw: inspired by OpenClaw, designed from scratch in Go, with security in the design from day one. We built it in public, and v3 shipped less than seven weeks later.",
       ],
       timelineLabel: "GoClaw, in dates",
       timeline: [
@@ -79,7 +79,7 @@ export const STORY: Bi<StoryPage> = {
       rows: [
         ["Origin", "OpenClaw, ported to Go", "Inspired by OpenClaw, designed from scratch in Go"],
         ["Users", "One person, one assistant", "Many teams on one gateway, each isolated (multi-tenant)"],
-        ["Security", "Open first, lock down later", "Closed by default, five layers of defence"],
+        ["Security", "Open first, lock down later", "Shut at the door, five layers of defence"],
         ["Records", "Whatever the chat log shows", "Every run traced, with OpenTelemetry export"],
       ],
       caption: "Same claws, different animal.",
@@ -98,7 +98,7 @@ export const STORY: Bi<StoryPage> = {
         { lhs: "more eyes", rhs: "more people hunting for holes", note: "also true" },
         { lhs: "a small team ÷ every self-hosted copy", rhs: "patches that arrive late" },
       ],
-      result: "Agents for business need closed source, and every door closed by default.",
+      result: "Agents for business need closed source, and a front door that stays shut until you open it.",
     },
     paths: {
       id: "two-paths",
@@ -131,7 +131,7 @@ export const STORY: Bi<StoryPage> = {
       title: "What we *kept*.",
       body: ["The philosophy came with us, unchanged. Six principles, straight from GoClaw's first talks."],
       items: [
-        { icon: "lock", title: "Closed by default", body: "Every permission starts closed. Your business opens exactly what it needs, and nothing more." },
+        { icon: "lock", title: "Shut at the door", body: "No token, no connection. No approval, no chat. Your business opens exactly what it needs." },
         { icon: "route", title: "Fix the architecture, not the blame", body: "When an agent goes wrong, we fix the system around the model instead of blaming the model." },
         { icon: "layers", title: "Defence in depth", body: "Five independent layers. Get past one, and four still stand." },
         { icon: "building-2", title: "Built for organisations", body: "Multi-tenant, per-user isolation, roles, audit trails and encrypted credentials." },
@@ -186,7 +186,7 @@ export const STORY: Bi<StoryPage> = {
         "Chúng tôi biết đến Clawdbot, trợ lý sau này trở thành OpenClaw, từ khoảng tháng 12/2025. Ý tưởng một AI làm việc thật rất hấp dẫn. Nhưng chúng tôi không dám đưa nó vào doanh nghiệp: có quá nhiều rủi ro về bảo mật, kiểm soát và vận hành.",
         "Tháng 2/2026, rủi ro đó được viết thành hẳn một bài nghiên cứu. Trong *Agents of Chaos* (arXiv 2602.20021), 38 nhà nghiên cứu từ Harvard, MIT và CMU cho năm agent chạy suốt hai tuần. Một agent phá hỏng cả mail server. Một agent làm lộ số an sinh xã hội. Hai agent nói chuyện vòng vo với nhau suốt chín ngày.",
         "Kết luận của họ cũng là của chúng tôi: lỗi nằm ở hệ thống quanh mô hình, không phải ở bản thân AI. Không phân quyền, không cô lập, không nhật ký kiểm toán, thông tin đăng nhập để dạng văn bản thô.",
-        "Thế là ngày 22/2/2026, GoClaw có commit đầu tiên: lấy cảm hứng từ OpenClaw, thiết kế lại từ đầu bằng Go, đóng mặc định ngay từ ngày đầu. Chúng tôi làm công khai, và chưa đầy bảy tuần sau đã có v3.",
+        "Thế là ngày 22/2/2026, GoClaw có commit đầu tiên: lấy cảm hứng từ OpenClaw, thiết kế lại từ đầu bằng Go, bảo mật nằm trong bản thiết kế ngay từ ngày đầu. Chúng tôi làm công khai, và chưa đầy bảy tuần sau đã có v3.",
       ],
       timelineLabel: "GoClaw qua các mốc",
       timeline: [
@@ -211,7 +211,7 @@ export const STORY: Bi<StoryPage> = {
       rows: [
         ["Nguồn gốc", "OpenClaw viết lại bằng Go", "Lấy cảm hứng từ OpenClaw, thiết kế từ đầu bằng Go"],
         ["Người dùng", "Một người, một trợ lý", "Nhiều đội dùng chung một gateway, mỗi đội tách biệt (multi-tenant)"],
-        ["Bảo mật", "Mở trước, khoá sau", "Đóng mặc định, phòng thủ 5 lớp"],
+        ["Bảo mật", "Mở trước, khoá sau", "Đóng từ cửa, phòng thủ 5 lớp"],
         ["Lưu vết", "Lịch sử chat có gì thì biết nấy", "Mọi lượt chạy đều có trace, xuất được qua OpenTelemetry"],
       ],
       caption: "Tên na ná, ruột khác hẳn.",
@@ -230,7 +230,7 @@ export const STORY: Bi<StoryPage> = {
         { lhs: "nhiều người đọc", rhs: "nhiều người đi tìm lỗ hổng", note: "cũng là sự thật" },
         { lhs: "một đội nhỏ ÷ từng bản tự cài đặt", rhs: "bản vá luôn đến muộn" },
       ],
-      result: "Agent cho doanh nghiệp cần mã nguồn đóng, và mọi cánh cửa đóng sẵn.",
+      result: "Agent cho doanh nghiệp cần mã nguồn đóng, và cánh cửa chỉ mở khi bạn mở.",
     },
     paths: {
       id: "two-paths",
@@ -263,7 +263,7 @@ export const STORY: Bi<StoryPage> = {
       title: "Những gì *chúng tôi giữ lại*.",
       body: ["Triết lý thì mang theo nguyên vẹn. Sáu nguyên tắc, từ những buổi chia sẻ đầu tiên về GoClaw."],
       items: [
-        { icon: "lock", title: "Đóng mặc định", body: "Mọi quyền đều bắt đầu ở trạng thái đóng. Doanh nghiệp mở đúng những gì cần, không hơn." },
+        { icon: "lock", title: "Đóng từ cửa", body: "Không token thì không kết nối. Chưa duyệt thì không chat. Doanh nghiệp mở đúng những gì cần." },
         { icon: "route", title: "Sửa kiến trúc, không đổ lỗi", body: "Khi agent làm sai, chúng tôi sửa hệ thống quanh mô hình thay vì đổ lỗi cho AI." },
         { icon: "layers", title: "Phòng thủ nhiều lớp", body: "Năm lớp độc lập. Vượt qua một lớp, vẫn còn bốn lớp chặn lại." },
         { icon: "building-2", title: "Làm cho tổ chức", body: "Multi-tenant, cô lập từng người dùng, phân vai trò, nhật ký kiểm toán và mã hoá thông tin đăng nhập." },

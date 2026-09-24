@@ -11,6 +11,7 @@ export type Integration = { id: string; brand: string; name: string; note?: Bi }
 export const CHANNELS: Integration[] = [
   { id: "telegram", brand: "telegram", name: "Telegram", note: { en: "Groups, forum topics, voice notes", vi: "Nhóm, forum topic, tin nhắn thoại" } },
   { id: "zalo-oa", brand: "zalo", name: "Zalo OA", note: { en: "Official accounts for customer care", vi: "Tài khoản OA chăm sóc khách hàng" } },
+  { id: "zalo-bot", brand: "zalo", name: "Zalo Bot", note: { en: "Bot API, direct chats", vi: "Bot API, chat trực tiếp" } },
   { id: "zalo-personal", brand: "zalo", name: "Zalo Personal", note: { en: "Personal accounts, direct chats", vi: "Tài khoản cá nhân, chat trực tiếp" } },
   { id: "slack", brand: "slack", name: "Slack", note: { en: "Socket Mode, streaming replies", vi: "Socket Mode, trả lời dạng stream" } },
   { id: "lark", brand: "lark", name: "Lark / Feishu", note: { en: "Streaming cards, topic isolation", vi: "Card stream, tách ngữ cảnh theo topic" } },
@@ -93,12 +94,20 @@ export const CHANNEL_DETAILS: Record<string, ChannelDetail> = {
     note: { en: "Each forum topic can carry its own prompt and tools.", vi: "Mỗi forum topic có thể có prompt và tool riêng." },
   },
   "zalo-oa": {
-    connect: { en: "Zalo OA Bot API", vi: "Zalo OA Bot API" },
+    connect: { en: "Official Account API, webhook", vi: "Official Account API, webhook" },
     chats: { en: "DMs only", vi: "Chỉ tin riêng" },
     streaming: false,
     voice: false,
     media: true,
-    note: { en: "Pairing is on by default. Images up to 5 MB.", vi: "Mặc định bật ghép cặp. Ảnh tối đa 5 MB." },
+    note: { en: "Images over 1 MB are compressed for you. Files up to 5 MB.", vi: "Ảnh trên 1 MB được nén tự động. Tệp tối đa 5 MB." },
+  },
+  "zalo-bot": {
+    connect: { en: "Zalo Bot API, polling or webhook", vi: "Zalo Bot API, polling hoặc webhook" },
+    chats: { en: "DMs only", vi: "Chỉ tin riêng" },
+    streaming: false,
+    voice: false,
+    media: true,
+    note: { en: "Pairing is on by default. 2,000 characters a message, images up to 5 MB.", vi: "Mặc định bật ghép cặp. 2.000 ký tự mỗi tin, ảnh tối đa 5 MB." },
   },
   "zalo-personal": {
     connect: { en: "QR scan, unofficial protocol", vi: "Quét QR, giao thức không chính thức" },

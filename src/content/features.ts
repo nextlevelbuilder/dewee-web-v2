@@ -155,10 +155,10 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
     lede: { en: "Where your team and your customers already talk.", vi: "Nơi đội ngũ và khách hàng của bạn vốn đang trò chuyện." },
     items: [
       {
-        title: { en: "Ten chat channels", vi: "10 kênh chat" },
+        title: { en: "Eleven chat channels", vi: "11 kênh chat" },
         body: {
-          en: "Telegram, Zalo OA, Zalo Personal, Slack, Lark, Discord, WhatsApp, Facebook, Pancake and Bitrix24.",
-          vi: "Telegram, Zalo OA, Zalo cá nhân, Slack, Lark, Discord, WhatsApp, Facebook, Pancake và Bitrix24.",
+          en: "Telegram, Zalo OA, Zalo Bot, Zalo Personal, Slack, Lark, Discord, WhatsApp, Facebook, Pancake and Bitrix24.",
+          vi: "Telegram, Zalo OA, Zalo Bot, Zalo cá nhân, Slack, Lark, Discord, WhatsApp, Facebook, Pancake và Bitrix24.",
         },
       },
       {
@@ -444,7 +444,7 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
     id: "security",
     icon: "shield-check",
     title: { en: "Security", vi: "Bảo mật" },
-    lede: { en: "Closed by default, five layers deep.", vi: "Đóng mặc định, phòng thủ năm lớp." },
+    lede: { en: "Shut at the door, five layers deep.", vi: "Đóng từ cửa, phòng thủ năm lớp." },
     items: [
       {
         title: { en: "Five layers of defence", vi: "Phòng thủ năm lớp" },
@@ -455,8 +455,8 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
         body: { en: "Provider keys, MCP keys and CLI credentials are stored with AES-256-GCM.", vi: "Key nhà cung cấp, key MCP và credential CLI được lưu bằng AES-256-GCM." },
       },
       {
-        title: { en: "Prompt-injection detection", vi: "Phát hiện prompt injection" },
-        body: { en: "Six known patterns are flagged on the way in. You choose log, warn or block.", vi: "Sáu mẫu tấn công quen thuộc bị gắn cờ ngay đầu vào. Bạn chọn ghi log, cảnh báo hay chặn." },
+        title: { en: "Prompt-injection checks", vi: "Kiểm tra prompt injection" },
+        body: { en: "Six known patterns are flagged on the way in. It warns by default; you choose log, warn or block.", vi: "Sáu mẫu tấn công quen thuộc bị gắn cờ ngay đầu vào. Mặc định là cảnh báo; bạn chọn ghi log, cảnh báo hay chặn." },
       },
       {
         title: { en: "Secret scrubbing", vi: "Che secret" },

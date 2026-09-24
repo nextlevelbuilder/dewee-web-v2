@@ -81,7 +81,7 @@ export const ABOUT: Bi<AboutPage> = {
         columns: { subject: "Subject", evidence: "Evidence", grade: "Grade", remark: "Teacher's remark" },
         rows: [
           { subject: "Homework ethic", evidence: "We test before we ship: 8,900+ automated tests guard the dewee codebase.", grade: "10", remark: "Always hands in complete homework." },
-          { subject: "Closed by default", evidence: "Every permission starts closed, behind five independent layers of defence.", grade: "10", remark: "Careful and thorough." },
+          { subject: "Shut at the door", evidence: "Tokens, pairing codes and network blocks guard the way in, behind five independent layers of defence.", grade: "10", remark: "Careful and thorough." },
           { subject: "Standing by your success", evidence: "Custom workflows built with you, and a year of maintenance with every On-Premises licence.", grade: "10", remark: "Always helps classmates." },
           { subject: "Building in public", evidence: "Six stable dewee releases in September 2026, each one on the public changelog.", grade: "10", remark: "Speaks up in class." },
         ],
@@ -148,7 +148,7 @@ export const ABOUT: Bi<AboutPage> = {
         columns: { subject: "Môn", evidence: "Minh chứng", grade: "Điểm", remark: "Lời phê" },
         rows: [
           { subject: "Làm bài tập về nhà", evidence: "Kiểm thử trước khi phát hành: hơn 8.900 bài test tự động canh giữ mã nguồn dewee.", grade: "10", remark: "Làm bài đầy đủ." },
-          { subject: "Đóng mặc định", evidence: "Mọi quyền bắt đầu ở trạng thái đóng, sau năm lớp phòng thủ độc lập.", grade: "10", remark: "Cẩn thận, chu đáo." },
+          { subject: "Đóng từ cửa", evidence: "Token, mã ghép cặp và chặn mạng nội bộ canh lối vào, sau năm lớp phòng thủ độc lập.", grade: "10", remark: "Cẩn thận, chu đáo." },
           { subject: "Đồng hành đến khi bạn thành công", evidence: "Cùng bạn xây workflow riêng, kèm một năm bảo trì cho mỗi license On-Premises.", grade: "10", remark: "Hay giúp đỡ bạn bè." },
           { subject: "Làm việc công khai", evidence: "Sáu bản stable của dewee trong tháng 9/2026, bản nào cũng lên changelog công khai.", grade: "10", remark: "Hăng hái phát biểu xây dựng bài." },
         ],

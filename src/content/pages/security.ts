@@ -45,15 +45,15 @@ export const SECURITY_PAGE: Bi<{
 }> = {
   en: {
     meta: {
-      title: "Security: closed by default, opened on purpose",
+      title: "Security: shut at the door, opened on purpose",
       description:
-        "Five layers of defence in dewee: rate limits, prompt-injection checks, a tool policy engine, secret scrubbing, sandboxing, and AES-256-GCM for stored secrets.",
+        "Five layers of defence in dewee: rate limits, prompt-injection checks, a tool policy engine, secret scrubbing, sandboxing, and AES-256-GCM for stored credentials.",
       crumb: "Security",
     },
     hero: {
       eyebrow: "Security",
-      title: "Closed by default. Opened *on purpose*.",
-      lede: "Most agent stacks start wide open and lock down later. dewee starts shut: every channel, tool and network path an agent gets is one somebody granted.",
+      title: "Shut at the door. Opened *on purpose*.",
+      lede: "Most agent stacks start wide open and lock down later. dewee starts with the door shut: no token, no connection; strangers wait for approval; private networks stay out of reach. Then you narrow what each agent may do.",
       note: "locks first, features second",
       primary: "See the five layers",
       secondary: "Report a vulnerability",
@@ -64,10 +64,10 @@ export const SECURITY_PAGE: Bi<{
       lede: "Each layer assumes the one before it has already failed.",
       core: "Your data",
       stamp: "10",
-      stampNote: "AES-256-GCM on every stored secret",
+      stampNote: "AES-256-GCM on stored credentials",
       items: [
         { name: "Transport", body: "Origin checks, size limits, constant-time auth and rate limits at the door." },
-        { name: "Input", body: "Prompt-injection detection before anything reaches a model." },
+        { name: "Input", body: "Prompt-injection checks before anything reaches a model: warn by default, block when you choose." },
         { name: "Tools", body: "A policy engine decides which agent may run what, and where." },
         { name: "Output", body: "Keys, tokens and secrets are scrubbed before a reply goes out." },
         { name: "Isolation", body: "Per-tenant data, per-user workspaces, sandboxed execution." },
@@ -205,7 +205,7 @@ export const SECURITY_PAGE: Bi<{
       ],
       footnoteTitle: "Honest footnote",
       footnote:
-        "Two switches start permissive for backward compatibility: an empty CORS list allows every origin, and injection detection warns instead of blocking. Set both before you go live.",
+        "A few switches still start permissive: an empty CORS list allows every origin, injection checks warn instead of blocking, and a new agent gets the full tool set with the sandbox off. Narrow them before you go live.",
     },
     closedSource: {
       eyebrow: "Why closed source",
@@ -269,15 +269,15 @@ export const SECURITY_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: "Bảo mật: đóng mặc định, mở có chủ đích",
+      title: "Bảo mật: đóng từ cửa, mở có chủ đích",
       description:
-        "Năm lớp phòng thủ của dewee: giới hạn tốc độ, phát hiện prompt injection, policy engine cho tool, che secret, sandbox, và mã hoá AES-256-GCM cho secret lưu trữ.",
+        "Năm lớp phòng thủ của dewee: giới hạn tốc độ, kiểm tra prompt injection, policy engine cho tool, che secret, sandbox, và mã hoá AES-256-GCM cho credential lưu trữ.",
       crumb: "Bảo mật",
     },
     hero: {
       eyebrow: "Bảo mật",
-      title: "Đóng mặc định. Mở *có chủ đích*.",
-      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi mới khoá dần. dewee bắt đầu từ trạng thái đóng: mọi kênh, mọi tool, mọi đường mạng mà agent có đều do một người cấp.",
+      title: "Đóng từ cửa. Mở *có chủ đích*.",
+      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi mới khoá dần. dewee bắt đầu với cửa đóng: không token thì không kết nối, người lạ phải chờ duyệt, mạng nội bộ nằm ngoài tầm với. Sau đó bạn thu hẹp những gì mỗi agent được làm.",
       note: "khoá trước, tính năng sau",
       primary: "Xem năm lớp phòng thủ",
       secondary: "Báo lỗ hổng",
@@ -288,10 +288,10 @@ export const SECURITY_PAGE: Bi<{
       lede: "Mỗi lớp đều giả định lớp trước nó đã thất thủ.",
       core: "Dữ liệu của bạn",
       stamp: "10",
-      stampNote: "AES-256-GCM cho mọi secret được lưu",
+      stampNote: "AES-256-GCM cho credential được lưu",
       items: [
         { name: "Transport", body: "Kiểm tra nguồn, giới hạn kích thước, xác thực thời gian hằng và giới hạn tốc độ ngay từ cửa." },
-        { name: "Input", body: "Phát hiện prompt injection trước khi bất cứ thứ gì tới model." },
+        { name: "Input", body: "Kiểm tra prompt injection trước khi bất cứ thứ gì tới model: mặc định cảnh báo, chặn khi bạn chọn." },
         { name: "Tool", body: "Policy engine quyết định agent nào được chạy gì, ở đâu." },
         { name: "Output", body: "Key, token và secret bị che trước khi câu trả lời được gửi đi." },
         { name: "Cô lập", body: "Dữ liệu tách theo tenant, workspace riêng từng người, chạy code trong sandbox." },
@@ -429,7 +429,7 @@ export const SECURITY_PAGE: Bi<{
       ],
       footnoteTitle: "Chú thích thật lòng",
       footnote:
-        "Có hai công tắc mặc định còn dễ dãi để tương thích ngược: danh sách CORS trống sẽ cho mọi origin, và phát hiện injection chỉ cảnh báo chứ chưa chặn. Hãy đặt cả hai trước khi chạy thật.",
+        "Vẫn còn vài công tắc mặc định dễ dãi: danh sách CORS trống sẽ cho mọi origin, kiểm tra injection chỉ cảnh báo chứ chưa chặn, và agent mới được đủ bộ tool với sandbox đang tắt. Hãy thu hẹp chúng trước khi chạy thật.",
     },
     closedSource: {
       eyebrow: "Vì sao mã nguồn đóng",

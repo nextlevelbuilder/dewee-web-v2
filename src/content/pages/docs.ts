@@ -34,7 +34,7 @@ export const DOC_SECTIONS: DocSection[] = [
     id: "security",
     icon: "shield-check",
     title: { en: "Security", vi: "Bảo mật" },
-    blurb: { en: "Five defence layers, closed by default, secrets, roles and audit.", vi: "Năm lớp phòng thủ, đóng mặc định, secret, phân quyền và kiểm toán." },
+    blurb: { en: "Five defence layers, a shut front door, secrets, roles and audit.", vi: "Năm lớp phòng thủ, cửa đóng từ đầu, secret, phân quyền và kiểm toán." },
   },
   {
     id: "runtime",
