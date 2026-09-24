@@ -7,7 +7,7 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: calc(var(--header-h) + 1.25rem);
   hanging-punctuation: first last;
 }
 body {
