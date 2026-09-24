@@ -1,0 +1,74 @@
+---
+/**
+ * Compact intro for a legal page: eyebrow, title, lede and the "Last updated" line with a real
+ * <time>. In the top corner the date is written by hand, the way every Vietnamese school
+ * notebook page starts ("Thứ Sáu, ngày 25 tháng 9 năm 2026"); it is decorative, the <time> is the
+ * source of truth. The mascot, in reading glasses, is going through the fine print.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import Icon from "~/components/ui/Icon.astro";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  /** e.g. "Last updated" */
+  updatedLabel: string;
+  /** Human-readable date, e.g. "25 September 2026" */
+  updatedText: string;
+  /** ISO date for the <time> element */
+  updatedIso: string;
+  /** Handwritten date in the corner (decorative) */
+  notebookDate?: string;
+}
+const { eyebrow, title, lede, updatedLabel, updatedText, updatedIso, notebookDate } = Astro.props;
+---
+
+<section class="lh">
+  <div class="lh__bg paper-grid paper-grid--fade" aria-hidden="true"></div>
+  <div class="container lh__grid">
+    <div class="lh__copy">
+      <p class="eyebrow" data-reveal>{eyebrow}</p>
+      <h1 class="lh__title" data-reveal set:html={inlineMarkup(title)} />
+      <p class="lede lh__lede" data-reveal>{lede}</p>
+      <p class="lh__updated" data-reveal>
+        <Icon name="calendar" size={16} />
+        <span>{updatedLabel}</span>
+        <time datetime={updatedIso}>{updatedText}</time>
+      </p>
+    </div>
+    <div class="lh__aside" aria-hidden="true">
+      {notebookDate && <p class="note lh__date">{notebookDate}</p>}
+      <div class="lh__mascot">
+        <DeweeMascot size="clamp(84px, 8vw, 120px)" mood="focused" accessory="glasses" motion="idle" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lh { position: relative; isolation: isolate; padding-block: clamp(2.75rem, 1.75rem + 4vw, 5rem) clamp(2rem, 1.25rem + 3vw, 3.5rem); border-block-end: 1px dashed var(--rule); }
+  .lh__bg { position: absolute; inset: 0; z-index: -1; }
+  .lh__grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-6); align-items: end; }
+  .lh__copy { display: grid; justify-items: start; gap: var(--space-4); }
+  .lh__title { font-size: var(--step-5); line-height: var(--leading-tight); max-inline-size: 20ch; text-wrap: balance; }
+  .lh__lede { margin-block-start: var(--space-1); }
+  .lh__updated {
+    display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-block-start: var(--space-2);
+    padding: 0.35rem 0.75rem; border-radius: var(--radius-round); border: 1px solid var(--rule); background: var(--surface);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.04em; color: var(--ink-3);
+  }
+  .lh__updated :global(svg) { color: var(--accent-ink); }
+  .lh__updated time { color: var(--ink); font-weight: 500; }
+
+  .lh__aside { display: grid; justify-items: end; align-content: space-between; gap: var(--space-5); align-self: stretch; }
+  .lh__date { font-size: var(--step-1); line-height: 1.3; text-align: end; transform: rotate(-2deg); transform-origin: 100% 50%; white-space: nowrap; }
+  .lh__mascot { justify-self: center; }
+
+  @media (max-width: 900px) {
+    .lh__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+    .lh__aside { order: -1; justify-items: end; align-self: auto; }
+    .lh__mascot { display: none; }
+    .lh__date { white-space: normal; font-size: var(--step-0); }
+  }
+</style>

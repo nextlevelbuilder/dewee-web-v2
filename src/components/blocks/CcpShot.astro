@@ -56,7 +56,9 @@ const img = { width: CCP_SHOT.width, height: CCP_SHOT.height, sizes, decoding: "
     font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3);
   }
   .shot__img { aspect-ratio: 1440 / 900; background: var(--paper-3); }
-  .shot__img img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top left; }
+  /* No `display` here: `.shot__img img` outranks a single class, so each capture sets its own. */
+  .shot__img img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top left; }
+  .shot__light { display: block; }
   .shot__dark { display: none; }
   :global(:root[data-theme="dark"]) .shot__light { display: none; }
   :global(:root[data-theme="dark"]) .shot__dark { display: block; }

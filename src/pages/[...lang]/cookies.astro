@@ -1,0 +1,13 @@
+---
+/** Cookie Policy; the cookie notice links here (EN + VI). Copy: src/content/legal/cookies.ts; layout: LegalLayout. */
+import LegalLayout from "~/layouts/LegalLayout.astro";
+import { langPaths, type Locale } from "~/i18n/config";
+import { COOKIES } from "~/content/legal/cookies";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<LegalLayout locale={locale} slug="cookies" doc={COOKIES} />

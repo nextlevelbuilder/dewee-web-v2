@@ -405,7 +405,7 @@ export const HOME_UI: Bi<{
     core: "Your data",
     includes: "What you get",
     tradeoffs: "Keep in mind",
-    badge: "Most chosen",
+    badge: "Our pick",
     timelineLabel: "From GoClaw to dewee",
   },
   vi: {
@@ -419,7 +419,7 @@ export const HOME_UI: Bi<{
     core: "Dữ liệu của bạn",
     includes: "Bạn nhận được",
     tradeoffs: "Cần lưu ý",
-    badge: "Được chọn nhiều",
+    badge: "Gợi ý của chúng tôi",
     timelineLabel: "Từ GoClaw đến dewee",
   },
 };

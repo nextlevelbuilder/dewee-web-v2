@@ -16,7 +16,7 @@ const single = plans.length === 1;
 
 <ul class:list={["plans", { "plans--single": single }]} role="list" data-reveal-group>
   {plans.map((p) => (
-    <li class:list={["plan", { "plan--hl": p.highlight && !single }]} data-reveal>
+    <li id={p.id} class:list={["plan", { "plan--hl": p.highlight && !single }]} data-reveal>
       {p.highlight && !single && badge && <span class="plan__badge">{badge}</span>}
       <div class="plan__head">
         <span class="plan__icon"><Icon name={p.icon as IconName} size={22} /></span>

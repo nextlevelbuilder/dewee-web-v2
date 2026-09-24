@@ -1,0 +1,44 @@
+---
+/**
+ * "The short version": a plain-language summary at the top of each legal section, written on a
+ * small piece of squared notebook paper with the pink margin rule and a handwritten label, as if
+ * someone had summarised the clause for you in the margin. The full text below it still governs.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+interface Props {
+  /** Handwritten label, e.g. "The short version" */
+  label: string;
+  text: string;
+}
+const { label, text } = Astro.props;
+---
+
+<div class="lsv paper-grid" role="note" aria-label={label}>
+  <p class="lsv__label">{label}</p>
+  <p class="lsv__text" set:html={inlineMarkup(text)} />
+</div>
+
+<style>
+  .lsv {
+    --cell: 7px;
+    position: relative; display: grid; gap: var(--space-2);
+    padding: var(--space-4) var(--space-5) var(--space-4) calc(var(--space-5) + 1.5rem);
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-2);
+    box-shadow: var(--shadow-1);
+  }
+  /* the notebook's pink margin rule */
+  .lsv::before {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: 1.1rem; inline-size: 4px;
+    border-inline: 1px solid var(--margin-rule); opacity: 0.8;
+  }
+  .lsv__label {
+    font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step-0); line-height: 1.4;
+    color: var(--accent-ink); transform: rotate(-1.5deg); transform-origin: 0 50%;
+  }
+  .lsv__text { font-size: var(--step-0); line-height: 1.6; color: var(--ink); max-inline-size: 60ch; }
+  .lsv__text :global(a) { color: var(--accent-ink); }
+  @media (max-width: 560px) {
+    .lsv { padding-inline: calc(var(--space-4) + 1.1rem) var(--space-4); }
+    .lsv::before { inset-inline-start: 0.75rem; }
+  }
+</style>

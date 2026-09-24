@@ -1,0 +1,105 @@
+---
+/**
+ * The honest side-by-side: one row per question a buyer asks (infrastructure, isolation,
+ * packages, setup, maintenance, data location, price), one column per plan.
+ * Wide screens get a real table; narrow screens stack each row into a card whose cells are
+ * labelled with the plan name, so nothing scrolls sideways. With a single plan (the Vietnam
+ * market) it becomes a two-column spec sheet: question on the left, answer on the right.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+interface Props {
+  caption: string;
+  /** Header of the question column, e.g. "Compare" */
+  corner: string;
+  plans: { id: string; name: string; icon: string; highlight?: boolean }[];
+  /** `values` follow the order of `plans` */
+  rows: { label: string; icon: string; values: string[] }[];
+}
+const { caption, corner, plans, rows } = Astro.props;
+const single = plans.length === 1;
+const hl = (i: number) => !single && plans[i]?.highlight;
+---
+
+<div class:list={["cmp", { "cmp--single": single }]} data-reveal>
+  <table>
+    <caption class="sr-only">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="cmp__corner">{corner}</th>
+        {plans.map((p, i) => (
+          <th scope="col" class:list={["cmp__plan", { "is-hl": hl(i) }]}>
+            <span class="cmp__plan-icon"><Icon name={p.icon as IconName} size={18} /></span>{p.name}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <th scope="row" class="cmp__q"><Icon name={r.icon as IconName} size={16} />{r.label}</th>
+          {r.values.map((v, i) => (
+            <td class:list={{ "is-hl": hl(i) }} data-plan={plans[i]?.name}>{v}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .cmp {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3);
+    box-shadow: var(--shadow-1); overflow: hidden;
+  }
+  .cmp table { inline-size: 100%; table-layout: fixed; }
+  .cmp th, .cmp td { padding: var(--space-4) var(--space-5); text-align: start; vertical-align: top; }
+  .cmp thead th { vertical-align: bottom; padding-block: var(--space-5) var(--space-4); border-block-end: 1.5px solid var(--rule-strong); }
+  .cmp__corner {
+    inline-size: 24%; font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500;
+    letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3);
+  }
+  .cmp__plan { font-family: var(--font-display-stack); font-size: var(--step-1); font-weight: 500; color: var(--ink); line-height: 1.2; }
+  .cmp__plan-icon {
+    display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; margin-block-end: var(--space-2);
+    border-radius: var(--radius-2); background: var(--accent-soft); color: var(--accent-ink);
+  }
+  .cmp__q {
+    display: flex; gap: var(--space-2); align-items: flex-start;
+    font-size: var(--step--1); font-weight: 600; color: var(--ink); line-height: 1.4;
+  }
+  .cmp__q :global(svg) { flex: none; margin-block-start: 0.15em; color: var(--accent-ink); }
+  .cmp td { font-size: var(--step--1); color: var(--ink-2); line-height: 1.5; }
+  .cmp tbody tr + tr > * { border-block-start: 1px dashed var(--rule); }
+  .cmp tbody tr:last-child td { color: var(--ink); font-weight: 600; }
+  .cmp .is-hl { background: color-mix(in oklch, var(--accent-soft) 55%, transparent); }
+  .cmp thead .is-hl { box-shadow: inset 0 3px 0 var(--accent); }
+
+  .cmp--single { max-inline-size: 56rem; }
+  .cmp--single .cmp__corner { inline-size: 36%; }
+  .cmp--single td { font-size: var(--step-0); }
+
+  @media (max-width: 760px) {
+    .cmp { background: transparent; border: 0; box-shadow: none; overflow: visible; border-radius: 0; }
+    .cmp table, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; inline-size: auto; }
+    .cmp thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .cmp tbody { display: grid; gap: var(--space-3); }
+    .cmp tbody tr {
+      padding: var(--space-4); border-radius: var(--radius-3); background: var(--surface);
+      border: 1px solid var(--rule); box-shadow: var(--shadow-1);
+    }
+    .cmp tbody tr + tr > * { border-block-start: 0; }
+    .cmp .cmp__q { padding: 0 0 var(--space-3); font-size: var(--step-0); }
+    .cmp td {
+      display: grid; grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); gap: var(--space-3);
+      padding: var(--space-2) var(--space-3); border-radius: var(--radius-1);
+    }
+    .cmp td + td { border-block-start: 1px dashed var(--rule); }
+    .cmp td::before {
+      content: attr(data-plan); font-family: var(--font-mono-stack); font-size: var(--step--2);
+      letter-spacing: 0.04em; color: var(--ink-3); line-height: 1.6;
+    }
+    .cmp--single td { display: block; padding: 0; }
+    .cmp--single td::before { content: none; }
+  }
+</style>

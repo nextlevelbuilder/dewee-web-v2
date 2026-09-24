@@ -1,0 +1,79 @@
+---
+/**
+ * "On this page" for a legal document. Wide screens get a numbered rail that stays in view while
+ * you read (sticky under the header); narrow screens get the same list folded into a
+ * <details> drawer above the text, so it never pushes the content down. No JavaScript.
+ * Numbers match the numbered section headings.
+ */
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  label: string;
+  items: { id: string; title: string }[];
+}
+const { label, items } = Astro.props;
+const num = (i: number) => String(i + 1).padStart(2, "0");
+---
+
+<nav class="lt" aria-label={label}>
+  <details class="lt__drawer">
+    <summary class="lt__summary">
+      <Icon name="list" size={16} />
+      <span>{label}</span>
+      <Icon name="chevron-down" size={16} class="lt__chev" />
+    </summary>
+    <ol class="lt__list" role="list">
+      {items.map((it, i) => (
+        <li><a href={`#${it.id}`}><span class="lt__num">{num(i)}</span><span>{it.title}</span></a></li>
+      ))}
+    </ol>
+  </details>
+
+  <div class="lt__rail">
+    <p class="lt__label">{label}</p>
+    <ol class="lt__list" role="list">
+      {items.map((it, i) => (
+        <li><a href={`#${it.id}`}><span class="lt__num">{num(i)}</span><span>{it.title}</span></a></li>
+      ))}
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .lt { position: sticky; inset-block-start: 6rem; align-self: start; }
+  .lt__label {
+    margin-block-end: var(--space-3); padding-inline-start: var(--space-3);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500;
+    letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3);
+  }
+  .lt__rail { max-block-size: calc(100dvh - 7.5rem); overflow-y: auto; overscroll-behavior: contain; padding-block-end: var(--space-4); }
+  .lt__list { display: grid; gap: 1px; border-inline-start: 1px solid var(--rule); }
+  .lt__list a {
+    display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); align-items: baseline; gap: var(--space-1);
+    min-block-size: 2.75rem; padding: 0.55rem var(--space-3); margin-inline-start: -1px;
+    border-inline-start: 2px solid transparent; font-size: var(--step--1); line-height: 1.35;
+    color: var(--ink-2); text-decoration: none;
+    transition: color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+  }
+  .lt__list a:hover { color: var(--accent-ink); border-inline-start-color: var(--accent); background: var(--accent-soft); }
+  .lt__num { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+
+  .lt__drawer { display: none; }
+
+  @media (max-width: 1000px) {
+    .lt { position: static; }
+    .lt__rail { display: none; }
+    .lt__drawer { display: block; border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); box-shadow: var(--shadow-1); }
+    .lt__summary {
+      display: flex; align-items: center; gap: var(--space-2); min-block-size: 3rem; padding: var(--space-3) var(--space-4);
+      font-weight: 600; font-size: var(--step--1); color: var(--ink); cursor: pointer; list-style: none;
+    }
+    .lt__summary::-webkit-details-marker { display: none; }
+    .lt__summary :global(svg) { flex: none; color: var(--accent-ink); }
+    .lt__summary :global(.lt__chev) { margin-inline-start: auto; transition: rotate var(--dur-2) var(--ease-out); }
+    .lt__drawer[open] .lt__summary :global(.lt__chev) { rotate: 180deg; }
+    .lt__drawer .lt__list { margin: 0 var(--space-4) var(--space-4); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lt__list a, .lt__summary :global(.lt__chev) { transition: none; }
+  }
+</style>
