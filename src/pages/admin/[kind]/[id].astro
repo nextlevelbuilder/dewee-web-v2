@@ -1,0 +1,317 @@
+---
+/**
+ * Page or post editor (/admin/pages/<id>, /admin/posts/<id>, and `new`). The form is server
+ * rendered; the island in content-editor-client.ts saves through the REST API with the session
+ * cookie + CSRF header, validates blocks as you type, runs status changes and revision restores,
+ * and refreshes the live preview iframe.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { FOUNDERS } from "~/content/founders";
+import { listBlocks } from "~/lib/blocks/registry";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { getPage } from "~/lib/server/pages/page-queries";
+import { listRevisions, type RevisionSummary } from "~/lib/server/pages/page-revisions";
+import type { PageRecord } from "~/lib/server/pages/page-schema";
+
+export const prerender = false;
+
+const plural = Astro.params.kind;
+if (plural !== "pages" && plural !== "posts") return new Response(null, { status: 404 });
+const kind = plural === "pages" ? "page" : "post";
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+
+const id = Astro.params.id ?? "";
+const isNew = id === "new";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!isNew && !UUID_RE.test(id)) return new Response(null, { status: 404 });
+const db = platformEnv().DB;
+
+let record: PageRecord | null = null;
+let revisions: RevisionSummary[] = [];
+let sibling: { id: string; locale: string } | null = null;
+if (!isNew) {
+  try {
+    record = await getPage(db, kind, id);
+  } catch {
+    return new Response(null, { status: 404 });
+  }
+  revisions = await listRevisions(db, kind, id, 30);
+  if (record.translation_key) {
+    const other = record.locale === "en" ? "vi" : "en";
+    const row = await db
+      .prepare("SELECT id, locale FROM pages WHERE kind = ? AND translation_key = ? AND locale = ? LIMIT 1")
+      .bind(kind, record.translation_key, other)
+      .first<{ id: string; locale: string }>();
+    sibling = row ?? null;
+  }
+}
+
+// `new?locale=vi&translation_key=…` pre-fills a translation of an existing page.
+const qLocale = Astro.url.searchParams.get("locale") === "vi" ? "vi" : "en";
+const qKey = (Astro.url.searchParams.get("translation_key") ?? "").slice(0, 80);
+const doc = {
+  title: record?.title ?? "",
+  slug: record?.slug ?? "",
+  locale: record?.locale ?? qLocale,
+  description: record?.description ?? "",
+  layout: record?.layout ?? (kind === "post" ? "article" : "default"),
+  translation_key: record?.translation_key ?? qKey,
+  tags: (record?.tags ?? []).join(", "),
+  author: record?.author ?? "",
+  cover: record?.cover ?? "",
+  seo: record?.seo ?? {},
+  blocks: JSON.stringify(record?.blocks ?? [], null, 2),
+  body_md: record?.body_md ?? "",
+};
+const E = ADMIN.editor;
+const heading = isNew ? `${E.newTitle} ${kind}` : doc.title;
+const catalog = kind === "page" ? listBlocks() : [];
+const statusClass = (s: string) => (s === "published" ? "chip chip--success" : s === "draft" ? "chip chip--warning" : "chip");
+const otherLocale = doc.locale === "en" ? "vi" : "en";
+---
+
+<AdminLayout title={heading} current={plural} email={auth.session.email} csrf={auth.csrf}>
+  <div
+    id="editor"
+    class="ed"
+    data-kind={kind}
+    data-plural={plural}
+    data-id={record?.id ?? ""}
+    data-version={record?.version ?? ""}
+    data-status={record?.status ?? "draft"}
+    data-msg={JSON.stringify({ saving: E.saving, saved: E.saved, conflict: E.conflict, validJson: E.validJson, badJson: E.badJson, confirmDelete: E.confirmDelete, confirmRestore: E.confirmRestore, generic: ADMIN.errors.generic })}
+  >
+    <div class="adm-head">
+      <div>
+        <a class="ed__back" href={`/admin/${plural}`}><Icon name="arrow-left" size={16} />{E.back}</a>
+        <h1 data-ed-heading>{heading}</h1>
+      </div>
+      <div class="ed__actions">
+        {record && <span class={statusClass(record.status)} data-ed-status>{record.status}</span>}
+        {record && <span class="ed__version">{E.version} <span data-ed-version>{record.version}</span></span>}
+        <button class="btn btn--primary" type="submit" form="ed-form" data-ed-save><Icon name="save" />{isNew ? E.create : E.save}</button>
+        {record && (
+          <>
+            <button class="btn" type="button" data-ed-action="publish" hidden={record.status === "published"}><Icon name="send" />{E.publish}</button>
+            <button class="btn" type="button" data-ed-action="unpublish" hidden={record.status !== "published"}><Icon name="eye-off" />{E.unpublish}</button>
+            <button class="btn btn--ghost" type="button" data-ed-action="archive" hidden={record.status === "archived"}><Icon name="box" />{E.archive}</button>
+            <button class="btn btn--ghost" type="button" data-ed-delete><Icon name="trash-2" />{E.delete}</button>
+            <a class="btn btn--ghost" href={`/admin/preview/${record.id}`} target="_blank" rel="noopener"><Icon name="external-link" />{E.openPreview}</a>
+            {record.status === "published" && <a class="btn btn--ghost" href={record.url} target="_blank" rel="noopener"><Icon name="eye" />{E.viewLive}</a>}
+          </>
+        )}
+      </div>
+    </div>
+    <p class="form-status" role="status" aria-live="polite" data-ed-msg></p>
+
+    <div class="ed__grid">
+      <form id="ed-form" class="adm-panel ed__form" novalidate>
+        <h2>{E.fields}</h2>
+        <div class="field">
+          <label for="ed-title">{E.title}</label>
+          <input id="ed-title" name="title" required maxlength="160" value={doc.title} />
+        </div>
+        <div class="ed__row">
+          <div class="field">
+            <label for="ed-slug">{E.slug}</label>
+            <input id="ed-slug" name="slug" maxlength="120" value={doc.slug} class="adm-mono" aria-describedby="ed-slug-hint" />
+            <p class="hint" id="ed-slug-hint">{E.slugHint}</p>
+          </div>
+          <div class="field">
+            <label for="ed-locale">{E.locale}</label>
+            <select id="ed-locale" name="locale">
+              <option value="en" selected={doc.locale === "en"}>English</option>
+              <option value="vi" selected={doc.locale === "vi"}>Tiếng Việt</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ed-description">{E.description}</label>
+          <textarea id="ed-description" name="description" rows="2" maxlength="300">{doc.description}</textarea>
+        </div>
+        <div class="ed__row">
+          {kind === "page" && (
+            <div class="field">
+              <label for="ed-layout">{E.layout}</label>
+              <select id="ed-layout" name="layout">
+                {["default", "landing", "article"].map((l) => <option value={l} selected={l === doc.layout}>{l}</option>)}
+              </select>
+            </div>
+          )}
+          <div class="field">
+            <label for="ed-tkey">{E.translationKey}</label>
+            <input id="ed-tkey" name="translation_key" maxlength="80" value={doc.translation_key} class="adm-mono" aria-describedby="ed-tkey-hint" />
+            <p class="hint" id="ed-tkey-hint">
+              {E.translationHint}
+              {sibling ? (
+                <> <a href={`/admin/${plural}/${sibling.id}`}>{sibling.locale.toUpperCase()} →</a></>
+              ) : record?.translation_key ? (
+                <> <a href={`/admin/${plural}/new?locale=${otherLocale}&translation_key=${encodeURIComponent(record.translation_key)}`}>+ {otherLocale.toUpperCase()}</a></>
+              ) : null}
+            </p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ed-tags">{E.tags}</label>
+          <input id="ed-tags" name="tags" value={doc.tags} aria-describedby="ed-tags-hint" />
+          <p class="hint" id="ed-tags-hint">{E.tagsHint}</p>
+        </div>
+        {kind === "post" && (
+          <div class="ed__row">
+            <div class="field">
+              <label for="ed-author">{E.author}</label>
+              <input id="ed-author" name="author" maxlength="80" value={doc.author} list="ed-founders" aria-describedby="ed-author-hint" />
+              <datalist id="ed-founders">{FOUNDERS.map((f) => <option value={f.id}>{f.name}</option>)}</datalist>
+              <p class="hint" id="ed-author-hint">{E.authorHint}</p>
+            </div>
+            <div class="field">
+              <label for="ed-cover">{E.cover}</label>
+              <input id="ed-cover" name="cover" value={doc.cover} class="adm-mono" />
+            </div>
+          </div>
+        )}
+
+        {kind === "page" ? (
+          <div class="field">
+            <label for="ed-blocks">{E.blocks}</label>
+            <textarea id="ed-blocks" name="blocks" rows="22" class="adm-mono ed__code" spellcheck="false" aria-describedby="ed-blocks-hint ed-blocks-issues">{doc.blocks}</textarea>
+            <p class="hint" id="ed-blocks-hint">{E.blocksHint}</p>
+            <div id="ed-blocks-issues" class="ed__issues" aria-live="polite" data-ed-issues></div>
+          </div>
+        ) : (
+          <div class="field">
+            <label for="ed-body">{E.body}</label>
+            <textarea id="ed-body" name="body_md" rows="24" class="adm-mono ed__code" spellcheck="true" aria-describedby="ed-body-hint">{doc.body_md}</textarea>
+            <p class="hint" id="ed-body-hint">{E.bodyHint}</p>
+          </div>
+        )}
+
+        <details class="ed__seo">
+          <summary>{E.seo}</summary>
+          <div class="field">
+            <label for="ed-seo-title">{E.seoTitle}</label>
+            <input id="ed-seo-title" name="seo.title" maxlength="70" value={doc.seo.title ?? ""} />
+          </div>
+          <div class="field">
+            <label for="ed-seo-desc">{E.seoDescription}</label>
+            <textarea id="ed-seo-desc" name="seo.description" rows="2" maxlength="200">{doc.seo.description ?? ""}</textarea>
+          </div>
+          <div class="field">
+            <label for="ed-seo-og">{E.ogImage}</label>
+            <input id="ed-seo-og" name="seo.ogImage" value={doc.seo.ogImage ?? ""} class="adm-mono" />
+          </div>
+          <label class="ed__check"><input type="checkbox" name="seo.noindex" checked={doc.seo.noindex === true} /> {E.noindex}</label>
+        </details>
+
+        <div class="field">
+          <label for="ed-note">{E.note}</label>
+          <input id="ed-note" name="note" maxlength="200" />
+          <p class="hint">{E.shortcut}</p>
+        </div>
+      </form>
+
+      <div class="ed__side">
+        <div class="adm-panel ed__preview">
+          <div class="ed__preview-head">
+            <h2>{E.previewTitle}</h2>
+            <button class="btn btn--sm" type="button" data-ed-preview><Icon name="refresh-cw" />{E.preview}</button>
+          </div>
+          <iframe name="ed-preview-frame" title={E.previewTitle} class="ed__frame" loading="lazy"></iframe>
+          <form id="ed-preview-form" method="post" action="/admin/preview" target="ed-preview-frame" hidden>
+            <input type="hidden" name="csrf" value={auth.csrf} />
+            <input type="hidden" name="kind" value={kind} />
+            <input type="hidden" name="doc" value="" />
+          </form>
+        </div>
+
+        {record && (
+          <div class="adm-panel">
+            <h2>{E.revisions}</h2>
+            {revisions.length === 0 ? (
+              <p class="adm-empty">{E.noRevisions}</p>
+            ) : (
+              <ol class="ed__revs" role="list">
+                {revisions.map((r) => (
+                  <li>
+                    <span class="ed__rev-v">v{r.version}</span>
+                    <span class="ed__rev-meta">
+                      <time datetime={r.created_at}>{r.created_at.replace("T", " ").slice(0, 16)}</time> · {r.actor}{r.note ? ` · ${r.note}` : ""}
+                    </span>
+                    {r.version !== record.version && (
+                      <button class="btn btn--sm" type="button" data-ed-restore={r.id}><Icon name="history" />{E.restore}</button>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        )}
+
+        {catalog.length > 0 && (
+          <div class="adm-panel">
+            <h2>{E.catalog}</h2>
+            <ul class="ed__catalog" role="list">
+              {catalog.map((b) => (
+                <li>
+                  <div class="ed__cat-head">
+                    <code>{b.type}</code>
+                    <button class="btn btn--sm" type="button" data-ed-insert={JSON.stringify({ type: b.type, props: b.example })}><Icon name="plus" />{E.insert}</button>
+                  </div>
+                  <p>{b.description}</p>
+                  <details data-ed-schema={b.type}>
+                    <summary>{E.schema}</summary>
+                    <pre class="ed__schema" data-ed-schema-body></pre>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { initContentEditor } from "~/components/admin/content-editor-client";
+  initContentEditor();
+</script>
+
+<style>
+  .ed { display: grid; gap: var(--space-4); }
+  .ed__back { display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 2.75rem; color: var(--ink-3); font-size: var(--step--1); }
+  .ed__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .ed__version { color: var(--ink-3); font-size: var(--step--1); }
+  .ed__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+  .ed__form, .ed__side { display: grid; gap: var(--space-4); }
+  .ed__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-4); align-items: start; }
+  .ed__code { font-size: var(--step--1); line-height: 1.5; tab-size: 2; resize: vertical; }
+  .ed__issues:empty { display: none; }
+  .ed__issues { font-size: var(--step--1); padding: var(--space-3); border-radius: var(--radius-2); background: var(--paper-2); }
+  .ed__issues[data-kind="error"] { background: var(--danger-soft); }
+  .ed__issues ul { padding-inline-start: 1.2em; }
+  .ed__seo { display: grid; gap: var(--space-3); }
+  .ed__seo summary { cursor: pointer; font-weight: 600; min-block-size: 2.75rem; display: flex; align-items: center; }
+  .ed__seo[open] { gap: var(--space-4); }
+  .ed__check { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem; }
+  .ed__side { position: sticky; inset-block-start: 4.5rem; }
+  .ed__preview-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .ed__frame { inline-size: 100%; block-size: 70vh; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper); }
+  .ed__revs { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); max-block-size: 18rem; overflow-y: auto; }
+  .ed__revs li { display: flex; align-items: center; gap: var(--space-3); font-size: var(--step--1); }
+  .ed__rev-v { font-family: var(--font-mono-stack); font-weight: 600; min-inline-size: 2.5rem; }
+  .ed__rev-meta { flex: 1; color: var(--ink-3); overflow-wrap: anywhere; }
+  .ed__catalog { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-4); max-block-size: 28rem; overflow-y: auto; }
+  .ed__catalog p { font-size: var(--step--1); color: var(--ink-3); }
+  .ed__cat-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .ed__schema { font-size: var(--step--2); max-block-size: 16rem; overflow: auto; padding: var(--space-3); background: var(--paper-2); border-radius: var(--radius-2); }
+  .hint { font-size: var(--step--2); color: var(--ink-3); }
+  @media (max-width: 1100px) {
+    .ed__grid { grid-template-columns: minmax(0, 1fr); }
+    .ed__side { position: static; }
+  }
+</style>

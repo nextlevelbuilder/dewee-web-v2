@@ -72,7 +72,7 @@ const { label, runtime, wire, control, licence, cli, note } = Astro.props;
 
       <div class="topo__cli">
         <p class="topo__cap"><Icon name="square-terminal" size={16} />{cli.label}</p>
-        <pre class="topo__code"><code>{cli.command}</code></pre>
+        <pre class="topo__code"><code>{cli.command.split(/ (?=--)/).map((part, i) => <>{i > 0 && " "}<span>{part}</span></>)}</code></pre>
         {note && <p class="note topo__note" aria-hidden="true">{note}</p>}
       </div>
     </div>
@@ -164,6 +164,8 @@ const { label, runtime, wire, control, licence, cli, note } = Astro.props;
     border-radius: 2px var(--radius-2) 2px 2px; box-shadow: var(--shadow-2);
   }
   .topo__code { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--step--1); line-height: 1.6; color: var(--ink); }
+  /* Break between flags, never inside one (`--` is a line-break opportunity otherwise). */
+  .topo__code span { display: inline-block; }
   .topo__note { justify-self: end; transform: rotate(-3deg); font-size: var(--step--1); }
 
   @media (prefers-reduced-motion: no-preference) {

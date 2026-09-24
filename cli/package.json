@@ -1,0 +1,25 @@
+{
+  "name": "dewee-web",
+  "version": "0.1.0",
+  "description": "Command line for the dewee.sh content platform: pages, blog posts, blocks, media and an MCP stdio bridge.",
+  "type": "module",
+  "bin": {
+    "dewee-web": "bin/dewee-web.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "dewee",
+    "cms",
+    "mcp",
+    "cli"
+  ],
+  "homepage": "https://dewee.sh/developers",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,25 @@
+---
+/** One to four buttons in a row. The first primary button gets the arrow. */
+import Icon from "~/components/ui/Icon.astro";
+type Button = { label: string; href: string; variant?: "primary" | "ink" | "ghost" | "default" };
+interface Props { buttons: Button[]; align?: "start" | "center" }
+const { buttons, align = "start" } = Astro.props;
+---
+
+<div class:list={["br", `br--${align}`]} data-reveal>
+  {buttons.map((b) => {
+    const variant = b.variant ?? "default";
+    const external = /^https?:\/\//.test(b.href);
+    return (
+      <a class:list={["btn", "btn--lg", variant !== "default" && `btn--${variant}`]} href={b.href} rel={external ? "noopener" : undefined}>
+        {b.label}{variant === "primary" && <Icon name="arrow-right" class="arrow" />}
+      </a>
+    );
+  })}
+</div>
+
+<style>
+  .br { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .br--center { justify-content: center; }
+  @media (max-width: 560px) { .br > * { flex: 1 1 100%; } }
+</style>

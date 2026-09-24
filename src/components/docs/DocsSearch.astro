@@ -1,0 +1,87 @@
+---
+/**
+ * Docs search box. The prerendered JSON index (search-index.json) is fetched on first focus,
+ * so pages pay nothing until someone searches. Keyboard: "/" focuses, arrows move, Enter opens,
+ * Escape clears. Behaviour lives in docs-search-client.ts; strings arrive already localised.
+ */
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  /** URL of the locale's search index. */
+  index: string;
+  labels: { label: string; placeholder: string; hint: string; loading: string; error: string; empty: string; emptyHint: string; results: string };
+  size?: "m" | "l";
+  /** Unique per page; used to wire ARIA ids. */
+  id: string;
+}
+const { index, labels, size = "m", id } = Astro.props;
+const listId = `${id}-results`;
+---
+
+<div class:list={["dsearch", `dsearch--${size}`]} data-docs-search data-index={index} data-labels={JSON.stringify(labels)} role="search">
+  <label class="sr-only" for={`${id}-input`}>{labels.label}</label>
+  <div class="dsearch__field">
+    <Icon name="search" class="dsearch__icon" />
+    <input
+      id={`${id}-input`}
+      class="dsearch__input"
+      type="search"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder={labels.placeholder}
+      role="combobox"
+      aria-expanded="false"
+      aria-autocomplete="list"
+      aria-controls={listId}
+      data-search-input
+    />
+    <kbd class="dsearch__kbd" aria-hidden="true" title={labels.hint}>/</kbd>
+  </div>
+  <div class="dsearch__panel" data-search-panel hidden>
+    <div class="dsearch__status" data-search-status aria-live="polite"></div>
+    <ul class="dsearch__list" id={listId} role="listbox" aria-label={labels.label} data-search-list></ul>
+  </div>
+</div>
+
+<script>
+  import { initDocsSearch } from "./docs-search-client";
+  initDocsSearch();
+</script>
+
+<style>
+  .dsearch { position: relative; inline-size: 100%; }
+  .dsearch__field { position: relative; display: flex; align-items: center; }
+  .dsearch__field :global(.dsearch__icon) {
+    position: absolute; inset-inline-start: 0.8rem; inline-size: 1.05rem; block-size: 1.05rem; color: var(--ink-3); pointer-events: none;
+  }
+  .dsearch__input {
+    padding-inline: 2.4rem 2.6rem; background: var(--surface); font-size: var(--step--1); min-block-size: 2.75rem;
+  }
+  .dsearch__input::-webkit-search-cancel-button { display: none; }
+  .dsearch__kbd { position: absolute; inset-inline-end: 0.7rem; color: var(--ink-3); pointer-events: none; }
+  .dsearch__input:focus + .dsearch__kbd, .dsearch__input:not(:placeholder-shown) + .dsearch__kbd { display: none; }
+  .dsearch--l .dsearch__input { min-block-size: 3.5rem; font-size: var(--step-0); padding-inline-start: 2.9rem; border-radius: var(--radius-3); box-shadow: var(--shadow-2); }
+  .dsearch--l .dsearch__field :global(.dsearch__icon) { inset-inline-start: 1rem; inline-size: 1.25rem; block-size: 1.25rem; }
+
+  .dsearch__panel {
+    position: absolute; z-index: var(--z-overlay); inset-inline: 0; inset-block-start: calc(100% + var(--space-2));
+    max-block-size: min(26rem, 65dvh); overflow-y: auto; overscroll-behavior: contain;
+    padding: var(--space-2); background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--radius-3); box-shadow: var(--shadow-3);
+  }
+  .dsearch--m .dsearch__panel { inline-size: max(100%, min(26rem, calc(100vw - 2 * var(--gutter)))); }
+  .dsearch__status { padding: var(--space-2) var(--space-3); font-size: var(--step--2); color: var(--ink-3); }
+  .dsearch__status:empty { display: none; }
+  .dsearch__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+  .dsearch__list :global(li) { border-radius: var(--radius-2); }
+  .dsearch__list :global(a) {
+    display: grid; gap: 2px; padding: var(--space-2) var(--space-3); border-radius: var(--radius-2);
+    text-decoration: none; color: var(--ink); min-block-size: 2.75rem;
+  }
+  .dsearch__list :global(li[aria-selected="true"] a), .dsearch__list :global(a:hover) { background: var(--accent-soft); }
+  .dsearch__list :global(.dsearch__title) { font-weight: 600; font-size: var(--step--1); line-height: 1.35; }
+  .dsearch__list :global(.dsearch__meta) { font-size: var(--step--2); color: var(--ink-3); line-height: 1.45; }
+  .dsearch__list :global(.dsearch__section) { font-family: var(--font-mono-stack); text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-ink); }
+  .dsearch__list :global(mark) { background: var(--highlight); color: inherit; border-radius: 2px; }
+  .dsearch__status :global(.dsearch__empty) { padding: var(--space-2) 0; display: grid; gap: var(--space-1); font-size: var(--step--1); color: var(--ink-2); }
+  .dsearch__status :global(small) { font-size: var(--step--2); color: var(--ink-3); }
+</style>

@@ -1,0 +1,131 @@
+---
+/**
+ * Renders a page-builder `blocks` array with the same components the hand-built pages use.
+ * Each block is re-validated against the registry at render time, so a stale or tampered row can
+ * never reach a component with unexpected props; invalid blocks are skipped (and logged).
+ *
+ * Placement follows the block's render mode (src/lib/blocks/block-types.ts):
+ * hero and self blocks bring their own section; section blocks are wrapped in `.section`
+ * (plain, `.band` or `.board`) with a container and an optional SectionHead; inline blocks
+ * sit in a bare container.
+ *
+ * `intro` supplies the page's h1 when the first block is not a PageHero, and the `after-hero`
+ * slot (page actions, dates) is placed right after whichever intro renders. The `article`
+ * layout keeps sections to the narrow reading column.
+ */
+import { getBlock, validateBlocks, type StoredBlock } from "~/lib/blocks/registry";
+import { inlineMarkup } from "~/lib/inline-markup";
+import PageHero from "./PageHero.astro";
+import SectionHead from "./SectionHead.astro";
+import FeatureGrid from "./FeatureGrid.astro";
+import Steps from "./Steps.astro";
+import Faq from "./Faq.astro";
+import Quote from "./Quote.astro";
+import CtaBand from "./CtaBand.astro";
+import Timeline from "./Timeline.astro";
+import ProofStrip from "./ProofStrip.astro";
+import TocIndex from "./TocIndex.astro";
+import LogoWall from "./LogoWall.astro";
+import EcosystemGrid from "./EcosystemGrid.astro";
+import RichText from "./primitives/RichText.astro";
+import Image from "./primitives/Image.astro";
+import Callout from "./primitives/Callout.astro";
+import ButtonRow from "./primitives/ButtonRow.astro";
+import Columns from "./primitives/Columns.astro";
+import Divider from "./primitives/Divider.astro";
+import Spacer from "./primitives/Spacer.astro";
+import type { ComponentProps } from "astro/types";
+
+type HeadingProps = ComponentProps<typeof SectionHead>;
+
+interface Props {
+  blocks: StoredBlock[];
+  layout?: "default" | "landing" | "article";
+  intro?: { title: string; lede?: string; eyebrow?: string };
+}
+const { blocks, layout = "default", intro } = Astro.props;
+const narrow = layout === "article";
+
+// Each component has its own Props; this lookup table erases them because every block's props were
+// just validated against the registry schema that mirrors those Props. `any` is the only parameter
+// type every Astro component factory is assignable to (parameters are contravariant).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyComponent = (props: any) => unknown;
+const COMPONENTS: Record<string, AnyComponent> = {
+  PageHero, SectionHead, FeatureGrid, Steps, Faq, Quote, CtaBand, Timeline, ProofStrip, TocIndex, LogoWall, EcosystemGrid,
+  RichText, Image, Callout, ButtonRow, Columns, Divider, Spacer,
+};
+
+type Item = { key: string; type: string; mode: string; props: Record<string, unknown>; heading?: HeadingProps; section: NonNullable<StoredBlock["section"]> };
+const items: Item[] = [];
+(Array.isArray(blocks) ? blocks : []).forEach((block, i) => {
+  const checked = validateBlocks([block]);
+  const def = checked.ok ? getBlock(checked.blocks[0].type) : undefined;
+  if (!checked.ok || !def || !COMPONENTS[def.type]) {
+    console.warn(`BlockRenderer: skipped block ${i}`, checked.ok ? "unknown component" : JSON.stringify(checked.issues).slice(0, 300));
+    return;
+  }
+  // `heading` was validated by the SectionHead schema that section blocks embed.
+  const { heading, ...props } = checked.blocks[0].props as { heading?: HeadingProps } & Record<string, unknown>;
+  const keepHeading = def.render === "section" && def.type !== "SectionHead";
+  items.push({
+    key: `${i}-${def.type}`,
+    type: def.type,
+    mode: def.render,
+    props: keepHeading ? props : checked.blocks[0].props,
+    heading: keepHeading ? heading : undefined,
+    section: checked.blocks[0].section ?? {},
+  });
+});
+const heroFirst = items[0]?.mode === "hero";
+const hero = heroFirst ? items[0] : undefined;
+const rest = heroFirst ? items.slice(1) : items;
+const HeroComponent = hero ? COMPONENTS[hero.type] : undefined;
+---
+
+{hero && HeroComponent ? (
+  <HeroComponent {...hero.props} />
+) : intro ? (
+  <header class="page-hero blk-intro">
+    <div class:list={["container", { "container--narrow": narrow }]}>
+      {intro.eyebrow && <p class="eyebrow">{intro.eyebrow}</p>}
+      <h1 set:html={inlineMarkup(intro.title)} />
+      {intro.lede && <p class="lede" set:html={inlineMarkup(intro.lede)} />}
+    </div>
+  </header>
+) : null}
+{Astro.slots.has("after-hero") && (
+  <div class:list={["container", "blk-after", { "container--narrow": narrow }]}><slot name="after-hero" /></div>
+)}
+
+{rest.map((it) => {
+  const Component = COMPONENTS[it.type];
+  if (it.mode === "hero" || it.mode === "self") return <Component {...it.props} />;
+  if (it.mode === "inline") return <div class:list={["container", { "container--narrow": narrow }]}><Component {...it.props} /></div>;
+  const bg = it.section.background ?? "plain";
+  const spacing = it.section.spacing ?? "normal";
+  const bare = it.type === "ProofStrip";
+  return (
+    <section
+      class:list={["section", "blk", `blk--${it.type.toLowerCase()}`, { band: bg === "band", board: bg === "board", "section--tight": spacing === "tight", "blk--flush": spacing === "flush" }]}
+      id={it.section.id}
+    >
+      {bare ? (
+        <Component {...it.props} />
+      ) : (
+        <div class:list={["container", "blk__stack", { "container--narrow": narrow }]}>
+          {it.heading && <SectionHead {...it.heading} />}
+          <Component {...it.props} />
+        </div>
+      )}
+    </section>
+  );
+})}
+
+<style>
+  .blk-intro h1 { max-inline-size: 22ch; }
+  .blk-after { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); padding-block-end: var(--space-4); }
+  .blk__stack { display: grid; gap: clamp(2rem, 1.25rem + 2.5vw, 3.5rem); }
+  .blk--flush { padding-block: 0; }
+  .blk--flush + .blk--flush { padding-block-start: var(--space-6); }
+</style>

@@ -1,0 +1,18 @@
+---
+/** A hairline rule, optionally with a centred handwritten label. */
+interface Props { label?: string }
+const { label } = Astro.props;
+---
+
+{label ? (
+  <div class="dv" role="separator" aria-label={label}><span class="note dv__label">{label}</span></div>
+) : (
+  <hr class="dv-rule" />
+)}
+
+<style>
+  .dv { display: flex; align-items: center; gap: var(--space-4); margin-block: var(--space-6); }
+  .dv::before, .dv::after { content: ""; flex: 1; border-block-start: 1px solid var(--rule); }
+  .dv__label { font-size: var(--step-0); }
+  .dv-rule { margin-block: var(--space-6); }
+</style>

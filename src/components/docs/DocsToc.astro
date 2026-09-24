@@ -1,0 +1,57 @@
+---
+/**
+ * "On this page": h2/h3 links for the current article, with the section in view marked as the
+ * reader scrolls (a tiny IntersectionObserver; the list works without it).
+ */
+interface Props { headings: { depth: number; slug: string; text: string }[]; label: string }
+const { headings, label } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{items.length > 1 && (
+  <nav class="dtoc" aria-label={label} data-docs-toc>
+    <p class="dtoc__label">{label}</p>
+    <ol class="dtoc__list" role="list">
+      {items.map((h) => (
+        <li class:list={["dtoc__item", `dtoc__item--${h.depth}`]}>
+          <a href={`#${h.slug}`} data-toc-link={h.slug}>{h.text}</a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<script>
+  const nav = document.querySelector<HTMLElement>("[data-docs-toc]");
+  if (nav && "IntersectionObserver" in window) {
+    const links = new Map<string, HTMLAnchorElement>();
+    nav.querySelectorAll<HTMLAnchorElement>("[data-toc-link]").forEach((a) => links.set(a.dataset.tocLink ?? "", a));
+    const targets = [...links.keys()].map((id) => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
+    const mark = (id: string) => links.forEach((a, key) => a.toggleAttribute("aria-current", key === id));
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) mark(visible[0].target.id);
+      },
+      { rootMargin: "-80px 0px -70% 0px" },
+    );
+    targets.forEach((el) => io.observe(el));
+  }
+</script>
+
+<style>
+  .dtoc { font-size: var(--step--1); }
+  .dtoc__label {
+    margin-block-end: var(--space-3); font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500;
+    letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3);
+  }
+  .dtoc__list { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--rule); }
+  .dtoc__item a {
+    display: block; padding: 0.3rem var(--space-3); margin-inline-start: -1px; border-inline-start: 2px solid transparent;
+    color: var(--ink-3); text-decoration: none; line-height: 1.4;
+    transition: color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+  }
+  .dtoc__item--3 a { padding-inline-start: calc(var(--space-3) + var(--space-3)); font-size: var(--step--2); }
+  .dtoc__item a:hover { color: var(--ink); }
+  .dtoc__item a[aria-current] { color: var(--accent-ink); border-inline-start-color: var(--accent); }
+</style>

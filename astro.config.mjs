@@ -24,6 +24,8 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false, redirectToDefaultLocale: false },
   },
   prefetch: { prefetchAll: false, defaultStrategy: "hover" },
+  // Docs code blocks: Shiki emits CSS variables so colours follow the site tokens in both themes.
+  markdown: { shikiConfig: { theme: "css-variables" } },
   // Fonts are downloaded at build time and self-hosted: no visitor IP ever reaches Google.
   fonts: [
     {

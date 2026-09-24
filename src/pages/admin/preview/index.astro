@@ -1,0 +1,68 @@
+---
+/**
+ * Live preview of unsaved editor state: the editor POSTs its form (as JSON in `doc`) here with the
+ * CSRF token, targeting the preview iframe. Fields are validated with the same schema as an API
+ * update; blocks are re-validated by BlockRenderer. Nothing is stored.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import PagePreview, { type PreviewDoc } from "~/components/admin/PagePreview.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { adminForm, field, requireAdmin } from "~/components/admin/admin-guard";
+import type { StoredBlock } from "~/lib/blocks/registry";
+import { zodIssues } from "~/lib/server/api/api-errors";
+import { updatePageInput } from "~/lib/server/pages/page-schema";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+if (Astro.request.method !== "POST") return Astro.redirect("/admin", 303);
+
+let doc: PreviewDoc | null = null;
+let problems: string[] = [];
+const form = await adminForm(Astro, auth.session);
+if (!form) {
+  Astro.response.status = 403;
+  problems = [ADMIN.errors.csrf];
+} else {
+  const kind = field(form, "kind") === "post" ? "post" : "page";
+  let raw: unknown = null;
+  try {
+    raw = JSON.parse(String(form.get("doc") ?? ""));
+  } catch {
+    problems = ["The editor sent invalid JSON."];
+  }
+  if (raw !== null) {
+    const parsed = updatePageInput.safeParse(raw);
+    if (!parsed.success) {
+      problems = zodIssues(parsed.error).map((i) => `${i.path || "(root)"}: ${i.message}`);
+    } else {
+      const d = parsed.data;
+      doc = {
+        kind,
+        locale: d.locale ?? "en",
+        title: d.title || "Untitled",
+        description: d.description ?? "",
+        layout: d.layout ?? (kind === "post" ? "article" : "default"),
+        blocks: (d.blocks ?? []) as StoredBlock[],
+        body_md: d.body_md ?? null,
+        cover: d.cover ?? null,
+        tags: d.tags ?? [],
+        author: d.author ?? null,
+        updated_at: new Date().toISOString(),
+      };
+    }
+  }
+}
+---
+
+{doc ? (
+  <PagePreview doc={doc} />
+) : (
+  <AdminLayout title={ADMIN.preview.banner} current="pages">
+    <div class="adm-alert" data-kind="error" role="alert">
+      <p>{ADMIN.preview.invalid}</p>
+      <ul>{problems.map((p) => <li>{p}</li>)}</ul>
+    </div>
+  </AdminLayout>
+)}

@@ -38,13 +38,13 @@ export const HOME: Bi<{
     meta: {
       title: "dewee: AI agents for business. The hard part is ours.",
       description:
-        "dewee puts AI agents to work inside your company: in the chats your team already uses, on the models you trust, behind security that is closed by default. From the team behind GoClaw.",
+        "dewee puts AI agents to work inside your company: in the chats your team already uses, on the models you trust, behind five layers of defence. From the team behind GoClaw.",
     },
     hero: {
       eyebrow: "Enterprise AI agents · from the makers of GoClaw",
       title: "The hard part is *ours*. The future is ~~yours~~.",
       lede:
-        "dewee puts AI agents to work inside your company: in the chats your team already lives in, on the models you trust, behind security that starts closed. We did the homework, so your business can simply move forward.",
+        "dewee puts AI agents to work inside your company: in the chats your team already lives in, on the models you trust, behind a door that stays shut until you open it. We did the homework, so your business can simply move forward.",
       primary: "Talk to us",
       secondary: "See what it can do",
       note: "it even follows up on Thursdays",
@@ -73,9 +73,9 @@ export const HOME: Bi<{
       items: [
         { text: "637,225 lines of Go, written and re-read", detail: "One ~25 MB binary. Starts in under a second." },
         { text: "8,900+ automated tests on every change", detail: "Tenant isolation, chaos start-ups, prompt injection, the lot." },
-        { text: "5 defence layers between your data and the internet", detail: "Closed by default. You open only what you need." },
+        { text: "5 defence layers between your data and the internet", detail: "Shut at the door: a token to connect, an approval before a stranger can chat." },
         { text: "20+ model providers, each with a fallback", detail: "When one provider has a bad day, your agents don't." },
-        { text: "10 chat channels, Zalo and Pancake included", detail: "Built for how Southeast Asian teams actually talk." },
+        { text: "11 chat channels, Zalo and Pancake included", detail: "Built for how Southeast Asian teams actually talk." },
         { text: "6 stable releases in September alone", detail: "We ship, we patch, we write it all down in the changelog." },
       ],
       grade: "10",
@@ -130,17 +130,17 @@ export const HOME: Bi<{
     },
     security: {
       eyebrow: "Security",
-      title: "Closed by default. Opened *on purpose*.",
-      lede: "Most agent stacks start wide open and hope for the best. dewee starts shut, and every capability an agent gets is one you granted.",
+      title: "Shut at the door. Opened *on purpose*.",
+      lede: "Most agent stacks start wide open and hope for the best. dewee starts with the door shut: no token, no connection; no approval, no chat. Then you decide what each agent may do.",
       layers: [
         { name: "Transport", body: "CORS, timing-safe auth, rate limits at the door." },
-        { name: "Input", body: "Prompt-injection detection before anything reaches a model." },
+        { name: "Input", body: "Prompt-injection checks before anything reaches a model: warn by default, block when you choose." },
         { name: "Tools", body: "A policy engine decides which agent may run what, where." },
         { name: "Output", body: "Keys, tokens and secrets are scrubbed from every reply." },
         { name: "Isolation", body: "Per-tenant data, per-agent workspaces, sandboxed execution." },
       ],
       stamp: "10",
-      stampNote: "AES-256-GCM on every stored secret",
+      stampNote: "AES-256-GCM on stored credentials",
       cta: "Read the security model",
     },
     integrations: {
@@ -210,13 +210,13 @@ export const HOME: Bi<{
     meta: {
       title: "dewee: AI agent cho doanh nghiệp. Phần khó để chúng tôi lo.",
       description:
-        "dewee đưa AI agent vào làm việc ngay trong doanh nghiệp bạn: trong những nhóm chat đội ngũ đang dùng, trên các mô hình bạn tin tưởng, với bảo mật đóng mặc định. Từ đội ngũ làm ra GoClaw.",
+        "dewee đưa AI agent vào làm việc ngay trong doanh nghiệp bạn: trong những nhóm chat đội ngũ đang dùng, trên các mô hình bạn tin tưởng, sau năm lớp phòng thủ. Từ đội ngũ làm ra GoClaw.",
     },
     hero: {
       eyebrow: "AI agent cho doanh nghiệp · từ đội ngũ làm ra GoClaw",
       title: "Phần khó để *chúng tôi* lo. Tương lai là của ~~bạn~~.",
       lede:
-        "dewee đưa AI agent vào làm việc ngay trong công ty bạn: trong những nhóm chat đội ngũ vẫn dùng mỗi ngày, trên các mô hình bạn tin tưởng, sau lớp bảo mật đóng từ đầu. Bài tập khó, chúng tôi làm rồi. Doanh nghiệp bạn chỉ việc tiến lên.",
+        "dewee đưa AI agent vào làm việc ngay trong công ty bạn: trong những nhóm chat đội ngũ vẫn dùng mỗi ngày, trên các mô hình bạn tin tưởng, sau cánh cửa chỉ mở khi bạn mở. Bài tập khó, chúng tôi làm rồi. Doanh nghiệp bạn chỉ việc tiến lên.",
       primary: "Trò chuyện với chúng tôi",
       secondary: "Xem dewee làm được gì",
       note: "nó còn biết tự nhắc việc nữa",
@@ -245,9 +245,9 @@ export const HOME: Bi<{
       items: [
         { text: "637.225 dòng Go, viết rồi đọc lại", detail: "Một file chạy ~25 MB. Khởi động dưới một giây." },
         { text: "8.900+ bài test tự động cho mỗi thay đổi", detail: "Cô lập tenant, khởi động trong hỗn loạn, prompt injection… đủ cả." },
-        { text: "5 lớp phòng thủ giữa dữ liệu của bạn và internet", detail: "Đóng mặc định. Bạn chỉ mở đúng thứ cần mở." },
+        { text: "5 lớp phòng thủ giữa dữ liệu của bạn và internet", detail: "Đóng từ cửa: có token mới kết nối, người lạ phải được duyệt mới chat được." },
         { text: "20+ nhà cung cấp mô hình, cái nào cũng có dự phòng", detail: "Nhà cung cấp gặp sự cố, agent của bạn vẫn làm việc." },
-        { text: "10 kênh chat, có cả Zalo và Pancake", detail: "Làm cho đúng cách người Việt và Đông Nam Á trò chuyện." },
+        { text: "11 kênh chat, có cả Zalo và Pancake", detail: "Làm cho đúng cách người Việt và Đông Nam Á trò chuyện." },
         { text: "6 bản phát hành ổn định chỉ riêng tháng 9", detail: "Ra bản đều, vá lỗi nhanh, ghi chép đầy đủ trong changelog." },
       ],
       grade: "10",
@@ -302,17 +302,17 @@ export const HOME: Bi<{
     },
     security: {
       eyebrow: "Bảo mật",
-      title: "Đóng mặc định. Mở *có chủ đích*.",
-      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi cầu may. dewee bắt đầu từ trạng thái đóng, và mọi quyền agent có đều do chính bạn cấp.",
+      title: "Đóng từ cửa. Mở *có chủ đích*.",
+      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi cầu may. dewee bắt đầu với cửa đóng: không token thì không kết nối, chưa duyệt thì không chat. Sau đó bạn quyết định mỗi agent được làm gì.",
       layers: [
         { name: "Transport", body: "CORS, xác thực chống timing attack, giới hạn tần suất ngay từ cửa." },
-        { name: "Input", body: "Phát hiện prompt injection trước khi tới mô hình." },
+        { name: "Input", body: "Kiểm tra prompt injection trước khi tới mô hình: mặc định cảnh báo, chặn khi bạn chọn." },
         { name: "Tools", body: "Chính sách quyết định agent nào được chạy gì, ở đâu." },
         { name: "Output", body: "Khoá, token và bí mật bị lọc khỏi mọi câu trả lời." },
         { name: "Isolation", body: "Dữ liệu tách theo tenant, workspace riêng cho agent, thực thi trong sandbox." },
       ],
       stamp: "10",
-      stampNote: "Mã hoá AES-256-GCM cho mọi bí mật",
+      stampNote: "Mã hoá AES-256-GCM cho credential lưu trữ",
       cta: "Đọc về mô hình bảo mật",
     },
     integrations: {
@@ -413,7 +413,7 @@ export const HOME_UI: Bi<{
     proofLabel: "dewee qua những con số",
     gradeLabel: "Điểm: 10 trên 10",
     exercise: "Bài",
-    stepNote: "bài khó để tụi mình lo",
+    stepNote: "bài khó để chúng tôi lo",
     archLabel: "Hành trình một tin nhắn qua dewee: kênh chat, gateway, vòng lặp agent 8 bước, nhà cung cấp mô hình và trace",
     more: (n) => `+${n} nữa`,
     core: "Dữ liệu của bạn",

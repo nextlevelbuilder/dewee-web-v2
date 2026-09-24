@@ -86,6 +86,8 @@ const socials = [
 
 <style>
   .footer { position: relative; margin-block-start: var(--space-9); padding-block: var(--space-9) var(--space-6); background: var(--paper-2); border-block-start: 1px solid var(--rule); }
+  /* A page that already ends on a tinted band runs straight into the footer (same paper), without a stripe of page colour between them. */
+  :global(main:has(> .band:last-child)) + .footer { margin-block-start: 0; }
   /* Torn-notebook-page perforation along the top edge */
   .footer__edge {
     position: absolute; inset-inline: 0; inset-block-start: -7px; block-size: 14px;

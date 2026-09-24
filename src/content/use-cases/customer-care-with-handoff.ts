@@ -2,7 +2,7 @@
  * Customer care: 24/7 answers from the knowledge base, with a clean handoff to a person.
  * Verified against dewee: human_handoff tool (structured case summary to a server-configured
  * route), Zalo OA / Facebook / WhatsApp / Pancake channels, per-user sessions, read_image,
- * Facebook admin-reply cooldown, prompt-injection detection, traces.
+ * Facebook admin-reply cooldown, prompt-injection checks, traces.
  */
 import type { UseCase } from "./types";
 

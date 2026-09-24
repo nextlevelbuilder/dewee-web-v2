@@ -1,0 +1,37 @@
+---
+/** Audit log, newest first, paged with a `before=<id>` cursor. */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import AuditTable from "~/components/admin/AuditTable.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { listAudit } from "~/lib/server/auth/audit-log";
+
+export const prerender = false;
+
+const PAGE = 50;
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const rawBefore = Astro.url.searchParams.get("before");
+const before = rawBefore === null ? undefined : Number(rawBefore);
+if (before !== undefined && (!Number.isSafeInteger(before) || before < 1)) return Astro.redirect("/admin/audit", 303);
+const rows = await listAudit(platformEnv().DB, { limit: PAGE, before });
+const last = rows.at(-1);
+---
+
+<AdminLayout title={ADMIN.audit.title} current="audit" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{ADMIN.audit.title}</h1>
+      <p>{ADMIN.audit.lede}</p>
+    </div>
+  </div>
+  <AuditTable rows={rows} />
+  {rows.length === PAGE && last && (
+    <div class="adm-pager">
+      <span />
+      <a class="btn" href={`/admin/audit?before=${last.id}`}>{ADMIN.audit.older}<Icon name="arrow-right" /></a>
+    </div>
+  )}
+</AdminLayout>

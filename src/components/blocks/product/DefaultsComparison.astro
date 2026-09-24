@@ -1,0 +1,163 @@
+---
+/**
+ * "Open by default" vs "closed by default" as a notebook spread: a real table whose left page
+ * is the open column (its title struck through in red pen) and whose right page is the closed
+ * column (ticked, tagged as dewee's defaults). A footnote card states the honest caveats.
+ * Below 760px each row becomes a stacked card with the column names as labels.
+ */
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  label: string;
+  topicLabel: string;
+  open: { title: string; motto: string; note?: string };
+  closed: { title: string; motto: string; tag: string };
+  rows: { topic: string; open: string; closed: string }[];
+  footnoteTitle: string;
+  footnote: string;
+}
+const { label, topicLabel, open, closed, rows, footnoteTitle, footnote } = Astro.props;
+---
+
+<figure class="dc">
+  <div class="dc__spread paper-grid" data-reveal>
+    <table class="dc__table">
+      <caption class="sr-only">{label}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="dc__h dc__h--topic"><span class="dc__topic-label">{topicLabel}</span></th>
+          <th scope="col" class="dc__h dc__h--open">
+            <span class="dc__title dc__title--open">
+              <span class="dc__struck">{open.title}</span>
+              <svg class="dc__strike" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true">
+                <path pathLength="1" d="M1 8 C 18 5.5, 36 9, 55 6.5 S 86 4.5, 99 5.5" />
+              </svg>
+            </span>
+            <span class="dc__motto">{open.motto}</span>
+            {open.note && <span class="note dc__note">{open.note}</span>}
+          </th>
+          <th scope="col" class="dc__h dc__h--closed">
+            <span class="chip chip--accent dc__tag">{closed.tag}</span>
+            <span class="dc__title">
+              <svg class="dc__tick" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M3 13.5 C 5.5 15, 7.5 17.5, 9 20 C 12 12.5, 16.5 7, 22 3" /></svg>
+              {closed.title}
+            </span>
+            <span class="dc__motto">{closed.motto}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <th scope="row" class="dc__topic">{r.topic}</th>
+            <td class="dc__cell dc__cell--open">
+              <span class="dc__label" aria-hidden="true">{open.title}</span>
+              <span class="dc__mark dc__mark--open" aria-hidden="true"><Icon name="x" size={14} stroke={2.25} /></span>
+              <span>{r.open}</span>
+            </td>
+            <td class="dc__cell dc__cell--closed">
+              <span class="dc__label" aria-hidden="true">{closed.title}</span>
+              <span class="dc__mark dc__mark--closed" aria-hidden="true"><Icon name="check" size={14} stroke={2.5} /></span>
+              <span>{r.closed}</span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <figcaption class="dc__foot">
+    <p class="dc__foot-title"><Icon name="circle-alert" size={18} />{footnoteTitle}</p>
+    <p class="dc__foot-body">{footnote}</p>
+  </figcaption>
+</figure>
+
+<style>
+  .dc { display: grid; gap: var(--space-5); margin: 0; }
+
+  /* The spread: one sheet, a spine shadow between the open and the closed page. */
+  .dc__spread {
+    --cell: 10px;
+    position: relative; border: 1px solid var(--rule); border-radius: var(--radius-4); background-color: var(--surface);
+    box-shadow: var(--shadow-2); overflow: hidden;
+  }
+  .dc__table { inline-size: 100%; border-collapse: collapse; table-layout: fixed; }
+  .dc__h--topic { inline-size: 24%; }
+  .dc__h, .dc__topic, .dc__cell { text-align: start; vertical-align: top; padding: var(--space-4) var(--space-5); }
+  .dc__h { padding-block: var(--space-6) var(--space-5); border-block-end: 1.5px solid var(--rule-strong); }
+  .dc__h--closed, .dc__cell--closed {
+    background: color-mix(in oklab, var(--accent-soft) 55%, transparent);
+    box-shadow: inset 14px 0 14px -14px color-mix(in oklab, var(--ink) 35%, transparent);
+  }
+  .dc__h--open, .dc__cell--open { border-inline-end: 1px solid var(--rule-strong); }
+
+  .dc__topic-label, .dc__label {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 500;
+  }
+  .dc__h { font-weight: 400; }
+  .dc__h > * + * { margin-block-start: var(--space-2); }
+  .dc__title { position: relative; display: flex; inline-size: fit-content; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.15; color: var(--ink); }
+  .dc__title--open { color: var(--ink-3); }
+  .dc__motto { display: block; max-inline-size: 38ch; font-size: var(--step--1); line-height: 1.55; color: var(--ink-2); }
+  .dc__note { display: block; color: var(--redpen); transform: rotate(-2deg); transform-origin: left center; }
+  .dc__tag { inline-size: fit-content; }
+
+  .dc__strike { position: absolute; inset-inline: -4%; inset-block-start: 50%; inline-size: 108%; block-size: 0.6em; translate: 0 -40%; overflow: visible; color: var(--redpen); pointer-events: none; }
+  .dc__strike path, .dc__tick path { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .dc__strike path { stroke-width: 1.8; }
+  .dc__tick { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--redpen); overflow: visible; }
+  .dc__tick path { stroke-width: 2.75; }
+
+  .dc__table tbody tr + tr > * { border-block-start: 1px dashed var(--rule); }
+  .dc__topic { font-weight: 600; font-size: var(--step--1); line-height: 1.5; color: var(--ink); }
+  .dc__cell { font-size: var(--step--1); line-height: 1.55; }
+  .dc__cell--open { color: var(--ink-3); }
+  .dc__cell--closed { color: var(--ink); }
+  .dc__cell > span:last-child { display: block; padding-inline-start: 1.75rem; }
+  .dc__cell { position: relative; }
+  .dc__mark {
+    position: absolute; inset-block-start: calc(var(--space-4) + 0.1em); inset-inline-start: var(--space-5);
+    display: grid; place-items: center; inline-size: 1.25rem; block-size: 1.25rem; border-radius: 50%;
+  }
+  .dc__mark--open { color: var(--ink-3); border: 1px solid var(--rule-strong); }
+  .dc__mark--closed { color: var(--surface); background: var(--success); }
+  .dc__label { display: none; }
+
+  .dc__foot {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); align-items: baseline;
+    padding: var(--space-4) var(--space-5); border: 1.5px dashed var(--redpen); border-radius: var(--radius-3); background: var(--surface);
+  }
+  .dc__foot-title { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .dc__foot-title :global(svg) { color: var(--redpen); flex: none; translate: 0 0.1em; }
+  .dc__foot-body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); max-inline-size: 72ch; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .dc__spread .dc__strike path { stroke-dashoffset: 1; transition: stroke-dashoffset 600ms var(--ease-in-out) 500ms; }
+    :global(html.js) .dc__spread .dc__tick path { stroke-dashoffset: 1; transition: stroke-dashoffset 450ms var(--ease-in-out) 1100ms; }
+    :global(html.js) .dc__spread.is-in .dc__strike path,
+    :global(html.js) .dc__spread.is-in .dc__tick path { stroke-dashoffset: 0; }
+  }
+
+  /* Phones and narrow tablets: the header shrinks to the two page titles, each row is a card. */
+  @media (max-width: 760px) {
+    .dc__table, .dc__table thead, .dc__table tbody, .dc__table tr, .dc__table th, .dc__table td { display: block; }
+    .dc__table .dc__h--topic { display: none; }
+    .dc__h, .dc__topic, .dc__cell { padding: var(--space-4); }
+    .dc__h--open, .dc__h--closed { display: block; border-inline-end: 0; }
+    .dc__h--open { border-block-end: 1px solid var(--rule-strong); }
+    .dc__h--closed { box-shadow: none; }
+    .dc__table thead tr { border-block-end: 1.5px solid var(--rule-strong); }
+    .dc__h { border-block-end: 0; }
+    .dc__table tbody tr + tr { border-block-start: 1.5px solid var(--rule-strong); }
+    .dc__table tbody tr + tr > * { border-block-start: 0; }
+    .dc__topic { padding-block-end: var(--space-2); font-size: var(--step-0); }
+    .dc__cell { padding-block: var(--space-3); }
+    .dc__cell--open { border-inline-end: 0; padding-block-start: 0; }
+    .dc__cell--closed { box-shadow: none; }
+    .dc__label { display: block; margin-block-end: var(--space-1); }
+    /* ink-3 drops below 4.5:1 on the tinted closed column; the accent ink stays readable and marks dewee's side. */
+    .dc__cell--closed .dc__label { color: var(--accent-ink); }
+    .dc__cell > span:last-child { padding-inline-start: 1.75rem; }
+    .dc__mark { inset-block-start: auto; margin-block-start: 0.1em; inset-inline-start: var(--space-4); }
+    .dc__foot { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
