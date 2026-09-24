@@ -47,14 +47,15 @@ const { locale } = Astro.props;
   let seen = false;
   try { seen = localStorage.getItem(KEY) === "ok"; } catch { seen = false; }
   if (el && !seen) {
-    // Wait until the visitor has moved past the first screen so the notice never covers the
-    // hero's call to action; pages too short to scroll show it after a short pause instead.
-    const show = () => { el.hidden = false; removeEventListener("scroll", onScroll); };
-    const onScroll = () => { if (scrollY > innerHeight * 0.6) show(); };
-    if (document.documentElement.scrollHeight < innerHeight * 1.6) setTimeout(show, 2500);
+    // Only show the notice once the visitor is past the first screen, and tuck it away again
+    // near the top, so it never covers the hero's call to action. Pages too short to scroll
+    // show it after a short pause instead.
+    const onScroll = () => { el.hidden = scrollY <= innerHeight * 0.6; };
+    if (document.documentElement.scrollHeight < innerHeight * 1.6) setTimeout(() => { el.hidden = false; }, 2500);
     else addEventListener("scroll", onScroll, { passive: true });
     el.querySelector("[data-cookie-ok]")?.addEventListener("click", () => {
       try { localStorage.setItem(KEY, "ok"); } catch { /* still hide for this page */ }
+      removeEventListener("scroll", onScroll);
       el.hidden = true;
     });
   }

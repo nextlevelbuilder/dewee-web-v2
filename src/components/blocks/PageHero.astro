@@ -87,4 +87,9 @@ const hasAside = Astro.slots.has("aside");
     .ph--aside .ph__grid { grid-template-columns: minmax(0, 1fr); }
     .ph__aside--mascot { display: none; }
   }
+  /* Stacked on phones: full-width buttons, so the secondary one lines up instead of floating indented. */
+  @media (max-width: 560px) {
+    .page-hero__actions { inline-size: 100%; }
+    .page-hero__actions .btn { flex: 1 1 100%; }
+  }
 </style>

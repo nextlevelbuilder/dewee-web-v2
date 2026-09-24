@@ -213,7 +213,7 @@ export const PRICING: Bi<PricingPage> = {
       body: "Kể cho chúng tôi nghe về đội ngũ, quy trình và hạ tầng hiện có. Chúng tôi sẽ gửi báo giá On-Premises rõ ràng, từng hạng mục.",
       primary: "Nhận báo giá On-Premises",
       secondary: "Hỏi dewee qua chat",
-      note: "tụi mình đọc từng tin nhắn",
+      note: "chúng tôi đọc từng tin nhắn",
     },
   },
 };

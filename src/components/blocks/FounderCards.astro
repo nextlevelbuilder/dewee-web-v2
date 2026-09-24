@@ -53,8 +53,13 @@ const { founders } = Astro.props;
   @media (max-width: 960px) { .fc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 620px) {
     .fc { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
-    .fc__card { grid-template-columns: 7.5rem minmax(0, 1fr); align-items: start; }
-    .fc__photo { inline-size: 100%; }
-    .fc__name { font-size: var(--step-2); }
+    /* Photo beside the name only; bio, facts and links take the full card width. */
+    .fc__card { grid-template-columns: 6rem minmax(0, 1fr); gap: 0 var(--space-4); }
+    .fc__body { display: contents; }
+    .fc__photo { grid-column: 1; grid-row: 1 / span 2; inline-size: 100%; }
+    .fc__name { grid-column: 2; grid-row: 1; align-self: end; font-size: var(--step-2); }
+    .fc__role { grid-column: 2; grid-row: 2; align-self: start; }
+    .fc__bio, .fc__facts, .fc__links { grid-column: 1 / -1; }
+    .fc__bio { margin-block-start: var(--space-4); }
   }
 </style>

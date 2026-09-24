@@ -413,7 +413,7 @@ export const HOME_UI: Bi<{
     proofLabel: "dewee qua những con số",
     gradeLabel: "Điểm: 10 trên 10",
     exercise: "Bài",
-    stepNote: "bài khó để tụi mình lo",
+    stepNote: "bài khó để chúng tôi lo",
     archLabel: "Hành trình một tin nhắn qua dewee: kênh chat, gateway, vòng lặp agent 8 bước, nhà cung cấp mô hình và trace",
     more: (n) => `+${n} nữa`,
     core: "Dữ liệu của bạn",
