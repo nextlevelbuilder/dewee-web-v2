@@ -51,6 +51,8 @@ const strings = { copied: t(locale, "copied"), failed: t(locale, "copyFailed"), 
     padding: var(--space-2); display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-3);
   }
   .pa__menu[hidden] { display: none; }
+  /* Near the start edge (the footer column), open the menu rightwards so it stays on screen. */
+  .pa--start .pa__menu { inset-inline-end: auto; inset-inline-start: 0; }
   .pa__menu > button, .pa__menu > a { display: flex; align-items: center; gap: 0.6rem; inline-size: 100%; min-block-size: 2.5rem; padding: 0.45rem 0.65rem; border-radius: var(--radius-1); text-align: start; }
   .pa__menu > button:hover, .pa__menu > a:hover, .pa__menu > :focus-visible { background: var(--accent-soft); color: var(--ink); }
   .pa__menu :global(.pa__ext) { margin-inline-start: auto; color: var(--ink-3); }

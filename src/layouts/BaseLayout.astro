@@ -35,10 +35,12 @@ interface Props {
   /** Show the ô-ly grid behind the whole page */
   grid?: boolean;
   chat?: boolean;
+  /** Copy/share/ask-an-AI menu in the footer; off for pages that carry their own (and for noindex pages) */
+  pageActions?: boolean;
   bodyClass?: string;
 }
 
-const { locale, path, altHref, grid = false, chat = true, bodyClass, ...seo } = Astro.props;
+const { locale, path, altHref, grid = false, chat = true, pageActions = !Astro.props.noindex, bodyClass, ...seo } = Astro.props;
 const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
 ---
 
@@ -79,7 +81,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <SiteFooter locale={locale} />
+    <SiteFooter locale={locale} page={pageActions ? { path, title: seo.title } : undefined} />
     <CookieBadge locale={locale} />
     {chat && <ChatLauncher locale={locale} />}
     <script>

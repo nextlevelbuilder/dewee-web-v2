@@ -49,6 +49,7 @@ const jsonLd = faqs.length ? [faqJsonLd(faqs)] : [];
 ---
 
 <BaseLayout
+  pageActions={false}
   title={page.seo.title || page.title}
   description={page.seo.description || page.description || page.title}
   locale={locale}
