@@ -6,6 +6,7 @@
  */
 import { htmlToMarkdown } from "../html-to-markdown";
 import { pageForTwin } from "./seo/seo-paths";
+import { isExcludedPath } from "./seo/sitemap-xml";
 
 type Render = (req: Request) => Promise<Response>;
 
@@ -24,6 +25,11 @@ export async function markdownTwin(request: Request, env: Env, render: Render): 
   const origin = (env.SITE_URL || url.origin).replace(/\/$/, "");
   const htmlPath = pageForTwin(url.pathname);
   const canonical = `${origin}${htmlPath}`;
+
+  // The admin, the API, MCP and error pages are not content: no twin, same as the sitemaps.
+  if (isExcludedPath(htmlPath)) {
+    return new Response(`# Not found\n\nThere is no page at ${htmlPath}.\n`, { status: 404, headers: { ...headers(canonical), "cache-control": "no-store" } });
+  }
 
   if (!url.search) {
     const staticTwin = await env.ASSETS.fetch(new Request(new URL(url.pathname, url.origin)));
