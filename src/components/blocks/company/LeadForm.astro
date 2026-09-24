@@ -1,0 +1,165 @@
+---
+/**
+ * A lead form written on a notebook sheet (contact requests, partner applications).
+ * It works without JavaScript: the browser posts form-urlencoded to /api/leads, which answers
+ * with a 303 back here (`?sent=1#<id>-done` or `?error=<code>#<id>-error`) and `:target` shows the
+ * outcome. With JavaScript, lead-form-client.ts pre-selects options from the query string
+ * (`data-query`), posts JSON, and shows the same panels in place.
+ * All labels arrive already localised; the honeypot field is invisible to people.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import Icon from "~/components/ui/Icon.astro";
+import type { LeadFormCopy, LeadFormUi } from "./lead-form-types";
+
+interface Props {
+  /** Form id; also the prefix of the outcome panels (`<id>-done`, `<id>-error`) */
+  id: string;
+  kind: "contact" | "partner";
+  locale: string;
+  /** Localised path of this page, where the no-JS post returns */
+  source: string;
+  /** Localised href of the privacy page */
+  privacyHref: string;
+  copy: LeadFormCopy;
+  ui: LeadFormUi;
+}
+const { id, kind, locale, source, privacyHref, copy, ui } = Astro.props;
+const { fields, submit, success } = copy;
+const { busy, optional, honeypot, failure, errors } = ui;
+const privacy = `${ui.privacy.text} [${ui.privacy.link}](${privacyHref})`;
+const fieldId = (name: string) => `${id}-${name}`;
+---
+
+<div class="lf" data-lead-form data-busy-label={busy} data-messages={JSON.stringify(errors)}>
+  <form id={id} class="lf__sheet paper-grid" action="/api/leads" method="post" accept-charset="utf-8">
+    <input type="hidden" name="kind" value={kind} />
+    <input type="hidden" name="locale" value={locale} />
+    <input type="hidden" name="source" value={source} />
+    <input type="hidden" name="form" value={id} />
+    <div class="lf__hp" aria-hidden="true">
+      <label for={fieldId("website")}>{honeypot}</label>
+      <input id={fieldId("website")} name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div id={`${id}-error`} class="lf__panel lf__panel--error" tabindex="-1" role="alert" data-error-panel>
+      <Icon name="circle-alert" size={20} />
+      <div>
+        <p class="lf__panel-title">{failure.title}</p>
+        <p class="lf__panel-body" data-error-text>{failure.body}</p>
+      </div>
+    </div>
+
+    <div class="lf__grid">
+      {fields.map((f) => (
+        <div class:list={["field", "lf__field", { "lf__field--wide": f.wide || f.type === "textarea" }]}>
+          <label for={fieldId(f.name)}>
+            {f.label}
+            {!f.required && <span class="lf__opt">({optional})</span>}
+          </label>
+          {f.type === "select" ? (
+            <select id={fieldId(f.name)} name={f.name} required={f.required} data-query={f.query}>
+              {f.options.map((o) => <option value={o.value} selected={o.value === (f.value ?? "")}>{o.label}</option>)}
+            </select>
+          ) : f.type === "textarea" ? (
+            <textarea id={fieldId(f.name)} name={f.name} rows={f.rows ?? 5} required={f.required} minlength={f.required ? 2 : undefined} maxlength={f.maxlength ?? 4000} placeholder={f.placeholder} aria-describedby={f.hint ? `${fieldId(f.name)}-hint` : undefined} />
+          ) : (
+            <input
+              id={fieldId(f.name)}
+              name={f.name}
+              type={f.type}
+              required={f.required}
+              maxlength={f.maxlength ?? (f.type === "email" ? 254 : 120)}
+              placeholder={f.placeholder}
+              autocomplete={f.autocomplete}
+              inputmode={f.type === "email" ? "email" : undefined}
+              aria-describedby={f.hint ? `${fieldId(f.name)}-hint` : undefined}
+            />
+          )}
+          {f.hint && <p class="hint" id={`${fieldId(f.name)}-hint`}>{f.hint}</p>}
+        </div>
+      ))}
+    </div>
+
+    <div class="lf__foot">
+      <button class="btn btn--primary btn--lg lf__submit" type="submit">
+        <span data-submit-label>{submit}</span><Icon name="send" />
+      </button>
+      {privacy && <p class="lf__privacy" set:html={inlineMarkup(privacy)} />}
+    </div>
+    <p class="form-status lf__status" role="status" aria-live="polite" data-status></p>
+  </form>
+
+  <div id={`${id}-done`} class="lf__done paper-grid" tabindex="-1" role="status" data-done-panel>
+    <span class="lf__tick" aria-hidden="true"><svg viewBox="0 0 48 48"><path pathLength="1" d="M9 25 L20 35 L40 11" /></svg></span>
+    <p class="lf__done-title">{success.title}</p>
+    <p class="lf__done-body">{success.body}</p>
+    <a class="btn btn--ghost" href={`${source}#${id}`} data-again>{success.again}</a>
+  </div>
+</div>
+
+<style>
+  .lf { position: relative; }
+  .lf__sheet, .lf__done {
+    --cell: 9px;
+    position: relative; background-color: var(--surface);
+    border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-2);
+    padding: clamp(1.5rem, 1rem + 2.5vw, 2.75rem) clamp(1.25rem, 0.75rem + 2.5vw, 2.75rem) clamp(1.5rem, 1rem + 2vw, 2.25rem) calc(clamp(1.25rem, 0.75rem + 2.5vw, 2.75rem) + 1.5rem);
+  }
+  /* the pink margin line of a notebook sheet */
+  .lf__sheet::before, .lf__done::before {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: clamp(1rem, 0.5rem + 1.5vw, 1.75rem); inline-size: 4px;
+    border-inline: 1px solid var(--margin-rule); opacity: 0.6; pointer-events: none;
+  }
+  .lf__hp { position: absolute; inset-inline-start: -10000px; inline-size: 1px; block-size: 1px; overflow: hidden; }
+
+  .lf__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); }
+  .lf__field--wide { grid-column: 1 / -1; }
+  .lf__field label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35em; }
+  .lf__opt { font-weight: 400; font-size: var(--step--2); color: var(--ink-3); }
+  .lf__field textarea { resize: vertical; min-block-size: 8rem; }
+  .lf__field select {
+    appearance: none; -webkit-appearance: none; padding-inline-end: 2.5rem; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%), linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+    background-position: calc(100% - 1.15rem) 55%, calc(100% - 0.8rem) 55%;
+    background-size: 0.35rem 0.35rem; background-repeat: no-repeat;
+  }
+
+  .lf__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-5); margin-block-start: var(--space-6); }
+  .lf__privacy { flex: 1 1 16rem; font-size: var(--step--2); color: var(--ink-3); line-height: 1.55; }
+  .lf__privacy :global(a) { color: var(--accent-ink); }
+  .lf__status:empty { display: none; }
+  .lf__status { margin-block-start: var(--space-4); }
+  .lf[data-busy] .lf__submit { opacity: 0.7; pointer-events: none; }
+
+  /* Outcome panels: hidden until targeted (no JS) or switched on by the client script */
+  .lf__panel { display: none; gap: var(--space-3); align-items: start; margin-block-end: var(--space-5); padding: var(--space-4); border-radius: var(--radius-2); }
+  .lf__panel--error { background: var(--danger-soft); color: var(--danger); }
+  .lf__panel:target, .lf[data-state="error"] .lf__panel--error { display: flex; }
+  .lf__panel :global(svg) { flex: none; margin-block-start: 0.15rem; }
+  .lf__panel-title { font-weight: 600; }
+  .lf__panel-body { font-size: var(--step--1); color: var(--ink-2); }
+
+  .lf__done { display: none; justify-items: center; text-align: center; gap: var(--space-3); padding-block: clamp(2.5rem, 2rem + 3vw, 4rem); }
+  .lf__done:target, .lf[data-state="done"] .lf__done { display: grid; }
+  .lf:has(.lf__done:target) .lf__sheet, .lf[data-state="done"] .lf__sheet { display: none; }
+  .lf__done:focus { outline: none; }
+  .lf__tick { inline-size: 3.5rem; block-size: 3.5rem; color: var(--success); }
+  .lf__tick svg { inline-size: 100%; block-size: 100%; overflow: visible; }
+  .lf__tick path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .lf__done-title { font-family: var(--font-display-stack); font-size: var(--step-3); line-height: 1.15; color: var(--ink); }
+  .lf__done-body { max-inline-size: 34rem; color: var(--ink-2); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lf__done:target .lf__tick path, .lf[data-state="done"] .lf__tick path { animation: lf-tick 700ms var(--ease-out) both 150ms; }
+    @keyframes lf-tick { from { stroke-dashoffset: 1; } }
+  }
+
+  @media (max-width: 640px) {
+    .lf__grid { grid-template-columns: minmax(0, 1fr); }
+    .lf__submit { inline-size: 100%; }
+  }
+</style>
+
+<script>
+  import { initLeadForms } from "./lead-form-client";
+  initLeadForms();
+</script>

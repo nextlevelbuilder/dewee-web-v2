@@ -1,0 +1,156 @@
+---
+/**
+ * "Nháp → chép sạch": an open notebook. The left page is the draft (pencil handwriting, with
+ * wrong ideas struck out and corrected in red pen); the right page is the fair copy, written out
+ * neatly and graded 10. Rows line up across the spine (CSS subgrid) so each draft line faces its
+ * clean version. Strike-throughs draw themselves when the spread scrolls in; with reduced motion
+ * or no JavaScript they are simply there.
+ */
+interface Row {
+  label: string;
+  /** What the draft page says (in red pen when it corrects `strike`) */
+  draft: string;
+  /** A wrong first idea, struck out on the draft page */
+  strike?: string;
+  fair: string;
+}
+interface Props {
+  /** Accessible summary of the whole figure */
+  label: string;
+  draft: { tag: string; name: string; note?: string };
+  fair: { tag: string; name: string; grade: string; gradeLabel: string; sign?: string };
+  /** Handwritten label on the arrow across the spine */
+  arrow: string;
+  rows: Row[];
+}
+const { label, draft, fair, arrow, rows } = Astro.props;
+---
+
+<figure class="dfc" aria-label={label} style={`--rows:${rows.length + 2}`} data-reveal>
+  <div class="dfc__page dfc__page--draft paper-grid">
+    <header class="dfc__head">
+      <span class="dfc__tag">{draft.tag}</span>
+      <span class="dfc__name">{draft.name}</span>
+      {draft.note && <span class="dfc__aside">{draft.note}</span>}
+    </header>
+    {rows.map((r, i) => (
+      <div class="dfc__row" style={`--i:${i}`}>
+        <span class="dfc__label">{r.label}</span>
+        <p class="dfc__draft">
+          {r.strike ? (
+            <>
+              <del>{r.strike}</del> <ins>{r.draft}</ins>
+            </>
+          ) : (
+            r.draft
+          )}
+        </p>
+      </div>
+    ))}
+    <div class="dfc__foot" aria-hidden="true"></div>
+  </div>
+
+  <p class="dfc__arrow" aria-hidden="true"><span>{arrow}</span><svg viewBox="0 0 120 40"><path pathLength="1" d="M4 28 C 30 6, 70 4, 108 20" /><path pathLength="1" d="M96 10 L110 21 L94 29" /></svg></p>
+
+  <div class="dfc__page dfc__page--fair paper-grid">
+    <header class="dfc__head">
+      <span class="dfc__tag">{fair.tag}</span>
+      <span class="dfc__name">{fair.name}</span>
+      <span class="dfc__grade" role="img" aria-label={fair.gradeLabel}>
+        <span>{fair.grade}</span>
+        <svg viewBox="0 0 120 100" aria-hidden="true"><path pathLength="1" d="M70 8 C 30 4 6 30 10 58 C 14 86 52 96 82 88 C 110 80 118 52 104 30 C 94 14 76 8 58 10" /></svg>
+      </span>
+    </header>
+    {rows.map((r) => (
+      <div class="dfc__row">
+        <span class="dfc__label">{r.label}</span>
+        <p class="dfc__fair">{r.fair}</p>
+      </div>
+    ))}
+    <div class="dfc__foot">{fair.sign && <p class="dfc__sign">{fair.sign}</p>}</div>
+  </div>
+</figure>
+
+<style>
+  .dfc {
+    position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(var(--rows), auto); column-gap: 0;
+    margin: 0; padding-block: var(--space-6) var(--space-4);
+  }
+  .dfc__page {
+    --cell: 9px;
+    grid-row: 1 / -1; display: grid; grid-template-rows: subgrid;
+    padding: var(--space-6) clamp(1.25rem, 0.5rem + 2.5vw, 2.75rem) var(--space-5);
+    background-color: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-2);
+  }
+  .dfc__page--draft {
+    grid-column: 1; background-color: var(--paper-2);
+    border-radius: var(--radius-3) 0 0 var(--radius-3); border-inline-end: 0;
+    transform: rotate(-0.8deg); transform-origin: 100% 50%;
+  }
+  .dfc__page--fair {
+    grid-column: 2; border-radius: 0 var(--radius-3) var(--radius-3) 0;
+    /* the crease of the spine */
+    background-image: linear-gradient(to right, color-mix(in oklch, var(--ink) 9%, transparent), transparent 2.5rem);
+    background-color: var(--surface);
+  }
+  .dfc__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); padding-block-end: var(--space-4); border-block-end: 1px solid var(--rule); position: relative; }
+  .dfc__tag { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3); }
+  .dfc__name { font-family: var(--font-display-stack); font-size: var(--step-3); line-height: 1; color: var(--ink); inline-size: 100%; }
+  .dfc__page--draft .dfc__name { font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step-2); line-height: 1.4; color: var(--ink-2); }
+  .dfc__aside { font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step--1); color: var(--ink-3); }
+
+  .dfc__row { display: grid; gap: var(--space-1); align-content: start; padding-block: var(--space-4); border-block-end: 1px dashed var(--rule); }
+  .dfc__label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .dfc__draft { font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step--1); line-height: 1.9; color: var(--ink-2); }
+  .dfc__fair { font-family: var(--font-display-stack); font-size: var(--step-1); line-height: 1.35; color: var(--ink); }
+
+  .dfc del {
+    text-decoration: none; color: var(--ink-3);
+    background: linear-gradient(var(--redpen), var(--redpen)) no-repeat 0 58% / 100% 2px;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
+  .dfc ins { text-decoration: none; color: var(--redpen); }
+
+  .dfc__foot { padding-block-start: var(--space-4); }
+  .dfc__sign { font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step-1); line-height: 1.6; color: var(--accent-ink); transform: rotate(-2deg); transform-origin: 0 50%; }
+
+  .dfc__grade {
+    position: absolute; inset-block-start: -2.75rem; inset-inline-end: -1.5rem;
+    inline-size: 5.5rem; block-size: 4.75rem; display: grid; place-items: center;
+    color: var(--redpen); transform: rotate(-8deg);
+  }
+  .dfc__grade > span { font-family: var(--font-hand-stack); font-size: var(--step-3); line-height: 1; padding-block-start: 0.2em; }
+  .dfc__grade svg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; }
+  .dfc__grade path, .dfc__arrow path { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+  .dfc__arrow {
+    position: absolute; z-index: 1; inset-block-start: 0; inset-inline-start: 50%; translate: -50% -55%;
+    display: grid; justify-items: center; color: var(--accent-ink); pointer-events: none;
+  }
+  .dfc__arrow span { font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step--1); white-space: nowrap; transform: rotate(-3deg); }
+  .dfc__arrow svg { inline-size: 6.5rem; block-size: 2.2rem; overflow: visible; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .dfc del { background-size: 0% 2px; transition: background-size 650ms var(--ease-in-out) calc(500ms + var(--i, 0) * 420ms); }
+    :global(html.js) .dfc.is-in del { background-size: 100% 2px; }
+    :global(html.js) .dfc ins { opacity: 0; transition: opacity var(--dur-4) var(--ease-out) calc(1000ms + var(--i, 0) * 420ms); }
+    :global(html.js) .dfc.is-in ins { opacity: 1; }
+    :global(html.js) .dfc__arrow path { stroke-dashoffset: 1; transition: stroke-dashoffset 800ms var(--ease-in-out) 900ms; }
+    :global(html.js) .dfc.is-in .dfc__arrow path { stroke-dashoffset: 0; }
+    :global(html.js) .dfc__grade { opacity: 0; transform: rotate(-8deg) scale(1.3); transition: opacity var(--dur-3) var(--ease-out) 1.6s, transform var(--dur-4) var(--ease-spring) 1.6s; }
+    :global(html.js) .dfc.is-in .dfc__grade { opacity: 1; transform: rotate(-8deg); }
+    :global(html.js) .dfc__grade path { stroke-dashoffset: 1; transition: stroke-dashoffset 700ms var(--ease-in-out) 1.8s; }
+    :global(html.js) .dfc.is-in .dfc__grade path { stroke-dashoffset: 0; }
+  }
+
+  @media (max-width: 760px) {
+    .dfc { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: var(--space-3); padding-block-start: 0; }
+    .dfc__page { grid-column: 1; grid-template-rows: none; border-radius: var(--radius-3); border-inline-end: 1px solid var(--rule); transform: none; }
+    .dfc__page--draft { grid-row: 1; }
+    .dfc__page--fair { grid-row: 3; background-image: none; }
+    .dfc__arrow { position: static; translate: none; grid-row: 2; grid-column: 1; }
+    .dfc__arrow svg { rotate: 90deg; inline-size: 3.5rem; block-size: 1.5rem; }
+    .dfc__grade { inset-inline-end: -0.5rem; }
+  }
+</style>
