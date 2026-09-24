@@ -1,0 +1,26 @@
+---
+/** Newer / older links between pages of minor versions (cursor-based, see release-groups.ts). */
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  label: string;
+  newer?: { label: string; href: string };
+  older?: { label: string; href: string };
+}
+const { label, newer, older } = Astro.props;
+---
+
+{(newer || older) && (
+  <nav class="clpager" aria-label={label}>
+    {newer ? (
+      <a class="btn btn--ghost" href={newer.href} rel="prev"><Icon name="arrow-left" />{newer.label}</a>
+    ) : <span></span>}
+    {older && (
+      <a class="btn" href={older.href} rel="next">{older.label}<Icon name="arrow-right" class="arrow" /></a>
+    )}
+  </nav>
+)}
+
+<style>
+  .clpager { display: flex; justify-content: space-between; gap: var(--space-4); padding-block-start: var(--space-6); border-block-start: 2px solid var(--ink); }
+</style>

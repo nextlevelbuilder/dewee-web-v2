@@ -1,0 +1,58 @@
+---
+/**
+ * Channel filter (Stable | Beta | All) as plain links, so it works without JavaScript and every
+ * view has a shareable URL, plus the Atom feed link and the time-zone note. The default slot
+ * takes page-level actions (copy as Markdown, share) at the end of the row.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { ChannelFilter } from "~/lib/server/seo/changelog/release-groups";
+
+interface Props {
+  label: string;
+  channels: { id: ChannelFilter; label: string; hint: string; href: string }[];
+  current: ChannelFilter;
+  feed: { label: string; href: string };
+  timeZone: string;
+  notesLanguage?: string;
+}
+const { label, channels, current, feed, timeZone, notesLanguage } = Astro.props;
+const hint = channels.find((c) => c.id === current)?.hint;
+---
+
+<div class="clnav">
+  <nav class="clnav__tabs" aria-label={label}>
+    <ul role="list">
+      {channels.map((c) => (
+        <li>
+          <a class="clnav__tab" href={c.href} aria-current={c.id === current ? "page" : undefined}>{c.label}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <a class="clnav__feed" href={feed.href} type="application/atom+xml"><Icon name="rss" size={16} />{feed.label}</a>
+  {Astro.slots.has("default") && <div class="clnav__actions"><slot /></div>}
+  <p class="clnav__meta">
+    {hint && <span>{hint}</span>}
+    <span>{timeZone}</span>
+    {notesLanguage && <span>{notesLanguage}</span>}
+  </p>
+</div>
+
+<style>
+  .clnav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); padding-block-end: var(--space-6); }
+  .clnav__tabs ul { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--rule-strong); border-radius: var(--radius-round); background: var(--surface); }
+  .clnav__tab {
+    display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 1.1rem; border-radius: var(--radius-round);
+    font-size: var(--step--1); font-weight: 500; color: var(--ink-2); text-decoration: none;
+    transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+  }
+  .clnav__tab:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .clnav__tab[aria-current="page"] { background: var(--ink); color: var(--ink-inverse); }
+  .clnav__feed {
+    display: inline-flex; align-items: center; gap: 0.4rem; min-block-size: 2.75rem;
+    font-size: var(--step--1); font-weight: 500; color: var(--accent-ink); text-decoration: none;
+  }
+  .clnav__feed:hover { text-decoration: underline; }
+  .clnav__actions { margin-inline-start: auto; }
+  .clnav__meta { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); font-size: var(--step--2); color: var(--ink-3); font-family: var(--font-mono-stack); letter-spacing: 0.02em; }
+</style>

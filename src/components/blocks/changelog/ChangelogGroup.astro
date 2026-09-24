@@ -1,0 +1,76 @@
+---
+/**
+ * A minor version (`v3.33`) as a notebook chapter: the version written large in the margin column,
+ * its releases on the ruled page. On the "all" channel the betas that led up to a stable release
+ * fold underneath it; a version still in beta says so and folds its betas the same way.
+ */
+import { fill, plural } from "~/content/pages/changelog";
+import type { Locale } from "~/i18n/config";
+import type { ChannelFilter } from "~/lib/server/seo/changelog/release-groups";
+import type { GroupView } from "~/lib/server/seo/changelog/changelog-view";
+import ChangelogRelease from "./ChangelogRelease.astro";
+
+type Plural = { one: string; other: string };
+type ReleaseLabels = { stable: string; beta: string; latest: string; permalink: string; noNotes: string; published: string };
+interface Props {
+  group: GroupView;
+  channel: ChannelFilter;
+  locale: Locale;
+  labels: ReleaseLabels & { group: string; count: Plural; betas: Plural; inBeta: string };
+}
+const { group, channel, locale, labels } = Astro.props;
+const total = group.stables.length + group.betas.length;
+const foldBetas = channel === "all" && group.betas.length > 0;
+const openList = channel === "all" ? group.stables : [...group.stables, ...group.betas];
+const headingId = `minor-${group.minor.replace(".", "-")}`;
+---
+
+<section class="clg" aria-labelledby={headingId} data-reveal>
+  <header class="clg__margin">
+    <h2 class="clg__minor" id={headingId}>
+      <span class="visually-hidden">{fill(labels.group, { minor: group.minor })}</span>
+      <span aria-hidden="true">v{group.minor}</span>
+    </h2>
+    <p class="clg__count">{plural(labels.count, total)}</p>
+  </header>
+  <div class="clg__page">
+    {channel !== "beta" && group.stables.length === 0 && <p class="note clg__in-beta">{fill(labels.inBeta, { minor: group.minor })}</p>}
+    {openList.map((r) => <ChangelogRelease release={r} locale={locale} labels={labels} />)}
+    {foldBetas && (
+      <details class="clg__betas">
+        <summary>{plural(labels.betas, group.betas.length, { minor: group.minor })}</summary>
+        <div class="clg__betas-list">
+          {group.betas.map((r) => <ChangelogRelease release={r} locale={locale} labels={labels} compact />)}
+        </div>
+      </details>
+    )}
+  </div>
+</section>
+
+<style>
+  .clg {
+    display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr); gap: clamp(1rem, 0.5rem + 2.5vw, 3rem);
+    padding-block: var(--space-6); border-block-start: 2px solid var(--ink);
+  }
+  .clg__margin { display: grid; align-content: start; gap: var(--space-1); position: sticky; inset-block-start: calc(var(--header-h) + var(--space-4)); }
+  .clg__minor { font-family: var(--font-display-stack); font-size: var(--step-4); font-weight: 400; font-style: italic; line-height: 1; color: var(--accent-ink); letter-spacing: var(--tracking-display); }
+  .clg__count { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.04em; }
+  .clg__page { min-inline-size: 0; }
+  .clg__page > :global(.rel:first-child) { padding-block-start: 0; }
+  .clg__in-beta { font-size: var(--step-0); color: var(--redpen); margin-block-end: var(--space-3); }
+  .clg__betas { margin-block-start: var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper-2); }
+  .clg__betas > summary {
+    display: flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem; padding: var(--space-2) var(--space-4);
+    cursor: pointer; font-size: var(--step--1); font-weight: 500; color: var(--ink-2); list-style: none;
+  }
+  .clg__betas > summary::-webkit-details-marker { display: none; }
+  .clg__betas > summary::before { content: "+"; font-family: var(--font-mono-stack); color: var(--accent-ink); inline-size: 1ch; }
+  .clg__betas[open] > summary::before { content: "−"; }
+  .clg__betas > summary:hover { color: var(--accent-ink); }
+  .clg__betas-list { padding: 0 var(--space-4) var(--space-2); border-block-start: 1px solid var(--rule); }
+  @media (max-width: 760px) {
+    .clg { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+    .clg__margin { position: static; display: flex; align-items: baseline; gap: var(--space-3); }
+    .clg__minor { font-size: var(--step-3); }
+  }
+</style>
