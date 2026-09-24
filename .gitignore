@@ -1,0 +1,16 @@
+node_modules
+dist
+.astro
+.wrangler
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.log
+.DS_Store
+/screenshots-raw
+/tmp
+
+# Internal plans and scout reports stay local (the repository is public)
+/plans/
