@@ -93,7 +93,8 @@ function card(input: OgCardInput, assets: { mascot: string; wordmark: string }):
       el("div", { width: 1.5, height: 30, backgroundColor: INK.ink3, opacity: 0.4 }),
       el("div", { display: "flex", fontFamily: "JetBrains Mono", fontSize: 22, fontWeight: 500, color: INK.ink3 }, clampText(input.url, 48)),
     ]),
-    el("div", { position: "absolute", right: 66, bottom: 34, width: 220, height: 30, backgroundImage: "radial-gradient(closest-side, rgba(20, 27, 60, 0.16), rgba(20, 27, 60, 0))" }),
+    // Satori paints a closest-side radial gradient as a hard grey box, so the shadow is a soft pill instead.
+    el("div", { position: "absolute", right: 104, bottom: 44, width: 150, height: 14, borderRadius: 9999, backgroundColor: "rgba(20, 27, 60, 0.10)", boxShadow: "0 0 14px 8px rgba(20, 27, 60, 0.08)" }),
     el("img", { position: "absolute", right: 58, bottom: 56, width: 236, height: 195, transform: "rotate(-7deg)" }, undefined, { src: assets.mascot, width: 236, height: 195 }),
   ]);
 }
