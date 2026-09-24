@@ -1,0 +1,65 @@
+---
+/**
+ * The docs contents: one collapsible group per section, the current section open and the
+ * current page marked in ink. Rendered twice by DocsLayout (sticky sidebar on wide screens,
+ * inside a <details> sheet on narrow ones), so it carries no ids of its own.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+import type { DocsNavGroup } from "./docs-types";
+
+interface Props { groups: DocsNavGroup[]; label: string }
+const { groups, label } = Astro.props;
+---
+
+<nav class="dnav" aria-label={label}>
+  {groups.map((g) => {
+    const open = g.pages.some((p) => p.current);
+    return (
+      <details class="dnav__group" open={open}>
+        <summary class="dnav__summary">
+          <Icon name={g.icon as IconName} class="dnav__icon" />
+          <span>{g.title}</span>
+          <Icon name="chevron-down" class="dnav__chev" />
+        </summary>
+        <ul class="dnav__list" role="list">
+          {g.pages.map((p) => (
+            <li>
+              <a class:list={["dnav__link", { "is-current": p.current }]} href={p.url} aria-current={p.current ? "page" : undefined}>{p.title}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    );
+  })}
+</nav>
+
+<style>
+  .dnav { display: grid; gap: var(--space-1); font-size: var(--step--1); }
+  .dnav__summary {
+    display: flex; align-items: center; gap: var(--space-2); min-block-size: 2.5rem; padding-inline: var(--space-2);
+    list-style: none; cursor: pointer; border-radius: var(--radius-2);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-2);
+  }
+  .dnav__summary::-webkit-details-marker { display: none; }
+  .dnav__summary:hover { color: var(--accent-ink); background: var(--surface-hover); }
+  .dnav__summary :global(.dnav__icon) { flex: none; inline-size: 1rem; block-size: 1rem; color: var(--accent-ink); }
+  .dnav__summary :global(.dnav__chev) { flex: none; margin-inline-start: auto; inline-size: 0.95rem; block-size: 0.95rem; color: var(--ink-3); transition: rotate var(--dur-2) var(--ease-out); }
+  .dnav__group:not([open]) .dnav__summary :global(.dnav__chev) { rotate: -90deg; }
+  .dnav__list { margin: 0 0 var(--space-3) calc(var(--space-2) + 0.5rem); padding: 0; border-inline-start: 1px solid var(--rule); }
+  .dnav__link {
+    position: relative; display: flex; align-items: center; min-block-size: 2.25rem; padding: 0.3rem var(--space-3);
+    color: var(--ink-2); text-decoration: none; line-height: 1.35; border-radius: 0 var(--radius-1) var(--radius-1) 0;
+    transition: color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+  }
+  .dnav__link:hover { color: var(--ink); background: var(--surface-hover); }
+  .dnav__link.is-current { color: var(--accent-ink); font-weight: 600; background: var(--accent-soft); }
+  /* The current page is ticked in ink on the ruled line, like a finished exercise. */
+  .dnav__link.is-current::before {
+    content: ""; position: absolute; inset-block: 0.35rem; inset-inline-start: -1.5px; inline-size: 2px; border-radius: 2px; background: var(--accent);
+  }
+  @media (max-width: 959px), (pointer: coarse) {
+    .dnav__link { min-block-size: 2.75rem; }
+    .dnav__summary { min-block-size: 2.75rem; }
+  }
+</style>
