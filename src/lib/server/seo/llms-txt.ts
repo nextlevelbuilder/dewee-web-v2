@@ -1,11 +1,12 @@
 /**
  * llms.txt (llmstxt.org): an H1, a blockquote summary, a short note on how to read the site,
- * then H2 sections of `[title](url): description` links. Links point at Markdown twins.
+ * then H2 sections of `[title](url): description` links, mostly to Markdown twins.
  */
 import { pick, type Bi, type Locale } from "../../../i18n/config.ts";
 import { LLMS_GROUPS, type SectionId } from "./page-sections.ts";
 
-export type LlmsLink = { title: string; twin: string; description: string; section: SectionId };
+/** `href` is site-relative: a Markdown twin, or another agent-readable resource (the OpenAPI spec). */
+export type LlmsLink = { title: string; href: string; description: string; section: SectionId };
 
 type Intro = { summary: Bi; note: Bi };
 
@@ -26,13 +27,13 @@ export function llmsTxt(opts: { locale: Locale; siteUrl: string; name: string; i
 
   const seen = new Set<string>();
   for (const group of LLMS_GROUPS) {
-    const links = opts.links.filter((l) => group.members.includes(l.section) && !seen.has(l.twin));
+    const links = opts.links.filter((l) => group.members.includes(l.section) && !seen.has(l.href));
     if (!links.length) continue;
     lines.push(`## ${pick(group.title, locale)}`, "");
     for (const l of links) {
-      seen.add(l.twin);
+      seen.add(l.href);
       const description = l.description ? `: ${oneLine(l.description)}` : "";
-      lines.push(`- [${linkText(l.title) || l.twin}](${site}${l.twin})${description}`);
+      lines.push(`- [${linkText(l.title) || l.href}](${site}${l.href})${description}`);
     }
     lines.push("");
   }

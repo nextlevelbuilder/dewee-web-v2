@@ -19,7 +19,8 @@ import { htmlToMarkdown } from "../src/lib/html-to-markdown.ts";
 import { LOCALES, localePath, pick, splitLocale, type Locale } from "../src/i18n/config.ts";
 import { SITE } from "../src/content/site.ts";
 import { CHANGELOG } from "../src/content/pages/changelog.ts";
-import { markdownTwinPath, ogSlug, OG_DEFAULT_SLUG, pathForHtmlFile } from "../src/lib/server/seo/seo-paths.ts";
+import { BLOG } from "../src/content/pages/blog.ts";
+import { markdownTwinPath, ogSlug, OG_DEFAULT_SLUG, pathForHtmlFile, SSR_CARD_ROUTES, type SsrCardRoute } from "../src/lib/server/seo/seo-paths.ts";
 import { fullTextRank, SECTION_LABEL, sectionOf, type SectionId } from "../src/lib/server/seo/page-sections.ts";
 import { fullTextSection, joinWithinBudget, LLMS_FULL_MAX_BYTES } from "../src/lib/server/seo/llms-full-text.ts";
 import type { SeoManifest, SeoPage } from "../src/lib/server/seo/seo-manifest.ts";
@@ -27,10 +28,16 @@ import { createOgRenderer, OG_TEMPLATE_VERSION, type OgCardInput } from "./og/og
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set(["_astro", "_seo", "og", "brand", "img", "fonts", "shots"]);
-/** Server-rendered pages whose title and description are fixed copy (not D1 content). */
-const SSR_CARDS: Array<{ route: string; meta: Record<Locale, { title: string; description: string }> }> = [
-  { route: "/changelog", meta: { en: CHANGELOG.en.meta, vi: CHANGELOG.vi.meta } },
-];
+/** Card copy is plain text: drop the inline markup (`*em*`, `==mark==`, `~~scribble~~`) the page copy uses. */
+const plain = (s: string) => s.replace(/\*|==|~~/g, "");
+/** Server-rendered sections with fixed copy; their pages (blog posts) fall back to the section card. */
+const SSR_CARDS: Record<SsrCardRoute, Record<Locale, { title: string; description: string }>> = {
+  "/changelog": { en: CHANGELOG.en.meta, vi: CHANGELOG.vi.meta },
+  "/blog": {
+    en: { title: plain(BLOG.hero.title.en), description: BLOG.meta.description.en },
+    vi: { title: plain(BLOG.hero.title.vi), description: BLOG.meta.description.vi },
+  },
+};
 /** Sections that stay in llms-full.txt when everything together is over budget. */
 const CORE_SECTIONS = new Set<SectionId>(["docs", "home", "product"]);
 
@@ -156,15 +163,15 @@ export async function runSeoPostbuild(opts: { dir: string; site: string; log?: L
     });
   }
 
-  // Server-rendered pages with fixed copy get their own card too; they pass it as `ogImage`.
-  for (const card of SSR_CARDS) {
+  // Server-rendered sections get a card from their fixed copy; SeoHead falls back to it (ssrOgImagePath).
+  for (const route of SSR_CARD_ROUTES) {
     for (const locale of LOCALES) {
-      const meta = card.meta[locale];
-      await writeCard(locale, ogSlug(card.route), {
+      const meta = SSR_CARDS[route][locale];
+      await writeCard(locale, ogSlug(route), {
         title: meta.title,
         description: meta.description,
-        eyebrow: pick(SECTION_LABEL[sectionOf(card.route)], locale),
-        url: `${host}${localePath(locale, card.route)}`,
+        eyebrow: pick(SECTION_LABEL[sectionOf(route)], locale),
+        url: `${host}${localePath(locale, route)}`,
       });
     }
   }

@@ -42,6 +42,8 @@ Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, st
 const path = `/p/${page.slug}`;
 const sameSlug = translation?.slug === page.slug;
 const altHref = translation ? translation.url : localePath(locale === "en" ? "vi" : "en", "/");
+// hreflang pairs the page with its published translation, whose slug may differ.
+const alternates = translation ? (locale === "en" ? { en: localePath("en", path), vi: translation.url } : { en: translation.url, vi: localePath("vi", path) }) : undefined;
 const faqs = page.blocks.filter((b) => b.type === "Faq").flatMap((b) => (b.props as { items: { q: string; a: string }[] }).items);
 const jsonLd = faqs.length ? [faqJsonLd(faqs)] : [];
 ---
@@ -53,7 +55,8 @@ const jsonLd = faqs.length ? [faqJsonLd(faqs)] : [];
   path={path}
   altHref={altHref}
   bilingual={sameSlug}
-  ogImage={page.seo.ogImage || page.cover || `/og/${locale}/index.png`}
+  alternates={alternates}
+  ogImage={page.seo.ogImage || page.cover || undefined}
   noindex={page.seo.noindex}
   modified={page.updated_at}
   jsonLd={jsonLd}

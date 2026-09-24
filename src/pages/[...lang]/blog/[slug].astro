@@ -56,6 +56,8 @@ const author = founder
     : { name: pick(BLOG.labels.team, locale), href: href("/about") };
 const altLocale = locale === "en" ? "vi" : "en";
 const altHref = translation ? translation.url : localePath(altLocale, "/blog");
+// hreflang pairs the page with its published translation, whose slug may differ.
+const alternates = translation ? (locale === "en" ? { en: href(path), vi: translation.url } : { en: translation.url, vi: href(path) }) : undefined;
 const cover = post.cover || undefined;
 const L = BLOG.labels;
 const jsonLd = [
@@ -80,8 +82,9 @@ const newer = around?.newer ?? null;
   path={path}
   altHref={altHref}
   bilingual={translation?.slug === post.slug}
+  alternates={alternates}
   type="article"
-  ogImage={post.seo.ogImage || cover || `/og/${locale}/index.png`}
+  ogImage={post.seo.ogImage || cover}
   noindex={post.seo.noindex}
   published={published}
   modified={post.updated_at}

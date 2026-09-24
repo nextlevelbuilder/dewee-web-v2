@@ -25,6 +25,9 @@ export function ogSlug(path: string): string {
 
 export const OG_DEFAULT_SLUG = "default";
 
+/** The REST API description: public (see /developers), so crawlers may read it although /api/ is closed. */
+export const OPENAPI_PATH = "/api/v1/openapi.json";
+
 /** Site-relative URL of a page's social card. */
 export function ogImagePath(locale: Locale, path: string): string {
   return `/og/${locale}/${ogSlug(path)}.png`;
@@ -32,6 +35,19 @@ export function ogImagePath(locale: Locale, path: string): string {
 
 export function ogDefaultPath(locale: Locale): string {
   return `/og/${locale}/${OG_DEFAULT_SLUG}.png`;
+}
+
+/**
+ * Server-rendered sections whose card is rendered at build time from fixed copy
+ * (scripts/postbuild-markdown-and-og.ts). Pages inside a section (a blog post) share its card.
+ */
+export const SSR_CARD_ROUTES = ["/changelog", "/blog"] as const;
+export type SsrCardRoute = (typeof SSR_CARD_ROUTES)[number];
+
+/** Card for a server-rendered page without its own image: its section's card, else the locale default. */
+export function ssrOgImagePath(locale: Locale, path: string): string {
+  const route = SSR_CARD_ROUTES.find((r) => path === r || path.startsWith(`${r}/`));
+  return route ? ogImagePath(locale, route) : ogDefaultPath(locale);
 }
 
 /**

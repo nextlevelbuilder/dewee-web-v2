@@ -6,6 +6,7 @@
  */
 import type { Locale } from "~/i18n/config";
 import { SITE } from "~/content/site";
+import { DEVELOPERS } from "~/content/pages/developers";
 import { loadDiscovery } from "./discovery-sources";
 import { discoveryResponse, siteOrigin, TEXT } from "./discovery-response";
 import { listPostMarkdown } from "./dynamic-pages";
@@ -13,6 +14,7 @@ import { fullTextSection, joinWithinBudget, LLMS_FULL_MAX_BYTES } from "./llms-f
 import { llmsTxt, type LlmsLink } from "./llms-txt";
 import { LLMS_GROUPS } from "./page-sections";
 import { LLMS_FULL_ASSET } from "./seo-manifest";
+import { OPENAPI_PATH } from "./seo-paths";
 
 const INTRO = {
   summary: SITE.description,
@@ -22,6 +24,11 @@ const INTRO = {
   },
 };
 
+/** The API description is open to anyone (see /developers), so agents get it next to the pages. */
+const resources = (locale: Locale): LlmsLink[] => [
+  { title: DEVELOPERS[locale].hero.openapi, href: OPENAPI_PATH, description: DEVELOPERS[locale].hero.note, section: "developers" },
+];
+
 const MEMBER_ORDER = LLMS_GROUPS.flatMap((g) => g.members);
 const rank = (l: LlmsLink) => MEMBER_ORDER.indexOf(l.section);
 
@@ -29,8 +36,9 @@ export async function llmsTxtResponse(env: Env, url: URL, locale: Locale): Promi
   const { staticPages, dynamicPages } = await loadDiscovery(env);
   const links: LlmsLink[] = [...staticPages, ...dynamicPages]
     .filter((p) => p.locale === locale)
-    .map((p) => ({ title: p.title, twin: p.twin, description: p.description, section: p.section }))
-    .sort((a, b) => rank(a) - rank(b) || a.twin.split("/").length - b.twin.split("/").length || a.twin.localeCompare(b.twin));
+    .map((p): LlmsLink => ({ title: p.title, href: p.twin, description: p.description, section: p.section }))
+    .concat(resources(locale))
+    .sort((a, b) => rank(a) - rank(b) || a.href.split("/").length - b.href.split("/").length || a.href.localeCompare(b.href));
   const body = llmsTxt({ locale, siteUrl: siteOrigin(env, url), name: "dewee", intro: INTRO, email: SITE.email, links });
   return discoveryResponse(body, TEXT);
 }

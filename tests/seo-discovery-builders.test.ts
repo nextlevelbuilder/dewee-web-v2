@@ -3,7 +3,7 @@ import { isExcludedPath, newest, sitemapIndexXml, toSitemapUrls, urlsetXml, w3cD
 import { AI_CRAWLERS, robotsTxt } from "../src/lib/server/seo/robots-txt";
 import { llmsTxt, type LlmsLink } from "../src/lib/server/seo/llms-txt";
 import { demoteHeadings, fullTextSection, joinWithinBudget, stripFrontMatter } from "../src/lib/server/seo/llms-full-text";
-import { markdownTwinPath, ogDefaultPath, ogImagePath, ogSlug, pageForTwin, pathForHtmlFile } from "../src/lib/server/seo/seo-paths";
+import { markdownTwinPath, ogDefaultPath, ogImagePath, ogSlug, pageForTwin, pathForHtmlFile, ssrOgImagePath } from "../src/lib/server/seo/seo-paths";
 import { fullTextRank, sectionOf } from "../src/lib/server/seo/page-sections";
 import { pagesFromRows } from "../src/lib/server/seo/dynamic-pages";
 
@@ -53,7 +53,7 @@ describe("sitemaps", () => {
 describe("robots.txt", () => {
   it("welcomes crawlers, AI crawlers included, and fences the private routes in production", () => {
     const txt = robotsTxt({ siteUrl: "https://dewee.sh/", production: true });
-    expect(txt).toContain("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /mcp\n");
+    expect(txt).toContain("User-agent: *\nAllow: /\nAllow: /api/v1/openapi.json\nDisallow: /admin\nDisallow: /api/\nDisallow: /mcp\n");
     for (const bot of AI_CRAWLERS) expect(txt).toContain(`User-agent: ${bot}\n`);
     expect(txt).toContain("Sitemap: https://dewee.sh/sitemap.xml");
     expect(txt).not.toMatch(/Disallow: \/\n/);
@@ -68,10 +68,10 @@ describe("robots.txt", () => {
 
 describe("llms.txt", () => {
   const links: LlmsLink[] = [
-    { title: "dewee [home]", twin: "/index.md", description: "Enterprise AI agents,\n  on your terms.", section: "home" },
-    { title: "Security", twin: "/security.md", description: "", section: "product" },
-    { title: "Pricing", twin: "/pricing.md", description: "Plans", section: "pricing" },
-    { title: "Odd page", twin: "/p/odd.md", description: "", section: "pages" },
+    { title: "dewee [home]", href: "/index.md", description: "Enterprise AI agents,\n  on your terms.", section: "home" },
+    { title: "Security", href: "/security.md", description: "", section: "product" },
+    { title: "Pricing", href: "/pricing.md", description: "Plans", section: "pricing" },
+    { title: "Odd page", href: "/p/odd.md", description: "", section: "pages" },
   ];
   const txt = llmsTxt({
     locale: "en",
@@ -125,6 +125,14 @@ describe("SEO paths and sections", () => {
     expect(ogDefaultPath("en")).toBe("/og/en/default.png");
   });
 
+  it("gives server-rendered pages their section card, else the default", () => {
+    expect(ssrOgImagePath("vi", "/blog")).toBe("/og/vi/blog.png");
+    expect(ssrOgImagePath("en", "/blog/hello-world")).toBe("/og/en/blog.png");
+    expect(ssrOgImagePath("en", "/changelog")).toBe("/og/en/changelog.png");
+    expect(ssrOgImagePath("en", "/blogroll")).toBe("/og/en/default.png");
+    expect(ssrOgImagePath("vi", "/p/landing")).toBe("/og/vi/default.png");
+  });
+
   it("maps build output files to served paths", () => {
     expect(pathForHtmlFile("index.html")).toBe("/");
     expect(pathForHtmlFile("vi.html")).toBe("/vi");
@@ -163,6 +171,17 @@ describe("pagesFromRows", () => {
     expect(pages.map((p) => p.path)).toEqual(["/blog/hello-world", "/vi/blog/hello-world", "/p/landing"]);
     expect(pages[0].alternates.map((a) => a.path)).toEqual(["/blog/hello-world", "/vi/blog/hello-world", "/blog/hello-world"]);
     expect(pages[1]).toMatchObject({ twin: "/vi/blog/hello-world.md", lastmod: "2026-09-02T00:00:00Z", section: "blog", description: "" });
+    expect(pages[2].alternates).toEqual([]);
+  });
+
+  it("pairs a translation whose slug differs, as the post page declares it", () => {
+    const pages = pagesFromRows([row({ translation_key: "k" }), row({ locale: "vi", slug: "xin-chao", translation_key: "k" }), row({ locale: "vi", slug: "other", translation_key: "z" })]);
+    expect(pages[0].alternates).toEqual([
+      { hreflang: "en", path: "/blog/hello-world" },
+      { hreflang: "vi", path: "/vi/blog/xin-chao" },
+      { hreflang: "x-default", path: "/blog/hello-world" },
+    ]);
+    expect(pages[1].alternates).toEqual(pages[0].alternates);
     expect(pages[2].alternates).toEqual([]);
   });
 

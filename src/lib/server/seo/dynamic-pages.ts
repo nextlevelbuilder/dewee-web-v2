@@ -7,6 +7,7 @@ import { localePath, LOCALES, type Locale } from "~/i18n/config";
 import { markdownTwinPath } from "./seo-paths";
 import { sectionOf, type SectionId } from "./page-sections";
 import type { Alternate } from "./sitemap-xml";
+import { slugError, type SlugKind } from "../pages/slug-rules";
 
 export type DynamicPage = {
   path: string;
@@ -37,8 +38,6 @@ const ROUTE_FOR_KIND: Record<string, (slug: string) => string> = {
   page: (slug) => `/p/${slug}`,
 };
 
-const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*){0,3}$/;
-
 function noindex(seo: string | null): boolean {
   if (!seo) return false;
   try {
@@ -48,23 +47,32 @@ function noindex(seo: string | null): boolean {
   }
 }
 
-/** Pure: D1 rows → pages, with hreflang pairs when a translation shares the slug (as the page itself declares). */
+const pathOf = (r: Row) => localePath(r.locale as Locale, ROUTE_FOR_KIND[r.kind](r.slug));
+
+/**
+ * Pure: D1 rows → pages. A row and its published translation (same kind and translation_key,
+ * other locale, any slug) get hreflang pairs, exactly as the pages declare them in <head>.
+ */
 export function pagesFromRows(rows: Row[]): DynamicPage[] {
-  const valid = rows.filter((r) => ROUTE_FOR_KIND[r.kind] && (r.locale === "en" || r.locale === "vi") && SLUG_RE.test(r.slug) && r.slug.length <= 120 && !noindex(r.seo));
+  // The same slug rules as the routes, so the sitemap never lists a URL that would 404.
+  const valid = rows.filter((r) => ROUTE_FOR_KIND[r.kind] && (r.locale === "en" || r.locale === "vi") && !slugError(r.slug, r.kind as SlugKind) && !noindex(r.seo));
   return valid.map((r) => {
     const locale = r.locale as Locale;
     const route = ROUTE_FOR_KIND[r.kind](r.slug);
-    const path = localePath(locale, route);
-    const twin = r.translation_key
-      ? valid.find((o) => o !== r && o.kind === r.kind && o.translation_key === r.translation_key && o.locale !== r.locale && o.slug === r.slug)
+    const path = pathOf(r);
+    const translation = r.translation_key
+      ? valid.find((o) => o !== r && o.kind === r.kind && o.translation_key === r.translation_key && o.locale !== r.locale)
       : undefined;
-    const alternates: Alternate[] = twin
-      ? [
-          { hreflang: "en", path: localePath("en", route) },
-          { hreflang: "vi", path: localePath("vi", route) },
-          { hreflang: "x-default", path: localePath("en", route) },
-        ]
-      : [];
+    const en = translation ? (locale === "en" ? path : pathOf(translation)) : undefined;
+    const vi = translation ? (locale === "vi" ? path : pathOf(translation)) : undefined;
+    const alternates: Alternate[] =
+      en && vi
+        ? [
+            { hreflang: "en", path: en },
+            { hreflang: "vi", path: vi },
+            { hreflang: "x-default", path: en },
+          ]
+        : [];
     return {
       path,
       locale,
