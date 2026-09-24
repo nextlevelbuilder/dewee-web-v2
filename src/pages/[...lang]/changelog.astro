@@ -24,7 +24,8 @@ export const prerender = false;
 
 const lang = Astro.params.lang;
 if (lang !== undefined && lang !== "vi") {
-  return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
+  // A null body lets Astro render the site's 404 page.
+  return new Response(null, { status: 404 });
 }
 
 const locale: Locale = lang === "vi" ? "vi" : "en";

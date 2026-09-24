@@ -49,6 +49,8 @@ const HeadingTag = compact ? "h4" : "h3";
   .rel__anchor:hover :global(.rel__link-icon), .rel__anchor:focus-visible :global(.rel__link-icon), .rel:target :global(.rel__link-icon) { opacity: 1; }
   .rel__anchor:hover .rel__tag-text { color: var(--accent-ink); }
   .rel:target .rel__tag-text { background: linear-gradient(transparent 58%, var(--highlight) 58%, var(--highlight) 92%, transparent 92%); }
+  /* The global success chip is 4:1 on its tint; mix toward ink like .chip--warning to reach AA. */
+  .rel__head .chip--success { color: color-mix(in oklch, var(--success) 70%, var(--ink)); }
   .rel__time { margin-inline-start: auto; font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.02em; white-space: nowrap; }
   .rel__name { font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); font-style: italic; }
   .rel__notes { max-inline-size: none; font-size: var(--step--1); line-height: 1.65; overflow-wrap: anywhere; }
