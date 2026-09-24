@@ -53,7 +53,7 @@ const { parts, locale, copyLabels } = Astro.props;
   .doc-body :global(.callout__title) {
     display: flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--callout-ink); font-size: var(--step--1);
   }
-  .doc-body :global(.callout--tip) { --callout: var(--success); --callout-soft: var(--success-soft); --callout-ink: var(--success); }
+  .doc-body :global(.callout--tip) { --callout: var(--success); --callout-soft: var(--success-soft); --callout-ink: color-mix(in oklch, var(--success) 65%, var(--ink)); }
   .doc-body :global(.callout--warning) { --callout: var(--warning); --callout-soft: var(--warning-soft); --callout-ink: color-mix(in oklch, var(--warning) 60%, var(--ink)); }
   .doc-body :global(.callout--caution) { --callout: var(--danger); --callout-soft: var(--danger-soft); --callout-ink: var(--danger); }
 

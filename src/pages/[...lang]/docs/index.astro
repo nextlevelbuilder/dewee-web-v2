@@ -48,7 +48,7 @@ const sections = DOC_SECTIONS.map((s) => ({
 
   <section class="section section--tight dhome-find" aria-label={ui.search.label}>
     <div class="container dhome-find__inner">
-      <DocsSearch id="docs-home-search" size="l" index={localePath(locale, "/docs/search-index.json")} labels={ui.search} />
+      <DocsSearch id="docs-home-search" size="l" fromUrl index={localePath(locale, "/docs/search-index.json")} labels={ui.search} />
       <div class="dhome-start">
         <p class="eyebrow">{ui.start.eyebrow}</p>
         <h2 class="dhome-start__title">{ui.start.title}</h2>

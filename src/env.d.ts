@@ -14,6 +14,10 @@ interface Env {
   CHANGELOG_REPO: string;
   /** Read-only GitHub token for the hourly changelog sync (optional). */
   GITHUB_TOKEN?: string;
+  /** Cloudflare Access team domain, e.g. `nextlevelbuilder.cloudflareaccess.com`; enables Access sign-in (optional). */
+  CF_ACCESS_TEAM_DOMAIN?: string;
+  /** Cloudflare Access application audience tag (optional). */
+  CF_ACCESS_AUD?: string;
   /** Resend key for admin sign-in codes (optional; API-key sign-in works without it). */
   RESEND_API_KEY?: string;
   /** Discord webhook that receives new chat sessions, leads and partner applications (optional). */
