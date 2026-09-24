@@ -1,0 +1,26 @@
+---
+/** One image with alt text and an optional caption; `src` is https:// or a /media/ path (validated upstream). */
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  size?: "prose" | "wide" | "full";
+  pixelWidth?: number;
+  pixelHeight?: number;
+}
+const { src, alt, caption, size = "wide", pixelWidth, pixelHeight } = Astro.props;
+---
+
+<figure class:list={["img", `img--${size}`]} data-reveal>
+  <img src={src} alt={alt} width={pixelWidth} height={pixelHeight} loading="lazy" decoding="async" />
+  {caption && <figcaption class="img__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .img { margin: 0; margin-inline: auto; }
+  .img--prose { max-inline-size: var(--measure); margin-inline: 0; }
+  .img--wide { max-inline-size: 100%; }
+  .img--full { max-inline-size: none; }
+  .img img { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-3); border: 1px solid var(--rule); box-shadow: var(--shadow-2); background: var(--paper-2); }
+  .img__caption { margin-block-start: var(--space-3); font-size: var(--step--1); color: var(--ink-3); }
+</style>

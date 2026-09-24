@@ -1,0 +1,13 @@
+---
+/** Vertical breathing room between blocks. */
+interface Props { size?: "s" | "m" | "l" }
+const { size = "m" } = Astro.props;
+---
+
+<div class:list={["sp", `sp--${size}`]} aria-hidden="true"></div>
+
+<style>
+  .sp--s { block-size: var(--space-5); }
+  .sp--m { block-size: var(--space-8, 3rem); }
+  .sp--l { block-size: calc(var(--section-y) * 0.75); }
+</style>
