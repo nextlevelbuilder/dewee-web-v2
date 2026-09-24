@@ -41,6 +41,8 @@ const { eyebrow, title, lede, items, grade, gradeLabel, signature } = Astro.prop
 </section>
 
 <style>
+  /* The grade stamp hangs past the page edge and starts scaled up before its reveal; clip it at the viewport, never scroll. */
+  .hw { overflow-x: clip; }
   .hw__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   .hw__head { position: sticky; inset-block-start: 7rem; }
   .hw__page {
@@ -88,6 +90,8 @@ const { eyebrow, title, lede, items, grade, gradeLabel, signature } = Astro.prop
   @media (max-width: 900px) {
     .hw__grid { grid-template-columns: minmax(0, 1fr); }
     .hw__head { position: static; }
+    /* Tablet gutters are too thin for the stamp to hang past the page edge and stay whole on screen. */
+    .hw__grade { inset-inline-end: 0.5rem; }
   }
   @media (max-width: 560px) {
     .hw__page { padding: var(--space-7) var(--space-4) var(--space-5) calc(var(--space-4) + 1.75rem); }
