@@ -6,6 +6,8 @@
  */
 import type { Bi } from "~/i18n/config";
 
+type ArchitectureLabels = { channels: string; gateway: string; pipeline: string; memory: string; tools: string; teams: string; providers: string; traces: string; stages: string };
+
 export const HOME: Bi<{
   meta: { title: string; description: string };
   hero: {
@@ -22,7 +24,7 @@ export const HOME: Bi<{
   pillars: { eyebrow: string; title: string; lede: string; cta: string; items: { icon: string; title: string; body: string }[] };
   useCases: { eyebrow: string; title: string; lede: string; cta: string; note: string };
   steps: { eyebrow: string; title: string; items: { title: string; body: string }[] };
-  architecture: { eyebrow: string; title: string; lede: string; cta: string; labels: Record<string, string> };
+  architecture: { eyebrow: string; title: string; lede: string; cta: string; labels: ArchitectureLabels };
   security: { eyebrow: string; title: string; lede: string; layers: { name: string; body: string }[]; stamp: string; stampNote: string; cta: string };
   integrations: { eyebrow: string; title: string; lede: string; channels: string; providers: string; cta: string };
   deploy: { eyebrow: string; title: string; lede: string; cta: string };
