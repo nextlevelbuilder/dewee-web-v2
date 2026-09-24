@@ -1,0 +1,106 @@
+---
+/**
+ * /use-cases (EN) and /vi/use-cases (VI): every use case as a card, filterable by kind of work,
+ * then the "one very full timetable" signature visual and an invitation to bring your own.
+ * Copy: src/content/pages/use-cases.ts. Case stories: src/content/use-cases/.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { USE_CASES_PAGE, USE_CASE_DETAIL_UI, USE_CASE_TIMETABLE } from "~/content/pages/use-cases";
+import { CHANNEL_MARKS, USE_CASES, USE_CASE_AREAS, useCaseBySlug } from "~/content/use-cases";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import UseCaseGrid from "~/components/blocks/use-cases/UseCaseGrid.astro";
+import UseCaseTimetable from "~/components/blocks/use-cases/UseCaseTimetable.astro";
+import { areaStyle, exerciseNo } from "~/components/blocks/use-cases/area-accent";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(USE_CASES_PAGE, locale);
+const ui = pick(USE_CASE_DETAIL_UI, locale);
+const href = (p: string) => localePath(locale, p);
+const contactHref = href("/contact?topic=use-case");
+
+const cards = USE_CASES.map((u, i) => ({
+  href: href(`/use-cases/${u.slug}`),
+  icon: u.icon,
+  team: pick(u.team, locale),
+  title: pick(u.title, locale),
+  summary: pick(u.summary, locale),
+  channels: u.channels.map((c) => CHANNEL_MARKS[c]),
+  area: u.area,
+  accent: areaStyle(u.area),
+  no: exerciseNo(i + 1),
+}));
+
+const rows = USE_CASE_TIMETABLE.map((period) => ({
+  time: pick(period.time, locale),
+  name: pick(period.name, locale),
+  jobs: period.slugs.map((slug) => {
+    const u = useCaseBySlug(slug);
+    if (!u) throw new Error(`Timetable lists an unknown use case: ${slug}`);
+    return { title: pick(u.title, locale), team: pick(u.team, locale), href: href(`/use-cases/${u.slug}`), icon: u.icon, accent: areaStyle(u.area) };
+  }),
+}));
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/use-cases"
+  breadcrumbs={[{ name: ui.crumb, path: "/use-cases" }]}
+>
+  <PageHero eyebrow={t.hero.eyebrow} title={t.hero.title} lede={t.hero.lede} note={t.hero.note} mascot={{ mood: "wink" }} />
+
+  <section class="section uc-index" aria-labelledby="uc-browse">
+    <div class="container uc-index__stack">
+      <SectionHead eyebrow={t.grid.eyebrow} title={t.grid.title} id="uc-browse" />
+      <UseCaseGrid
+        items={cards}
+        channelsLabel={ui.label.runsOn}
+        readLabel={ui.read}
+        filters={{
+          label: t.grid.filterLabel,
+          all: t.grid.all,
+          status: t.grid.status,
+          areas: USE_CASE_AREAS.map((a) => ({ id: a.id, label: pick(a.label, locale) })),
+        }}
+        invite={{ ...t.grid.invite, no: exerciseNo(USE_CASES.length + 1), href: contactHref }}
+      />
+    </div>
+  </section>
+
+  <section class="section band uc-index" aria-labelledby="uc-timetable">
+    <div class="container uc-index__stack">
+      <SectionHead eyebrow={t.timetable.eyebrow} title={t.timetable.title} lede={t.timetable.lede} align="center" id="uc-timetable" />
+      <UseCaseTimetable
+        sheetTitle={t.timetable.sheetTitle}
+        caption={t.timetable.caption}
+        meta={[
+          { label: t.timetable.classLabel, value: t.timetable.classValue },
+          { label: t.timetable.yearLabel, value: t.timetable.yearValue },
+        ]}
+        cols={{ time: t.timetable.colTime, period: t.timetable.colPeriod, jobs: t.timetable.colJobs }}
+        rows={rows}
+        free={{ ...t.timetable.free, href: contactHref }}
+        disclaimer={t.timetable.disclaimer}
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: contactHref }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .uc-index__stack { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); }
+</style>
