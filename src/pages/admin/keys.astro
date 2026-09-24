@@ -1,7 +1,8 @@
 ---
 /**
  * API keys: create (the plaintext key is rendered once, in this response only), list and revoke.
- * Both actions are same-origin form POSTs carrying the session's CSRF token.
+ * Both actions are same-origin form POSTs carrying the session's CSRF token. Each create form
+ * carries a one-time nonce, so refreshing the page (which re-posts the form) cannot mint a second key.
  */
 import AdminLayout from "~/components/admin/AdminLayout.astro";
 import Icon from "~/components/ui/Icon.astro";
@@ -21,6 +22,20 @@ const K = ADMIN.keys;
 let created: { key: string; name: string } | null = null;
 let message: { kind: "error" | "success"; text: string } | null = null;
 
+/** Marks a create-form nonce as used; true when it was used before. KV trouble never blocks creating a key. */
+async function alreadySubmitted(nonce: string): Promise<boolean> {
+  if (!/^[0-9a-f-]{36}$/.test(nonce)) return false;
+  const kv = platformEnv().KV;
+  const slot = `admin:key-form:${nonce}`;
+  try {
+    if (await kv.get(slot)) return true;
+    await kv.put(slot, "1", { expirationTtl: 86_400 });
+  } catch {
+    /* dedupe is a convenience; fall through and create */
+  }
+  return false;
+}
+
 if (Astro.request.method === "POST") {
   const form = await adminForm(Astro, auth.session);
   if (!form) {
@@ -32,6 +47,7 @@ if (Astro.request.method === "POST") {
     const days = Number(field(form, "expires"));
     if (!name || name.length > 80) message = { kind: "error", text: K.badName };
     else if (scopes.length === 0) message = { kind: "error", text: K.badScopes };
+    else if (await alreadySubmitted(field(form, "nonce"))) message = { kind: "error", text: K.alreadyCreated };
     else {
       const expiresAt = (EXPIRY_DAYS as readonly number[]).includes(days) ? new Date(Date.now() + days * 86_400_000).toISOString() : null;
       const result = await createApiKey(db, { name, scopes: [...new Set(scopes)], ownerEmail: auth.session.email, expiresAt });
@@ -76,6 +92,7 @@ const day = (iso: string | null) => (iso ? iso.slice(0, 10) : "—");
     <h2>{K.create}</h2>
     <input type="hidden" name="csrf" value={auth.csrf} />
     <input type="hidden" name="action" value="create" />
+    <input type="hidden" name="nonce" value={crypto.randomUUID()} />
     <div class="field">
       <label for="key-name">{K.name}</label>
       <input id="key-name" name="name" required maxlength="80" />

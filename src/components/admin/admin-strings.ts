@@ -140,6 +140,7 @@ export const ADMIN = {
     none: "No API keys yet.",
     badName: "Give the key a name (up to 80 characters).",
     badScopes: "Choose at least one scope.",
+    alreadyCreated: "That form was already submitted, so no second key was created. A key is shown only once; revoke it below if you did not copy it.",
   },
   leads: {
     title: "Leads",
