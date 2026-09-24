@@ -22,7 +22,8 @@ const { label, code, copy } = Astro.props;
       <span aria-live="polite">{copy.copy}</span>
     </button>
   </figcaption>
-  <pre class="cs__pre" tabindex="0"><code>{code}</code></pre>
+  {/* A bare <pre> (no scoped <code> child) keeps the page's Markdown twin a clean fenced block. */}
+  <pre class="cs__pre" tabindex="0">{code}</pre>
 </figure>
 
 <script>
@@ -35,7 +36,7 @@ const { label, code, copy } = Astro.props;
       const text = btn.querySelector("span");
       let timer: ReturnType<typeof setTimeout> | undefined;
       btn.addEventListener("click", async () => {
-        const code = btn.closest("figure")?.querySelector("code")?.textContent ?? "";
+        const code = btn.closest("figure")?.querySelector("pre")?.textContent ?? "";
         let ok = true;
         try {
           await navigator.clipboard.writeText(code);
@@ -69,7 +70,7 @@ const { label, code, copy } = Astro.props;
   .cs__copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .cs__copy[hidden] { display: none; }
   .cs__pre {
-    margin: 0; padding: var(--space-4); overflow-x: auto;
+    margin: 0; padding: var(--space-4); overflow-x: auto; font-family: var(--font-mono-stack);
     font-size: var(--step--1); line-height: 1.6; color: var(--ink); tab-size: 2;
   }
   .cs__pre:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
