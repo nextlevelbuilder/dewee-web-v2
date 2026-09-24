@@ -50,7 +50,7 @@ blocks. Everything else is code. `/developers` is the public guide.
   `leads:read`. Keys are shown once, stored hashed, and only super-admins can create them.
 - **Writes are idempotent** with an `Idempotency-Key` header. Admin browser calls send the session
   plus `X-CSRF-Token`; API keys never reach the browser.
-- To operate content (not code) with an AI agent, use `skills/dewee-web-content/SKILL.md`.
+- To operate content (not code) with an AI agent, use `docs/skills/dewee-web-content/SKILL.md`.
 - Local run: `pnpm build && pnpm exec wrangler d1 migrations apply DB --local && pnpm exec wrangler dev --port 4389 --var ENVIRONMENT:development`.
   Outside production the sign-in code is logged to the console when `RESEND_API_KEY` is unset.
 
