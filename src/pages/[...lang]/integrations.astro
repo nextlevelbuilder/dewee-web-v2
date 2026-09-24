@@ -1,0 +1,137 @@
+---
+/**
+ * /integrations: the ten channels as a report card, the 21 model providers grouped by how you
+ * connect them, voice engines, MCP and tools, and a "missing one? ask us" next step.
+ * Lists live in src/content/integrations.ts; page copy in src/content/pages/integrations.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { INTEGRATIONS_PAGE } from "~/content/pages/integrations";
+import { CHANNELS, CHANNEL_DETAILS, PROVIDER_GROUPS, STT, VOICE, providersIn, type Integration } from "~/content/integrations";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import LogoWall from "~/components/blocks/LogoWall.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import FactSplit from "~/components/blocks/product/FactSplit.astro";
+import ChannelReportCard from "~/components/blocks/product/ChannelReportCard.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(INTEGRATIONS_PAGE, locale);
+const href = (p: string) => localePath(locale, p);
+const url = `${SITE.url}${href("/integrations")}`;
+const askHref = href("/contact?topic=integration");
+
+// Every channel in CHANNELS must have a detail row; fail the build rather than render a gap.
+const channelRows = CHANNELS.map((c) => {
+  const d = CHANNEL_DETAILS[c.id];
+  if (!d) throw new Error(`integrations: no CHANNEL_DETAILS entry for channel "${c.id}"`);
+  return {
+    brand: c.brand,
+    name: c.name,
+    connect: pick(d.connect, locale),
+    chats: pick(d.chats, locale),
+    streaming: d.streaming,
+    voice: d.voice,
+    media: d.media,
+    note: pick(d.note, locale),
+  };
+});
+
+const toItem = (it: Integration, note?: string) => ({ brand: it.brand, name: it.name, note });
+const providerGroups = PROVIDER_GROUPS.map((g) => ({
+  label: t.models.groups[g.id],
+  size: g.id === "api" ? ("s" as const) : ("l" as const),
+  items: providersIn(g.id).map((p) => toItem(p, t.models.notes[p.id])),
+}));
+const voiceGroups = [
+  { label: t.voice.tts, size: "s" as const, items: VOICE.map((v) => toItem(v)) },
+  { label: t.voice.stt, size: "s" as const, items: STT.map((v) => toItem(v)) },
+];
+
+const jsonLd = [
+  {
+    "@type": "WebPage",
+    name: t.meta.title,
+    description: t.meta.description,
+    url,
+    inLanguage: locale === "vi" ? "vi-VN" : "en-US",
+    about: { "@type": "SoftwareApplication", name: "dewee", applicationCategory: "BusinessApplication" },
+    publisher: { "@id": `${SITE.ownerUrl}#org` },
+  },
+];
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/integrations"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/integrations" }]}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: "#channels" },
+      { label: t.hero.secondary, href: askHref },
+    ]}
+    mascot={{ mood: "happy", accessory: "headset" }}
+  />
+
+  <section class="section band" id="channels">
+    <div class="container int-stack">
+      <SectionHead eyebrow={t.channels.eyebrow} title={t.channels.title} lede={t.channels.lede} />
+      <ChannelReportCard label={t.channels.label} columns={t.channels.columns} marks={t.channels.marks} rows={channelRows} />
+    </div>
+  </section>
+
+  <section class="section" id="models">
+    <div class="container int-split">
+      <SectionHead eyebrow={t.models.eyebrow} title={t.models.title} lede={t.models.lede} />
+      <LogoWall groups={providerGroups} />
+    </div>
+  </section>
+
+  <section class="section band" id="voice">
+    <div class="container">
+      <FactSplit eyebrow={t.voice.eyebrow} title={t.voice.title} lede={t.voice.lede} points={t.voice.points} reverse>
+        <div class="card paper-grid int-voice">
+          <LogoWall groups={voiceGroups} />
+        </div>
+      </FactSplit>
+    </div>
+  </section>
+
+  <section class="section" id="mcp">
+    <div class="container int-stack">
+      <SectionHead eyebrow={t.mcp.eyebrow} title={t.mcp.title} lede={t.mcp.lede} />
+      <FeatureGrid items={t.mcp.items} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: askHref }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .int-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .int-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .int-voice { --cell: 10px; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); transform: rotate(-0.8deg); }
+  @media (max-width: 960px) {
+    .int-split { grid-template-columns: minmax(0, 1fr); }
+    .int-voice { transform: none; }
+  }
+</style>
