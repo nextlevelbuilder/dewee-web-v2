@@ -58,8 +58,8 @@ export function initChatWidget() {
     li.className = `msg msg--${m.role}`;
     const p = document.createElement("p");
     p.textContent = m.text;
-    li.append(p);
-    log.append(li);
+    li.appendChild(p);
+    log.appendChild(li);
     scrollDown();
   };
 
@@ -69,7 +69,7 @@ export function initChatWidget() {
     typingEl.className = "msg msg--agent msg--typing";
     typingEl.setAttribute("aria-label", "…");
     typingEl.innerHTML = "<i></i><i></i><i></i>";
-    log.append(typingEl);
+    log.appendChild(typingEl);
     scrollDown();
   };
 
@@ -137,7 +137,7 @@ export function initChatWidget() {
     }
   };
 
-  toggle.addEventListener("click", () => open(panel.hidden));
+  toggle.addEventListener("click", () => open(panel.hidden !== false));
   root.querySelector("[data-chat-close]")?.addEventListener("click", () => { open(false); toggle.focus(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { open(false); toggle.focus(); } });
 
