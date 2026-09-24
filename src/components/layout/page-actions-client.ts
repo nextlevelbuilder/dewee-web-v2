@@ -8,7 +8,7 @@ async function copy(text: string): Promise<boolean> {
     ta.value = text;
     ta.setAttribute("readonly", "");
     ta.style.cssText = "position:fixed;opacity:0";
-    document.body.append(ta);
+    document.body.appendChild(ta);
     ta.select();
     const ok = document.execCommand("copy");
     ta.remove();
@@ -42,7 +42,7 @@ export function initPageActions() {
       if (open) menu.querySelector<HTMLElement>("[role=menuitem]")?.focus();
     };
 
-    toggle.addEventListener("click", () => setOpen(menu.hidden));
+    toggle.addEventListener("click", () => setOpen(menu.hidden !== false));
     document.addEventListener("click", (e) => { if (!root.contains(e.target as Node)) setOpen(false); });
     root.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !menu.hidden) { setOpen(false); toggle.focus(); }
