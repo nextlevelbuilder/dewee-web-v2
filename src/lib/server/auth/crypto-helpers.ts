@@ -58,7 +58,7 @@ export function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-export function base64UrlDecode(input: string): Uint8Array {
+export function base64UrlDecode(input: string): Uint8Array<ArrayBuffer> {
   const b64 = input.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(input.length / 4) * 4, "=");
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
