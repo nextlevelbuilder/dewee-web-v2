@@ -50,7 +50,7 @@ const body = renderMarkdown(post.body_md ?? "");
 const minutes = readingMinutes(post.body_md ?? "");
 const founder = post.author ? FOUNDERS.find((f) => f.id === post.author) : undefined;
 const author = founder
-  ? { name: founder.name, href: `${href("/about")}#${founder.id}` }
+  ? { name: founder.name, href: `${href("/about")}#founders` }
   : post.author
     ? { name: post.author, href: undefined }
     : { name: pick(BLOG.labels.team, locale), href: href("/about") };
@@ -160,6 +160,9 @@ const newer = around?.newer ?? null;
   .post__body { font-size: var(--step-0); }
   .post__tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); color: var(--ink-3); }
   .post__tags a { text-decoration: none; }
+  @media (pointer: coarse), (max-width: 960px) {
+    .post__tags a { min-block-size: 2.75rem; padding-inline: 0.9rem; }
+  }
   .post__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
   .post__adj { display: grid; gap: var(--space-2); text-decoration: none; color: var(--ink); }
   .post__adj--older { text-align: end; justify-items: end; }

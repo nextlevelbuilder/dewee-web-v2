@@ -8,8 +8,8 @@ export const BLOG = {
   meta: {
     title: { en: "Blog", vi: "Blog" },
     description: {
-      en: "Release notes, engineering write-ups and the story behind dewee, the enterprise AI-agent platform from NextLevelBuilder.",
-      vi: "Ghi chú phát hành, bài viết kỹ thuật và câu chuyện phía sau dewee, nền tảng AI agent cho doanh nghiệp của NextLevelBuilder.",
+      en: "Release notes, engineering write-ups and the story behind dewee, the enterprise AI-agent platform built by NextLevelBuilder, the team behind GoClaw.",
+      vi: "Ghi chú phát hành, bài viết kỹ thuật và câu chuyện phía sau dewee, nền tảng AI agent cho doanh nghiệp của NextLevelBuilder, đội ngũ làm ra GoClaw.",
     },
   },
   hero: {
