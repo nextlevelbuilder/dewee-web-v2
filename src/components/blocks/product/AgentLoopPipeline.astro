@@ -1,0 +1,181 @@
+---
+/**
+ * The agent loop, hand-drawn on ô-ly paper: stage 1 sets up once, stages 2–7 run as a loop
+ * (a racetrack: left to right along the top, right to left along the bottom, then back up),
+ * and the last stage wraps up once. The loop outline draws itself when it scrolls into view.
+ * Expects exactly 8 stages; `source` is the internal component name, shown in mono.
+ * Pure HTML/CSS layout so every label wraps and translates; phones get a single column.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+
+type Stage = { name: string; source: string; body: string };
+interface Props {
+  label: string;
+  phases: { setup: string; loop: string; wrap: string };
+  again: string;
+  stages: Stage[];
+}
+const { label, phases, again, stages } = Astro.props;
+const [first, ...rest] = stages;
+const loop = rest.slice(0, 6);
+const last = rest[6];
+// Racetrack placement for stages 2–7 and the arrow each one draws towards the next stage.
+const seats = [
+  { area: "1 / 1", arrow: "right" },
+  { area: "1 / 2", arrow: "right" },
+  { area: "1 / 3", arrow: "down" },
+  { area: "2 / 3", arrow: "left" },
+  { area: "2 / 2", arrow: "left" },
+  { area: "2 / 1", arrow: "up" },
+];
+---
+
+<figure class="alp paper-grid" aria-label={label}>
+  <span class="alp__margin" aria-hidden="true"></span>
+
+  <div class="alp__row">
+    <p class="alp__tag">{phases.setup}</p>
+    <ol class="alp__list alp__list--single" role="list">
+      <li class="alp__st" data-arrow="down" data-reveal>
+        <span class="alp__n" aria-hidden="true">1</span>
+        <h3 class="alp__name">{first.name}</h3>
+        <p class="alp__src">{first.source}</p>
+        <p class="alp__body" set:html={inlineMarkup(first.body)} />
+      </li>
+    </ol>
+  </div>
+
+  <div class="alp__loop" data-reveal>
+    <svg class="alp__track" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M7 3.2 C 30 1.6, 70 2.6, 93.5 3 C 98.4 3.4, 98.9 8, 98.8 20 C 99.2 45, 98.6 70, 98.9 89 C 98.8 96, 96 97.8, 90 97.6 C 65 98.4, 35 97.2, 8.5 98 C 3.2 97.9, 1.3 95, 1.4 85 C 1 60, 1.6 35, 1.2 13 C 1.3 5.5, 3.2 3.4, 8 3.1"
+      />
+    </svg>
+    <p class="alp__tag alp__tag--loop">{phases.loop}</p>
+    <ol class="alp__list alp__list--loop" role="list" start="2">
+      {loop.map((s, i) => (
+        <li class="alp__st" data-arrow={seats[i].arrow} style={`--area: ${seats[i].area}`}>
+          <span class="alp__n" aria-hidden="true">{i + 2}</span>
+          <h3 class="alp__name">{s.name}</h3>
+          <p class="alp__src">{s.source}</p>
+          <p class="alp__body" set:html={inlineMarkup(s.body)} />
+        </li>
+      ))}
+    </ol>
+    <p class="note alp__again">{again}</p>
+  </div>
+
+  <div class="alp__row alp__row--wrap">
+    <ol class="alp__list alp__list--single" role="list" start="8">
+      <li class="alp__st" data-arrow="in" data-reveal>
+        <span class="alp__n" aria-hidden="true">8</span>
+        <h3 class="alp__name">{last.name}</h3>
+        <p class="alp__src">{last.source}</p>
+        <p class="alp__body" set:html={inlineMarkup(last.body)} />
+      </li>
+    </ol>
+    <p class="alp__tag">{phases.wrap}</p>
+  </div>
+</figure>
+
+<style>
+  .alp {
+    --cell: 10px;
+    --col-gap: clamp(2.5rem, 1.5rem + 2vw, 3.5rem);
+    --row-gap: clamp(3.5rem, 2.5rem + 2.5vw, 5rem);
+    --pad: clamp(1rem, 0.25rem + 3vw, 3rem);
+    --arrow-size: 26px;
+    --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 17 C 10 15, 18 17, 27 15.5 M20 9 C 23 11.5, 25.5 13.5, 28 15.6 C 25 17.5, 22.5 20, 20.5 23' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    position: relative;
+    display: grid; gap: var(--space-6);
+    margin: 0; padding: clamp(2rem, 1rem + 3vw, 3.5rem) var(--pad) clamp(2rem, 1rem + 3vw, 3.5rem) calc(var(--pad) + clamp(0rem, -1rem + 4vw, 2.5rem));
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-4); box-shadow: var(--shadow-2);
+  }
+  /* the notebook's pink margin rule */
+  .alp__margin {
+    position: absolute; inset-block: 0; inset-inline-start: clamp(0.75rem, -0.25rem + 3vw, 2.75rem);
+    inline-size: 4px; border-inline: 1px solid var(--margin-rule); opacity: 0.55; pointer-events: none;
+  }
+
+  .alp__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: end; padding-inline: var(--pad); }
+  .alp__row .alp__list { grid-column: 1; }
+  .alp__row .alp__tag { grid-column: 2 / -1; align-self: center; justify-self: start; }
+  .alp__row--wrap { align-items: start; }
+  .alp__row--wrap .alp__list { grid-column: 3; grid-row: 1; }
+  .alp__row--wrap .alp__tag { grid-column: 1 / 3; grid-row: 1; justify-self: end; }
+
+  .alp__tag {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    padding: 0.3rem 0.75rem; border-radius: var(--radius-round);
+    background: var(--accent-soft); color: var(--accent-ink);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* The loop: a hand-drawn box, stations on a racetrack */
+  .alp__loop { position: relative; padding: var(--space-8) var(--pad) var(--space-7); }
+  .alp__track { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; pointer-events: none; color: var(--accent); }
+  .alp__track path { fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .alp__tag--loop { position: absolute; inset-block-start: 0; inset-inline-end: var(--pad); translate: 0 -40%; background: var(--surface); border: 1.5px solid var(--accent); }
+  .alp__list--loop {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--row-gap) var(--col-gap);
+  }
+  .alp__list--loop .alp__st { grid-area: var(--area); }
+  .alp__again {
+    position: absolute; inset-inline-start: 50%; inset-block-start: calc(50% + (var(--space-8) - var(--space-7)) / 2);
+    translate: -50% -50%; margin: 0; white-space: nowrap; font-size: var(--step-0); rotate: -2deg;
+  }
+
+  /* A station: one stage of the loop */
+  .alp__st {
+    position: relative; display: grid; gap: var(--space-2); align-content: start;
+    padding: var(--space-5); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-1);
+  }
+  .alp__n {
+    display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; margin-block-end: var(--space-1);
+    border: 1.5px solid var(--accent); border-radius: 52% 48% 55% 45% / 47% 55% 45% 53%;
+    font-family: var(--font-display-stack); font-size: var(--step-1); line-height: 1; color: var(--accent-ink);
+  }
+  .alp__name { font-size: var(--step-2); line-height: var(--leading-snug); }
+  .alp__src { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); overflow-wrap: anywhere; }
+  .alp__body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); }
+
+  /* Hand-drawn arrows between stations (decorative; order is carried by the list numbering) */
+  .alp__st[data-arrow]::after {
+    content: ""; position: absolute; inline-size: var(--arrow-size); block-size: var(--arrow-size);
+    background-color: var(--accent);
+    -webkit-mask: var(--arrow) center / contain no-repeat; mask: var(--arrow) center / contain no-repeat;
+    pointer-events: none;
+  }
+  .alp__st[data-arrow="right"]::after { inset-block-start: 50%; inset-inline-end: calc((var(--col-gap) + var(--arrow-size)) / -2); translate: 0 -50%; }
+  .alp__st[data-arrow="left"]::after { inset-block-start: 50%; inset-inline-start: calc((var(--col-gap) + var(--arrow-size)) / -2); translate: 0 -50%; rotate: 180deg; }
+  .alp__st[data-arrow="down"]::after { inset-inline-start: 50%; inset-block-end: calc((var(--row-gap) + var(--arrow-size)) / -2); translate: -50% 0; rotate: 90deg; }
+  .alp__st[data-arrow="up"]::after { inset-inline-start: 50%; inset-block-start: calc((var(--row-gap) + var(--arrow-size)) / -2); translate: -50% 0; rotate: -90deg; }
+  .alp__row .alp__st[data-arrow="down"]::after { inset-block-end: calc((var(--space-6) + var(--space-8) + var(--arrow-size)) / -2); }
+  .alp__st[data-arrow="in"]::after { inset-inline-start: 50%; inset-block-start: calc((var(--space-6) + var(--space-7) + var(--arrow-size)) / -2); translate: -50% 0; rotate: 90deg; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* The track is stretched to the box (non-scaling stroke), so it is revealed with a wipe
+       rather than a dash offset, which Chrome would measure in screen space and stop short. */
+    :global(html.js) .alp__loop .alp__track { clip-path: inset(-8px 100% -8px -8px); transition: clip-path 1400ms var(--ease-in-out) 200ms; }
+    :global(html.js) .alp__loop.is-in .alp__track { clip-path: inset(-8px -8px -8px -8px); }
+  }
+
+  @media (max-width: 900px) {
+    .alp { --col-gap: var(--space-5); --row-gap: var(--space-8); }
+    .alp__row, .alp__row--wrap { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3); padding-inline: var(--space-4); }
+    .alp__row .alp__list, .alp__row--wrap .alp__list { grid-column: 1; grid-row: 2; }
+    .alp__row .alp__tag, .alp__row--wrap .alp__tag { grid-column: 1; grid-row: 1; justify-self: start; }
+    /* Tall on phones: the stretched track sits ~3% above the bottom edge, so leave room for the note. */
+    .alp__loop { padding: var(--space-8) var(--space-4) 5.5rem; }
+    .alp__list--loop { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+    .alp__list--loop .alp__st { grid-area: auto; }
+    .alp__list--loop .alp__st:not(:last-child)::after {
+      inset-inline-start: 50%; inset-inline-end: auto; inset-block-start: auto;
+      inset-block-end: calc((var(--row-gap) + var(--arrow-size)) / -2); translate: -50% 0; rotate: 90deg;
+    }
+    .alp__list--loop .alp__st:last-child::after, .alp__st[data-arrow="in"]::after { display: none; }
+    .alp__again { position: static; translate: none; margin-block-start: var(--space-5); white-space: normal; text-align: center; }
+    .alp__row--wrap .alp__tag { margin-block-start: var(--space-2); }
+  }
+</style>
