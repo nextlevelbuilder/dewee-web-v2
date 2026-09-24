@@ -45,21 +45,34 @@ const ENTRIES: Entry[] = [
 
 const HUMAN = /human|person|someone|sales|contact|call|demo|người thật|nhân viên|tư vấn|liên hệ|gọi/i;
 
-export function answerFromFaq(text: string, locale: Locale): { text: string; askEmail: boolean } {
+/**
+ * FAQ answer for a visitor message. Without an email on file the answer asks for one (and the
+ * widget shows the email form); once the visitor has left it, the answer says the team has it.
+ */
+export function answerFromFaq(text: string, locale: Locale, hasEmail = false): { text: string; askEmail: boolean } {
   const hit = ENTRIES.find((e) => e.match.test(text));
   if (hit && !HUMAN.test(text)) return { text: hit[locale], askEmail: false };
+  const vi = locale === "vi";
   if (HUMAN.test(text)) {
     return {
-      text: locale === "vi"
-        ? "Chắc chắn rồi! Để lại email bên dưới, một người trong đội sẽ liên hệ bạn (thường trong vài giờ làm việc). Hoặc viết thẳng tới hi@nextlevelbuilder.io."
-        : "Of course! Leave your email below and someone from the team will get back to you, usually within a few working hours. Or write to hi@nextlevelbuilder.io.",
-      askEmail: true,
+      text: hasEmail
+        ? vi
+          ? "Chắc chắn rồi! Đội ngũ đã có email của bạn và sẽ liên hệ bạn (thường trong vài giờ làm việc). Hoặc viết thẳng tới hi@nextlevelbuilder.io."
+          : "Of course! We have your email, and someone from the team will get back to you, usually within a few working hours. Or write to hi@nextlevelbuilder.io."
+        : vi
+          ? "Chắc chắn rồi! Để lại email bên dưới, một người trong đội sẽ liên hệ bạn (thường trong vài giờ làm việc). Hoặc viết thẳng tới hi@nextlevelbuilder.io."
+          : "Of course! Leave your email below and someone from the team will get back to you, usually within a few working hours. Or write to hi@nextlevelbuilder.io.",
+      askEmail: !hasEmail,
     };
   }
   return {
-    text: locale === "vi"
-      ? "Câu này mình cần hỏi lại đội ngũ. Bạn để lại email nhé, người thật sẽ trả lời bạn sớm."
-      : "That one needs a human. Leave your email and a real person will answer you soon.",
-    askEmail: true,
+    text: hasEmail
+      ? vi
+        ? "Câu này mình cần hỏi lại đội ngũ. Đội ngũ đã có email của bạn, người thật sẽ trả lời bạn sớm."
+        : "That one needs a human. We have your email, and a real person will answer you soon."
+      : vi
+        ? "Câu này mình cần hỏi lại đội ngũ. Bạn để lại email nhé, người thật sẽ trả lời bạn sớm."
+        : "That one needs a human. Leave your email and a real person will answer you soon.",
+    askEmail: !hasEmail,
   };
 }
