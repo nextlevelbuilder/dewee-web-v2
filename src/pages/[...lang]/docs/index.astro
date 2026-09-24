@@ -1,0 +1,176 @@
+---
+/**
+ * Docs home: the one place the docs mascot appears (focused, with glasses), a large search box,
+ * three "start here" pages and a contents page listing every section with its pages.
+ * Copy: src/content/pages/docs.ts. Pages: the `docs` content collection.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import DocsSearch from "~/components/docs/DocsSearch.astro";
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+import { getDocPages } from "~/lib/docs";
+import { DOC_SECTIONS, DOCS_UI } from "~/content/pages/docs";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const ui = pick(DOCS_UI, locale);
+const pages = await getDocPages(locale);
+const bySlug = new Map(pages.map((p) => [p.slug, p]));
+
+const start = ui.start.items.map((item, i) => {
+  const page = bySlug.get(item.slug);
+  if (!page) throw new Error(`Docs home links to missing page "${locale}/${item.slug}".`);
+  return { n: i + 1, label: item.label, url: page.url, description: page.entry.data.description };
+});
+
+const sections = DOC_SECTIONS.map((s) => ({
+  id: s.id,
+  icon: s.icon as IconName,
+  title: pick(s.title, locale),
+  blurb: pick(s.blurb, locale),
+  pages: pages.filter((p) => p.entry.data.section === s.id).map((p) => ({ title: p.entry.data.title, url: p.url })),
+})).filter((s) => s.pages.length > 0);
+---
+
+<BaseLayout
+  title={ui.meta.title}
+  description={ui.meta.description}
+  locale={locale}
+  path="/docs"
+  breadcrumbs={[{ name: ui.meta.crumb, path: "/docs" }]}
+>
+  <PageHero eyebrow={ui.hero.eyebrow} title={ui.hero.title} lede={ui.hero.lede} note={ui.hero.note} mascot={{ mood: "focused", accessory: "glasses" }} />
+
+  <section class="section section--tight dhome-find" aria-label={ui.search.label}>
+    <div class="container dhome-find__inner">
+      <DocsSearch id="docs-home-search" size="l" index={localePath(locale, "/docs/search-index.json")} labels={ui.search} />
+      <div class="dhome-start">
+        <p class="eyebrow">{ui.start.eyebrow}</p>
+        <h2 class="dhome-start__title">{ui.start.title}</h2>
+        <ol class="dhome-start__list" role="list">
+          {start.map((s) => (
+            <li>
+              <a class="card card--link dhome-start__card" href={s.url}>
+                <span class="dhome-start__n" aria-hidden="true">{String(s.n).padStart(2, "0")}</span>
+                <span class="dhome-start__label">{s.label}<Icon name="arrow-right" size={16} class="dhome-start__go" /></span>
+                <span class="dhome-start__desc">{s.description}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band dhome-contents" aria-labelledby="docs-contents">
+    <div class="container">
+      <SectionHead title={ui.sectionsTitle} id="docs-contents" size="m" />
+      <div class="dhome-grid">
+        {sections.map((s, i) => (
+          <article class="dhome-sec" id={`section-${s.id}`}>
+            <header class="dhome-sec__head">
+              <span class="dhome-sec__icon"><Icon name={s.icon} size={20} /></span>
+              <div>
+                <h3 class="dhome-sec__title"><span class="dhome-sec__num" aria-hidden="true">§{i + 1}</span> {s.title}</h3>
+                <p class="dhome-sec__blurb">{s.blurb}</p>
+              </div>
+            </header>
+            <ol class="dhome-sec__list" role="list">
+              {s.pages.map((p) => (
+                <li>
+                  <a class="dhome-sec__row" href={p.url}>
+                    <span class="dhome-sec__page">{p.title}</span>
+                    <span class="dhome-sec__dots" aria-hidden="true"></span>
+                    <Icon name="arrow-right" size={14} class="dhome-sec__go" />
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <p class="dhome-sec__count">{s.pages.length} {ui.pagesCount}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight dhome-next" aria-labelledby="docs-next">
+    <div class="container">
+      <div class="card dhome-next__card">
+        <div>
+          <h2 class="dhome-next__title" id="docs-next">{ui.next.title}</h2>
+          <p class="dhome-next__body">{ui.next.body}</p>
+        </div>
+        <div class="dhome-next__actions">
+          <a class="btn btn--primary btn--lg" href={localePath(locale, "/contact")}>{ui.next.primary}<Icon name="arrow-right" class="arrow" /></a>
+          <button type="button" class="btn btn--lg" data-open-chat><Icon name="message-circle" />{ui.next.secondary}</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .dhome-find { padding-block-start: 0; }
+  .dhome-find__inner { display: grid; gap: var(--space-8); }
+  .dhome-find__inner > :global(.dsearch) { max-inline-size: 44rem; }
+
+  .dhome-start { display: grid; gap: var(--space-3); }
+  .dhome-start__title { font-size: var(--step-2); }
+  .dhome-start__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin-block-start: var(--space-3); }
+  .dhome-start__card { display: grid; align-content: start; gap: var(--space-2); block-size: 100%; color: var(--ink); text-decoration: none; }
+  .dhome-start__n { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); }
+  .dhome-start__label { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-1); }
+  .dhome-start__label :global(.dhome-start__go) { color: var(--accent-ink); transition: transform var(--dur-2) var(--ease-out); }
+  .dhome-start__card:hover :global(.dhome-start__go) { transform: translateX(3px); }
+  .dhome-start__desc { font-size: var(--step--1); color: var(--ink-3); }
+
+  .dhome-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin-block-start: var(--space-6); }
+  .dhome-sec {
+    display: grid; align-content: start; gap: var(--space-4); padding: var(--space-5) var(--space-6);
+    border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); box-shadow: var(--shadow-1);
+    scroll-margin-block-start: 6rem;
+  }
+  .dhome-sec__head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+  .dhome-sec__icon {
+    display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: var(--radius-2);
+    background: var(--accent-soft); color: var(--accent-ink);
+  }
+  .dhome-sec__title { font-size: var(--step-1); }
+  .dhome-sec__num { font-family: var(--font-mono-stack); font-size: var(--step--1); color: var(--ink-3); }
+  .dhome-sec__blurb { margin-block-start: var(--space-1); font-size: var(--step--1); color: var(--ink-3); }
+  .dhome-sec__list { display: grid; }
+  .dhome-sec__row {
+    display: grid; grid-template-columns: minmax(0, max-content) minmax(1.5rem, 1fr) 1rem; align-items: end; column-gap: var(--space-3);
+    min-block-size: 2.75rem; padding-block: var(--space-2); border-block-end: 1px solid var(--rule);
+    color: var(--ink); text-decoration: none;
+  }
+  .dhome-sec__page { align-self: center; line-height: 1.35; }
+  .dhome-sec__dots {
+    align-self: center; block-size: 3px; opacity: 0.7;
+    background-image: radial-gradient(circle, var(--ink-3) 1px, transparent 1.3px); background-size: 7px 3px; background-repeat: repeat-x;
+  }
+  .dhome-sec__row :global(.dhome-sec__go) { align-self: center; color: var(--accent-ink); opacity: 0.35; transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  .dhome-sec__row:hover { color: var(--accent-ink); }
+  .dhome-sec__row:hover :global(.dhome-sec__go), .dhome-sec__row:focus-visible :global(.dhome-sec__go) { opacity: 1; transform: translateX(3px); }
+  .dhome-sec__count { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+
+  .dhome-next__card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-5) var(--space-7); padding: var(--space-6) var(--space-7); }
+  .dhome-next__title { font-size: var(--step-2); }
+  .dhome-next__body { margin-block-start: var(--space-2); max-inline-size: 38rem; color: var(--ink-2); }
+  .dhome-next__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  @media (max-width: 900px) {
+    .dhome-start__list, .dhome-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .dhome-sec { padding: var(--space-5); }
+    .dhome-sec__row { grid-template-columns: minmax(0, 1fr) 1rem; }
+    .dhome-sec__dots { display: none; }
+    .dhome-next__card { padding: var(--space-5); }
+  }
+</style>
