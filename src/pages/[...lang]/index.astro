@@ -1,0 +1,218 @@
+---
+/**
+ * Homepage. Copy lives in src/content/pages/home.ts; every section is a reusable block from
+ * src/components/blocks so the page builder can compose the same pieces.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { HOME, HOME_UI } from "~/content/pages/home";
+import { USE_CASES } from "~/content/use-cases";
+import { CHANNELS, PROVIDERS } from "~/content/integrations";
+import { FOUNDERS } from "~/content/founders";
+import { ECOSYSTEM } from "~/content/ecosystem";
+import { plansFor } from "~/content/plans";
+import { faqJsonLd, productJsonLd } from "~/lib/json-ld";
+import Icon from "~/components/ui/Icon.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import HomeHero from "~/components/blocks/HomeHero.astro";
+import ProofStrip from "~/components/blocks/ProofStrip.astro";
+import HomeworkChecklist from "~/components/blocks/HomeworkChecklist.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import TocIndex from "~/components/blocks/TocIndex.astro";
+import Steps from "~/components/blocks/Steps.astro";
+import ArchitectureSketch from "~/components/blocks/ArchitectureSketch.astro";
+import SecurityLayers from "~/components/blocks/SecurityLayers.astro";
+import LogoWall from "~/components/blocks/LogoWall.astro";
+import DeployPlans from "~/components/blocks/DeployPlans.astro";
+import StorySplit from "~/components/blocks/StorySplit.astro";
+import FounderCards from "~/components/blocks/FounderCards.astro";
+import EcosystemGrid from "~/components/blocks/EcosystemGrid.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(HOME, locale);
+const ui = pick(HOME_UI, locale);
+const href = (p: string) => localePath(locale, p);
+const plans = plansFor(locale).map((p) => ({
+  id: p.id,
+  icon: p.icon,
+  name: pick(p.name, locale),
+  price: pick(p.price, locale),
+  period: pick(p.period, locale),
+  tagline: pick(p.tagline, locale),
+  includes: pick(p.includes, locale),
+  tradeoffs: pick(p.tradeoffs, locale),
+  cta: { label: pick(p.cta, locale), href: href(`/pricing#${p.id}`) },
+  highlight: p.highlight,
+}));
+const jsonLd = [
+  productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: p.price.replace(/[^\d.]/g, "") })) }),
+  faqJsonLd(t.faq.items),
+];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/" jsonLd={jsonLd}>
+  <HomeHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    primary={{ label: t.hero.primary, href: href("/contact") }}
+    secondary={{ label: t.hero.secondary, href: href("/use-cases") }}
+    note={t.hero.note}
+    chat={{ ...t.hero.chat, label: ui.chatLabel }}
+  />
+
+  <ProofStrip items={t.proof} label={ui.proofLabel} />
+
+  <HomeworkChecklist
+    eyebrow={t.homework.eyebrow}
+    title={t.homework.title}
+    lede={t.homework.lede}
+    items={t.homework.items}
+    grade={t.homework.grade}
+    gradeLabel={ui.gradeLabel}
+    signature={t.homework.signature}
+  />
+
+  <section class="section band">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.pillars.eyebrow} title={t.pillars.title} lede={t.pillars.lede} />
+      <FeatureGrid items={t.pillars.items} />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/features")}>{t.pillars.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="use-cases">
+    <div class="container home-stack">
+      <div class="home-split">
+        <SectionHead eyebrow={t.useCases.eyebrow} title={t.useCases.title} lede={t.useCases.lede} />
+        <p class="note home-aside" aria-hidden="true">{`14 ${t.useCases.note}…`}</p>
+      </div>
+      <TocIndex items={USE_CASES.map((u) => ({ title: pick(u.title, locale), meta: pick(u.team, locale), href: href(`/use-cases/${u.slug}`), icon: u.icon }))} />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/use-cases")}>{t.useCases.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.steps.eyebrow} title={t.steps.title} />
+      <Steps items={t.steps.items} label={ui.exercise} highlight={1} highlightNote={ui.stepNote} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.architecture.eyebrow} title={t.architecture.title} lede={t.architecture.lede} />
+      <ArchitectureSketch labels={t.architecture.labels} channels={CHANNELS} providers={PROVIDERS} more={ui.more} label={ui.archLabel} />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/architecture")}>{t.architecture.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <SecurityLayers
+    eyebrow={t.security.eyebrow}
+    title={t.security.title}
+    lede={t.security.lede}
+    layers={t.security.layers}
+    core={ui.core}
+    stamp={t.security.stamp}
+    stampNote={t.security.stampNote}
+    cta={{ label: t.security.cta, href: href("/security") }}
+  />
+
+  <section class="section">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.integrations.eyebrow} title={t.integrations.title} lede={t.integrations.lede} />
+      <LogoWall
+        groups={[
+          { label: t.integrations.channels, size: "l", items: CHANNELS.map((c) => ({ brand: c.brand, name: c.name, note: c.note ? pick(c.note, locale) : undefined })) },
+          { label: t.integrations.providers, size: "s", items: PROVIDERS },
+        ]}
+      />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/integrations")}>{t.integrations.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="deploy">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.deploy.eyebrow} title={t.deploy.title} lede={t.deploy.lede} />
+      <DeployPlans plans={plans} includesLabel={ui.includes} tradeoffsLabel={ui.tradeoffs} badge={ui.badge} />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/pricing")}>{t.deploy.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <StorySplit
+        eyebrow={t.story.eyebrow}
+        title={t.story.title}
+        body={t.story.body}
+        quote={t.story.quote}
+        cta={{ label: t.story.cta, href: href("/story") }}
+        timeline={t.story.timeline}
+        timelineLabel={ui.timelineLabel}
+      />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.founders.eyebrow} title={t.founders.title} lede={t.founders.lede} />
+      <FounderCards
+        founders={FOUNDERS.map((f) => ({ name: f.name, photo: f.photo, role: pick(f.role, locale), bio: pick(f.bio, locale), facts: pick(f.facts, locale), company: f.company, links: f.links }))}
+      />
+      <div class="home-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/about")}>{t.founders.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container home-stack">
+      <SectionHead eyebrow={t.ecosystem.eyebrow} title={t.ecosystem.title} lede={t.ecosystem.lede} />
+      <EcosystemGrid products={ECOSYSTEM.map((p) => ({ id: p.id, name: p.name, url: p.url, icon: p.icon, tagline: pick(p.tagline, locale), role: pick(p.role, locale) }))} />
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container home-faq">
+      <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} />
+      <Faq items={t.faq.items} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .home-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .home-foot { display: flex; justify-content: flex-start; }
+  .home-split { display: flex; justify-content: space-between; align-items: end; gap: var(--space-6); }
+  .home-aside { font-size: var(--step-1); transform: rotate(-4deg); white-space: nowrap; }
+  .home-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  @media (max-width: 900px) {
+    .home-faq { grid-template-columns: minmax(0, 1fr); }
+    .home-split { flex-direction: column; align-items: start; }
+    .home-aside { display: none; }
+  }
+</style>

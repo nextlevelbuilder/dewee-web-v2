@@ -1,0 +1,63 @@
+---
+/**
+ * "Copy page" split button for humans and agents: copy the page as Markdown, copy its link,
+ * open the raw .md, hand it to ChatGPT / Claude / Gemini, or use the native share sheet.
+ * The Markdown twin of every URL lives at `<url>.md` (see src/lib/server/markdown-twin.ts).
+ */
+import { localePath, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import Icon from "~/components/ui/Icon.astro";
+import BrandMark from "~/components/ui/BrandMark.astro";
+interface Props { locale: Locale; path: string; title: string; class?: string }
+const { locale, path, title, class: className } = Astro.props;
+const site = (Astro.site?.toString() ?? "https://dewee.sh").replace(/\/$/, "");
+const href = localePath(locale, path);
+const url = `${site}${href}`;
+const md = href === "/" ? "/index.md" : `${href}.md`;
+const prompt = `${t(locale, "aiPrompt")} ${site}${md}`;
+const q = encodeURIComponent(prompt);
+const strings = { copied: t(locale, "copied"), failed: t(locale, "copyFailed"), gemini: t(locale, "geminiHint") };
+---
+
+<div class:list={["pa", className]} data-page-actions data-md={md} data-url={url} data-title={title} data-prompt={prompt} data-strings={JSON.stringify(strings)}>
+  <button type="button" class="pa__main" data-pa="copy-md">
+    <Icon name="copy" size={16} /><span data-pa-label>{t(locale, "copyMarkdown")}</span>
+  </button>
+  <button type="button" class="pa__more" aria-haspopup="menu" aria-expanded="false" aria-label={t(locale, "pageActions")} data-pa-toggle>
+    <Icon name="chevron-down" size={16} />
+  </button>
+  <div class="pa__menu" role="menu" data-pa-menu hidden>
+    <button type="button" role="menuitem" data-pa="copy-url"><Icon name="link" size={16} />{t(locale, "copyUrl")}</button>
+    <a role="menuitem" href={md} target="_blank" rel="noopener"><Icon name="file-text" size={16} />{t(locale, "viewMarkdown")}</a>
+    <hr />
+    <a role="menuitem" href={`https://chatgpt.com/?hints=search&q=${q}`} target="_blank" rel="noopener"><BrandMark brand="openai" name="ChatGPT" size={16} />{t(locale, "askChatGPT")}<Icon name="arrow-up-right" size={14} class="pa__ext" /></a>
+    <a role="menuitem" href={`https://claude.ai/new?q=${q}`} target="_blank" rel="noopener"><BrandMark brand="claude" name="Claude" size={16} />{t(locale, "askClaude")}<Icon name="arrow-up-right" size={14} class="pa__ext" /></a>
+    <a role="menuitem" href="https://gemini.google.com/app" target="_blank" rel="noopener" data-pa="gemini"><BrandMark brand="gemini" name="Gemini" size={16} />{t(locale, "askGemini")}<Icon name="arrow-up-right" size={14} class="pa__ext" /></a>
+    <hr />
+    <button type="button" role="menuitem" data-pa="share"><Icon name="share-2" size={16} />{t(locale, "share")}</button>
+  </div>
+  <span class="sr-only" role="status" aria-live="polite" data-pa-status></span>
+</div>
+
+<style>
+  .pa { position: relative; display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); font-size: var(--step--2); }
+  .pa button, .pa a { color: var(--ink-2); text-decoration: none; }
+  .pa__main { display: inline-flex; align-items: center; gap: 0.45rem; min-block-size: 2.5rem; padding: 0.4rem 0.8rem; border-radius: var(--radius-2) 0 0 var(--radius-2); font-weight: 500; }
+  .pa__more { display: grid; place-items: center; inline-size: 2.5rem; border-inline-start: 1px solid var(--rule); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
+  .pa__main:hover, .pa__more:hover, .pa__more[aria-expanded="true"] { background: var(--accent-soft); color: var(--ink); }
+  .pa[data-done] .pa__main { color: var(--success); }
+  .pa__menu {
+    position: absolute; z-index: var(--z-overlay); inset-block-start: calc(100% + 6px); inset-inline-end: 0; min-inline-size: 14.5rem;
+    padding: var(--space-2); display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-3);
+  }
+  .pa__menu[hidden] { display: none; }
+  .pa__menu > button, .pa__menu > a { display: flex; align-items: center; gap: 0.6rem; inline-size: 100%; min-block-size: 2.5rem; padding: 0.45rem 0.65rem; border-radius: var(--radius-1); text-align: start; }
+  .pa__menu > button:hover, .pa__menu > a:hover, .pa__menu > :focus-visible { background: var(--accent-soft); color: var(--ink); }
+  .pa__menu :global(.pa__ext) { margin-inline-start: auto; color: var(--ink-3); }
+  .pa__menu hr { margin: 0.2rem 0; border: 0; border-block-start: 1px solid var(--rule); }
+</style>
+
+<script>
+  import { initPageActions } from "./page-actions-client";
+  initPageActions();
+</script>

@@ -1,0 +1,41 @@
+---
+/**
+ * Section heading used across pages and page-builder blocks.
+ * `title` and `lede` accept inline markup (*em*, ==mark==, ~~scribble~~, [link](/url)).
+ * `note` is a handwritten margin comment that sits in the notebook margin on wide screens.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  note?: string;
+  align?: "start" | "center";
+  level?: 1 | 2 | 3;
+  size?: "xl" | "l" | "m";
+  class?: string;
+  id?: string;
+}
+const { eyebrow, title, lede, note, align = "start", level = 2, size = "l", class: className, id } = Astro.props;
+const Tag = `h${level}` as "h1" | "h2" | "h3";
+---
+
+<header class:list={["sh", `sh--${align}`, `sh--${size}`, className]} data-reveal>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Tag class="sh__title" id={id} set:html={inlineMarkup(title)} />
+  {lede && <p class="lede sh__lede" set:html={inlineMarkup(lede)} />}
+  {note && <p class="note sh__note" aria-hidden="true">{note}</p>}
+</header>
+
+<style>
+  .sh { position: relative; display: grid; gap: var(--space-4); max-inline-size: 46rem; }
+  .sh--center { margin-inline: auto; text-align: center; justify-items: center; }
+  .sh--center .sh__lede { margin-inline: auto; }
+  .sh__title { max-inline-size: 22ch; }
+  .sh--xl .sh__title { font-size: var(--step-6); line-height: var(--leading-tight); max-inline-size: 16ch; }
+  .sh--l .sh__title { font-size: var(--step-5); }
+  .sh--m .sh__title { font-size: var(--step-4); }
+  .sh__lede { margin-block-start: var(--space-1); }
+  .sh__note { transform: rotate(-2deg); transform-origin: 0 50%; margin-block-start: calc(var(--space-1) * -1); }
+  .sh--center .sh__note { transform-origin: 50% 50%; }
+</style>

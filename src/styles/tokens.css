@@ -1,0 +1,155 @@
+/*
+ * dewee design tokens — "Vở ô ly · mực tím" (notebook paper, purple ink).
+ * Light theme = a Vietnamese school notebook. Dark theme = the classroom blackboard.
+ * Every color, size, space, radius, shadow and duration used by components comes from here.
+ * If a value is missing, change the design, not the scale (see DESIGN.md).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ── Brand constants (theme-independent) ─────────────────────────── */
+  --brand-iris: oklch(0.52 0.22 277);          /* #5446e8, dewee iris */
+  --brand-magenta: oklch(0.74 0.19 322);       /* mascot highlight */
+  --brand-violet: oklch(0.55 0.24 290);
+  --brand-blue: oklch(0.52 0.22 264);
+  --brand-sky: oklch(0.62 0.17 250);
+  --brand-navy: oklch(0.22 0.09 270);          /* wordmark navy */
+  --mascot-gradient: radial-gradient(120% 120% at 28% 12%, oklch(0.86 0.12 328) 0%, oklch(0.70 0.22 318) 18%, oklch(0.55 0.25 292) 45%, oklch(0.48 0.24 266) 72%, oklch(0.58 0.19 250) 100%);
+
+  /* ── Paper & ink (light) ─────────────────────────────────────────── */
+  --paper: oklch(0.986 0.005 290);             /* page */
+  --paper-2: oklch(0.967 0.010 288);           /* sunk band */
+  --paper-3: oklch(0.938 0.016 286);           /* deeper band, table header */
+  --surface: oklch(0.997 0.002 290);           /* raised card */
+  --surface-hover: oklch(0.975 0.008 288);
+  --ink: oklch(0.235 0.065 272);               /* primary text: navy ink */
+  --ink-2: oklch(0.395 0.045 275);             /* secondary text */
+  --ink-3: oklch(0.525 0.030 278);             /* muted text (≥4.5:1 on paper) */
+  --ink-inverse: oklch(0.985 0.005 290);
+  --rule: oklch(0.885 0.018 282);              /* hairline */
+  --rule-strong: oklch(0.80 0.030 280);
+  --grid-fine: oklch(0.62 0.10 255 / 0.10);    /* ô ly fine line (blue, like real notebooks) */
+  --grid-bold: oklch(0.58 0.12 262 / 0.20);    /* ô ly bold line every 4 rows */
+  --margin-rule: oklch(0.70 0.15 12);          /* the pink/red margin line */
+  --accent: var(--brand-iris);
+  --accent-ink: oklch(0.46 0.22 277);          /* accent as text on paper, AA */
+  --accent-soft: oklch(0.935 0.035 282);       /* tinted fill */
+  --accent-contrast: oklch(0.99 0.005 290);    /* text on accent */
+  --highlight: oklch(0.93 0.09 95 / 0.75);     /* highlighter marker (bút dạ quang) */
+  --redpen: oklch(0.56 0.19 25);               /* teacher's red pen, used for grades */
+  --success: oklch(0.55 0.13 155);
+  --success-soft: oklch(0.95 0.04 155);
+  --warning: oklch(0.62 0.14 70);
+  --warning-soft: oklch(0.96 0.05 85);
+  --danger: oklch(0.55 0.20 25);
+  --danger-soft: oklch(0.95 0.03 25);
+  --focus: oklch(0.55 0.22 277);
+  --overlay: oklch(0.2 0.05 275 / 0.42);
+
+  /* Tinted, layered shadows (one depth strategy: soft paper lift) */
+  --shadow-1: 0 1px 0 oklch(0.3 0.06 275 / 0.04), 0 1px 2px oklch(0.3 0.06 275 / 0.06);
+  --shadow-2: 0 1px 2px oklch(0.3 0.06 275 / 0.05), 0 6px 18px -6px oklch(0.3 0.08 275 / 0.14);
+  --shadow-3: 0 2px 4px oklch(0.3 0.06 275 / 0.05), 0 18px 48px -16px oklch(0.3 0.10 275 / 0.24);
+
+  /* ── Type ────────────────────────────────────────────────────────── */
+  --font-display-stack: var(--font-display), "Newsreader", Georgia, serif;
+  --font-body-stack: var(--font-body), "Be Vietnam Pro", system-ui, sans-serif;
+  --font-hand-stack: var(--font-hand), "Playwrite VN", cursive;
+  --font-mono-stack: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  /* Fluid scale, ratio ≈1.25 on phones → ≈1.333 on desktop (320px → 1440px) */
+  --step--2: clamp(0.72rem, 0.70rem + 0.08vw, 0.78rem);
+  --step--1: clamp(0.84rem, 0.82rem + 0.10vw, 0.9rem);
+  --step-0: clamp(1rem, 0.97rem + 0.14vw, 1.0625rem);
+  --step-1: clamp(1.18rem, 1.12rem + 0.30vw, 1.375rem);
+  --step-2: clamp(1.42rem, 1.30rem + 0.55vw, 1.8rem);
+  --step-3: clamp(1.72rem, 1.50rem + 1.05vw, 2.45rem);
+  --step-4: clamp(2.1rem, 1.72rem + 1.85vw, 3.3rem);
+  --step-5: clamp(2.55rem, 1.95rem + 2.95vw, 4.45rem);
+  --step-6: clamp(3rem, 2.15rem + 4.30vw, 5.9rem);
+
+  --leading-tight: 1.06;
+  --leading-snug: 1.22;
+  --leading-body: 1.62;
+  --tracking-display: -0.022em;
+  --tracking-caps: 0.12em;
+  --measure: 66ch;
+  --measure-narrow: 52ch;
+
+  /* ── Space (4px base) ────────────────────────────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --space-11: 10rem;
+  --section-y: clamp(4.5rem, 3rem + 7vw, 9rem);   /* 72px → 144px section rhythm */
+  --gutter: clamp(1rem, 0.6rem + 2vw, 2rem);
+  --page-max: 78rem;                               /* 1248px */
+  --page-wide: 88rem;
+  --margin-col: clamp(0rem, -6rem + 12vw, 7.5rem); /* notebook margin column, 0 on phones */
+
+  /* ── Shape ───────────────────────────────────────────────────────── */
+  --radius-1: 6px;
+  --radius-2: 10px;
+  --radius-3: 14px;
+  --radius-4: 22px;
+  --radius-round: 999px;
+
+  /* ── Motion ──────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 560ms;
+  --dur-5: 900ms;
+
+  --z-header: 40;
+  --z-overlay: 60;
+  --z-chat: 70;
+  --z-toast: 80;
+}
+
+/* ── Blackboard (dark) ─────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: oklch(0.195 0.028 278);
+  --paper-2: oklch(0.225 0.032 278);
+  --paper-3: oklch(0.26 0.036 278);
+  --surface: oklch(0.235 0.034 278);
+  --surface-hover: oklch(0.27 0.038 278);
+  --ink: oklch(0.955 0.012 285);               /* chalk */
+  --ink-2: oklch(0.84 0.022 283);
+  --ink-3: oklch(0.72 0.028 282);
+  --ink-inverse: oklch(0.2 0.03 278);
+  --rule: oklch(0.34 0.035 280);
+  --rule-strong: oklch(0.44 0.04 280);
+  --grid-fine: oklch(0.95 0.02 285 / 0.045);
+  --grid-bold: oklch(0.95 0.03 285 / 0.085);
+  --margin-rule: oklch(0.66 0.13 12 / 0.75);
+  --accent: oklch(0.68 0.18 282);
+  --accent-ink: oklch(0.80 0.12 285);
+  --accent-soft: oklch(0.30 0.07 282);
+  --accent-contrast: oklch(0.16 0.03 278);
+  --highlight: oklch(0.78 0.12 95 / 0.28);
+  --redpen: oklch(0.72 0.15 25);
+  --success: oklch(0.74 0.13 155);
+  --success-soft: oklch(0.30 0.05 155);
+  --warning: oklch(0.80 0.13 80);
+  --warning-soft: oklch(0.32 0.05 80);
+  --danger: oklch(0.72 0.16 25);
+  --danger-soft: oklch(0.32 0.06 25);
+  --focus: oklch(0.78 0.14 285);
+  --overlay: oklch(0.08 0.02 278 / 0.6);
+  --shadow-1: 0 1px 0 oklch(0 0 0 / 0.2);
+  --shadow-2: 0 1px 2px oklch(0 0 0 / 0.25), 0 8px 22px -8px oklch(0 0 0 / 0.5);
+  --shadow-3: 0 2px 4px oklch(0 0 0 / 0.3), 0 22px 56px -18px oklch(0 0 0 / 0.65);
+}

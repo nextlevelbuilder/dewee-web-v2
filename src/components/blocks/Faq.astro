@@ -1,0 +1,39 @@
+---
+/**
+ * Questions and answers as native <details>. Pair with `faqJsonLd()` so search engines
+ * and answer engines get the same Q&A.
+ */
+import Icon from "~/components/ui/Icon.astro";
+interface Props { items: { q: string; a: string }[] }
+const { items } = Astro.props;
+---
+
+<div class="faq" data-reveal-group>
+  {items.map((it) => (
+    <details class="faq__item" data-reveal>
+      <summary class="faq__q"><span>{it.q}</span><Icon name="plus" class="faq__icon" size={20} /></summary>
+      <p class="faq__a">{it.a}</p>
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq { border-block-start: 1px solid var(--rule); }
+  .faq__item { border-block-end: 1px solid var(--rule); }
+  .faq__q {
+    display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
+    padding-block: var(--space-5); cursor: pointer; list-style: none;
+    font-family: var(--font-display-stack); font-size: var(--step-1); line-height: 1.35; color: var(--ink);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__q:hover { color: var(--accent-ink); }
+  .faq__q :global(.faq__icon) { flex: none; color: var(--accent-ink); transition: transform var(--dur-3) var(--ease-out); }
+  .faq__item[open] .faq__q :global(.faq__icon) { transform: rotate(135deg); }
+  .faq__a { padding-block-end: var(--space-5); padding-inline-end: var(--space-7); color: var(--ink-2); max-inline-size: var(--measure); }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq__item[open] .faq__a { animation: faq-open var(--dur-3) var(--ease-out); }
+    @keyframes faq-open { from { opacity: 0; transform: translateY(-4px); } }
+  }
+  @media (max-width: 560px) { .faq__a { padding-inline-end: 0; } }
+</style>

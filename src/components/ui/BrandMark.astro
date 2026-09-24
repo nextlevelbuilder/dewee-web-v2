@@ -1,0 +1,24 @@
+---
+/**
+ * Monochrome brand mark for an integration, drawn like a rubber stamp in the notebook.
+ * Brands without a vendored mark fall back to a lettered monogram (never an invented logo).
+ */
+import { BRANDS } from "./brand-paths";
+interface Props { brand: string; name: string; size?: number; class?: string }
+const { brand, name, size = 28, class: className } = Astro.props;
+const mark = BRANDS[brand];
+const initials = name.replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+---
+{mark ? (
+  <svg class:list={["brand-mark", className]} viewBox={mark.viewBox} width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false" set:html={mark.body} />
+) : (
+  <span class:list={["brand-mark brand-mark--mono", className]} style={`--s:${size}px`} aria-hidden="true">{initials}</span>
+)}
+<style>
+  .brand-mark { flex: none; }
+  .brand-mark--mono {
+    display: inline-grid; place-items: center; inline-size: var(--s); block-size: var(--s);
+    border-radius: 28%; border: 1.5px solid currentColor; font: 600 calc(var(--s) * 0.38) / 1 var(--font-mono-stack);
+    letter-spacing: -0.02em;
+  }
+</style>

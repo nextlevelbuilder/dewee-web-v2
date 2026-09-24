@@ -1,0 +1,86 @@
+---
+/**
+ * Deployment plans as index cards. With a single plan (the Vietnam market: On-Premises only)
+ * the card spreads into a wide two-column sheet instead of a lonely narrow column.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+type Plan = {
+  id: string; icon: string; name: string; price: string; period: string; tagline: string;
+  includes: string[]; tradeoffs: string[]; cta: { label: string; href: string }; highlight?: boolean;
+};
+interface Props { plans: Plan[]; includesLabel: string; tradeoffsLabel: string; badge?: string }
+const { plans, includesLabel, tradeoffsLabel, badge } = Astro.props;
+const single = plans.length === 1;
+---
+
+<ul class:list={["plans", { "plans--single": single }]} role="list" data-reveal-group>
+  {plans.map((p) => (
+    <li class:list={["plan", { "plan--hl": p.highlight && !single }]} data-reveal>
+      {p.highlight && !single && badge && <span class="plan__badge">{badge}</span>}
+      <div class="plan__head">
+        <span class="plan__icon"><Icon name={p.icon as IconName} size={22} /></span>
+        <h3 class="plan__name">{p.name}</h3>
+        <p class="plan__tagline">{p.tagline}</p>
+        <p class="plan__price"><span class="plan__amount">{p.price}</span><span class="plan__period">{p.period}</span></p>
+        <a class:list={["btn", p.highlight || single ? "btn--primary" : "btn--ink", "plan__cta"]} href={p.cta.href}>{p.cta.label}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+      <div class="plan__lists">
+        <div>
+          <p class="plan__cap">{includesLabel}</p>
+          <ul role="list" class="plan__list">
+            {p.includes.map((x) => <li><Icon name="check" size={16} class="ok" />{x}</li>)}
+          </ul>
+        </div>
+        <div>
+          <p class="plan__cap">{tradeoffsLabel}</p>
+          <ul role="list" class="plan__list plan__list--muted">
+            {p.tradeoffs.map((x) => <li><Icon name="minus" size={16} />{x}</li>)}
+          </ul>
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--space-5); align-items: stretch; }
+  .plan {
+    position: relative; display: grid; grid-template-rows: auto 1fr; gap: var(--space-6);
+    padding: var(--space-6); border-radius: var(--radius-3); background: var(--surface);
+    border: 1px solid var(--rule); box-shadow: var(--shadow-1);
+  }
+  .plan--hl { border-color: var(--accent); box-shadow: var(--shadow-3); }
+  .plan__badge {
+    position: absolute; inset-block-start: 0; inset-inline-end: var(--space-5); translate: 0 -50%;
+    padding: 0.2rem 0.7rem; border-radius: var(--radius-round); background: var(--accent); color: var(--accent-contrast);
+    font-size: var(--step--2); font-weight: 600;
+  }
+  .plan__head { display: grid; gap: var(--space-3); justify-items: start; }
+  .plan__icon { display: grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-2); background: var(--accent-soft); color: var(--accent-ink); }
+  .plan__name { font-size: var(--step-3); }
+  .plan__tagline { color: var(--ink-2); font-size: var(--step--1); }
+  .plan__price { display: grid; gap: 2px; margin-block: var(--space-2); }
+  .plan__amount { font-family: var(--font-display-stack); font-size: var(--step-5); line-height: 1; letter-spacing: var(--tracking-display); }
+  .plan__period { font-size: var(--step--2); color: var(--ink-3); font-family: var(--font-mono-stack); }
+  .plan__cta { inline-size: 100%; }
+  .plan__lists { display: grid; gap: var(--space-5); align-content: start; padding-block-start: var(--space-5); border-block-start: 1px dashed var(--rule-strong); }
+  .plan__cap { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-block-end: var(--space-3); }
+  .plan__list { display: grid; gap: var(--space-2); font-size: var(--step--1); }
+  .plan__list li { display: grid; grid-template-columns: 1.1rem minmax(0, 1fr); gap: var(--space-2); align-items: start; line-height: 1.5; }
+  .plan__list :global(svg) { margin-block-start: 0.2em; }
+  .plan__list :global(.ok) { color: var(--success); }
+  .plan__list--muted { color: var(--ink-3); }
+
+  .plans--single .plan { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: none; gap: clamp(2rem, 1rem + 4vw, 4.5rem); padding: clamp(1.5rem, 1rem + 3vw, 3rem); border-color: var(--accent); box-shadow: var(--shadow-3); }
+  .plans--single .plan__lists { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-block-start: 0; border-block-start: 0; padding-inline-start: clamp(1.5rem, 1rem + 3vw, 4rem); border-inline-start: 1px dashed var(--rule-strong); }
+  .plans--single .plan__cta { inline-size: auto; }
+  @media (max-width: 860px) {
+    .plans--single .plan { grid-template-columns: minmax(0, 1fr); }
+    .plans--single .plan__lists { padding-inline-start: 0; border-inline-start: 0; padding-block-start: var(--space-5); border-block-start: 1px dashed var(--rule-strong); }
+  }
+  @media (max-width: 560px) {
+    .plans--single .plan__lists { grid-template-columns: minmax(0, 1fr); }
+    .plans--single .plan__cta { inline-size: 100%; }
+  }
+</style>
