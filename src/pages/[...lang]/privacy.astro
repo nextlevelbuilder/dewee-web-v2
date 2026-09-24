@@ -1,0 +1,13 @@
+---
+/** Privacy Policy (EN + VI). Copy: src/content/legal/privacy.ts; layout: LegalLayout. */
+import LegalLayout from "~/layouts/LegalLayout.astro";
+import { langPaths, type Locale } from "~/i18n/config";
+import { PRIVACY } from "~/content/legal/privacy";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<LegalLayout locale={locale} slug="privacy" doc={PRIVACY} />

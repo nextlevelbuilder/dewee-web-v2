@@ -1,0 +1,13 @@
+---
+/** GDPR rights, DPA and sub-processors (EN + VI). Copy: src/content/legal/gdpr.ts; layout: LegalLayout. */
+import LegalLayout from "~/layouts/LegalLayout.astro";
+import { langPaths, type Locale } from "~/i18n/config";
+import { GDPR } from "~/content/legal/gdpr";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<LegalLayout locale={locale} slug="gdpr" doc={GDPR} />
