@@ -154,6 +154,8 @@ const { label, topicLabel, open, closed, rows, footnoteTitle, footnote } = Astro
     .dc__cell--open { border-inline-end: 0; padding-block-start: 0; }
     .dc__cell--closed { box-shadow: none; }
     .dc__label { display: block; margin-block-end: var(--space-1); }
+    /* ink-3 drops below 4.5:1 on the tinted closed column; the accent ink stays readable and marks dewee's side. */
+    .dc__cell--closed .dc__label { color: var(--accent-ink); }
     .dc__cell > span:last-child { padding-inline-start: 1.75rem; }
     .dc__mark { inset-block-start: auto; margin-block-start: 0.1em; inset-inline-start: var(--space-4); }
     .dc__foot { grid-template-columns: minmax(0, 1fr); }
