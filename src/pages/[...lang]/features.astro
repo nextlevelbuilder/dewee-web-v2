@@ -1,0 +1,135 @@
+---
+/**
+ * /features: what shipped this month first, then the full capability catalogue by area.
+ * Page chrome copy lives in src/content/pages/features.ts; releases and capabilities in
+ * src/content/features.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { formatDate, langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { FEATURES_PAGE } from "~/content/pages/features";
+import { CAPABILITY_GROUPS, RELEASES } from "~/content/features";
+import { productJsonLd } from "~/lib/json-ld";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import TocIndex from "~/components/blocks/TocIndex.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import ReleaseMonth from "~/components/blocks/product/ReleaseMonth.astro";
+import CapabilityCatalogue from "~/components/blocks/product/CapabilityCatalogue.astro";
+import ConsoleShots from "~/components/blocks/product/ConsoleShots.astro";
+import { ccpShotProps } from "~/content/ccp-screens";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(FEATURES_PAGE, locale);
+const href = (p: string) => localePath(locale, p);
+
+const releases = RELEASES.map((r) => ({
+  version: r.version,
+  iso: r.date,
+  date: formatDate(`${r.date}T12:00:00+07:00`, locale),
+  title: pick(r.title, locale),
+  items: pick(r.items, locale),
+}));
+
+const groups = CAPABILITY_GROUPS.map((g) => ({
+  id: g.id,
+  icon: g.icon,
+  title: pick(g.title, locale),
+  lede: pick(g.lede, locale),
+  meta: t.catalogue.count(g.items.length),
+  items: g.items.map((it) => ({
+    title: pick(it.title, locale),
+    body: pick(it.body, locale),
+    since: it.since ? `${t.catalogue.since} v${it.since}` : undefined,
+  })),
+}));
+
+const jsonLd = [
+  {
+    ...productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/features")}` }),
+    featureList: groups.flatMap((g) => g.items.map((it) => it.title)),
+    softwareVersion: RELEASES[0].version,
+  },
+];
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/features"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/features" }]}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: "#new" },
+      { label: t.hero.secondary, href: "#catalogue" },
+    ]}
+    mascot={{ mood: "wink", accessory: "cap" }}
+  />
+
+  <section class="section band" id="new">
+    <div class="container feat-stack">
+      <SectionHead eyebrow={t.releases.eyebrow} title={t.releases.title} lede={t.releases.lede} />
+      <ReleaseMonth
+        month={RELEASES[0].date.slice(0, 7)}
+        monthLabel={t.releases.monthLabel}
+        weekdays={t.releases.weekdays}
+        calendarLabel={t.releases.calendarLabel}
+        releases={releases}
+        releasedOn={t.releases.releasedOn}
+        changelog={{ label: t.releases.changelog, href: href("/changelog") }}
+        note={t.releases.note}
+      />
+    </div>
+  </section>
+
+  <section class="section" id="catalogue">
+    <div class="container feat-stack">
+      <SectionHead eyebrow={t.catalogue.eyebrow} title={t.catalogue.title} lede={t.catalogue.lede} />
+      <CapabilityCatalogue groups={groups} indexLabel={t.catalogue.indexLabel} />
+    </div>
+  </section>
+
+  <section class="section band" id="console">
+    <div class="container">
+      <ConsoleShots
+        eyebrow={t.console.eyebrow}
+        title={t.console.title}
+        lede={t.console.lede}
+        shots={[ccpShotProps("agents", locale), ccpShotProps("traces", locale)]}
+      />
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container feat-more">
+      <SectionHead eyebrow={t.more.eyebrow} title={t.more.title} size="m" />
+      <TocIndex columns={1} items={t.more.items.map((m) => ({ title: m.title, meta: m.meta, href: href(m.path), icon: m.icon }))} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .feat-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .feat-more { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  @media (max-width: 900px) {
+    .feat-more { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

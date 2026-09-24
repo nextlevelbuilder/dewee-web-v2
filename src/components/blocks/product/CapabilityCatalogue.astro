@@ -1,0 +1,110 @@
+---
+/**
+ * The capability catalogue as a notebook's chapters: a wrapping index of area chips on top,
+ * then one chapter per area with a sticky heading on the left and ruled items on the right.
+ * An item with `since` (already localised, e.g. "since v3.30") gets an accent tag so the newest
+ * work stands out. Group ids become anchors `#cap-<id>`.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+
+type Item = { title: string; body: string; since?: string };
+type Group = { id: string; icon: string; title: string; lede: string; meta: string; items: Item[] };
+interface Props { groups: Group[]; indexLabel: string }
+const { groups, indexLabel } = Astro.props;
+---
+
+<div class="cc">
+  <nav class="cc__index" aria-label={indexLabel}>
+    <ul class="cc__chips" role="list">
+      {groups.map((g) => (
+        <li>
+          <a class="cc__chip" href={`#cap-${g.id}`}>
+            <Icon name={g.icon as IconName} size={16} />
+            <span>{g.title}</span>
+            <span class="cc__chip-meta">{g.items.length}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <div class="cc__chapters">
+    {groups.map((g, gi) => (
+      <section class="cc__group" id={`cap-${g.id}`} aria-labelledby={`cap-${g.id}-title`}>
+        <header class="cc__head" data-reveal>
+          <span class="cc__no">{String(gi + 1).padStart(2, "0")}</span>
+          <span class="cc__icon"><Icon name={g.icon as IconName} size={22} /></span>
+          <h3 class="cc__title" id={`cap-${g.id}-title`}>{g.title}</h3>
+          <p class="cc__lede">{g.lede}</p>
+          <p class="cc__meta">{g.meta}</p>
+        </header>
+        <ul class="cc__items" role="list" data-reveal-group>
+          {g.items.map((it) => (
+            <li class:list={["cc__item", { "cc__item--new": it.since }]} data-reveal>
+              <p class="cc__item-title">
+                <span>{it.title}</span>
+                {it.since && <span class="chip chip--accent mono cc__since">{it.since}</span>}
+              </p>
+              <p class="cc__item-body">{it.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</div>
+
+<style>
+  .cc { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+
+  .cc__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .cc__chip {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    min-block-size: 2.5rem; padding: 0.35rem 0.85rem;
+    border: 1px solid var(--rule); border-radius: var(--radius-round); background: var(--surface);
+    font-size: var(--step--1); font-weight: 500; color: var(--ink); text-decoration: none;
+    transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+  }
+  .cc__chip :global(svg) { color: var(--accent-ink); flex: none; }
+  .cc__chip:hover { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .cc__chip-meta { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+
+  .cc__chapters { display: grid; border-block-start: 1px solid var(--rule-strong); }
+  .cc__group {
+    display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(1.5rem, 0.5rem + 3vw, 4rem);
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+    border-block-end: 1px solid var(--rule);
+    scroll-margin-block-start: 5rem;
+  }
+  .cc__head {
+    position: sticky; inset-block-start: 6rem; align-self: start;
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--space-3); row-gap: var(--space-2);
+  }
+  .cc__no { grid-column: 1 / -1; font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.1em; color: var(--ink-3); }
+  .cc__icon {
+    display: grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; color: var(--accent-ink);
+    border: 1.5px solid currentColor; border-radius: 52% 48% 55% 45% / 47% 55% 45% 53%;
+  }
+  .cc__title { font-size: var(--step-3); line-height: var(--leading-tight); }
+  .cc__lede { grid-column: 1 / -1; color: var(--ink-2); max-inline-size: 34ch; margin-block-start: var(--space-2); }
+  .cc__meta { grid-column: 1 / -1; font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+
+  .cc__items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(1.5rem, 1rem + 2vw, 3rem); align-content: start; }
+  .cc__item { display: grid; gap: var(--space-2); align-content: start; padding-block: var(--space-4) var(--space-5); border-block-start: 1px dashed var(--rule); }
+  .cc__item:nth-child(-n + 2) { border-block-start: 0; padding-block-start: 0; }
+  .cc__item-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .cc__since { font-size: 0.7rem; padding-block: 0.12rem; }
+  .cc__item-body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); max-inline-size: 44ch; }
+
+  @media (max-width: 960px) {
+    .cc__group { grid-template-columns: minmax(0, 1fr); }
+    .cc__head { position: static; }
+  }
+  @media (max-width: 640px) {
+    .cc__items { grid-template-columns: minmax(0, 1fr); }
+    .cc__item:nth-child(2) { border-block-start: 1px dashed var(--rule); padding-block-start: var(--space-4); }
+    .cc__chip { min-block-size: 2.75rem; }
+  }
+</style>
