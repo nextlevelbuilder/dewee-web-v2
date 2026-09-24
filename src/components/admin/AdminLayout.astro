@@ -63,7 +63,7 @@ const links: { id: Section; href: string; label: string }[] = [
           </nav>
         )}
         <div class="adm__user">
-          <a href="/" class="adm__muted"><Icon name="external-link" size={14} />{ADMIN.nav.site}</a>
+          <a href="/" class="adm__muted"><Icon name="external-link" size={14} /><span class="adm__muted-label">{ADMIN.nav.site}</span></a>
           {email && csrf && (
             <form method="post" action="/admin/logout">
               <input type="hidden" name="csrf" value={csrf} />
@@ -84,13 +84,13 @@ const links: { id: Section; href: string; label: string }[] = [
   .adm { min-block-size: 100vh; background: var(--paper); }
   .adm__bar { position: sticky; inset-block-start: 0; z-index: 10; background: var(--surface); border-block-end: 1px solid var(--rule); }
   .adm__bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-6); min-block-size: 3.5rem; }
-  .adm__brand { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); text-decoration: none; }
+  .adm__brand { display: inline-flex; align-items: center; min-block-size: 2.75rem; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); text-decoration: none; }
   .adm__nav { display: flex; flex-wrap: wrap; gap: var(--space-1); flex: 1; }
   .adm__nav a { padding: 0.5rem 0.75rem; min-block-size: 2.75rem; display: inline-flex; align-items: center; border-radius: var(--radius-2); color: var(--ink-2); text-decoration: none; font-size: var(--step--1); font-weight: 500; }
   .adm__nav a:hover { background: var(--surface-hover); color: var(--ink); }
   .adm__nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); }
   .adm__user { display: flex; align-items: center; gap: var(--space-4); margin-inline-start: auto; }
-  .adm__muted { display: inline-flex; align-items: center; gap: 0.35em; color: var(--ink-3); font-size: var(--step--1); }
+  .adm__muted { display: inline-flex; align-items: center; min-block-size: 2.75rem; gap: 0.35em; color: var(--ink-3); font-size: var(--step--1); }
   .adm__main { padding-block: var(--space-7) var(--space-10); display: grid; gap: var(--space-6); align-content: start; }
   .adm-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-4); }
   .adm-head h1 { font-size: var(--step-4); }
@@ -119,4 +119,22 @@ const links: { id: Section; href: string; label: string }[] = [
   .adm-stat strong { font-family: var(--font-display-stack); font-size: var(--step-4); color: var(--ink); line-height: 1; }
   .adm-stat span { color: var(--ink-3); font-size: var(--step--1); }
   .adm-stat a { color: var(--ink-2); font-weight: 600; }
+  /* Status chips need 4.5:1 on the admin's small type; empty status lines take no grid track. */
+  .adm .chip--success { color: color-mix(in oklch, var(--success) 70%, var(--ink)); }
+  .adm .form-status:empty { display: none; }
+  .adm__user .btn { min-block-size: 2.75rem; }
+  /* Narrow screens: brand and account on one row, the nav as a scrollable row beneath. */
+  @media (max-width: 720px) {
+    .adm__bar-inner { column-gap: var(--space-3); }
+    .adm__user { gap: var(--space-2); }
+    .adm__nav { order: 3; flex: 1 0 100%; flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--space-2) * -1); }
+    .adm__nav a { flex: none; }
+  }
+  /* Phones: "View site" keeps its accessible name but shows only the icon. */
+  @media (max-width: 420px) {
+    .adm__muted { min-inline-size: 2.75rem; justify-content: center; }
+    .adm__muted-label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  }
+  /* Tables scroll sideways on narrow screens instead of squeezing every cell into a tall column. */
+  .adm-table { min-inline-size: 44rem; }
 </style>
