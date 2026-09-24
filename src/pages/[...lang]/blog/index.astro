@@ -1,0 +1,146 @@
+---
+/**
+ * Blog index, rendered on request from D1 so a post published through the admin, API, CLI or MCP
+ * shows up within the edge cache window. `?tag=` filters by tag, `?page=` paginates.
+ * Unknown languages, bad query values and pages past the end return the 404 page.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { formatDate, localePath, pick } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { BLOG } from "~/content/pages/blog";
+import { readingMinutes } from "~/lib/blocks/safe-markdown";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { listPublishedPosts } from "~/lib/server/pages/page-queries";
+
+export const prerender = false;
+
+const PAGE_SIZE = 12;
+const { lang } = Astro.params;
+if (lang !== undefined && lang !== "vi") return new Response(null, { status: 404 });
+const locale = lang === "vi" ? "vi" : "en";
+const href = (p: string) => localePath(locale, p);
+
+const tagParam = Astro.url.searchParams.get("tag")?.trim() || undefined;
+const pageParam = Astro.url.searchParams.get("page");
+const pageNo = pageParam === null ? 1 : Number(pageParam);
+if (!Number.isInteger(pageNo) || pageNo < 1 || pageNo > 1000 || (tagParam && tagParam.length > 40)) {
+  return new Response(null, { status: 404 });
+}
+
+let result;
+try {
+  result = await listPublishedPosts(platformEnv().DB, locale, { limit: PAGE_SIZE, offset: (pageNo - 1) * PAGE_SIZE, tag: tagParam });
+} catch (err) {
+  console.error("blog index: query failed", err instanceof Error ? err.message : err);
+  return new Response(null, { status: 503, headers: { "retry-after": "30" } });
+}
+const { posts, total } = result;
+const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
+if (pageNo > lastPage) return new Response(null, { status: 404 });
+
+Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, stale-while-revalidate=86400");
+
+const listUrl = (n: number) => {
+  const q = new URLSearchParams();
+  if (tagParam) q.set("tag", tagParam);
+  if (n > 1) q.set("page", String(n));
+  const qs = q.toString();
+  return href("/blog") + (qs ? `?${qs}` : "");
+};
+const L = BLOG.labels;
+const filtered = Boolean(tagParam) || pageNo > 1;
+---
+
+<BaseLayout
+  title={pick(BLOG.meta.title, locale)}
+  description={pick(BLOG.meta.description, locale)}
+  locale={locale}
+  path="/blog"
+  noindex={filtered}
+>
+  <link slot="head" rel="alternate" type="application/rss+xml" title={pick(BLOG.rss.title, locale)} href={href("/blog/rss.xml")} />
+  <PageHero
+    eyebrow={pick(BLOG.hero.eyebrow, locale)}
+    title={pick(BLOG.hero.title, locale)}
+    lede={pick(BLOG.hero.lede, locale)}
+    note={pick(BLOG.hero.note, locale)}
+    mascot={{ mood: "focused", accessory: "glasses" }}
+    actions={[{ label: pick(L.rss, locale), href: href("/blog/rss.xml"), variant: "ghost" }]}
+  />
+
+  <section class="section band">
+    <div class="container blog">
+      {tagParam && (
+        <p class="blog__filter">
+          <span>{pick(L.tagged, locale)} <strong class="chip chip--accent">{tagParam}</strong></span>
+          <a href={href("/blog")}>{pick(L.clearTag, locale)}</a>
+        </p>
+      )}
+      {posts.length === 0 ? (
+        <p class="blog__empty">{pick(L.empty, locale)}</p>
+      ) : (
+        <ol class="blog__list" role="list">
+          {posts.map((post) => (
+            <li>
+              <article class="card card--link blog-card">
+                <p class="blog-card__meta">
+                  <time datetime={post.published_at ?? post.created_at}>{formatDate(post.published_at ?? post.created_at, locale)}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>{readingMinutes(post.body_md ?? "")} {t(locale, "minutesRead")}</span>
+                </p>
+                <h2 class="blog-card__title">
+                  <a class="blog-card__link" href={href(`/blog/${post.slug}`)}>{post.title}</a>
+                </h2>
+                {post.description && <p class="blog-card__desc">{post.description}</p>}
+                {post.tags.length > 0 && (
+                  <ul class="blog-card__tags" role="list" aria-label={pick(L.tags, locale)}>
+                    {post.tags.map((tag) => <li><a class="chip" href={`${href("/blog")}?tag=${encodeURIComponent(tag)}`}>{tag}</a></li>)}
+                  </ul>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+      )}
+      {lastPage > 1 && (
+        <nav class="blog__pages" aria-label={pick(L.pagination, locale)}>
+          {pageNo > 1 ? <a class="btn" href={listUrl(pageNo - 1)}><Icon name="arrow-left" />{pick(L.newerPage, locale)}</a> : <span />}
+          <span class="blog__page-no">{pageNo} / {lastPage}</span>
+          {pageNo < lastPage ? <a class="btn" href={listUrl(pageNo + 1)}>{pick(L.olderPage, locale)}<Icon name="arrow-right" /></a> : <span />}
+        </nav>
+      )}
+    </div>
+  </section>
+
+  <CtaBand
+    title={pick(BLOG.cta.title, locale)}
+    body={pick(BLOG.cta.body, locale)}
+    primary={{ label: pick(BLOG.cta.primary.label, locale), href: href(BLOG.cta.primary.href) }}
+    secondary={{ label: pick(BLOG.cta.secondary.label, locale), chat: true }}
+  />
+</BaseLayout>
+
+<style>
+  .blog { display: grid; gap: var(--space-6); }
+  .blog__filter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); color: var(--ink-2); }
+  .blog__filter a { color: var(--accent-ink); }
+  .blog__empty { color: var(--ink-3); font-size: var(--step-1); }
+  .blog__list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
+  .blog__list > li { display: grid; }
+  .blog-card { display: flex; flex-direction: column; gap: var(--space-3); }
+  .blog-card__meta { display: flex; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-3); }
+  .blog-card__title { font-size: var(--step-2); line-height: var(--leading-tight); }
+  .blog-card__link { color: var(--ink); text-decoration: none; }
+  /* The whole card is the hit area; tag chips sit above the stretched link. */
+  .blog-card__link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .blog-card__link:focus-visible { outline: none; }
+  .blog-card:has(.blog-card__link:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .blog-card__desc { color: var(--ink-2); }
+  .blog-card__tags { list-style: none; padding: 0; margin: auto 0 0; display: flex; flex-wrap: wrap; gap: var(--space-2); position: relative; z-index: 1; }
+  .blog-card__tags a { text-decoration: none; }
+  .blog__pages { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+  .blog__page-no { color: var(--ink-3); font-size: var(--step--1); }
+</style>
