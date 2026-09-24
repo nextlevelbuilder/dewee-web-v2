@@ -64,15 +64,21 @@ const { parts, locale, copyLabels } = Astro.props;
     --astro-code-background: transparent;
     --astro-code-token-comment: var(--ink-3);
     --astro-code-token-keyword: var(--accent-ink);
-    --astro-code-token-string: var(--success);
-    --astro-code-token-string-expression: var(--success);
-    --astro-code-token-constant: var(--redpen);
+    /* On light paper the raw green and red sit near 3.8:1, so they are mixed toward ink to clear AA. */
+    --astro-code-token-string: color-mix(in oklch, var(--success) 70%, var(--ink));
+    --astro-code-token-string-expression: color-mix(in oklch, var(--success) 70%, var(--ink));
+    --astro-code-token-constant: color-mix(in oklch, var(--redpen) 75%, var(--ink));
     --astro-code-token-parameter: var(--ink-2);
     --astro-code-token-function: var(--brand-blue);
     --astro-code-token-punctuation: var(--ink-3);
     --astro-code-token-link: var(--accent-ink);
   }
-  :global(:root[data-theme="dark"]) .doc-body :global(.code-block) { --astro-code-token-function: var(--warning); }
+  :global(:root[data-theme="dark"]) .doc-body :global(.code-block) {
+    --astro-code-token-function: var(--warning);
+    --astro-code-token-string: var(--success);
+    --astro-code-token-string-expression: var(--success);
+    --astro-code-token-constant: var(--redpen);
+  }
   .doc-body :global(.code-block__bar) {
     display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
     min-block-size: 2.25rem; padding-inline: var(--space-4) var(--space-2); border-block-end: 1px solid var(--rule); background: var(--paper-2);
