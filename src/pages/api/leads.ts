@@ -8,9 +8,6 @@ import { handleLeadRequest, methodNotAllowed } from "~/lib/server/leads";
 
 export const prerender = false;
 
-// `cloudflare:workers` types `env` as the ambient (empty) Cloudflare.Env; the real bindings are declared on `Env` in src/env.d.ts.
-const bindings = env as unknown as Env;
-
-export const POST: APIRoute = ({ request, locals }) => handleLeadRequest(request, bindings, locals.cfContext);
+export const POST: APIRoute = ({ request, locals }) => handleLeadRequest(request, env, locals.cfContext);
 
 export const ALL: APIRoute = () => methodNotAllowed();

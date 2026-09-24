@@ -258,15 +258,7 @@ hr { border: 0; border-block-start: 1px solid var(--rule); }
     transition: opacity var(--dur-5) var(--ease-out), transform var(--dur-5) var(--ease-out);
     transition-delay: calc(var(--reveal-i, 0) * 70ms);
   }
-  html.js [data-reveal="ink"] {
-    transform: none;
-    clip-path: inset(0 100% 0 0);
-    opacity: 1;
-    transition: clip-path 1100ms var(--ease-in-out);
-    transition-delay: calc(var(--reveal-i, 0) * 90ms);
-  }
   html.js [data-reveal].is-in { opacity: 1; transform: none; }
-  html.js [data-reveal="ink"].is-in { clip-path: inset(0 0 0 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
