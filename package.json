@@ -35,13 +35,5 @@
     "vitest": "^5.0.1",
     "wrangler": "^4.138.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "workerd",
-      "sharp",
-      "@resvg/resvg-js"
-    ]
-  },
   "packageManager": "pnpm@12.4.2"
 }
