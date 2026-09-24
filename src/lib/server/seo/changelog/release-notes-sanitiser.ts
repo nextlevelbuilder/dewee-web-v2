@@ -115,8 +115,8 @@ function scrubLine(line: string, repoRe: string, inFence: boolean): string {
     .replace(repoUrl, "")
     // owner/repo#12, owner/repo@sha
     .replace(new RegExp(`\\b${repoRe}(?:#\\d+|@[0-9a-f]{7,40})`, "gi"), "")
-    // (#12), (#12, #13), and bare #12 or #12-#14 refs
-    .replace(/\s*\(\s*#\d+(?:\s*,\s*#\d+)*\s*\)/g, "")
+    // (#12), (#12, #13), (issue #12), (fixes #12), and bare #12 or #12-#14 refs
+    .replace(/\s*\(\s*(?:(?:issues?|PRs?|pull requests?|fix(?:es)?|closes?|refs?|see)\s+)?#\d+(?:\s*,\s*#\d+)*\s*\)/gi, "")
     .replace(/(^|[\s(,])#\d+(?:\s*[-–,]\s*#\d+)*\b/g, "$1")
     // internal URLs: links keep their text, bare URLs go
     .replace(/\[([^\]]*)\]\(\s*(https?:\/\/[^)\s]+)[^)]*\)/g, (m, text: string, url: string) => (isInternalUrl(url) ? text : m))

@@ -33,6 +33,8 @@ describe("sanitiseReleaseNotes", () => {
     expect(clean("- Ported from acme/private-app#44 and acme/private-app@1a2b3c4d")).toBe("- Ported from and");
     expect(clean("- Reverts 9f8e7d6c5b4a (bump to 3.2.1)")).toBe("- Reverts (bump to 3.2.1)");
     expect(clean("- Cache is now 1024000 bytes, decade-old facade")).toBe("- Cache is now 1024000 bytes, decade-old facade");
+    expect(clean("- Close parity gaps (issue #231), audit (fixes #9)")).toBe("- Close parity gaps, audit");
+    expect(clean("- ci(fix): pin the runner 1a2b3c4d (issue)")).toBe("- ci(fix): pin the runner (issue)");
   });
 
   it("keeps the text of links into the private repo and removes bare repo URLs", () => {

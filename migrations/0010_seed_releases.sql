@@ -1253,7 +1253,7 @@ INSERT INTO releases (tag, name, channel, published_at, body, url, synced_at) VA
 * fix: untrack .pi/, pin the agent-context rules, and finish the probe version
 * fix(release): fail loudly when the production surfaces diverge
 * fix(release): fail closed on a relative release path, and bring the deployment guide under budget
-* feat(ccp): close action-level RGD to CCP parity gaps (issue )
+* feat(ccp): close action-level RGD to CCP parity gaps
 * fix(ccp): address the issue completion-audit findings
 * fix(release): validate GOCLAW_UPDATE_STATUS_DIR too, and name the guard for what it checks
 * ci(docs): report documents over the line budget without failing the build
