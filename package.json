@@ -10,8 +10,9 @@
     "preview": "wrangler dev --port 4389",
     "check": "astro check",
     "test": "vitest run",
-    "deploy:staging": "wrangler deploy --env staging",
-    "deploy:production": "wrangler deploy"
+    "deploy:staging": "pnpm build:staging && wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "deploy:production": "pnpm build && wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "build:staging": "CLOUDFLARE_ENV=staging SITE_URL=https://staging.dewee.sh astro build"
   },
   "engines": {
     "node": ">=22"
@@ -41,5 +42,6 @@
       "sharp",
       "@resvg/resvg-js"
     ]
-  }
+  },
+  "packageManager": "pnpm@12.4.2"
 }
