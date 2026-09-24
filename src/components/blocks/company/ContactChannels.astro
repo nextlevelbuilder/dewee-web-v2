@@ -1,0 +1,70 @@
+---
+/**
+ * Direct ways to reach the team, as a short list of stamped channels (email, Discord, Facebook…)
+ * plus an "open the chat" button that triggers the site chat through `data-open-chat`.
+ * `brand` uses a vendored brand mark; otherwise `icon` names a Lucide icon.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import BrandMark from "~/components/ui/BrandMark.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+interface Props {
+  title: string;
+  items: { label: string; value: string; href: string; desc?: string; brand?: string; icon?: string; external?: boolean }[];
+  chat?: { label: string; desc?: string };
+}
+const { title, items, chat } = Astro.props;
+---
+
+<aside class="cc" aria-labelledby="contact-channels-title">
+  <h2 class="cc__title" id="contact-channels-title">{title}</h2>
+  <ul class="cc__list" role="list">
+    {items.map((it) => (
+      <li>
+        <a class="cc__item" href={it.href} target={it.external ? "_blank" : undefined} rel={it.external ? "noopener" : undefined}>
+          <span class="cc__mark">
+            {it.brand ? <BrandMark brand={it.brand} name={it.label} size={20} /> : <Icon name={(it.icon ?? "link") as IconName} size={20} />}
+          </span>
+          <span class="cc__text">
+            <span class="cc__label">{it.label}</span>
+            <span class="cc__value">{it.value}</span>
+            {it.desc && <span class="cc__desc">{it.desc}</span>}
+          </span>
+          <Icon name={it.external ? "arrow-up-right" : "arrow-right"} size={18} class="cc__go" />
+        </a>
+      </li>
+    ))}
+  </ul>
+  {chat && (
+    <div class="cc__chat">
+      <button type="button" class="btn btn--ink btn--lg cc__chat-btn" data-open-chat>
+        <Icon name="message-circle" />{chat.label}
+      </button>
+      {chat.desc && <p class="cc__chat-desc">{chat.desc}</p>}
+    </div>
+  )}
+</aside>
+
+<style>
+  .cc { display: grid; gap: var(--space-5); align-content: start; }
+  .cc__title { font-size: var(--step-2); line-height: 1.2; }
+  .cc__list { display: grid; border-block-start: 1px solid var(--rule); }
+  .cc__item {
+    display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) auto; gap: var(--space-4); align-items: center;
+    padding-block: var(--space-4); border-block-end: 1px solid var(--rule); text-decoration: none; color: inherit;
+  }
+  .cc__mark {
+    display: grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; color: var(--accent-ink);
+    border: 1.5px solid currentColor; border-radius: 52% 48% 55% 45% / 47% 55% 45% 53%;
+    transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-2) var(--ease-out);
+  }
+  .cc__item:hover .cc__mark { transform: rotate(-8deg); background: var(--accent-soft); }
+  .cc__text { display: grid; gap: 0.1rem; min-inline-size: 0; }
+  .cc__label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .cc__value { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+  .cc__desc { font-size: var(--step--1); color: var(--ink-2); }
+  .cc__item :global(.cc__go) { color: var(--ink-3); transition: transform var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out); }
+  .cc__item:hover :global(.cc__go) { color: var(--accent-ink); transform: translateX(2px); }
+  .cc__chat { display: grid; gap: var(--space-2); justify-items: start; }
+  .cc__chat-desc { font-size: var(--step--1); color: var(--ink-3); }
+  @media (max-width: 480px) { .cc__chat-btn { inline-size: 100%; } }
+</style>

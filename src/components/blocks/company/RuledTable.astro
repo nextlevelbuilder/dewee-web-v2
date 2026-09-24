@@ -1,0 +1,64 @@
+---
+/**
+ * A comparison or rate table ruled like a notebook ledger. The first column is the row label.
+ * On narrow screens every row becomes a small card whose cells carry their column heading,
+ * so nothing scrolls sideways. `highlight` marks one column (e.g. "what we built").
+ */
+interface Props {
+  caption?: string;
+  head: string[];
+  rows: string[][];
+  highlight?: number;
+  note?: string;
+}
+const { caption, head, rows, highlight, note } = Astro.props;
+---
+
+<div class="rt" data-reveal>
+  <table class="rt__table">
+    {caption && <caption class="rt__caption">{caption}</caption>}
+    <thead>
+      <tr>{head.map((h, i) => <th scope="col" class:list={{ "rt__hl": i === highlight }}>{h}</th>)}</tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          {row.map((cell, i) =>
+            i === 0 ? (
+              <th scope="row">{cell}</th>
+            ) : (
+              <td class:list={{ "rt__hl": i === highlight }} data-col={head[i]}>{cell}</td>
+            ),
+          )}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  {note && <p class="rt__note">{note}</p>}
+</div>
+
+<style>
+  .rt { display: grid; gap: var(--space-3); }
+  .rt__table { inline-size: 100%; font-size: var(--step--1); line-height: 1.5; }
+  .rt__caption { caption-side: top; text-align: start; padding-block-end: var(--space-3); font-family: var(--font-display-stack); font-size: var(--step-2); color: var(--ink); }
+  .rt__table th, .rt__table td { padding: var(--space-3) var(--space-4); text-align: start; vertical-align: top; border-block-end: 1px solid var(--rule); }
+  .rt__table thead th {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-3); border-block-end: 1.5px solid var(--rule-strong);
+  }
+  .rt__table tbody th { font-weight: 600; color: var(--ink); }
+  .rt__table td { color: var(--ink-2); }
+  .rt__table .rt__hl { color: var(--ink); background: color-mix(in oklch, var(--accent-soft) 55%, transparent); }
+  .rt__table thead .rt__hl { color: var(--accent-ink); }
+  .rt__note { font-size: var(--step--2); color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    .rt__table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .rt__table, .rt__caption, .rt__table tbody, .rt__table tr, .rt__table th, .rt__table td { display: block; }
+    .rt__table tr { padding-block: var(--space-3); border-block-end: 1px solid var(--rule-strong); }
+    .rt__table tbody th { padding: 0 0 var(--space-2); border: 0; font-size: var(--step-0); }
+    .rt__table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-3); border-block-end: 1px dashed var(--rule); }
+    .rt__table td:last-child { border-block-end: 0; }
+    .rt__table td::before { content: attr(data-col); font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); }
+  }
+</style>

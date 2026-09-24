@@ -1,0 +1,104 @@
+---
+/**
+ * /story: "From GoClaw to dewee: why we closed the source", told as six notebook chapters.
+ * Copy lives in src/content/pages/story.ts. Signature visual: the draft → fair copy spread
+ * (GoClaw crossed out and corrected into dewee) in chapter four.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { STORY } from "~/content/pages/story";
+import { articleJsonLd } from "~/lib/json-ld";
+import Icon from "~/components/ui/Icon.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import Timeline from "~/components/blocks/Timeline.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import StoryChapter from "~/components/blocks/company/StoryChapter.astro";
+import ChapterIndex from "~/components/blocks/company/ChapterIndex.astro";
+import RuledTable from "~/components/blocks/company/RuledTable.astro";
+import ChalkEquations from "~/components/blocks/company/ChalkEquations.astro";
+import DraftFairCopy from "~/components/blocks/company/DraftFairCopy.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(STORY, locale);
+const href = (p: string) => localePath(locale, p);
+const isExternal = (p: string) => /^https?:\/\//.test(p);
+/** Chapter titles carry inline markup (*em*); the index card wants plain words. */
+const plain = (s: string) => s.replace(/\*|==|~~/g, "").replace(/\.$/, "");
+
+const chapters = [t.origin, t.name, t.math, t.paths, t.kept, t.next];
+const contents = chapters.map((c) => ({ href: `#${c.id}`, title: plain(c.title), date: c.date }));
+const chapter = (c: (typeof chapters)[number]) => ({ id: c.id, label: t.chapterLabel, number: chapters.indexOf(c) + 1, title: c.title, body: c.body, date: c.date, note: c.note });
+
+const url = `${SITE.url}${href("/story")}`;
+const jsonLd = [articleJsonLd({ title: t.meta.title, description: t.meta.description, url })];
+const breadcrumbs = [{ name: t.meta.crumb, path: "/story" }];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/story" type="article" jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+  <PageHero eyebrow={t.hero.eyebrow} title={t.hero.title} lede={t.hero.lede} note={t.hero.note} mascot={false}>
+    <ChapterIndex slot="aside" title={t.hero.contents} items={contents} />
+  </PageHero>
+
+  <StoryChapter {...chapter(t.origin)}>
+    <Timeline items={t.origin.timeline} label={t.origin.timelineLabel} />
+  </StoryChapter>
+
+  <StoryChapter {...chapter(t.name)} tone="band">
+    <RuledTable caption={t.name.caption} head={t.name.head} rows={t.name.rows} highlight={2} />
+  </StoryChapter>
+
+  <StoryChapter {...chapter(t.math)} tone="board">
+    <ChalkEquations label={t.math.label} lines={t.math.lines} result={t.math.result} />
+  </StoryChapter>
+
+  <StoryChapter {...chapter(t.paths)} wide>
+    <DraftFairCopy label={t.paths.spread.label} arrow={t.paths.spread.arrow} draft={t.paths.spread.draft} fair={t.paths.spread.fair} rows={t.paths.spread.rows} />
+  </StoryChapter>
+
+  <StoryChapter {...chapter(t.kept)} tone="band" wide>
+    <FeatureGrid items={t.kept.items} />
+  </StoryChapter>
+
+  <StoryChapter {...chapter(t.next)}>
+    <ul class="story-links" role="list" data-reveal-group>
+      {t.next.links.map((l) => (
+        <li data-reveal>
+          {isExternal(l.href) ? (
+            <a class="story-link" href={l.href} target="_blank" rel="noopener">{l.label}<Icon name="arrow-up-right" class="arrow" /></a>
+          ) : (
+            <a class="story-link" href={href(l.href)}>{l.label}<Icon name="arrow-right" class="arrow" /></a>
+          )}
+        </li>
+      ))}
+    </ul>
+  </StoryChapter>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .story-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--space-3); max-inline-size: 52rem; }
+  .story-link {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+    min-block-size: 3.25rem; padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--rule-strong); border-radius: var(--radius-2); background: var(--surface);
+    color: var(--ink); font-weight: 600; text-decoration: none;
+    transition: border-color var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+  }
+  .story-link:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .story-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .story-link:hover { transform: translateY(-2px); }
+  }
+</style>

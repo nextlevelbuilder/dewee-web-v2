@@ -1,0 +1,71 @@
+---
+/**
+ * Now / Next / Later as three columns of a to-do page written in pencil. Items in "now" carry a
+ * half-filled progress mark, "next" an empty box, "later" a dashed one. Each column has a caption
+ * that says what the column honestly means; `note` is the red-pen footnote (e.g. "no dates").
+ */
+interface Props {
+  label: string;
+  columns: { id: "now" | "next" | "later"; title: string; caption: string; items: { title: string; body: string; meta?: string }[] }[];
+  note?: string;
+}
+const { label, columns, note } = Astro.props;
+---
+
+<div class="rm" role="group" aria-label={label}>
+  <div class="rm__cols" data-reveal-group>
+    {columns.map((c) => (
+      <section class:list={["rm__col", `rm__col--${c.id}`]} aria-labelledby={`rm-${c.id}`} data-reveal>
+        <header class="rm__head">
+          <h3 class="rm__title" id={`rm-${c.id}`}>{c.title}</h3>
+          <p class="rm__caption">{c.caption}</p>
+        </header>
+        <ul class="rm__items" role="list">
+          {c.items.map((it) => (
+            <li class="rm__item">
+              <span class="rm__box" aria-hidden="true"></span>
+              <div class="rm__copy">
+                <p class="rm__name">{it.title}</p>
+                <p class="rm__body">{it.body}</p>
+                {it.meta && <p class="rm__meta">{it.meta}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+  {note && <p class="note note--red rm__note">{note}</p>}
+</div>
+
+<style>
+  .rm { display: grid; gap: var(--space-6); }
+  .rm__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 0.5rem + 1.5vw, 2rem); align-items: start; }
+  .rm__col {
+    --cell: 9px;
+    display: grid; gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-3);
+    background: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-1);
+  }
+  .rm__col--now { border-color: var(--accent); box-shadow: var(--shadow-2); }
+  .rm__col--later { background: transparent; border-style: dashed; box-shadow: none; }
+  .rm__head { display: grid; gap: var(--space-1); padding-block-end: var(--space-3); border-block-end: 2px solid var(--ink); }
+  .rm__col--later .rm__head { border-block-end-style: dashed; border-block-end-color: var(--rule-strong); }
+  .rm__title { font-size: var(--step-3); font-style: italic; font-weight: 400; line-height: 1; }
+  .rm__col--now .rm__title { color: var(--accent-ink); }
+  .rm__caption { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.04em; color: var(--ink-3); }
+  .rm__items { display: grid; gap: var(--space-5); }
+  .rm__item { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: var(--space-3); align-items: start; }
+  .rm__box { inline-size: 1.1rem; block-size: 1.1rem; margin-block-start: 0.25rem; border: 1.5px solid var(--ink-3); border-radius: 4px; }
+  .rm__col--now .rm__box { border-color: var(--accent); background: linear-gradient(135deg, var(--accent) 50%, transparent 50%); }
+  .rm__col--later .rm__box { border-style: dashed; }
+  .rm__copy { display: grid; gap: var(--space-1); }
+  .rm__name { font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .rm__body { font-size: var(--step--1); color: var(--ink-2); line-height: 1.6; }
+  .rm__meta { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); letter-spacing: 0.02em; }
+  .rm__col--later .rm__meta { color: var(--ink-3); }
+  .rm__note { justify-self: end; font-size: var(--step-1); transform: rotate(-2deg); text-align: end; }
+  @media (max-width: 960px) {
+    .rm__cols { grid-template-columns: minmax(0, 1fr); }
+    .rm__note { justify-self: start; text-align: start; }
+  }
+</style>

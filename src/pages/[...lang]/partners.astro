@@ -1,0 +1,132 @@
+---
+/**
+ * /partners: the partner programme (roles, tiers, benefits, how it works, FAQ, apply).
+ * Copy lives in src/content/pages/partners.ts. Signature visual: the tier staircase drawn on the
+ * blackboard. The application form posts to /api/leads as `kind: "partner"`; role cards deep-link
+ * to `?role=<id>#apply`, which the form script uses to pre-select the track.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { PARTNERS } from "~/content/pages/partners";
+import { LEAD_FORM_UI } from "~/content/pages/contact";
+import { faqJsonLd } from "~/lib/json-ld";
+import { inlineMarkup } from "~/lib/inline-markup";
+import Icon from "~/components/ui/Icon.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import Steps from "~/components/blocks/Steps.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import RoleCards from "~/components/blocks/company/RoleCards.astro";
+import TierLadder from "~/components/blocks/company/TierLadder.astro";
+import RuledTable from "~/components/blocks/company/RuledTable.astro";
+import LeadForm from "~/components/blocks/company/LeadForm.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(PARTNERS, locale);
+const ui = pick(LEAD_FORM_UI, locale);
+const href = (p: string) => localePath(locale, p);
+const page = href("/partners");
+const roles = t.roles.items.map((r) => ({ ...r, cta: { label: r.cta, href: `${page}?role=${r.id}#apply` } }));
+const { checklist, email } = t.apply;
+const form = { fields: t.apply.fields, submit: t.apply.submit, success: t.apply.success };
+---
+
+<BaseLayout
+  title={t.meta.title}
+  description={t.meta.description}
+  locale={locale}
+  path="/partners"
+  jsonLd={[faqJsonLd(t.faq.items)]}
+  breadcrumbs={[{ name: t.meta.crumb, path: "/partners" }]}
+>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: "#apply" },
+      { label: t.hero.secondary, href: href("/contact?topic=partner") },
+    ]}
+    mascot={{ mood: "wink", accessory: "none" }}
+  />
+
+  <section class="section" id="roles">
+    <div class="container partners-stack">
+      <SectionHead eyebrow={t.roles.eyebrow} title={t.roles.title} lede={t.roles.lede} />
+      <RoleCards roles={roles} />
+    </div>
+  </section>
+
+  <section class="section board" id="tiers">
+    <div class="container partners-stack">
+      <SectionHead eyebrow={t.tiers.eyebrow} title={t.tiers.title} lede={t.tiers.lede} />
+      <TierLadder label={t.tiers.label} depositLabel={t.tiers.depositLabel} marginLabel={t.tiers.marginLabel} tiers={t.tiers.items} />
+      <div class="partners-bd">
+        <RuledTable caption={t.tiers.bd.caption} head={t.tiers.bd.head} rows={t.tiers.bd.rows} note={t.tiers.bd.note} />
+        <p class="partners-source">{t.tiers.source}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="benefits">
+    <div class="container partners-stack">
+      <SectionHead eyebrow={t.benefits.eyebrow} title={t.benefits.title} />
+      <FeatureGrid items={t.benefits.items} />
+    </div>
+  </section>
+
+  <section class="section" id="how-it-works">
+    <div class="container partners-stack">
+      <SectionHead eyebrow={t.steps.eyebrow} title={t.steps.title} />
+      <Steps items={t.steps.items} label={t.steps.label} />
+    </div>
+  </section>
+
+  <section class="section band section--tight" id="faq">
+    <div class="container partners-faq">
+      <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} />
+      <Faq items={t.faq.items} />
+    </div>
+  </section>
+
+  <section class="section" id="apply">
+    <div class="container partners-apply">
+      <div class="partners-apply__intro">
+        <SectionHead eyebrow={t.apply.eyebrow} title={t.apply.title} lede={t.apply.lede} />
+        <div class="partners-check" data-reveal>
+          <p class="partners-check__title">{checklist.title}</p>
+          <ul class="partners-check__list" role="list">
+            {checklist.items.map((it) => <li><Icon name="check" size={18} class="partners-check__tick" />{it}</li>)}
+          </ul>
+        </div>
+        <p class="partners-mail" set:html={inlineMarkup(email)} />
+      </div>
+      <LeadForm id="partner-form" kind="partner" locale={locale} source={page} privacyHref={href("/privacy")} copy={form} ui={ui} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .partners-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .partners-bd { display: grid; gap: var(--space-3); }
+  .partners-source { font-size: var(--step--2); color: var(--ink-3); font-style: italic; }
+  .partners-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .partners-apply { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .partners-apply__intro { display: grid; gap: var(--space-6); position: sticky; inset-block-start: 7rem; }
+  .partners-check { display: grid; gap: var(--space-3); padding-block-start: var(--space-4); border-block-start: 1px dashed var(--rule-strong); }
+  .partners-check__title { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3); }
+  .partners-check__list { display: grid; gap: var(--space-2); color: var(--ink-2); }
+  .partners-check__list li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: var(--space-2); align-items: start; }
+  .partners-check__list :global(.partners-check__tick) { margin-block-start: 0.2rem; color: var(--accent-ink); }
+  .partners-mail { font-size: var(--step--1); color: var(--ink-3); }
+  .partners-mail :global(a) { color: var(--accent-ink); }
+  @media (max-width: 960px) {
+    .partners-faq, .partners-apply { grid-template-columns: minmax(0, 1fr); }
+    .partners-apply__intro { position: static; }
+  }
+</style>

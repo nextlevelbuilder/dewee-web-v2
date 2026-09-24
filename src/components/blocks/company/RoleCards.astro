@@ -1,0 +1,48 @@
+---
+/**
+ * Two (or more) partner roles as labelled figure cards ("fig. 01"), each with a summary,
+ * a ticked list, an italic exemplar line and its own call to action.
+ */
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  roles: { fig: string; tag: string; name: string; summary: string; points: string[]; exemplar?: string; cta: { label: string; href: string } }[];
+}
+const { roles } = Astro.props;
+---
+
+<ul class="roles" role="list" data-reveal-group>
+  {roles.map((r, i) => (
+    <li class:list={["roles__card", { "roles__card--lead": i === 0 }]} data-reveal>
+      <p class="roles__fig"><span>{r.fig}</span><span>{r.tag}</span></p>
+      <h3 class="roles__name">{r.name}</h3>
+      <p class="roles__summary">{r.summary}</p>
+      <ul class="roles__points" role="list">
+        {r.points.map((p) => (
+          <li><Icon name="check" size={18} class="roles__tick" />{p}</li>
+        ))}
+      </ul>
+      {r.exemplar && <p class="roles__ex">{r.exemplar}</p>}
+      <a class:list={["btn", i === 0 ? "btn--primary" : "btn--ink", "roles__cta"]} href={r.cta.href}>{r.cta.label}<Icon name="arrow-right" class="arrow" /></a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: clamp(1.25rem, 0.5rem + 2.5vw, 2.5rem); }
+  .roles__card {
+    display: grid; grid-template-rows: auto auto auto 1fr auto auto; gap: var(--space-4); align-content: start;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); background: var(--surface);
+    border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-1);
+  }
+  .roles__card--lead { border-color: var(--accent); box-shadow: var(--shadow-2); }
+  .roles__fig { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .roles__fig span:first-child { color: var(--accent-ink); }
+  .roles__name { font-size: var(--step-4); line-height: 1.05; }
+  .roles__summary { color: var(--ink-2); }
+  .roles__points { display: grid; gap: var(--space-3); align-content: start; font-size: var(--step--1); color: var(--ink); }
+  .roles__points li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: var(--space-2); align-items: start; line-height: 1.5; }
+  .roles__points :global(.roles__tick) { color: var(--accent-ink); margin-block-start: 0.1rem; }
+  .roles__ex { font-family: var(--font-display-stack); font-style: italic; color: var(--ink-3); }
+  .roles__cta { justify-self: start; }
+  @media (max-width: 480px) { .roles__cta { justify-self: stretch; white-space: normal; } }
+</style>

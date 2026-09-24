@@ -1,0 +1,67 @@
+---
+/**
+ * /roadmap: Now / Next / Later, with what shipped recently and no promised dates.
+ * Copy lives in src/content/pages/roadmap.ts (each item traced to the dewee repository or its
+ * GitHub releases). Signature visual: the three-column pencil to-do page.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { ROADMAP } from "~/content/pages/roadmap";
+import Icon from "~/components/ui/Icon.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Timeline from "~/components/blocks/Timeline.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import RoadmapBoard from "~/components/blocks/company/RoadmapBoard.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(ROADMAP, locale);
+const href = (p: string) => localePath(locale, p);
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/roadmap" breadcrumbs={[{ name: t.meta.crumb, path: "/roadmap" }]}>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[
+      { label: t.hero.primary, href: href("/changelog") },
+      { label: t.hero.secondary, href: href("/contact?topic=use-case") },
+    ]}
+    mascot={{ mood: "focused", accessory: "glasses" }}
+  />
+
+  <section class="section" id="plan">
+    <div class="container roadmap-stack">
+      <SectionHead eyebrow={t.board.eyebrow} title={t.board.title} lede={t.board.lede} />
+      <RoadmapBoard label={t.board.label} columns={t.board.columns} note={t.board.note} />
+    </div>
+  </section>
+
+  <section class="section band" id="shipped">
+    <div class="container roadmap-stack">
+      <SectionHead eyebrow={t.shipped.eyebrow} title={t.shipped.title} lede={t.shipped.lede} />
+      <Timeline items={t.shipped.items} label={t.shipped.label} />
+      <div class="roadmap-foot" data-reveal>
+        <a class="btn btn--ink" href={href("/changelog")}>{t.shipped.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact?topic=use-case") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .roadmap-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .roadmap-foot { display: flex; justify-content: flex-start; }
+</style>
