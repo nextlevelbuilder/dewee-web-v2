@@ -236,7 +236,8 @@ a:hover { text-decoration-color: currentColor; }
   white-space: nowrap;
 }
 .chip--accent { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); }
-.chip--success { background: var(--success-soft); border-color: transparent; color: var(--success); }
+/* success is a fill colour; mixed toward ink it reads at 4.5:1 on its own soft tint in both themes. */
+.chip--success { background: var(--success-soft); border-color: transparent; color: color-mix(in oklch, var(--success) 65%, var(--ink)); }
 .chip--warning { background: var(--warning-soft); border-color: transparent; color: color-mix(in oklch, var(--warning) 70%, var(--ink)); }
 .chip .dot { inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; }
 kbd {

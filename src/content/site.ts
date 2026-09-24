@@ -46,7 +46,7 @@ export const NAV_PRODUCT: NavGroup = {
     { href: "/architecture", label: { en: "Architecture", vi: "Kiến trúc" }, description: { en: "Pipeline, memory, teams, tenancy", vi: "Pipeline, bộ nhớ, đội agent, đa người thuê" } },
     { href: "/security", label: { en: "Security", vi: "Bảo mật" }, description: { en: "Shut at the door, five layers deep", vi: "Đóng từ cửa, phòng thủ 5 lớp" } },
     { href: "/integrations", label: { en: "Integrations", vi: "Tích hợp" }, description: { en: "Channels, LLM providers, MCP", vi: "Kênh chat, nhà cung cấp LLM, MCP" } },
-    { href: "/changelog", label: { en: "Changelog", vi: "Nhật ký thay đổi" }, description: { en: "Stable and beta, straight from GitHub", vi: "Bản stable và beta, lấy thẳng từ GitHub" } },
+    { href: "/changelog", label: { en: "Changelog", vi: "Nhật ký thay đổi" }, description: { en: "Every stable and beta release, written down", vi: "Mọi bản stable và beta, ghi lại đầy đủ" } },
     { href: "/roadmap", label: { en: "Roadmap", vi: "Lộ trình" }, description: { en: "What we are building next", vi: "Những gì sắp ra lò" } },
   ],
 };
