@@ -1,0 +1,122 @@
+---
+/**
+ * Minimal chrome for /admin: the design tokens and fonts of the public site, a top bar with the
+ * sections and sign-out, and nothing else (no chat, no cookie badge, never indexed).
+ * `csrf` is exposed in a meta tag for the editor islands and the WebMCP admin tools.
+ */
+import { Font } from "astro:assets";
+import "~/styles/global.css";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "./admin-strings";
+
+type Section = "dashboard" | "pages" | "posts" | "keys" | "leads" | "audit" | "login";
+interface Props {
+  title: string;
+  current: Section;
+  email?: string;
+  csrf?: string;
+}
+const { title, current, email, csrf } = Astro.props;
+const links: { id: Section; href: string; label: string }[] = [
+  { id: "dashboard", href: "/admin", label: ADMIN.nav.dashboard },
+  { id: "pages", href: "/admin/pages", label: ADMIN.nav.pages },
+  { id: "posts", href: "/admin/posts", label: ADMIN.nav.posts },
+  { id: "keys", href: "/admin/keys", label: ADMIN.nav.keys },
+  { id: "leads", href: "/admin/leads", label: ADMIN.nav.leads },
+  { id: "audit", href: "/admin/audit", label: ADMIN.nav.audit },
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    {csrf && <meta name="csrf-token" content={csrf} />}
+    <title>{`${title} · ${ADMIN.brand}`}</title>
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, p = "system";
+        try { p = localStorage.getItem("dewee.theme") || "system"; } catch (e) {}
+        var dark = p === "dark" || (p === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        d.dataset.theme = dark ? "dark" : "light";
+        d.classList.add("js");
+      })();
+    </script>
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-mono" />
+    <link rel="icon" type="image/png" href="/brand/favicon.png" />
+  </head>
+  <body class="adm">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="adm__bar">
+      <div class="container container--wide adm__bar-inner">
+        <a class="adm__brand" href="/admin"><img src="/brand/favicon.png" alt="" width="24" height="24" />{ADMIN.brand}</a>
+        {email && (
+          <nav class="adm__nav" aria-label="Admin">
+            {links.map((l) => (
+              <a href={l.href} aria-current={l.id === current ? "page" : undefined}>{l.label}</a>
+            ))}
+          </nav>
+        )}
+        <div class="adm__user">
+          <a href="/" class="adm__muted"><Icon name="external-link" size={14} />{ADMIN.nav.site}</a>
+          {email && csrf && (
+            <form method="post" action="/admin/logout">
+              <input type="hidden" name="csrf" value={csrf} />
+              <button class="btn btn--sm" type="submit" title={`${ADMIN.nav.signedInAs} ${email}`}><Icon name="log-out" />{ADMIN.nav.signOut}</button>
+            </form>
+          )}
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1" class="container container--wide adm__main">
+      <slot />
+    </main>
+    {email && <script>import "~/components/webmcp/webmcp-admin";</script>}
+  </body>
+</html>
+
+<style is:global>
+  .adm { min-block-size: 100vh; background: var(--paper); }
+  .adm__bar { position: sticky; inset-block-start: 0; z-index: 10; background: var(--surface); border-block-end: 1px solid var(--rule); }
+  .adm__bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-6); min-block-size: 3.5rem; }
+  .adm__brand { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); text-decoration: none; }
+  .adm__nav { display: flex; flex-wrap: wrap; gap: var(--space-1); flex: 1; }
+  .adm__nav a { padding: 0.5rem 0.75rem; min-block-size: 2.75rem; display: inline-flex; align-items: center; border-radius: var(--radius-2); color: var(--ink-2); text-decoration: none; font-size: var(--step--1); font-weight: 500; }
+  .adm__nav a:hover { background: var(--surface-hover); color: var(--ink); }
+  .adm__nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); }
+  .adm__user { display: flex; align-items: center; gap: var(--space-4); margin-inline-start: auto; }
+  .adm__muted { display: inline-flex; align-items: center; gap: 0.35em; color: var(--ink-3); font-size: var(--step--1); }
+  .adm__main { padding-block: var(--space-7) var(--space-10); display: grid; gap: var(--space-6); align-content: start; }
+  .adm-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-4); }
+  .adm-head h1 { font-size: var(--step-4); }
+  .adm-head p { color: var(--ink-3); margin-block-start: var(--space-2); }
+  .adm-panel { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; }
+  .adm-panel h2 { font-size: var(--step-1); }
+  .adm-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); }
+  .adm-toolbar .field { min-inline-size: 10rem; }
+  .adm-toolbar .field--grow { flex: 1; min-inline-size: 14rem; }
+  .adm-table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); }
+  .adm-table { inline-size: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  .adm-table th, .adm-table td { padding: 0.6rem 0.85rem; text-align: start; vertical-align: top; border-block-end: 1px solid var(--rule); }
+  .adm-table th { background: var(--paper-2); color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .adm-table tr:last-child td { border-block-end: 0; }
+  .adm-table code, .adm-mono { font-family: var(--font-mono-stack); font-size: 0.92em; }
+  .adm-table .num { text-align: end; font-variant-numeric: tabular-nums; }
+  .adm-empty { color: var(--ink-3); padding: var(--space-5); }
+  .adm-pager { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); color: var(--ink-3); font-size: var(--step--1); }
+  .adm-status { display: inline-flex; align-items: center; gap: 0.35em; }
+  .adm-alert { padding: var(--space-3) var(--space-4); border-radius: var(--radius-2); border: 1px solid var(--rule); background: var(--paper-2); }
+  .adm-alert[data-kind="error"] { border-color: var(--danger); background: var(--danger-soft); color: var(--ink); }
+  .adm-alert[data-kind="success"] { border-color: transparent; background: var(--success-soft); color: var(--ink); }
+  .adm-inline-form { display: inline; }
+  .adm-stats { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  .adm-stat { display: grid; gap: var(--space-1); }
+  .adm-stat strong { font-family: var(--font-display-stack); font-size: var(--step-4); color: var(--ink); line-height: 1; }
+  .adm-stat span { color: var(--ink-3); font-size: var(--step--1); }
+  .adm-stat a { color: var(--ink-2); font-weight: 600; }
+</style>

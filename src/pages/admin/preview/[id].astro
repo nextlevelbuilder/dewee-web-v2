@@ -1,0 +1,20 @@
+---
+/** Saved preview of any page or post by id, drafts included (super admins only). */
+import PagePreview from "~/components/admin/PagePreview.astro";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import type { PageRow } from "~/lib/server/pages/page-schema";
+import { toRecord } from "~/lib/server/pages/page-schema";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const id = Astro.params.id ?? "";
+if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return new Response(null, { status: 404 });
+const row = await platformEnv().DB.prepare("SELECT * FROM pages WHERE id = ?").bind(id).first<PageRow>();
+if (!row) return new Response(null, { status: 404 });
+const rec = toRecord(row);
+---
+
+<PagePreview doc={rec} />

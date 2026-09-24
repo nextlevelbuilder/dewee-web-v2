@@ -1,0 +1,98 @@
+---
+/** Pages or posts list (/admin/pages, /admin/posts): search, filter by status and language, paging. */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { listPages, listQuerySchema } from "~/lib/server/pages/page-queries";
+
+export const prerender = false;
+
+const plural = Astro.params.kind;
+if (plural !== "pages" && plural !== "posts") return new Response(null, { status: 404 });
+const kind = plural === "pages" ? "page" : "post";
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+
+const raw = Object.fromEntries([...Astro.url.searchParams].filter(([k, v]) => ["q", "status", "locale", "offset"].includes(k) && v !== ""));
+const parsed = listQuerySchema.safeParse({ ...raw, limit: 50 });
+if (!parsed.success) return Astro.redirect(`/admin/${plural}`, 303);
+const query = parsed.data;
+const { data, pagination } = await listPages(platformEnv().DB, kind, query);
+const title = plural === "pages" ? ADMIN.nav.pages : ADMIN.nav.posts;
+const T = ADMIN.list;
+const pageHref = (offset: number) => {
+  const q = new URLSearchParams();
+  for (const k of ["q", "status", "locale"] as const) if (query[k]) q.set(k, String(query[k]));
+  if (offset > 0) q.set("offset", String(offset));
+  const s = q.toString();
+  return `/admin/${plural}${s ? `?${s}` : ""}`;
+};
+const statusClass = (s: string) => (s === "published" ? "chip chip--success" : s === "draft" ? "chip chip--warning" : "chip");
+---
+
+<AdminLayout title={title} current={plural} email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{title}</h1>
+    </div>
+    <a class="btn btn--primary" href={`/admin/${plural}/new`}><Icon name="plus" />{plural === "pages" ? ADMIN.dashboard.newPage : ADMIN.dashboard.newPost}</a>
+  </div>
+
+  <form class="adm-toolbar" method="get" role="search">
+    <div class="field field--grow">
+      <label for="cf-q">{T.search}</label>
+      <input id="cf-q" name="q" type="search" value={query.q ?? ""} maxlength="100" />
+    </div>
+    <div class="field">
+      <label for="cf-status">{T.status}</label>
+      <select id="cf-status" name="status">
+        <option value="">{T.any}</option>
+        {["draft", "published", "archived"].map((s) => <option value={s} selected={s === query.status}>{s}</option>)}
+      </select>
+    </div>
+    <div class="field">
+      <label for="cf-locale">{T.locale}</label>
+      <select id="cf-locale" name="locale">
+        <option value="">{T.any}</option>
+        <option value="en" selected={query.locale === "en"}>English</option>
+        <option value="vi" selected={query.locale === "vi"}>Tiếng Việt</option>
+      </select>
+    </div>
+    <button class="btn" type="submit"><Icon name="filter" />{T.filter}</button>
+  </form>
+
+  {data.length === 0 ? (
+    <p class="adm-empty">{T.empty}</p>
+  ) : (
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th scope="col">{T.title}</th><th scope="col">{T.slug}</th><th scope="col">{T.locale}</th><th scope="col">{T.status}</th>
+            <th scope="col" class="num">{T.version}</th><th scope="col">{T.updated}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((p) => (
+            <tr>
+              <td><a href={`/admin/${plural}/${p.id}`}>{p.title}</a></td>
+              <td class="adm-mono">{p.status === "published" ? <a href={p.url} target="_blank" rel="noopener">{p.slug}</a> : p.slug}</td>
+              <td>{p.locale.toUpperCase()}</td>
+              <td><span class={statusClass(p.status)}>{p.status}</span></td>
+              <td class="num">{p.version}</td>
+              <td class="adm-mono"><time datetime={p.updated_at}>{p.updated_at.replace("T", " ").slice(0, 16)}</time></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  <div class="adm-pager">
+    {query.offset > 0 ? <a class="btn" href={pageHref(Math.max(0, query.offset - query.limit))}><Icon name="arrow-left" />{T.newer}</a> : <span />}
+    <span>{T.showing} {data.length ? query.offset + 1 : 0}–{query.offset + data.length} {T.of} {pagination.total}</span>
+    {query.offset + data.length < pagination.total ? <a class="btn" href={pageHref(query.offset + query.limit)}>{T.older}<Icon name="arrow-right" /></a> : <span />}
+  </div>
+</AdminLayout>
