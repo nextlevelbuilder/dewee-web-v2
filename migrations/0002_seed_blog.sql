@@ -26,7 +26,7 @@ The runtime is a single Go binary of about 25 MB that starts in under a second. 
 
 ## What comes next
 
-Every stable release lands in the [changelog](/changelog). If there is work your team would rather not do, [tell us about it](/contact): that is usually where the first agent starts.', '{}', NULL, '["launch", "product"]', NULL, 'published', 'introducing-dewee', '2026-09-25T02:00:00.000Z', '2026-09-25T02:00:00.000Z', '2026-09-25T02:00:00.000Z', 1);
+Every stable release lands in the [changelog](/changelog). If there is work your team would rather not do, [tell us about it](/contact): that is usually where the first agent starts.', '{}', NULL, '["launch", "product"]', NULL, 'published', 'introducing-dewee', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c02', 'post', 'vi', 'introducing-dewee', 'Giới thiệu dewee', 'dewee là nền tảng AI agent cho doanh nghiệp từ đội ngũ làm ra GoClaw. dewee là gì, agent làm được gì trong đó, và chạy ở đâu.', 'article', '[]', 'dewee đưa AI agent vào làm việc ngay trong công ty bạn: trong những ứng dụng chat đội ngũ đang dùng, trên các mô hình bạn tin tưởng, sau một lớp bảo mật đóng ngay từ đầu.
 
@@ -51,7 +51,7 @@ Runtime là một file Go duy nhất khoảng 25 MB, khởi động dưới mộ
 
 ## Tiếp theo
 
-Mọi bản phát hành stable đều được ghi trong [nhật ký thay đổi](/vi/changelog). Nếu đội ngũ bạn có việc gì không muốn làm, [kể cho chúng tôi nghe](/vi/contact): agent đầu tiên thường bắt đầu từ đó.', '{}', NULL, '["ra mắt", "sản phẩm"]', NULL, 'published', 'introducing-dewee', '2026-09-25T02:00:00.000Z', '2026-09-25T02:00:00.000Z', '2026-09-25T02:00:00.000Z', 1);
+Mọi bản phát hành stable đều được ghi trong [nhật ký thay đổi](/vi/changelog). Nếu đội ngũ bạn có việc gì không muốn làm, [kể cho chúng tôi nghe](/vi/contact): agent đầu tiên thường bắt đầu từ đó.', '{}', NULL, '["ra mắt", "sản phẩm"]', NULL, 'published', 'introducing-dewee', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', '2026-09-24T09:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c03', 'post', 'en', 'from-goclaw-to-dewee', 'From GoClaw to dewee: why we closed the source', 'GoClaw stays open for the community; dewee carries the enterprise weight. The short version of why.', 'article', '[]', 'GoClaw started in February 2026 as an open agent gateway: inspired by OpenClaw, rebuilt from scratch in Go, and secure by default from day one. Versions 1 and 2 shipped in public in March, and v3 brought multi-tenancy, agent teams and five-layer security in April.
 
@@ -64,7 +64,7 @@ So in June 2026 we split the work:
 
 > Inspired by OpenClaw. Rebuilt from scratch. Grown up for business.
 
-That is the short version. [The whole story](/story) covers the people, the timeline and what changed along the way.', '{}', NULL, '["story"]', NULL, 'published', 'from-goclaw-to-dewee', '2026-09-25T03:00:00.000Z', '2026-09-25T03:00:00.000Z', '2026-09-25T03:00:00.000Z', 1);
+That is the short version. [The whole story](/story) covers the people, the timeline and what changed along the way.', '{}', NULL, '["story"]', NULL, 'published', 'from-goclaw-to-dewee', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c04', 'post', 'vi', 'from-goclaw-to-dewee', 'Từ GoClaw đến dewee: vì sao chúng tôi đóng mã nguồn', 'GoClaw vẫn mở cho cộng đồng; dewee gánh phần doanh nghiệp. Phiên bản ngắn của câu chuyện.', 'article', '[]', 'GoClaw ra đời vào tháng 2/2026 như một agent gateway mã nguồn mở: lấy cảm hứng từ OpenClaw, viết lại từ đầu bằng Go, và bảo mật mặc định ngay từ ngày đầu tiên. Phiên bản 1 và 2 ra mắt công khai trong tháng 3, rồi v3 mang đến đa người thuê, đội agent và bảo mật 5 lớp vào tháng 4.
 
@@ -77,7 +77,7 @@ Vì vậy, tháng 6/2026 chúng tôi chia việc:
 
 > Lấy cảm hứng từ OpenClaw. Viết lại từ đầu. Trưởng thành cho doanh nghiệp.
 
-Đó là phiên bản ngắn. [Toàn bộ câu chuyện](/vi/story) kể về con người, các mốc thời gian và những gì đã thay đổi trên đường đi.', '{}', NULL, '["câu chuyện"]', NULL, 'published', 'from-goclaw-to-dewee', '2026-09-25T03:00:00.000Z', '2026-09-25T03:00:00.000Z', '2026-09-25T03:00:00.000Z', 1);
+Đó là phiên bản ngắn. [Toàn bộ câu chuyện](/vi/story) kể về con người, các mốc thời gian và những gì đã thay đổi trên đường đi.', '{}', NULL, '["câu chuyện"]', NULL, 'published', 'from-goclaw-to-dewee', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', '2026-09-24T10:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c05', 'post', 'en', 'how-we-test-dewee', 'How we test dewee: 8,900+ tests and counting', 'Unit, contract, invariant, integration and scenario tests: how dewee is checked before an agent ever meets a customer.', 'article', '[]', 'Agents that touch real customers and real money cannot be a weekend demo. So before we talk about features, here is how we check them.
 
@@ -102,7 +102,7 @@ When something breaks, the fix ships with a test that proves it. In September al
 
 Since v3.31 the release pipeline fails loudly when production surfaces diverge and refuses a relative release path. Since v3.32 every deploy gate retries the readiness check, not just the file transfer.
 
-Tests do not make software perfect. They make mistakes cheaper to catch, which is how we could ship [six stable releases in September](/blog/september-2026-releases) without asking anyone to hold their breath.', '{}', NULL, '["engineering", "testing"]', NULL, 'published', 'how-we-test-dewee', '2026-09-25T04:00:00.000Z', '2026-09-25T04:00:00.000Z', '2026-09-25T04:00:00.000Z', 1);
+Tests do not make software perfect. They make mistakes cheaper to catch, which is how we could ship [six stable releases in September](/blog/september-2026-releases) without asking anyone to hold their breath.', '{}', NULL, '["engineering", "testing"]', NULL, 'published', 'how-we-test-dewee', '2026-09-24T11:00:00.000Z', '2026-09-24T11:00:00.000Z', '2026-09-24T11:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c06', 'post', 'vi', 'how-we-test-dewee', 'Cách chúng tôi kiểm thử dewee: hơn 8.900 bài test và vẫn đang tăng', 'Unit, contract, invariant, integration và scenario test: dewee được kiểm tra thế nào trước khi agent gặp khách hàng.', 'article', '[]', 'Agent làm việc với khách hàng thật và tiền thật không thể là bản demo làm vội cuối tuần. Vì vậy, trước khi nói về tính năng, đây là cách chúng tôi kiểm tra chúng.
 
@@ -127,7 +127,7 @@ Khi có lỗi, bản vá luôn đi kèm một bài test chứng minh lỗi đã 
 
 Từ v3.31, pipeline phát hành báo lỗi rõ ràng khi các môi trường production lệch nhau và từ chối đường dẫn phát hành tương đối. Từ v3.32, mọi cổng deploy đều thử lại bước kiểm tra sẵn sàng, chứ không chỉ bước chuyển file.
 
-Test không làm phần mềm hoàn hảo. Test giúp phát hiện sai sót rẻ hơn, và nhờ vậy chúng tôi có thể phát hành [sáu bản stable trong tháng 9](/vi/blog/september-2026-releases) mà không bắt ai phải nín thở.', '{}', NULL, '["kỹ thuật", "kiểm thử"]', NULL, 'published', 'how-we-test-dewee', '2026-09-25T04:00:00.000Z', '2026-09-25T04:00:00.000Z', '2026-09-25T04:00:00.000Z', 1);
+Test không làm phần mềm hoàn hảo. Test giúp phát hiện sai sót rẻ hơn, và nhờ vậy chúng tôi có thể phát hành [sáu bản stable trong tháng 9](/vi/blog/september-2026-releases) mà không bắt ai phải nín thở.', '{}', NULL, '["kỹ thuật", "kiểm thử"]', NULL, 'published', 'how-we-test-dewee', '2026-09-24T11:00:00.000Z', '2026-09-24T11:00:00.000Z', '2026-09-24T11:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c07', 'post', 'en', 'september-2026-releases', 'September 2026: six stable releases', 'v3.28 to v3.33 in plain words: visual workflows, a public MCP server, new model providers and a round of security fixes.', 'article', '[]', 'September was a busy month in the changelog: six stable releases, v3.28 to v3.33, between 3 and 24 September. Here is what each one brought, in plain words. The full notes are in the [changelog](/changelog).
 
@@ -167,7 +167,7 @@ INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout,
 - Follow-up fixes for the public MCP beta.
 - The customer control plane gains time zones, a changelog, and English and Vietnamese interface languages.
 
-Work on v3.34 is already in beta. If one of these changes matters to your team, [ask us about it](/contact).', '{}', NULL, '["releases", "changelog"]', NULL, 'published', 'september-2026-releases', '2026-09-25T05:00:00.000Z', '2026-09-25T05:00:00.000Z', '2026-09-25T05:00:00.000Z', 1);
+Work on v3.34 is already in beta. If one of these changes matters to your team, [ask us about it](/contact).', '{}', NULL, '["releases", "changelog"]', NULL, 'published', 'september-2026-releases', '2026-09-24T12:00:00.000Z', '2026-09-24T12:00:00.000Z', '2026-09-24T12:00:00.000Z', 1);
 
 INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout, blocks, body_md, seo, cover, tags, author, status, translation_key, published_at, created_at, updated_at, version) VALUES ('5d1b7c1e-2f7a-4c8e-9a51-0b6f3e2a7c08', 'post', 'vi', 'september-2026-releases', 'Tháng 9/2026: sáu bản phát hành stable', 'Từ v3.28 đến v3.33, nói dễ hiểu: workflow trực quan, MCP server công khai, nhà cung cấp mô hình mới và một loạt bản vá bảo mật.', 'article', '[]', 'Tháng 9 là một tháng bận rộn trong nhật ký thay đổi: sáu bản phát hành stable, từ v3.28 đến v3.33, trong khoảng từ ngày 3 đến ngày 24/9. Dưới đây là những gì mỗi bản mang lại, nói cho dễ hiểu. Ghi chú đầy đủ nằm trong [nhật ký thay đổi](/vi/changelog).
 
@@ -207,7 +207,7 @@ INSERT OR IGNORE INTO pages (id, kind, locale, slug, title, description, layout,
 - Các bản vá tiếp theo cho bản beta của MCP công khai.
 - Control plane cho khách hàng có thêm múi giờ, nhật ký thay đổi, và giao diện tiếng Anh lẫn tiếng Việt.
 
-v3.34 đã ở giai đoạn beta. Nếu thay đổi nào trong số này quan trọng với đội ngũ bạn, [hãy hỏi chúng tôi](/vi/contact).', '{}', NULL, '["phát hành", "changelog"]', NULL, 'published', 'september-2026-releases', '2026-09-25T05:00:00.000Z', '2026-09-25T05:00:00.000Z', '2026-09-25T05:00:00.000Z', 1);
+v3.34 đã ở giai đoạn beta. Nếu thay đổi nào trong số này quan trọng với đội ngũ bạn, [hãy hỏi chúng tôi](/vi/contact).', '{}', NULL, '["phát hành", "changelog"]', NULL, 'published', 'september-2026-releases', '2026-09-24T12:00:00.000Z', '2026-09-24T12:00:00.000Z', '2026-09-24T12:00:00.000Z', 1);
 
 INSERT INTO page_revisions (page_id, version, snapshot, actor, note)
 SELECT id, 1, json_object('id', id, 'kind', kind, 'locale', locale, 'slug', slug, 'title', title, 'description', description, 'layout', layout, 'blocks', blocks, 'body_md', body_md, 'seo', seo, 'cover', cover, 'tags', tags, 'author', author, 'status', status, 'translation_key', translation_key, 'published_at', published_at, 'created_at', created_at, 'updated_at', updated_at, 'version', version), 'seed', 'seeded' FROM pages
