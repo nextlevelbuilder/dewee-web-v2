@@ -1,10 +1,10 @@
 /**
  * Content integrity for the use-case section: shape, bilingual parity, SEO lengths and links.
- * Runs in plain vitest, so the modules under test may only use type imports from `~/…`.
  */
 import { describe, expect, it } from "vitest";
 import { CHANNEL_MARKS, USE_CASE_AREAS, USE_CASES, useCaseBySlug } from "./index";
 import { USE_CASES_PAGE, USE_CASE_TIMETABLE } from "../pages/use-cases";
+import { CCP_SCREENS } from "../ccp-screens";
 
 const LOCALES = ["en", "vi"] as const;
 /** SeoHead appends this to every page title. */
@@ -100,6 +100,10 @@ describe("use cases", () => {
           expect(r).not.toBe(u.slug);
           expect(slugs, r).toContain(r);
         }
+      });
+
+      it("names a real console screen when it shows one", () => {
+        if (d.console) expect(CCP_SCREENS.map((s) => s.id)).toContain(d.console);
       });
     });
   }

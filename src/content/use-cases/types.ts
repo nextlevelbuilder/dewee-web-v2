@@ -5,6 +5,7 @@
  */
 import type { Bi } from "~/i18n/config";
 import type { IconName } from "~/components/ui/icon-paths";
+import type { CcpScreenId } from "~/content/ccp-screens";
 
 /** Chat channels a use case can run on. Display names and marks live in CHANNEL_MARKS (index.ts). */
 export type ChannelId = "telegram" | "zalo" | "slack" | "lark" | "discord" | "whatsapp" | "facebook" | "pancake" | "bitrix24";
@@ -39,6 +40,11 @@ export type UseCaseDetail = {
   description: Bi;
   /** Slugs of three sibling use cases shown under "related" */
   related: [string, string, string];
+  /**
+   * Optional console screen that shows where this job is set up. Only for cases
+   * where one real screen carries the story (see src/content/ccp-screens.ts).
+   */
+  console?: CcpScreenId;
 };
 
 export type UseCase = {

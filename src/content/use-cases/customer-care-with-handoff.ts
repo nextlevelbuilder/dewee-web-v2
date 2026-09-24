@@ -88,5 +88,6 @@ export const customerCareWithHandoff: UseCase = {
       vi: "dewee trả lời khách trên Zalo, Facebook, WhatsApp và Pancake suốt ngày đêm, và chuyển ca khó cho đội của bạn kèm tóm tắt, để khách không phải kể lại từ đầu.",
     },
     related: ["social-media-care", "sales-knowledge-assistant", "ai-coworker-in-group-chats"],
+    console: "channels",
   },
 };

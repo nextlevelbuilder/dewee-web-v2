@@ -157,7 +157,8 @@ export const USE_CASE_DETAIL_UI: Bi<{
   read: string;
   label: { kicker: string; no: string; subject: string; name: string; class: string; school: string; schoolValue: string; runsOn: string };
   problem: { cite: string };
-  flow: { eyebrow: string; title: string; step: string };
+  /** `console` labels the optional console screenshot under the steps. */
+  flow: { eyebrow: string; title: string; step: string; console: string };
   crew: { eyebrow: string; title: string; agents: string; capabilities: string; chatLabel: (room: string) => string; caption: string };
   guardrails: { eyebrow: string; title: string; lede: string; note: string };
   outcome: { eyebrow: string; remark: string; runsOn: string; integrations: string };
@@ -180,7 +181,7 @@ export const USE_CASE_DETAIL_UI: Bi<{
       runsOn: "Runs on",
     },
     problem: { cite: "What we hear, again and again" },
-    flow: { eyebrow: "How it works", title: "One ordinary day, *step by step*.", step: "Step" },
+    flow: { eyebrow: "How it works", title: "One ordinary day, *step by step*.", step: "Step", console: "Where you set it up" },
     crew: {
       eyebrow: "In the chat",
       title: "What it looks like *in practice*.",
@@ -221,7 +222,7 @@ export const USE_CASE_DETAIL_UI: Bi<{
       runsOn: "Chạy trên",
     },
     problem: { cite: "Điều chúng tôi nghe đi nghe lại" },
-    flow: { eyebrow: "Cách vận hành", title: "Một ngày bình thường, *từng bước một*.", step: "Bước" },
+    flow: { eyebrow: "Cách vận hành", title: "Một ngày bình thường, *từng bước một*.", step: "Bước", console: "Nơi bạn thiết lập" },
     crew: {
       eyebrow: "Trong nhóm chat",
       title: "Trông thế nào *khi chạy thật*.",

@@ -87,5 +87,6 @@ export const salesKnowledgeAssistant: UseCase = {
       vi: "dewee giúp mỗi sales trả lời có nguồn về giá, thông số và chính sách, soạn báo giá theo bảng giá hiện hành và chuyển chiết khấu vượt mức cho quản lý duyệt.",
     },
     related: ["customer-care-with-handoff", "real-estate-market-signals", "meeting-notes-and-decisions"],
+    console: "knowledge-base",
   },
 };

@@ -65,14 +65,14 @@ export const taskChasing: UseCase = {
     chat: { channel: "lark", room: { en: "Ops · Week 39", vi: "Vận hành · Tuần 39" } },
     transcript: {
       en: [
-        { who: "dewee", me: true, text: "Morning check-in ✓ @Hoang, the supplier contract is due Thursday. How is it going? @Nga, the payroll file is due today." },
+        { who: "dewee", me: true, text: "Morning check-in: @Hoang, the supplier contract is due Thursday. How is it going? @Nga, the payroll file is due today." },
         { who: "Nga", role: "Accounting", text: "Payroll is ready, uploading now." },
         { who: "Hoang", role: "Purchasing", text: "Stuck. Legal hasn't replied since Tuesday." },
         { who: "dewee", me: true, text: "Marked blocked and told Mr Tien. I've also pinged @Vu in Legal, since the review is due Friday." },
         { who: "Tien", role: "Operations manager", text: "Thanks. Vu, can you call Hoang before lunch?" },
       ],
       vi: [
-        { who: "dewee", me: true, text: "Cập nhật đầu ngày ✓ @Hoàng ơi, hợp đồng nhà cung cấp hạn thứ Năm, tới đâu rồi anh? @Nga, file lương hạn hôm nay chị nhé." },
+        { who: "dewee", me: true, text: "Cập nhật đầu ngày: @Hoàng ơi, hợp đồng nhà cung cấp hạn thứ Năm, tới đâu rồi anh? @Nga, file lương hạn hôm nay chị nhé." },
         { who: "Chị Nga", role: "Kế toán", text: "File lương xong rồi, chị đang tải lên." },
         { who: "Anh Hoàng", role: "Mua hàng", text: "Đang kẹt em. Pháp chế chưa phản hồi từ thứ Ba." },
         { who: "dewee", me: true, text: "Em đánh dấu việc này đang bị chặn và đã báo anh Tiến. Em cũng nhắc @Vũ bên Pháp chế vì hạn review là thứ Sáu ạ." },
@@ -88,5 +88,6 @@ export const taskChasing: UseCase = {
       vi: "Agent dewee thu thập cập nhật hằng ngày trong nhóm chat, nhắc người phụ trách trước hạn, báo ngay khi có điểm nghẽn và gửi quản lý bảng tiến độ gọn gàng.",
     },
     related: ["meeting-notes-and-decisions", "ai-coworker-in-group-chats", "hr-recruiting"],
+    console: "schedules",
   },
 };

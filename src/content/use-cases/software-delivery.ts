@@ -66,14 +66,14 @@ export const softwareDelivery: UseCase = {
     chat: { channel: "slack", room: { en: "#eng-nightly", vi: "#eng-nightly" } },
     transcript: {
       en: [
-        { who: "dewee", me: true, text: "Morning ✓ Three PRs are ready for review: #412 date parsing, #415 Zalo retry, #418 invoice email typo. #409 is blocked: the staging database has no seed data." },
+        { who: "dewee", me: true, text: "Morning. Three PRs are ready for review: #412 date parsing, #415 Zalo retry, #418 invoice email typo. #409 is blocked: the staging database has no seed data." },
         { who: "Tuan", role: "Tech lead", text: "@dewee why did #415 need a retry change?" },
         { who: "dewee", me: true, text: "The logs on the issue show Zalo returning 429 twice. I added backoff and two tests. The trace is linked on the PR." },
         { who: "Tuan", role: "Tech lead", text: "Nice. I'll review #415 first. Vy, can you look at the seed for #409?" },
         { who: "Vy", role: "Backend", text: "On it." },
       ],
       vi: [
-        { who: "dewee", me: true, text: "Chào buổi sáng ✓ Có 3 PR chờ review: #412 xử lý ngày tháng, #415 retry Zalo, #418 lỗi chính tả email hoá đơn. #409 đang bị chặn: DB staging chưa có dữ liệu seed." },
+        { who: "dewee", me: true, text: "Chào cả nhà. Có 3 PR chờ review: #412 xử lý ngày tháng, #415 retry Zalo, #418 lỗi chính tả email hoá đơn. #409 đang bị chặn: DB staging chưa có dữ liệu seed." },
         { who: "Anh Tuấn", role: "Tech lead", text: "@dewee sao #415 phải sửa phần retry vậy em?" },
         { who: "dewee", me: true, text: "Log đính kèm trong issue cho thấy Zalo trả về 429 hai lần anh ạ. Em thêm backoff và hai bài test. Trace có link trong PR." },
         { who: "Anh Tuấn", role: "Tech lead", text: "Ổn. Anh review #415 trước. Vy xem giúp phần seed cho #409 nhé?" },
@@ -89,5 +89,6 @@ export const softwareDelivery: UseCase = {
       vi: "Agent dewee phân loại issue, viết bản sửa kèm test, chạy trong sandbox và mở pull request qua đêm, để kỹ sư bắt đầu ngày mới bằng việc review thay vì phân loại.",
     },
     related: ["seo-around-the-clock", "task-chasing", "ai-coworker-in-group-chats"],
+    console: "teams",
   },
 };

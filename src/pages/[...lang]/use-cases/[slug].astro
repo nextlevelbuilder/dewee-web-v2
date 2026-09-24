@@ -1,7 +1,7 @@
 ---
 /**
  * /use-cases/[slug] (EN) and /vi/use-cases/[slug] (VI): one use case told as a short case story.
- * Problem (pull quote) → how it works → the chat and the crew → where people stay in charge
+ * Problem (pull quote) → how it works (plus the console screen, when the case names one) → the chat and the crew → where people stay in charge
  * (the page's one blackboard) → what changes → related cases → call to action.
  * Copy: src/content/use-cases/<slug>.ts and src/content/pages/use-cases.ts.
  */
@@ -22,6 +22,8 @@ import CrewAndTools from "~/components/blocks/use-cases/CrewAndTools.astro";
 import Guardrails from "~/components/blocks/use-cases/Guardrails.astro";
 import CaseOutcome from "~/components/blocks/use-cases/CaseOutcome.astro";
 import UseCaseGrid from "~/components/blocks/use-cases/UseCaseGrid.astro";
+import CcpShot from "~/components/blocks/CcpShot.astro";
+import { ccpShotProps } from "~/content/ccp-screens";
 import { areaStyle, exerciseNo } from "~/components/blocks/use-cases/area-accent";
 
 export const prerender = true;
@@ -120,7 +122,15 @@ const jsonLd = [
       <div class="ucd-split__head">
         <SectionHead eyebrow={ui.flow.eyebrow} title={ui.flow.title} id="uc-flow" />
       </div>
-      <FlowSteps steps={pick(d.flow, locale)} label={ui.flow.step} />
+      <div class="ucd-flow">
+        <FlowSteps steps={pick(d.flow, locale)} label={ui.flow.step} />
+        {d.console && (
+          <div class="ucd-console">
+            <p class="eyebrow">{ui.flow.console}</p>
+            <CcpShot {...ccpShotProps(d.console, locale)} sizes="(min-width: 1200px) 42rem, (min-width: 901px) 55vw, 94vw" />
+          </div>
+        )}
+      </div>
     </div>
   </section>
 
@@ -183,6 +193,8 @@ const jsonLd = [
   .ucd-stack { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); }
   .ucd-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   .ucd-split__head { position: sticky; inset-block-start: calc(var(--header-h, 4.5rem) + var(--space-5)); }
+  .ucd-flow { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); min-inline-size: 0; }
+  .ucd-console { display: grid; gap: var(--space-4); }
   .ucd-chat { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 4.5rem); align-items: start; }
 
   @media (max-width: 900px) {
