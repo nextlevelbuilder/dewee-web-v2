@@ -1,0 +1,146 @@
+---
+/**
+ * Pricing & deployment. Plans and prices come from src/content/plans.ts (`plansFor` keeps the
+ * VI locale On-Premises only); the words around them live in src/content/pages/pricing.ts.
+ * Other pages deep-link to /pricing#saas, #dedicated and #on-premises (see PlanAnchors).
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { PLAN_COMPARISON, plansFor } from "~/content/plans";
+import { PRICING } from "~/content/pages/pricing";
+import { faqJsonLd, productJsonLd } from "~/lib/json-ld";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import DeployPlans from "~/components/blocks/DeployPlans.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import PlanAnchors from "~/components/blocks/pricing/PlanAnchors.astro";
+import PlanComparison from "~/components/blocks/pricing/PlanComparison.astro";
+import DeploymentTopology from "~/components/blocks/pricing/DeploymentTopology.astro";
+import RefundNote from "~/components/blocks/pricing/RefundNote.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(PRICING, locale);
+const href = (p: string) => localePath(locale, p);
+const contact = (plan: string) => `${href("/contact")}?plan=${encodeURIComponent(plan)}`;
+const vi = locale === "vi";
+
+const source = plansFor(locale);
+const plans = source.map((p) => ({
+  id: p.id,
+  icon: p.icon,
+  name: pick(p.name, locale),
+  price: pick(p.price, locale),
+  period: pick(p.period, locale),
+  tagline: pick(p.tagline, locale),
+  includes: pick(p.includes, locale),
+  tradeoffs: pick(p.tradeoffs, locale),
+  cta: { label: pick(p.cta, locale), href: contact(p.id) },
+  highlight: p.highlight,
+}));
+const comparison = PLAN_COMPARISON.map((r) => ({
+  label: pick(r.label, locale),
+  icon: r.icon,
+  values: source.map((p) => pick(r.values[p.id], locale)),
+}));
+
+const heroActions = vi
+  ? [{ label: t.hero.primary, href: contact("on-premises") }, { label: t.hero.secondary, href: "#on-premises" }]
+  : [{ label: t.hero.primary, href: "#compare" }, { label: t.hero.secondary, href: href("/contact") }];
+
+const product = productJsonLd({
+  description: t.meta.description,
+  url: `${SITE.url}${href("/pricing")}`,
+  offers: source.map((p) => ({ name: pick(p.name, locale), price: String(p.priceUsd) })),
+});
+const jsonLd = [product, faqJsonLd(t.faq.items)];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/pricing"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/pricing" }]} jsonLd={jsonLd}>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={heroActions}
+    mascot={{ mood: "wink" }}
+  />
+
+  <section class="section band" id="plans">
+    <div class="container pr-stack">
+      <SectionHead eyebrow={t.plans.eyebrow} title={t.plans.title} lede={t.plans.lede} />
+      <PlanAnchors ids={plans.map((p) => p.id)}>
+        <DeployPlans plans={plans} includesLabel={t.plans.includes} tradeoffsLabel={t.plans.tradeoffs} badge={t.plans.badge} />
+      </PlanAnchors>
+    </div>
+  </section>
+
+  <section class="section" id="compare">
+    <div class="container pr-stack">
+      <SectionHead eyebrow={t.compare.eyebrow} title={t.compare.title} lede={t.compare.lede} note={t.compare.note} />
+      <PlanComparison
+        caption={t.compare.caption}
+        corner={t.compare.corner}
+        plans={plans.map((p) => ({ id: p.id, name: p.name, icon: p.icon, highlight: p.highlight }))}
+        rows={comparison}
+      />
+    </div>
+  </section>
+
+  <section class="section band" id="how-it-connects">
+    <div class="container pr-stack">
+      <SectionHead eyebrow={t.topology.eyebrow} title={t.topology.title} lede={t.topology.lede} />
+      <DeploymentTopology
+        label={t.topology.label}
+        runtime={t.topology.runtime}
+        wire={t.topology.wire}
+        control={t.topology.control}
+        licence={t.topology.licence}
+        cli={t.topology.cli}
+        note={t.topology.note}
+      />
+    </div>
+  </section>
+
+  <section class="section" id="refunds">
+    <div class="container pr-money">
+      <div class="pr-money__receipt">
+        <RefundNote
+          eyebrow={t.refunds.eyebrow}
+          title={t.refunds.title}
+          lede={t.refunds.lede}
+          items={t.refunds.items}
+          link={{ label: t.refunds.link, href: `${href("/policy")}#refunds` }}
+        />
+      </div>
+      <div class="pr-stack pr-stack--tight">
+        <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} size="m" />
+        <Faq items={t.faq.items} />
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: vi ? contact("on-premises") : href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .pr-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .pr-stack--tight { gap: var(--space-6); }
+  .pr-money { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .pr-money__receipt { position: sticky; inset-block-start: 6.5rem; }
+  @media (max-width: 900px) {
+    .pr-money { grid-template-columns: minmax(0, 1fr); }
+    .pr-money__receipt { position: static; }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+/**
+ * The refund policy in one glance, printed like a shop receipt (hoá đơn): a heading, one line
+ * per plan and a link to the full policy. The perforated bottom edge is a CSS mask, so the
+ * receipt sits on any band colour.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  items: { label: string; text: string }[];
+  link: { label: string; href: string };
+}
+const { eyebrow, title, lede, items, link } = Astro.props;
+---
+
+<div class="rcpt" data-reveal>
+  <div class="rcpt__paper">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h2 class="rcpt__title" set:html={inlineMarkup(title)} />
+    {lede && <p class="rcpt__lede">{lede}</p>}
+    <dl class="rcpt__lines">
+      {items.map((it) => (
+        <div class="rcpt__line">
+          <dt>{it.label}</dt>
+          <dd>{it.text}</dd>
+        </div>
+      ))}
+    </dl>
+    <a class="rcpt__link" href={link.href}><Icon name="scroll-text" size={16} />{link.label}<Icon name="arrow-right" size={16} class="arrow" /></a>
+  </div>
+</div>
+
+<style>
+  .rcpt__paper {
+    display: grid; gap: var(--space-4); padding: var(--space-6) var(--space-5) calc(var(--space-6) + 8px);
+    background: var(--surface); border: 1px solid var(--rule); border-block-end: 0; border-radius: var(--radius-2) var(--radius-2) 0 0;
+    /* perforated tear-off edge */
+    -webkit-mask: radial-gradient(circle at 8px 100%, transparent 5px, #000 5.5px) 0 0 / 16px 100% repeat-x;
+    mask: radial-gradient(circle at 8px 100%, transparent 5px, #000 5.5px) 0 0 / 16px 100% repeat-x;
+  }
+  .rcpt__title { font-size: var(--step-4); }
+  .rcpt__lede { font-size: var(--step--1); color: var(--ink-3); }
+  .rcpt__lines { display: grid; border-block: 1.5px dashed var(--rule-strong); }
+  .rcpt__line { display: grid; gap: var(--space-1); padding-block: var(--space-4); }
+  .rcpt__line + .rcpt__line { border-block-start: 1px dashed var(--rule); }
+  .rcpt__line dt { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); }
+  .rcpt__line dd { margin: 0; font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; }
+  .rcpt__link {
+    display: inline-flex; align-items: center; gap: var(--space-2); justify-self: start; min-block-size: 2.75rem;
+    font-size: var(--step--1); font-weight: 600; color: var(--accent-ink); text-decoration: none;
+  }
+  .rcpt__link:hover { text-decoration: underline; }
+  .rcpt__link :global(svg) { flex: none; }
+  .rcpt__link :global(.arrow) { transition: transform var(--dur-2) var(--ease-out); }
+  .rcpt__link:hover :global(.arrow) { transform: translateX(3px); }
+</style>
