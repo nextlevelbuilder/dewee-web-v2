@@ -1,0 +1,79 @@
+---
+/**
+ * A labelled, copyable code sample for documentation pages (not a page-builder block).
+ * The code is rendered as escaped text. The copy button stays hidden until the script confirms
+ * the Clipboard API exists, so the sample still reads and selects normally without JavaScript.
+ */
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  label: string;
+  code: string;
+  /** Button text: idle, after a successful copy, after a failed one */
+  copy: { copy: string; copied: string; failed: string };
+}
+const { label, code, copy } = Astro.props;
+---
+
+<figure class="cs" data-reveal>
+  <figcaption class="cs__bar">
+    <span class="cs__label">{label}</span>
+    <button class="cs__copy" type="button" hidden data-code-copy data-copy={copy.copy} data-copied={copy.copied} data-failed={copy.failed}>
+      <Icon name="copy" size={14} />
+      <span aria-live="polite">{copy.copy}</span>
+    </button>
+  </figcaption>
+  <pre class="cs__pre" tabindex="0"><code>{code}</code></pre>
+</figure>
+
+<script>
+  /** Wires every copy button once; the label flips to "copied" (or "failed") for two seconds. */
+  function initCodeCopy() {
+    if (!navigator.clipboard?.writeText) return;
+    for (const btn of document.querySelectorAll<HTMLButtonElement>("[data-code-copy]:not([data-bound])")) {
+      btn.dataset.bound = "";
+      btn.hidden = false;
+      const text = btn.querySelector("span");
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      btn.addEventListener("click", async () => {
+        const code = btn.closest("figure")?.querySelector("code")?.textContent ?? "";
+        let ok = true;
+        try {
+          await navigator.clipboard.writeText(code);
+        } catch {
+          ok = false;
+        }
+        if (!text) return;
+        text.textContent = (ok ? btn.dataset.copied : btn.dataset.failed) ?? "";
+        clearTimeout(timer);
+        timer = setTimeout(() => (text.textContent = btn.dataset.copy ?? ""), 2000);
+      });
+    }
+  }
+  initCodeCopy();
+</script>
+
+<style>
+  .cs { margin: 0; min-inline-size: 0; display: grid; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper-3); overflow: hidden; }
+  .cs__bar {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+    min-block-size: 2.75rem; padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+    border-block-end: 1px solid var(--rule); background: var(--surface);
+  }
+  .cs__label { font-size: var(--step--1); font-weight: 600; color: var(--ink); }
+  .cs__copy {
+    display: inline-flex; align-items: center; gap: var(--space-1); flex: none;
+    min-block-size: 2.25rem; padding: 0.35rem 0.7rem; border: 1px solid transparent; border-radius: var(--radius-1);
+    background: transparent; color: var(--ink-2); font: inherit; font-size: var(--step--2); cursor: pointer;
+  }
+  .cs__copy:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .cs__copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .cs__copy[hidden] { display: none; }
+  .cs__pre {
+    margin: 0; padding: var(--space-4); overflow-x: auto;
+    font-size: var(--step--1); line-height: 1.6; color: var(--ink); tab-size: 2;
+  }
+  .cs__pre:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  @media (max-width: 560px) {
+    .cs__copy { min-block-size: 2.75rem; }
+  }
+</style>

@@ -1,0 +1,202 @@
+---
+/**
+ * /developers: the five ways agents and developers work with dewee.sh (REST API, CLI, MCP,
+ * WebMCP, Markdown twins). Copy and code samples live in src/content/pages/developers.ts.
+ * Rhythm: hero, index, API (band), CLI, MCP (the page's one blackboard), WebMCP, Markdown (band), CTA.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { DEVELOPERS } from "~/content/pages/developers";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import TocIndex from "~/components/blocks/TocIndex.astro";
+import Steps from "~/components/blocks/Steps.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import RuledTable from "~/components/blocks/company/RuledTable.astro";
+import Callout from "~/components/blocks/primitives/Callout.astro";
+import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { inlineMarkup } from "~/lib/inline-markup";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(DEVELOPERS, locale);
+const href = (p: string) => localePath(locale, p);
+const OPENAPI = "/api/v1/openapi.json";
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/developers" breadcrumbs={[{ name: t.meta.crumb, path: "/developers" }]}>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    mascot={{ mood: "focused", accessory: "glasses" }}
+    actions={[
+      { label: t.hero.openapi, href: OPENAPI, variant: "primary" },
+      { label: t.hero.jump, href: "#mcp", variant: "ghost" },
+    ]}
+  />
+
+  <section class="section">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.index.eyebrow} title={t.index.title} lede={t.index.lede} />
+      <TocIndex items={t.index.items} />
+      <Callout tone="note" title={t.index.access.title} body={t.index.access.body} />
+    </div>
+  </section>
+
+  <section class="section band" id="api">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.api.eyebrow} title={t.api.title} lede={t.api.lede} />
+      <div class="dev-split">
+        <dl class="dev-facts" aria-label={t.api.factsLabel}>
+          {t.api.facts.map((f) => (
+            <div class="dev-fact" data-reveal>
+              <dt class="dev-fact__term">{f.term}</dt>
+              <dd class="dev-fact__code"><code>{f.code}</code></dd>
+              <dd class="dev-fact__body" set:html={inlineMarkup(f.body)} />
+            </div>
+          ))}
+        </dl>
+        <div class="dev-side">
+          <RuledTable caption={t.api.scopes.caption} head={t.api.scopes.head} rows={t.api.scopes.rows} />
+          <p class="dev-aside-note">{t.api.scopes.note}</p>
+        </div>
+      </div>
+      <h3 class="dev-subtitle">{t.api.examplesTitle}</h3>
+      <div class="dev-samples">
+        {t.api.snippets.map((s) => <CodeSample label={s.label} code={s.code} copy={t.copy} />)}
+      </div>
+      <p class="dev-actions">
+        <a class="btn" href={OPENAPI} download="dewee-openapi.json"><Icon name="download" />{t.api.openapi}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="cli">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.cli.eyebrow} title={t.cli.title} lede={t.cli.lede} />
+      <Steps items={t.cli.steps} label={t.cli.stepLabel} />
+      <div class="dev-samples">
+        {t.cli.snippets.map((s) => <CodeSample label={s.label} code={s.code} copy={t.copy} />)}
+      </div>
+      <Callout tone="tip" title={t.cli.envNote.title} body={t.cli.envNote.body} />
+    </div>
+  </section>
+
+  <section class="section board" id="mcp">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.mcp.eyebrow} title={t.mcp.title} lede={t.mcp.lede} />
+      <div class="dev-modes">
+        {[t.mcp.remote, t.mcp.stdio].map((mode) => (
+          <div class="dev-mode">
+            <h3 class="dev-subtitle">{mode.title}</h3>
+            <p class="dev-mode__body">{mode.body}</p>
+            {mode.snippets.map((s) => <CodeSample label={s.label} code={s.code} copy={t.copy} />)}
+          </div>
+        ))}
+      </div>
+      <div class="dev-tools-wrap">
+        <h3 class="dev-subtitle">{t.mcp.toolsTitle}</h3>
+        <ul class="dev-tools dev-tools--3" role="list" data-reveal-group>
+          {t.mcp.tools.map((tool) => (
+            <li class="dev-tool" data-reveal><code>{tool.name}</code><span>{tool.body}</span></li>
+          ))}
+        </ul>
+        <p class="dev-aside-note">{t.mcp.toolsNote}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="webmcp">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.webmcp.eyebrow} title={t.webmcp.title} lede={t.webmcp.lede} />
+      <div class="dev-modes">
+        {[
+          { title: t.webmcp.publicTitle, body: t.webmcp.publicBody, list: t.webmcp.publicTools, icon: "globe" as const },
+          { title: t.webmcp.adminTitle, body: t.webmcp.adminBody, list: t.webmcp.adminTools, icon: "lock" as const },
+        ].map((group) => (
+          <div class="dev-mode">
+            <h3 class="dev-subtitle"><Icon name={group.icon} size={20} />{group.title}</h3>
+            <p class="dev-mode__body">{group.body}</p>
+            <ul class="dev-tools" role="list" data-reveal-group>
+              {group.list.map((tool) => (
+                <li class="dev-tool" data-reveal><code>{tool.name}</code><span>{tool.body}</span></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="markdown">
+    <div class="container dev-stack">
+      <SectionHead eyebrow={t.markdown.eyebrow} title={t.markdown.title} lede={t.markdown.lede} />
+      <dl class="dev-facts dev-facts--grid" aria-label={t.markdown.factsLabel}>
+        {t.markdown.items.map((f) => (
+          <div class="dev-fact" data-reveal>
+            <dt class="dev-fact__term">{f.term}</dt>
+            <dd class="dev-fact__code"><a href={f.code}><code>{f.code}</code></a></dd>
+            <dd class="dev-fact__body" set:html={inlineMarkup(f.body)} />
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: href("/contact") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .dev-stack { display: grid; gap: clamp(2rem, 1.25rem + 2.5vw, 3.25rem); }
+  .dev-stack > :global(*) { min-inline-size: 0; }
+  .dev-split { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 3vw, 4rem); align-items: start; }
+  .dev-side { display: grid; gap: var(--space-3); }
+  .dev-subtitle { display: flex; align-items: center; gap: var(--space-2); font-size: var(--step-2); }
+  .dev-aside-note { font-size: var(--step--1); color: var(--ink-3); max-inline-size: var(--measure); }
+
+  .dev-facts { display: grid; gap: 0; margin: 0; border-block-start: 2px solid var(--ink); }
+  .dev-fact { display: grid; grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr); column-gap: var(--space-5); row-gap: var(--space-1); padding-block: var(--space-4); border-block-end: 1px solid var(--rule); }
+  .dev-fact__term { grid-row: span 2; font-family: var(--font-display-stack); font-size: var(--step-1); line-height: 1.3; color: var(--ink); }
+  .dev-fact dd { margin: 0; min-inline-size: 0; }
+  .dev-fact__code code, .dev-tool code { overflow-wrap: anywhere; color: var(--accent-ink); font-size: var(--step--1); }
+  .dev-fact__code a { display: inline-flex; align-items: center; min-block-size: 2.75rem; text-decoration: none; }
+  .dev-fact__code a:hover code { text-decoration: underline; }
+  .dev-fact__body { color: var(--ink-2); font-size: var(--step--1); line-height: 1.55; }
+  .dev-facts--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(2rem, 1rem + 3vw, 4rem); border-block-start: 0; }
+  .dev-facts--grid .dev-fact { border-block-start: 0; }
+
+  .dev-samples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-items: start; }
+  .dev-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  .dev-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 1rem + 3vw, 4rem); align-items: start; }
+  .dev-mode { display: grid; gap: var(--space-4); min-inline-size: 0; }
+  .dev-mode__body { color: var(--ink-2); max-inline-size: var(--measure-narrow); }
+
+  .dev-tools-wrap { display: grid; gap: var(--space-4); }
+  .dev-tools { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--rule-strong); }
+  .dev-tools--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--space-6); }
+  .dev-tool { display: grid; gap: 0.15rem; padding-block: var(--space-3); border-block-end: 1px dashed var(--rule); }
+  .dev-tool code { justify-self: start; }
+  .dev-tool span { font-size: var(--step--1); color: var(--ink-2); }
+
+  @media (max-width: 960px) {
+    .dev-split, .dev-samples, .dev-modes { grid-template-columns: minmax(0, 1fr); }
+    .dev-tools--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .dev-fact { grid-template-columns: minmax(0, 1fr); }
+    .dev-fact__term { grid-row: auto; }
+    .dev-facts--grid, .dev-tools--3 { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
