@@ -1,0 +1,13 @@
+---
+/** Terms of Service (EN + VI). Copy: src/content/legal/terms.ts; layout: LegalLayout. */
+import LegalLayout from "~/layouts/LegalLayout.astro";
+import { langPaths, type Locale } from "~/i18n/config";
+import { TERMS } from "~/content/legal/terms";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<LegalLayout locale={locale} slug="terms" doc={TERMS} />

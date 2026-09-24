@@ -1,0 +1,96 @@
+---
+/**
+ * Shell for the five legal pages (/terms, /policy, /privacy, /cookies, /gdpr), built on
+ * BaseLayout: a compact hero with the revision date, then a sticky "On this page" rail beside
+ * numbered sections that each open with "The short version", and a closing band with a human
+ * contact and the other legal documents as the next step. Copy lives in src/content/legal.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { localePath, pick, type Bi, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import type { LegalDoc, LegalSlug } from "~/content/legal/types";
+import { LEGAL_EMAIL, LEGAL_ORDER, LEGAL_UI, LEGAL_UPDATED } from "~/content/legal/legal-ui";
+import LegalHero from "~/components/blocks/legal/LegalHero.astro";
+import LegalToc from "~/components/blocks/legal/LegalToc.astro";
+import LegalSection from "~/components/blocks/legal/LegalSection.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import TocIndex from "~/components/blocks/TocIndex.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  slug: LegalSlug;
+  doc: Bi<LegalDoc>;
+}
+const { locale, slug, doc: bi } = Astro.props;
+const doc = pick(bi, locale);
+const ui = pick(LEGAL_UI, locale);
+const path = `/${slug}`;
+const others = LEGAL_ORDER.filter((s) => s !== slug).map((s) => ({
+  title: ui.docs[s].title,
+  meta: ui.docs[s].meta,
+  icon: ui.docs[s].icon,
+  href: localePath(locale, `/${s}`),
+}));
+---
+
+<BaseLayout
+  title={doc.meta.title}
+  description={doc.meta.description}
+  locale={locale}
+  path={path}
+  breadcrumbs={[{ name: doc.meta.crumb, path }]}
+  modified={LEGAL_UPDATED}
+>
+  <LegalHero
+    eyebrow={doc.hero.eyebrow}
+    title={doc.hero.title}
+    lede={doc.hero.lede}
+    updatedLabel={t(locale, "edited")}
+    updatedText={ui.updatedDate}
+    updatedIso={LEGAL_UPDATED}
+    notebookDate={ui.notebookDate}
+  />
+
+  <div class="section legal">
+    <div class="container legal__grid">
+      <LegalToc label={t(locale, "onThisPage")} items={doc.sections.map((s) => ({ id: s.id, title: s.title }))} />
+      <article class="legal__body">
+        {doc.sections.map((s, i) => (
+          <LegalSection index={i + 1} id={s.id} title={s.title} short={s.short} shortLabel={ui.shortLabel} body={s.body} />
+        ))}
+      </article>
+    </div>
+  </div>
+
+  <section class="section band legal-next">
+    <div class="container legal-next__grid">
+      <div class="legal-next__head">
+        <SectionHead eyebrow={ui.next.eyebrow} title={ui.next.title} lede={ui.next.lede} size="m" />
+        <div class="legal-next__actions" data-reveal>
+          <a class="btn btn--primary" href={`mailto:${LEGAL_EMAIL}`}><Icon name="mail" />{ui.next.primary}</a>
+          <a class="btn" href={localePath(locale, "/contact")}>{ui.next.secondary}<Icon name="arrow-right" class="arrow" /></a>
+        </div>
+      </div>
+      <TocIndex items={others} columns={1} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal { padding-block-start: clamp(2.5rem, 1.5rem + 3vw, 4.5rem); }
+  .legal__grid { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .legal__body { min-inline-size: 0; max-inline-size: 46rem; }
+
+  .legal-next__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .legal-next__head { display: grid; gap: var(--space-6); }
+  .legal-next__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  @media (max-width: 1000px) {
+    .legal__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .legal__body { max-inline-size: none; }
+  }
+  @media (max-width: 900px) {
+    .legal-next__grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
