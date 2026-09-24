@@ -14,3 +14,6 @@ dist
 
 # Internal plans and scout reports stay local (the repository is public)
 /plans/
+
+# Agent worktrees and local tool state
+/.claude/
