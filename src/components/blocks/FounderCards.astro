@@ -1,7 +1,10 @@
 ---
 /**
  * Founders as 3×4 ID photos stapled to index cards (ảnh thẻ): a nod to every Vietnamese
- * student's school records. Cards tilt slightly and straighten on hover.
+ * student's school records. The cards sit on a dot grid that lights up around the pointer.
+ * On hover a card straightens, leans toward the pointer and its photo catches a holographic
+ * sheen, like the foil on an ID card. Without a fine pointer, or with reduced motion, the
+ * cards stay still and the photos keep their colour.
  */
 interface Props {
   founders: { name: string; photo: string; role: string; bio: string; facts: string[]; company: { name: string; url: string }; links?: { label: string; href: string }[] }[];
@@ -9,12 +12,16 @@ interface Props {
 const { founders } = Astro.props;
 ---
 
+<div class="fc-field" data-founders>
+<span class="fc-field__dots" aria-hidden="true"></span>
+<span class="fc-field__glow" aria-hidden="true"></span>
 <ul class="fc" role="list" data-reveal-group>
   {founders.map((f, i) => (
-    <li class="fc__card" style={`--tilt:${[-1.2, 0.8, -0.4][i % 3]}deg`} data-reveal>
+    <li class="fc__card" style={`--tilt:${[-1.2, 0.8, -0.4][i % 3]}deg`} data-reveal data-founder>
       <div class="fc__photo">
         <span class="fc__staple" aria-hidden="true"></span>
         <img src={f.photo} alt={f.name} width="600" height="800" loading="lazy" decoding="async" />
+        <span class="fc__foil" aria-hidden="true"></span>
       </div>
       <div class="fc__body">
         <h3 class="fc__name">{f.name}</h3>
@@ -29,17 +36,57 @@ const { founders } = Astro.props;
     </li>
   ))}
 </ul>
+</div>
 
 <style>
+  /* Dot grid behind the cards. --gx/--gy follow the pointer (set by the script below); the
+     bright layer is masked to a soft circle there, so the grid "lights up" where you point. */
+  .fc-field { --gx: 50%; --gy: 50%; --glow: 0; position: relative; isolation: isolate; }
+  .fc-field__dots, .fc-field__glow {
+    position: absolute; inset: calc(var(--space-7) * -1) calc(var(--space-5) * -1); z-index: -1; pointer-events: none;
+    background-image: radial-gradient(circle, var(--dot) 1.2px, transparent 1.6px);
+    background-size: 18px 18px; background-position: center;
+  }
+  .fc-field__dots { --dot: color-mix(in oklch, var(--ink) 16%, transparent); mask-image: radial-gradient(ellipse at center, #000 45%, transparent 80%); }
+  .fc-field__glow {
+    --dot: var(--accent);
+    background-image: radial-gradient(circle, var(--dot) 1.6px, transparent 2.2px), radial-gradient(circle at var(--gx) var(--gy), color-mix(in oklch, var(--accent) 14%, transparent), transparent 55%);
+    background-size: 18px 18px, 100% 100%;
+    mask-image: radial-gradient(circle 15rem at var(--gx) var(--gy), #000 0%, rgb(0 0 0 / 0.55) 40%, transparent 100%);
+    opacity: var(--glow); transition: opacity var(--dur-4) var(--ease-out);
+  }
+
   .fc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.25rem, 0.5rem + 2.5vw, 2.5rem); }
   .fc__card {
+    --rx: 0deg; --ry: 0deg; --px: 50%; --py: 50%; --lift: 0;
     display: grid; gap: var(--space-5); align-content: start; padding: var(--space-5);
     background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-2); box-shadow: var(--shadow-2);
-    transform: rotate(var(--tilt)); transition: transform var(--dur-3) var(--ease-spring), box-shadow var(--dur-3) var(--ease-out);
+    transform: perspective(900px) rotate(calc(var(--tilt) * (1 - var(--lift)))) rotateX(var(--rx)) rotateY(var(--ry)) translateY(calc(var(--lift) * -6px));
+    transition: transform var(--dur-3) var(--ease-spring), box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out);
   }
-  .fc__card:hover { transform: rotate(0) translateY(-4px); box-shadow: var(--shadow-3); }
+  .fc__card:hover, .fc__card:focus-within {
+    --lift: 1;
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--rule));
+    box-shadow: var(--shadow-3), 0 0 0 1px color-mix(in oklch, var(--accent) 18%, transparent), 0 24px 60px -24px color-mix(in oklch, var(--accent) 55%, transparent);
+  }
+  .fc__card.is-tracking { transition: transform 90ms linear, box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out); }
   .fc__photo { position: relative; inline-size: 58%; aspect-ratio: 3 / 4; padding: 6px; background: oklch(0.99 0 0); box-shadow: var(--shadow-1); border: 1px solid var(--rule); }
-  .fc__photo img { inline-size: 100%; block-size: 100%; object-fit: cover; filter: saturate(0.9) contrast(1.02); }
+  .fc__photo { overflow: hidden; }
+  .fc__photo img {
+    inline-size: 100%; block-size: 100%; object-fit: cover; filter: saturate(0.95) contrast(1.02);
+    transition: transform var(--dur-4) var(--ease-out), filter var(--dur-3) var(--ease-out);
+  }
+  .fc__card:hover .fc__photo img, .fc__card:focus-within .fc__photo img { transform: scale(1.06); filter: saturate(1.25) contrast(1.06); }
+  /* Holographic foil: an iris → bronze → vermilion band plus a glare spot, both anchored to the
+     pointer (--px/--py), blended over the photo only while the card is hovered. */
+  .fc__foil {
+    position: absolute; inset: 6px; pointer-events: none; opacity: 0; mix-blend-mode: soft-light;
+    background:
+      radial-gradient(circle at var(--px) var(--py), oklch(1 0 0 / 0.75), transparent 38%),
+      linear-gradient(115deg, transparent 20%, oklch(0.70 0.18 282 / 0.9) calc(var(--px) - 10%), oklch(0.80 0.12 75 / 0.9) var(--px), oklch(0.66 0.19 28 / 0.9) calc(var(--px) + 12%), transparent 85%);
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+  .fc__card:hover .fc__foil { opacity: 0.85; }
   .fc__staple { position: absolute; inset-block-start: -6px; inset-inline-start: 50%; translate: -50% 0; inline-size: 34px; block-size: 8px; border: 2px solid var(--ink-3); border-block-end: 0; border-radius: 2px 2px 0 0; z-index: 1; }
   .fc__name { font-size: var(--step-3); line-height: 1.1; }
   .fc__role { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); margin-block-start: var(--space-2); letter-spacing: 0.02em; }
@@ -50,6 +97,10 @@ const { founders } = Astro.props;
   .fc__links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin-block-start: var(--space-4); font-size: var(--step--1); }
   .fc__links a { color: var(--ink-2); font-weight: 500; }
   .fc__links a:hover { color: var(--accent-ink); }
+  @media (prefers-reduced-motion: reduce) {
+    .fc__card, .fc__card:hover, .fc__card:focus-within { --rx: 0deg; --ry: 0deg; transition: box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out); }
+    .fc__card:hover .fc__photo img { transform: none; }
+  }
   @media (max-width: 960px) { .fc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 620px) {
     .fc { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
@@ -61,5 +112,57 @@ const { founders } = Astro.props;
     .fc__role { grid-column: 2; grid-row: 2; align-self: start; }
     .fc__bio, .fc__facts, .fc__links { grid-column: 1 / -1; }
     .fc__bio { margin-block-start: var(--space-4); }
+    .fc-field__dots, .fc-field__glow { inset-inline: calc(var(--gutter, 1rem) * -1); }
   }
 </style>
+
+<script>
+  // Pointer-driven light: the dot grid brightens around the pointer and the hovered card leans
+  // toward it. Fine pointers only, and never with reduced motion (the grid glow still follows).
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  document.querySelectorAll<HTMLElement>("[data-founders]").forEach((field) => {
+    const glow = field.querySelector<HTMLElement>(".fc-field__glow");
+    if (!fine || !glow) return;
+    let frame = 0;
+    let last: PointerEvent | null = null;
+    const paint = () => {
+      frame = 0;
+      if (!last) return;
+      const e = last;
+      // Coordinates relative to the glow layer, which bleeds past the field on every side.
+      const box = glow.getBoundingClientRect();
+      field.style.setProperty("--gx", `${Math.round(e.clientX - box.left)}px`);
+      field.style.setProperty("--gy", `${Math.round(e.clientY - box.top)}px`);
+      const card = (e.target as Element).closest<HTMLElement>("[data-founder]");
+      field.querySelectorAll<HTMLElement>("[data-founder]").forEach((c) => {
+        if (c === card) return;
+        c.classList.remove("is-tracking");
+        c.style.removeProperty("--rx"); c.style.removeProperty("--ry");
+      });
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      card.style.setProperty("--px", `${Math.round(x * 100)}%`);
+      card.style.setProperty("--py", `${Math.round(y * 100)}%`);
+      if (still) return;
+      card.classList.add("is-tracking");
+      card.style.setProperty("--ry", `${((x - 0.5) * 10).toFixed(2)}deg`);
+      card.style.setProperty("--rx", `${((0.5 - y) * 8).toFixed(2)}deg`);
+    };
+    field.addEventListener("pointermove", (e) => {
+      last = e;
+      field.style.setProperty("--glow", "1");
+      if (!frame) frame = requestAnimationFrame(paint);
+    });
+    field.addEventListener("pointerleave", () => {
+      last = null;
+      field.style.setProperty("--glow", "0");
+      field.querySelectorAll<HTMLElement>("[data-founder]").forEach((c) => {
+        c.classList.remove("is-tracking");
+        c.style.removeProperty("--rx"); c.style.removeProperty("--ry");
+      });
+    });
+  });
+</script>

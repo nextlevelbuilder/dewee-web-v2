@@ -99,11 +99,15 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-header);
+    border-block-end: 1px solid transparent;
+    transition: border-color var(--dur-3) var(--ease-out);
+  }
+  /* The frosted glass lives on a pseudo-element: a backdrop-filter on the header itself would
+     make it the containing block for the fixed mobile sheet, collapsing the sheet to the bar. */
+  .site-header::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background: color-mix(in oklch, var(--paper) 82%, transparent);
     backdrop-filter: saturate(1.4) blur(14px);
-    -webkit-backdrop-filter: saturate(1.4) blur(14px);
-    border-block-end: 1px solid transparent;
-    transition: border-color var(--dur-3) var(--ease-out), background-color var(--dur-3) var(--ease-out);
   }
   .site-header.is-scrolled { border-block-end-color: var(--rule); }
   .site-header__bar {
@@ -172,6 +176,8 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
   .mobile-nav__group a { display: block; padding: 0.7rem 0; font-family: var(--font-display-stack); font-size: var(--step-2); text-decoration: none; border-block-end: 1px solid var(--rule); }
   .mobile-nav__group a[aria-current="page"] { color: var(--accent-ink); }
   .mobile-nav__cta { display: grid; gap: var(--space-3); }
+  /* While the sheet is open, the cookie notice and chat launcher would sit on its last links. */
+  :global(html:has(#mobile-nav:not([hidden])) :is([data-cookie], [data-chat])) { display: none; }
 
   @media (max-width: 1080px) {
     .nav, .site-header__cta { display: none; }
