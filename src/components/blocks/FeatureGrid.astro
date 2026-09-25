@@ -1,0 +1,59 @@
+---
+/**
+ * Numbered features on a ruled grid (hairlines, no boxes). Icons sit in a hand-inked ring.
+ * `href` turns an item into a link.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+interface Props { items: { icon: string; title: string; body: string; href?: string }[]; columns?: 2 | 3 }
+const { items, columns = 3 } = Astro.props;
+---
+
+<ul class:list={["fg", `fg--${columns}`]} role="list" data-reveal-group>
+  {items.map((it, i) => {
+    const Tag = it.href ? "a" : "div";
+    return (
+      <li class="fg__cell" data-reveal>
+        <Tag class:list={["fg__item", { "fg__item--link": it.href }]} href={it.href}>
+          <span class="fg__top">
+            <span class="fg__icon"><Icon name={it.icon as IconName} size={22} /></span>
+            <span class="fg__num">{String(i + 1).padStart(2, "0")}</span>
+          </span>
+          <h3 class="fg__title">{it.title}</h3>
+          <p class="fg__body">{it.body}</p>
+        </Tag>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .fg { display: grid; border-block-start: 1px solid var(--rule); }
+  .fg--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fg--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fg__cell { border-block-end: 1px solid var(--rule); }
+  .fg--3 .fg__cell:not(:nth-child(3n + 1)), .fg--2 .fg__cell:nth-child(even) { border-inline-start: 1px solid var(--rule); }
+  .fg__item { display: grid; gap: var(--space-3); align-content: start; block-size: 100%; padding: var(--space-6) var(--space-5) var(--space-6); text-decoration: none; color: inherit; }
+  .fg__item--link { transition: background-color var(--dur-2) var(--ease-out); }
+  .fg__item--link:hover { background: var(--surface-hover); }
+  .fg__top { display: flex; justify-content: space-between; align-items: center; margin-block-end: var(--space-2); }
+  .fg__icon {
+    display: grid; place-items: center; inline-size: 3rem; block-size: 3rem; color: var(--accent-ink);
+    border: 1.5px solid currentColor; border-radius: 52% 48% 55% 45% / 47% 55% 45% 53%;
+    transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-2) var(--ease-out);
+  }
+  .fg__cell:hover .fg__icon { transform: rotate(-8deg) scale(1.06); background: var(--accent-soft); }
+  .fg__num { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.08em; }
+  .fg__title { font-size: var(--step-2); line-height: 1.2; }
+  .fg__body { color: var(--ink-2); font-size: var(--step--1); line-height: 1.6; max-inline-size: 38ch; }
+  @media (max-width: 960px) {
+    .fg--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fg--3 .fg__cell:not(:nth-child(3n + 1)) { border-inline-start: 0; }
+    .fg--3 .fg__cell:nth-child(even) { border-inline-start: 1px solid var(--rule); }
+  }
+  @media (max-width: 600px) {
+    .fg--3, .fg--2 { grid-template-columns: minmax(0, 1fr); }
+    .fg .fg__cell:nth-child(n) { border-inline-start: 0; }
+    .fg__item { padding-inline: 0; }
+  }
+</style>

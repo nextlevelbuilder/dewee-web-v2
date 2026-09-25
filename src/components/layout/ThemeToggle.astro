@@ -1,0 +1,72 @@
+---
+/**
+ * Theme control. `variant="button"` flips light ↔ dark (header);
+ * `variant="segmented"` offers Light / Dark / System (footer).
+ * The preference lives in localStorage("dewee.theme"); the no-flash script in BaseLayout applies it.
+ */
+import type { Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import Icon from "~/components/ui/Icon.astro";
+interface Props { locale: Locale; variant?: "button" | "segmented" }
+const { locale, variant = "button" } = Astro.props;
+---
+
+{variant === "button" ? (
+  <button class="theme-btn" type="button" data-theme-toggle aria-label={t(locale, "themeLabel")} title={`${t(locale, "themeLight")} / ${t(locale, "themeDark")}`}>
+    <Icon name="sun" class="theme-btn__sun" />
+    <Icon name="moon" class="theme-btn__moon" />
+  </button>
+) : (
+  <div class="theme-seg" role="radiogroup" aria-label={t(locale, "themeLabel")} data-theme-seg>
+    <button type="button" role="radio" data-value="light" aria-checked="false"><Icon name="sun" />{t(locale, "themeLight")}</button>
+    <button type="button" role="radio" data-value="dark" aria-checked="false"><Icon name="moon" />{t(locale, "themeDark")}</button>
+    <button type="button" role="radio" data-value="system" aria-checked="false"><Icon name="monitor" />{t(locale, "themeSystem")}</button>
+  </div>
+)}
+
+<style>
+  .theme-btn {
+    display: inline-grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-2);
+    color: var(--ink-2); transition: background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+  }
+  .theme-btn:hover { background: var(--accent-soft); color: var(--ink); }
+  .theme-btn :global(svg) { grid-area: 1 / 1; inline-size: 1.15rem; block-size: 1.15rem; transition: transform var(--dur-4) var(--ease-spring), opacity var(--dur-2) var(--ease-out); }
+  :global(:root[data-theme="dark"]) .theme-btn :global(.theme-btn__sun),
+  :global(:root:not([data-theme="dark"])) .theme-btn :global(.theme-btn__moon) { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+
+  .theme-seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: var(--radius-2); border: 1px solid var(--rule); background: var(--paper-2); }
+  .theme-seg button {
+    display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 2.25rem; padding: 0.3rem 0.7rem; border-radius: calc(var(--radius-2) - 3px);
+    font-size: var(--step--2); font-weight: 500; color: var(--ink-3);
+  }
+  .theme-seg button:hover { color: var(--ink); }
+  .theme-seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1); }
+</style>
+
+<script>
+  const KEY = "dewee.theme";
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const read = (): string => { try { return localStorage.getItem(KEY) || "system"; } catch { return "system"; } };
+  const apply = (pref: string) => {
+    const dark = pref === "dark" || (pref === "system" && media.matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themePref = pref;
+    document.querySelectorAll<HTMLElement>("[data-theme-seg] [role=radio]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.value === pref)));
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#1b1a2e" : "#fbfaff");
+  };
+  const save = (pref: string) => { try { localStorage.setItem(KEY, pref); } catch { /* private mode: theme still applies for this page */ } apply(pref); };
+
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
+    if (btn.dataset.wired) return; btn.dataset.wired = "1";
+    btn.addEventListener("click", () => save(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+  });
+  document.querySelectorAll<HTMLElement>("[data-theme-seg]").forEach((seg) => {
+    if (seg.dataset.wired) return; seg.dataset.wired = "1";
+    seg.addEventListener("click", (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>("[data-value]");
+      if (b?.dataset.value) save(b.dataset.value);
+    });
+  });
+  media.addEventListener("change", () => { if (read() === "system") apply("system"); });
+  apply(read());
+</script>

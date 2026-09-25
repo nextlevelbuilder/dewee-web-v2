@@ -1,0 +1,70 @@
+---
+/**
+ * One release on the changelog: the tag as a heading with its permalink, a channel badge, the
+ * publish time in Vietnam time, and the release notes (already sanitised and rendered to safe
+ * HTML by src/lib/server/seo/changelog). `compact` is the smaller variant used for folded betas.
+ */
+import { formatDate, type Locale } from "~/i18n/config";
+import { fill } from "~/content/pages/changelog";
+import type { ReleaseView } from "~/lib/server/seo/changelog/changelog-view";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  release: ReleaseView;
+  locale: Locale;
+  labels: { stable: string; beta: string; latest: string; permalink: string; noNotes: string; published: string };
+  compact?: boolean;
+}
+const { release: r, locale, labels, compact = false } = Astro.props;
+const when = formatDate(r.publishedAt, locale, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+const HeadingTag = compact ? "h4" : "h3";
+---
+
+<article class:list={["rel", { "rel--compact": compact, "rel--beta": r.channel === "beta" }]} id={r.tag} aria-labelledby={`${r.tag}-title`}>
+  <header class="rel__head">
+    <HeadingTag class="rel__tag" id={`${r.tag}-title`}>
+      <a class="rel__anchor" href={r.permalink} aria-label={fill(labels.permalink, { tag: r.tag })}>
+        <span class="rel__tag-text">{r.tag}</span>
+        <Icon name="link" size={14} class="rel__link-icon" />
+      </a>
+    </HeadingTag>
+    <span class:list={["chip", r.channel === "stable" ? "chip--success" : "chip--warning"]}>
+      <span class="dot" aria-hidden="true"></span>{r.channel === "stable" ? labels.stable : labels.beta}
+    </span>
+    {r.latest && <span class="chip chip--accent">{labels.latest}</span>}
+    <time class="rel__time" datetime={r.publishedAt}><span class="visually-hidden">{labels.published}: </span>{when}</time>
+  </header>
+  {r.name && <p class="rel__name">{r.name}</p>}
+  {r.html ? <div class="prose rel__notes" set:html={r.html} /> : <p class="rel__empty">{labels.noNotes}</p>}
+</article>
+
+<style>
+  .rel { display: grid; gap: var(--space-3); padding-block: var(--space-5); scroll-margin-block-start: calc(var(--header-h) + var(--space-4)); }
+  .rel + .rel { border-block-start: 1px dashed var(--rule-strong); }
+  .rel__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+  .rel__tag { font-family: var(--font-mono-stack); font-size: var(--step-1); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; margin: 0; }
+  .rel--compact .rel__tag { font-size: var(--step-0); }
+  .rel__anchor { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink); text-decoration: none; min-block-size: 2.75rem; }
+  .rel__anchor :global(.rel__link-icon) { color: var(--ink-3); opacity: 0; transition: opacity var(--dur-2) var(--ease-out); }
+  .rel__anchor:hover :global(.rel__link-icon), .rel__anchor:focus-visible :global(.rel__link-icon), .rel:target :global(.rel__link-icon) { opacity: 1; }
+  .rel__anchor:hover .rel__tag-text { color: var(--accent-ink); }
+  .rel:target .rel__tag-text { background: linear-gradient(transparent 58%, var(--highlight) 58%, var(--highlight) 92%, transparent 92%); }
+  /* The global success chip is 4:1 on its tint; mix toward ink like .chip--warning to reach AA. */
+  .rel__head .chip--success { color: color-mix(in oklch, var(--success) 70%, var(--ink)); }
+  .rel__time { margin-inline-start: auto; font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.02em; white-space: nowrap; }
+  .rel__name { font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); font-style: italic; }
+  .rel__notes { max-inline-size: none; font-size: var(--step--1); line-height: 1.65; overflow-wrap: anywhere; }
+  .rel__notes :global(h4), .rel__notes :global(h5), .rel__notes :global(h6) {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-3); margin-block-start: 1.2em;
+  }
+  .rel__notes :global(h4:first-child), .rel__notes :global(h5:first-child), .rel__notes :global(h6:first-child) { margin-block-start: 0; }
+  .rel__notes :global(code) { padding: 0.05em 0.3em; border-radius: var(--radius-1); background: var(--paper-3); color: var(--ink); }
+  .rel__notes :global(pre code) { padding: 0; background: none; }
+  .rel__notes :global(li + li) { margin-block-start: 0.25em; }
+  .rel__empty { font-size: var(--step--1); color: var(--ink-3); font-style: italic; }
+  @media (max-width: 640px) {
+    .rel__time { margin-inline-start: 0; flex-basis: 100%; }
+    .rel__anchor :global(.rel__link-icon) { opacity: 1; }
+  }
+</style>

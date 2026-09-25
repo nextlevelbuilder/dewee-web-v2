@@ -1,0 +1,171 @@
+---
+/**
+ * API keys: create (the plaintext key is rendered once, in this response only), list and revoke.
+ * Both actions are same-origin form POSTs carrying the session's CSRF token. Each create form
+ * carries a one-time nonce, so refreshing the page (which re-posts the form) cannot mint a second key.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { adminForm, field, requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { API_SCOPES, isApiScope } from "~/lib/server/auth/api-key-format";
+import { createApiKey, listApiKeys, revokeApiKey } from "~/lib/server/auth/api-key-store";
+
+export const prerender = false;
+
+const EXPIRY_DAYS = [30, 90, 365] as const;
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const db = platformEnv().DB;
+const K = ADMIN.keys;
+let created: { key: string; name: string } | null = null;
+let message: { kind: "error" | "success"; text: string } | null = null;
+
+/** Marks a create-form nonce as used; true when it was used before. KV trouble never blocks creating a key. */
+async function alreadySubmitted(nonce: string): Promise<boolean> {
+  if (!/^[0-9a-f-]{36}$/.test(nonce)) return false;
+  const kv = platformEnv().KV;
+  const slot = `admin:key-form:${nonce}`;
+  try {
+    if (await kv.get(slot)) return true;
+    await kv.put(slot, "1", { expirationTtl: 86_400 });
+  } catch {
+    /* dedupe is a convenience; fall through and create */
+  }
+  return false;
+}
+
+if (Astro.request.method === "POST") {
+  const form = await adminForm(Astro, auth.session);
+  if (!form) {
+    Astro.response.status = 403;
+    message = { kind: "error", text: ADMIN.errors.csrf };
+  } else if (field(form, "action") === "create") {
+    const name = field(form, "name");
+    const scopes = form.getAll("scopes").filter(isApiScope);
+    const days = Number(field(form, "expires"));
+    if (!name || name.length > 80) message = { kind: "error", text: K.badName };
+    else if (scopes.length === 0) message = { kind: "error", text: K.badScopes };
+    else if (await alreadySubmitted(field(form, "nonce"))) message = { kind: "error", text: K.alreadyCreated };
+    else {
+      const expiresAt = (EXPIRY_DAYS as readonly number[]).includes(days) ? new Date(Date.now() + days * 86_400_000).toISOString() : null;
+      const result = await createApiKey(db, { name, scopes: [...new Set(scopes)], ownerEmail: auth.session.email, expiresAt });
+      created = { key: result.key, name };
+    }
+  } else if (field(form, "action") === "revoke") {
+    const ok = await revokeApiKey(db, field(form, "id"), auth.session.email);
+    message = ok ? { kind: "success", text: K.revoked } : { kind: "error", text: ADMIN.errors.generic };
+  }
+}
+if (created) Astro.response.headers.set("cache-control", "no-store, private");
+
+const keys = await listApiKeys(db);
+const now = Date.now();
+const state = (k: (typeof keys)[number]) =>
+  k.revoked_at ? K.revoked : k.expires_at && Date.parse(k.expires_at) <= now ? K.expired : K.active;
+const day = (iso: string | null) => (iso ? iso.slice(0, 10) : "—");
+---
+
+<AdminLayout title={K.title} current="keys" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{K.title}</h1>
+      <p>{K.lede}</p>
+    </div>
+  </div>
+
+  {message && <p class="adm-alert" data-kind={message.kind} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p>}
+
+  {created && (
+    <div class="adm-panel adm-key-once" role="status">
+      <h2>{created.name}</h2>
+      <p>{K.created}</p>
+      <div class="adm-key-once__row">
+        <input id="new-key" class="adm-mono" type="text" readonly value={created.key} aria-label={created.name} />
+        <button class="btn btn--primary" type="button" data-copy-target="new-key"><Icon name="copy" />{K.copy}</button>
+      </div>
+    </div>
+  )}
+
+  <form class="adm-panel" method="post">
+    <h2>{K.create}</h2>
+    <input type="hidden" name="csrf" value={auth.csrf} />
+    <input type="hidden" name="action" value="create" />
+    <input type="hidden" name="nonce" value={crypto.randomUUID()} />
+    <div class="field">
+      <label for="key-name">{K.name}</label>
+      <input id="key-name" name="name" required maxlength="80" />
+      <p class="hint">{K.nameHint}</p>
+    </div>
+    <fieldset class="adm-scopes">
+      <legend class="label">{K.scopes}</legend>
+      {API_SCOPES.map((s) => (
+        <label class="adm-check"><input type="checkbox" name="scopes" value={s} checked={s.endsWith(":read")} /> <code>{s}</code></label>
+      ))}
+    </fieldset>
+    <div class="field adm-expiry">
+      <label for="key-expires">{K.expires}</label>
+      <select id="key-expires" name="expires">
+        <option value="">{K.never}</option>
+        {EXPIRY_DAYS.map((d) => <option value={d} selected={d === 90}>{d} {K.days}</option>)}
+      </select>
+    </div>
+    <button class="btn btn--primary" type="submit"><Icon name="key" />{K.create}</button>
+  </form>
+
+  {keys.length === 0 ? (
+    <p class="adm-empty">{K.none}</p>
+  ) : (
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th scope="col">{K.name}</th><th scope="col">{K.prefix}</th><th scope="col">{K.scopes}</th><th scope="col">{K.owner}</th>
+            <th scope="col">{K.lastUsed}</th><th scope="col">{K.expires}</th><th scope="col">{ADMIN.editor.status}</th><th scope="col"><span class="sr-only">{K.revoke}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {keys.map((k) => (
+            <tr>
+              <td>{k.name}</td>
+              <td><code>dwk_{k.prefix}_…</code></td>
+              <td class="adm-mono">{k.scopes.split(" ").join(", ")}</td>
+              <td>{k.owner_email}</td>
+              <td class="adm-mono">{day(k.last_used_at)}</td>
+              <td class="adm-mono">{k.expires_at ? day(k.expires_at) : K.never}</td>
+              <td>{state(k)}</td>
+              <td>
+                {!k.revoked_at && (
+                  <form method="post" class="adm-inline-form" data-confirm={K.confirmRevoke}>
+                    <input type="hidden" name="csrf" value={auth.csrf} />
+                    <input type="hidden" name="action" value="revoke" />
+                    <input type="hidden" name="id" value={k.id} />
+                    <button class="btn btn--sm" type="submit"><Icon name="trash-2" />{K.revoke}</button>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</AdminLayout>
+
+<script>
+  import { bindConfirmForms, bindCopyButtons } from "~/components/admin/admin-ui-client";
+  bindCopyButtons();
+  bindConfirmForms();
+</script>
+
+<style>
+  .adm-key-once { border-color: var(--accent); }
+  .adm-key-once__row { display: flex; gap: var(--space-2); }
+  .adm-key-once__row input { flex: 1; }
+  .adm-scopes { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
+  .adm-scopes legend { margin-block-end: var(--space-2); }
+  .adm-check { display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem; }
+  .adm-expiry { max-inline-size: 14rem; }
+  .hint { font-size: var(--step--2); color: var(--ink-3); }
+</style>

@@ -1,0 +1,85 @@
+---
+/**
+ * An agent team's task board, pinned to the notebook: a lead, three columns of sticky-note tasks
+ * (one may show what it is blocked by) and a human-handoff slip at the bottom. It is an
+ * illustration of how teams work, so the caption must say it is an example.
+ */
+import Icon from "~/components/ui/Icon.astro";
+
+type Card = { text: string; who: string; note?: string };
+interface Props {
+  label: string;
+  caption: string;
+  lead: string;
+  columns: { title: string; cards: Card[] }[];
+  handoff: string;
+}
+const { label, caption, lead, columns, handoff } = Astro.props;
+---
+
+<figure class="tb drum-texture" aria-label={label}>
+  <div class="tb__top">
+    <span class="chip chip--accent"><Icon name="users" size={14} />{lead}</span>
+  </div>
+  <div class="tb__cols">
+    {columns.map((col, ci) => (
+      <div class="tb__col" role="group" aria-label={col.title}>
+        <p class="tb__col-title">{col.title}</p>
+        <ul class="tb__cards" role="list">
+          {col.cards.map((c) => (
+            <li class:list={["tb__card", `tb__card--${ci}`]}>
+              <p class="tb__text">{c.text}</p>
+              <p class="tb__who"><Icon name="bot" size={14} />{c.who}</p>
+              {c.note && <p class="tb__note"><Icon name="link-2" size={13} />{c.note}</p>}
+              {ci === columns.length - 1 && <Icon name="check" size={18} stroke={2.5} class="tb__done" />}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+  <p class="tb__handoff"><Icon name="hand-heart" size={18} />{handoff}</p>
+  <figcaption class="note tb__caption">{caption}</figcaption>
+</figure>
+
+<style>
+  .tb {
+    --cell: 9px;
+    position: relative; display: grid; gap: var(--space-5); margin: 0;
+    padding: var(--space-6) clamp(1rem, 0.5rem + 2vw, 2rem) var(--space-5);
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-4); box-shadow: var(--shadow-2);
+  }
+  .tb__top { display: flex; }
+  .tb__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+  .tb__col { display: grid; gap: var(--space-3); align-content: start; }
+  .tb__col-title {
+    padding-block-end: var(--space-2); border-block-end: 1.5px solid var(--rule-strong);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .tb__cards { display: grid; gap: var(--space-3); }
+  /* sticky notes: tinted paper, a little crooked */
+  .tb__card {
+    position: relative; display: grid; gap: var(--space-2); padding: var(--space-4) var(--space-3) var(--space-3);
+    border-radius: var(--radius-1); box-shadow: var(--shadow-1); color: var(--ink);
+  }
+  .tb__card--0 { background: var(--warning-soft); rotate: -1.5deg; }
+  .tb__card--1 { background: var(--accent-soft); rotate: 1deg; }
+  .tb__card--2 { background: var(--success-soft); rotate: -0.5deg; }
+  .tb__text { font-weight: 600; font-size: var(--step--1); line-height: 1.4; }
+  .tb__who, .tb__note { display: flex; align-items: center; gap: var(--space-1); font-size: var(--step--2); color: var(--ink-2); }
+  .tb__note { font-family: var(--font-mono-stack); color: var(--ink-2); }
+  .tb__card :global(.tb__done) { position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2); color: var(--success); }
+  .tb__handoff {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding: var(--space-3) var(--space-4); border: 1.5px dashed var(--seal); border-radius: var(--radius-2);
+    background: var(--surface); font-size: var(--step--1); color: var(--ink);
+  }
+  .tb__handoff :global(svg) { color: var(--seal); flex: none; }
+  .tb__caption { justify-self: end; margin: 0; font-size: var(--step--1); transform: rotate(-1.5deg); }
+
+  @media (max-width: 640px) {
+    .tb__cols { grid-template-columns: minmax(0, 1fr); }
+    .tb__card { rotate: none; }
+    .tb__caption { justify-self: start; }
+  }
+</style>

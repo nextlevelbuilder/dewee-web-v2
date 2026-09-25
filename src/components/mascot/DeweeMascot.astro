@@ -1,0 +1,264 @@
+---
+/**
+ * dewee mascot: the ink/dew drop from the logo, redrawn as SVG so it can emote.
+ * Moods change the face; accessories dress it for a context (docs = glasses, chat = headset).
+ * Behaviour (blink, follow the cursor, squish on click, doze off) is wired by mascot-behavior.ts
+ * and is purely decorative: the SVG is aria-hidden unless a label is given.
+ */
+export type MascotMood = "happy" | "awake" | "wink" | "sleepy" | "love" | "surprised" | "focused";
+export type MascotAccessory = "none" | "glasses" | "headset" | "cap";
+
+interface Props {
+  size?: number | string;
+  mood?: MascotMood;
+  accessory?: MascotAccessory;
+  /** idle: breathe + blink; drop: falls onto the page first; still: no motion */
+  motion?: "idle" | "drop" | "still";
+  /** eyes follow the pointer and the body reacts to clicks */
+  interactive?: boolean;
+  label?: string;
+  class?: string;
+}
+
+const {
+  size = 120,
+  mood = "happy",
+  accessory = "none",
+  motion = "idle",
+  interactive = false,
+  label,
+  class: className = "",
+} = Astro.props;
+
+// Unique ids so several mascots can share a page without gradient collisions.
+const uid = `m${Math.random().toString(36).slice(2, 8)}`;
+const width = typeof size === "number" ? `${size}px` : size;
+const BODY = "M118 14 C 160 12 196 44 210 92 C 222 134 206 170 162 176 C 124 181 76 182 44 168 C 14 155 10 118 24 84 C 40 44 76 16 118 14 Z";
+---
+
+<span
+  class:list={["mascot", `mascot--${motion}`, className]}
+  data-mascot
+  data-mood={mood}
+  data-base-mood={mood}
+  data-interactive={interactive ? "true" : undefined}
+  style={`--mascot-w:${width}`}
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+>
+  <span class="mascot__shadow" aria-hidden="true"></span>
+  <svg class="mascot__svg" viewBox="0 0 240 200" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id={`${uid}-body`} cx="0.30" cy="0.10" r="1.05" fx="0.30" fy="0.08">
+        <stop offset="0" stop-color="#fbc8f7" />
+        <stop offset="0.16" stop-color="#e777f2" />
+        <stop offset="0.40" stop-color="#7a4df0" />
+        <stop offset="0.66" stop-color="#3a3fe6" />
+        <stop offset="0.86" stop-color="#2447e4" />
+        <stop offset="1" stop-color="#2b86ee" />
+      </radialGradient>
+      <radialGradient id={`${uid}-left`} cx="0.04" cy="0.62" r="0.34">
+        <stop offset="0" stop-color="#e46cf0" stop-opacity="0.7" />
+        <stop offset="1" stop-color="#e46cf0" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id={`${uid}-rim`} cx="0.9" cy="0.72" r="0.36">
+        <stop offset="0" stop-color="#4fb3ff" stop-opacity="0.7" />
+        <stop offset="1" stop-color="#4fb3ff" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id={`${uid}-sheen`} cx="0.3" cy="0.2" r="0.3">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.55" />
+        <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <g class="mascot__body">
+      {accessory === "headset" && (
+        <path class="mascot__acc" d="M40 92 C 40 30 200 30 200 92" fill="none" stroke="#1b1f5e" stroke-width="9" stroke-linecap="round" />
+      )}
+      <path d={BODY} fill={`url(#${uid}-body)`} />
+      <path d={BODY} fill={`url(#${uid}-left)`} />
+      <path d={BODY} fill={`url(#${uid}-rim)`} />
+      <path d={BODY} fill={`url(#${uid}-sheen)`} />
+
+      <g class="mascot__face">
+        <g class="mascot__eyes" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+          <!-- happy: the logo's closed smiling eyes -->
+          <g class="eyes eyes--happy">
+            <path d="M70 98 Q 84 110 98 98" />
+            <path d="M136 98 Q 150 110 164 98" />
+          </g>
+          <!-- awake: open oval eyes that blink -->
+          <g class="eyes eyes--awake" fill="#fff" stroke="none">
+            <ellipse class="eye" cx="84" cy="100" rx="7" ry="9.5" />
+            <ellipse class="eye" cx="150" cy="100" rx="7" ry="9.5" />
+          </g>
+          <g class="eyes eyes--wink">
+            <ellipse cx="84" cy="100" rx="7" ry="9.5" fill="#fff" stroke="none" />
+            <path d="M136 100 Q 150 110 164 100" />
+          </g>
+          <g class="eyes eyes--sleepy">
+            <path d="M70 103 Q 84 108 98 103" />
+            <path d="M136 103 Q 150 108 164 103" />
+          </g>
+          <g class="eyes eyes--love" fill="#fff" stroke="none">
+            <path d="M84 110 C 70 100 72 88 80 89 C 83 89.5 84 92 84 93 C 84 92 85 89.5 88 89 C 96 88 98 100 84 110 Z" />
+            <path d="M150 110 C 136 100 138 88 146 89 C 149 89.5 150 92 150 93 C 150 92 151 89.5 154 89 C 162 88 164 100 150 110 Z" />
+          </g>
+          <g class="eyes eyes--focused">
+            <path d="M72 101 L 96 101" />
+            <path d="M138 101 L 162 101" />
+          </g>
+        </g>
+        <g class="mascot__mouth" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round">
+          <path class="mouth mouth--smile" d="M102 124 Q 117 140 132 124" />
+          <ellipse class="mouth mouth--o" cx="117" cy="130" rx="6" ry="7.5" fill="#fff" stroke="none" />
+          <path class="mouth mouth--flat" d="M106 128 Q 117 132 128 128" />
+        </g>
+        <g class="mascot__cheeks" fill="#ff8fd0" opacity="0.5">
+          <ellipse cx="62" cy="120" rx="9" ry="5" />
+          <ellipse cx="172" cy="120" rx="9" ry="5" />
+        </g>
+      </g>
+
+      {accessory === "glasses" && (
+        <g class="mascot__acc" fill="none" stroke="#141852" stroke-width="4.5">
+          <circle cx="84" cy="100" r="19" fill="#ffffff" fill-opacity="0.12" />
+          <circle cx="150" cy="100" r="19" fill="#ffffff" fill-opacity="0.12" />
+          <path d="M103 98 Q 117 90 131 98" />
+          <path d="M65 96 L 44 90" stroke-linecap="round" />
+          <path d="M169 96 L 196 90" stroke-linecap="round" />
+        </g>
+      )}
+      {accessory === "headset" && (
+        <g class="mascot__acc">
+          <rect x="22" y="80" width="22" height="40" rx="10" fill="#1b1f5e" />
+          <rect x="196" y="80" width="22" height="40" rx="10" fill="#1b1f5e" />
+          <path d="M34 118 C 36 146 64 150 92 142" fill="none" stroke="#1b1f5e" stroke-width="5" stroke-linecap="round" />
+          <circle cx="95" cy="141" r="6" fill="#1b1f5e" />
+        </g>
+      )}
+      {accessory === "cap" && (
+        <g class="mascot__acc">
+          <path d="M72 30 L 128 8 L 184 30 L 128 52 Z" fill="#141852" />
+          <path d="M100 40 L 100 58 C 116 66 140 66 156 58 L 156 40" fill="#141852" />
+          <path d="M184 30 L 186 62" stroke="#f5c542" stroke-width="3" />
+          <circle cx="186" cy="64" r="4" fill="#f5c542" />
+        </g>
+      )}
+    </g>
+  </svg>
+  <span class="mascot__zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>
+</span>
+
+<style>
+  .mascot {
+    --look-x: 0px;
+    --look-y: 0px;
+    position: relative;
+    display: inline-block;
+    inline-size: var(--mascot-w);
+    aspect-ratio: 240 / 200;
+    flex: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mascot[data-interactive] { cursor: pointer; }
+  .mascot__svg { inline-size: 100%; block-size: 100%; overflow: visible; }
+  .mascot__body { transform-box: fill-box; transform-origin: 50% 100%; }
+  .mascot__face { transform: translate(var(--look-x), var(--look-y)); transition: transform 380ms var(--ease-out); }
+  .mascot__shadow {
+    position: absolute; inset-inline: 18%; inset-block-end: -4%; block-size: 9%;
+    border-radius: 50%; background: radial-gradient(closest-side, oklch(0.3 0.12 275 / 0.28), transparent);
+    filter: blur(1px);
+  }
+
+  /* Moods: show exactly one eye set and one mouth */
+  .eyes, .mouth { display: none; }
+  .mascot__cheeks { display: none; }
+  [data-mood="happy"] .eyes--happy, [data-mood="happy"] .mouth--smile { display: inline; }
+  [data-mood="awake"] .eyes--awake, [data-mood="awake"] .mouth--smile { display: inline; }
+  [data-mood="wink"] .eyes--wink, [data-mood="wink"] .mouth--smile { display: inline; }
+  [data-mood="sleepy"] .eyes--sleepy, [data-mood="sleepy"] .mouth--flat { display: inline; }
+  [data-mood="love"] .eyes--love, [data-mood="love"] .mouth--smile, [data-mood="love"] .mascot__cheeks { display: inline; }
+  [data-mood="surprised"] .eyes--awake, [data-mood="surprised"] .mouth--o { display: inline; }
+  [data-mood="focused"] .eyes--focused, [data-mood="focused"] .mouth--flat { display: inline; }
+  [data-mood="happy"] .mascot__cheeks, [data-mood="wink"] .mascot__cheeks { display: inline; opacity: 0.32; }
+
+  .eye { transform-box: fill-box; transform-origin: center; }
+
+  .mascot__zzz {
+    position: absolute; inset-block-start: -8%; inset-inline-end: -4%;
+    font-family: var(--font-sign-stack); font-size-adjust: var(--font-sign-adjust); color: var(--accent-ink); font-size: calc(var(--mascot-w) * 0.14);
+    pointer-events: none; opacity: 0;
+  }
+  .mascot__zzz i { font-style: normal; display: inline-block; }
+  [data-mood="sleepy"] .mascot__zzz { opacity: 1; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mascot--idle .mascot__body, .mascot--drop.is-landed .mascot__body { animation: mascot-breathe 3.6s var(--ease-in-out) infinite; }
+    .mascot--idle .mascot__svg, .mascot--drop.is-landed .mascot__svg { animation: mascot-float 5.2s var(--ease-in-out) infinite; }
+    .mascot--idle .mascot__shadow, .mascot--drop.is-landed .mascot__shadow { animation: mascot-shadow 5.2s var(--ease-in-out) infinite; }
+    [data-mood="awake"] .eyes--awake .eye, [data-mood="surprised"] .eyes--awake .eye { animation: mascot-blink 4.6s infinite; }
+    [data-mood="sleepy"] .mascot__zzz i { animation: mascot-z 2.4s var(--ease-out) infinite; opacity: 0; }
+    [data-mood="sleepy"] .mascot__zzz i:nth-child(2) { animation-delay: 0.6s; }
+    [data-mood="sleepy"] .mascot__zzz i:nth-child(3) { animation-delay: 1.2s; }
+
+    html.js .mascot--drop:not(.is-landed) .mascot__svg { opacity: 0; }
+    .mascot--drop.is-dropping .mascot__svg { opacity: 1; animation: mascot-drop 1100ms cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+    .mascot--drop.is-dropping .mascot__body { animation: mascot-land 1100ms linear forwards; }
+    .mascot.is-squish .mascot__body { animation: mascot-squish 620ms var(--ease-spring); }
+    .mascot.is-hop .mascot__svg { animation: mascot-hop 700ms var(--ease-out); }
+  }
+
+  @keyframes mascot-breathe {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.025, 0.972); }
+  }
+  @keyframes mascot-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5%); }
+  }
+  @keyframes mascot-shadow {
+    0%, 100% { transform: scaleX(1); opacity: 1; }
+    50% { transform: scaleX(0.82); opacity: 0.6; }
+  }
+  @keyframes mascot-blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.08); }
+  }
+  @keyframes mascot-z {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translate(40%, -140%) scale(1.2); opacity: 0; }
+  }
+  @keyframes mascot-drop {
+    0% { transform: translateY(-160%); }
+    70% { transform: translateY(0); }
+    100% { transform: translateY(0); }
+  }
+  @keyframes mascot-land {
+    0% { transform: scale(0.82, 1.22); }
+    64% { transform: scale(0.86, 1.18); }
+    72% { transform: scale(1.22, 0.76); }
+    84% { transform: scale(0.95, 1.06); }
+    92% { transform: scale(1.03, 0.97); }
+    100% { transform: scale(1, 1); }
+  }
+  @keyframes mascot-squish {
+    0% { transform: scale(1, 1); }
+    30% { transform: scale(1.16, 0.82); }
+    60% { transform: scale(0.94, 1.08); }
+    100% { transform: scale(1, 1); }
+  }
+  @keyframes mascot-hop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-14%); }
+  }
+</style>
+
+<script>
+  import { initMascots } from "./mascot-behavior";
+  initMascots();
+  document.addEventListener("astro:page-load", initMascots);
+</script>

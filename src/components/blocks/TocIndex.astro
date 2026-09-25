@@ -1,0 +1,57 @@
+---
+/**
+ * A book's table of contents (mục lục): numbered titles joined to their chapter by dot leaders.
+ * Reads top-to-bottom in columns on wide screens, like a real contents page.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+interface Props { items: { title: string; meta: string; href: string; icon?: string }[]; columns?: 1 | 2 }
+const { items, columns = 2 } = Astro.props;
+const rows = Math.ceil(items.length / columns);
+---
+
+<ol class:list={["toc", `toc--${columns}`]} role="list" style={`--rows:${rows}`} data-reveal-group>
+  {items.map((it, i) => (
+    <li data-reveal>
+      <a class="toc__row" href={it.href}>
+        <span class="toc__num">{String(i + 1).padStart(2, "0")}</span>
+        <span class="toc__title">{it.title}</span>
+        <span class="toc__dots" aria-hidden="true"></span>
+        <Icon name="arrow-right" class="toc__go" size={16} />
+        <span class="toc__meta">{it.icon && <Icon name={it.icon as IconName} size={14} />}{it.meta}</span>
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .toc { display: grid; column-gap: clamp(2rem, 1rem + 4vw, 5rem); }
+  .toc--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(var(--rows), auto); }
+  .toc__row {
+    display: grid; grid-template-columns: 2rem minmax(0, max-content) minmax(2rem, 1fr) 1rem; align-items: end; column-gap: var(--space-3); row-gap: var(--space-1);
+    padding-block: var(--space-4); border-block-end: 1px solid var(--rule);
+    text-decoration: none; color: var(--ink);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+  .toc__num { align-self: baseline; font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+  .toc__title { align-self: baseline; font-family: var(--font-display-stack); font-size: var(--step-1); line-height: 1.3; }
+  .toc__dots {
+    block-size: 3px; margin-block-end: 0.5em; opacity: 0.7;
+    background-image: radial-gradient(circle, var(--ink-3) 1px, transparent 1.3px); background-size: 7px 3px; background-repeat: repeat-x;
+  }
+  .toc__row :global(.toc__go) { margin-block-end: 0.3em; color: var(--accent-ink); opacity: 0.35; transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  .toc__meta {
+    grid-column: 2 / -1; display: inline-flex; align-items: center; gap: var(--space-2);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .toc__meta :global(svg) { color: var(--accent-ink); }
+  .toc__row:hover { color: var(--accent-ink); }
+  .toc__row:hover :global(.toc__go), .toc__row:focus-visible :global(.toc__go) { opacity: 1; transform: translateX(3px); }
+  @media (max-width: 900px) {
+    .toc--2 { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-template-rows: none; }
+  }
+  @media (max-width: 560px) {
+    .toc__row { grid-template-columns: 1.75rem minmax(0, 1fr) 1rem; }
+    .toc__dots { display: none; }
+  }
+</style>

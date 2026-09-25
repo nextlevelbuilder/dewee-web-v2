@@ -1,0 +1,48 @@
+---
+/**
+ * Integrations drawn as rubber stamps. `size="l"` shows tiles with a one-line note;
+ * `size="s"` shows compact chips. Marks come from BrandMark (monogram when no vendored mark).
+ */
+import BrandMark from "~/components/ui/BrandMark.astro";
+type Item = { brand: string; name: string; note?: string };
+interface Props { groups: { label: string; size?: "l" | "s"; items: Item[] }[] }
+const { groups } = Astro.props;
+---
+
+<div class="lw">
+  {groups.map((g) => (
+    <div class:list={["lw__group", `lw__group--${g.size ?? "s"}`]}>
+      <p class="lw__label">{g.label}<span>{g.items.length}</span></p>
+      <ul class="lw__list" role="list" data-reveal-group>
+        {g.items.map((it) => (
+          <li class="lw__item" data-reveal>
+            <BrandMark brand={it.brand} name={it.name} size={g.size === "l" ? 26 : 18} />
+            <span class="lw__text"><span class="lw__name">{it.name}</span>{g.size === "l" && it.note && <span class="lw__note">{it.note}</span>}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+<style>
+  .lw { display: grid; gap: var(--space-7); }
+  .lw__label { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-block-end: var(--space-4); }
+  .lw__label span { padding: 0 0.45rem; border-radius: var(--radius-round); background: var(--accent-soft); color: var(--accent-ink); letter-spacing: 0; }
+  .lw__list { display: grid; gap: var(--space-3); }
+  .lw__group--l .lw__list { grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.5rem), 1fr)); }
+  .lw__group--s .lw__list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .lw__item {
+    display: flex; align-items: center; gap: var(--space-3); color: var(--ink);
+    border: 1px solid var(--rule); background: var(--surface); border-radius: var(--radius-2);
+    transition: transform var(--dur-2) var(--ease-spring), border-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+  }
+  .lw__group--l .lw__item { padding: var(--space-4); }
+  .lw__group--s .lw__item { padding: 0.45rem 0.75rem; gap: var(--space-2); font-size: var(--step--1); border-radius: var(--radius-round); }
+  .lw__item:hover { transform: rotate(-1.5deg) translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow-2); }
+  .lw__item :global(.brand-mark) { color: var(--accent-ink); }
+  .lw__text { display: grid; min-inline-size: 0; }
+  .lw__name { font-weight: 600; line-height: 1.3; }
+  .lw__group--s .lw__name { font-weight: 500; }
+  .lw__note { font-size: var(--step--2); color: var(--ink-3); line-height: 1.4; }
+</style>

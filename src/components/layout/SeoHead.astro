@@ -1,0 +1,122 @@
+---
+/**
+ * Everything a crawler, a social card or an agent needs to understand a page:
+ * title/description, canonical + hreflang, Open Graph/Twitter, the Markdown twin and llms.txt,
+ * and truthful JSON-LD (organization, website, breadcrumbs, plus page-specific nodes).
+ * Social cards: prerendered pages get `/og/<locale>/<slug>.png` from the build pass
+ * (scripts/postbuild-markdown-and-og.ts); server-rendered pages without `ogImage` get their
+ * section's card (blog, changelog) or the locale's default card.
+ * hreflang: both locales at the same path, unless `alternates` names each locale's URL
+ * (a translated post can have a different slug per language).
+ */
+import { LOCALE_META, localePath, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { breadcrumbJsonLd, crumbsForPath, organizationJsonLd, websiteJsonLd } from "~/lib/json-ld";
+import { markdownTwinPath, ogImagePath, ssrOgImagePath } from "~/lib/server/seo/seo-paths";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Unprefixed path, e.g. "/features" */
+  path: string;
+  ogImage?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+  /** false when the page exists in only one locale */
+  bilingual?: boolean;
+  /**
+   * Site-relative (or absolute) URL of the page in each locale, for pages whose translation has a
+   * different path. Overrides `bilingual`: hreflang is emitted when both locales are given.
+   */
+  alternates?: Partial<Record<Locale, string>>;
+  jsonLd?: Record<string, unknown>[];
+  /** Explicit trail; inner pages without one get it from the site navigation */
+  breadcrumbs?: { name: string; path: string }[];
+  published?: string;
+  modified?: string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  path,
+  ogImage,
+  type = "website",
+  noindex = false,
+  bilingual = true,
+  alternates,
+  jsonLd = [],
+  breadcrumbs,
+  published,
+  modified,
+} = Astro.props;
+
+const site = (Astro.site?.toString() ?? SITE.url).replace(/\/$/, "");
+const canonicalPath = localePath(locale, path);
+const canonical = `${site}${canonicalPath}`;
+const mdUrl = `${site}${markdownTwinPath(canonicalPath)}`;
+const llmsUrl = `${site}${locale === "vi" ? "/vi/llms.txt" : "/llms.txt"}`;
+const fullTitle = path === "/" ? title : `${title} · dewee`;
+const ogPath = ogImage || (Astro.isPrerendered ? ogImagePath(locale, path) : ssrOgImagePath(locale, path));
+const absoluteUrl = (href: string) => (/^https?:\/\//.test(href) ? href : `${site}${href}`);
+const og = absoluteUrl(ogPath);
+const ogType = /\.png($|\?)/i.test(og) ? "image/png" : /\.jpe?g($|\?)/i.test(og) ? "image/jpeg" : undefined;
+const otherLocale: Locale = locale === "en" ? "vi" : "en";
+const localeUrls = alternates
+  ? alternates.en && alternates.vi
+    ? { en: absoluteUrl(alternates.en), vi: absoluteUrl(alternates.vi) }
+    : undefined
+  : bilingual
+    ? { en: `${site}${localePath("en", path)}`, vi: `${site}${localePath("vi", path)}` }
+    : undefined;
+
+const crumbs = breadcrumbs ?? (path === "/" ? [] : crumbsForPath(path, locale, title));
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    organizationJsonLd(site),
+    websiteJsonLd(site, locale),
+    ...(crumbs.length ? [breadcrumbJsonLd(site, locale, crumbs)] : []),
+    ...jsonLd,
+  ],
+};
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+{localeUrls && (
+  <>
+    <link rel="alternate" hreflang="en" href={localeUrls.en} />
+    <link rel="alternate" hreflang="vi" href={localeUrls.vi} />
+    <link rel="alternate" hreflang="x-default" href={localeUrls.en} />
+  </>
+)}
+<link rel="alternate" type="text/markdown" href={mdUrl} title="Markdown" />
+<link rel="alternate" type="text/plain" href={llmsUrl} title="llms.txt" />
+
+<meta property="og:site_name" content="dewee" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={og} />
+{ogType && <meta property="og:image:type" content={ogType} />}
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
+<meta property="og:locale" content={LOCALE_META[locale].ogLocale} />
+{localeUrls && <meta property="og:locale:alternate" content={LOCALE_META[otherLocale].ogLocale} />}
+{published && <meta property="article:published_time" content={published} />}
+{modified && <meta property="article:modified_time" content={modified} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@nlb_io" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={og} />
+<meta name="twitter:image:alt" content={title} />
+
+<script type="application/ld+json" set:html={JSON.stringify(graph).replace(/</g, "\\u003c")} />

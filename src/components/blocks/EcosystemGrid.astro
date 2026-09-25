@@ -1,0 +1,44 @@
+---
+/** The NextLevelBuilder product family as a shelf of labelled cards linking out. */
+import Icon from "~/components/ui/Icon.astro";
+interface Props { products: { id: string; name: string; url: string; icon: string; tagline: string; role: string }[] }
+const { products } = Astro.props;
+const host = (u: string) => new URL(u).host.replace(/^www\./, "");
+---
+
+<ul class="eco" role="list" data-reveal-group>
+  {products.map((p) => (
+    <li data-reveal>
+      <a class="eco__card" href={p.url} target="_blank" rel="noopener">
+        <span class="eco__top">
+          <img class="eco__icon" src={p.icon} alt="" width="40" height="40" loading="lazy" decoding="async" />
+          <Icon name="arrow-up-right" class="eco__go" size={18} />
+        </span>
+        <span class="eco__name">{p.name}</span>
+        <span class="eco__tagline">{p.tagline}</span>
+        <span class="eco__role">{p.role}</span>
+        <span class="eco__host">{host(p.url)}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .eco { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+  .eco__card {
+    display: grid; gap: var(--space-2); align-content: start; block-size: 100%; padding: var(--space-5);
+    border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); text-decoration: none; color: inherit;
+    transition: transform var(--dur-3) var(--ease-out), box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+  }
+  .eco__card:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); border-color: var(--rule-strong); }
+  .eco__top { display: flex; justify-content: space-between; align-items: start; margin-block-end: var(--space-2); }
+  .eco__icon { inline-size: 40px; block-size: 40px; border-radius: var(--radius-2); object-fit: contain; }
+  .eco__card :global(.eco__go) { color: var(--ink-3); transition: transform var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out); }
+  .eco__card:hover :global(.eco__go) { color: var(--accent-ink); transform: translate(2px, -2px); }
+  .eco__name { font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.15; color: var(--ink); }
+  .eco__tagline { font-weight: 600; font-size: var(--step--1); color: var(--ink); }
+  .eco__role { font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; }
+  .eco__host { margin-block-start: var(--space-2); font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); }
+  @media (max-width: 960px) { .eco { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .eco { grid-template-columns: minmax(0, 1fr); } }
+</style>

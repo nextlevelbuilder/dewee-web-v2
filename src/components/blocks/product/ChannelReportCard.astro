@@ -1,0 +1,119 @@
+---
+/**
+ * Every channel's report card: one ruled row per channel with how it connects, which
+ * conversations it handles, and red-pen marks for streaming, voice notes and files, plus a
+ * short "good to know". A real table on wide screens; each row becomes a card below 1000px.
+ * Yes/no/opt-in marks carry screen-reader text, so the table reads correctly without the ink.
+ */
+import BrandMark from "~/components/ui/BrandMark.astro";
+
+type Mark = boolean | "opt-in";
+type Row = { brand: string; name: string; connect: string; chats: string; streaming: Mark; voice: Mark; media: Mark; note: string };
+interface Props {
+  label: string;
+  columns: { channel: string; connect: string; chats: string; streaming: string; voice: string; media: string; note: string };
+  marks: { yes: string; no: string; optIn: string };
+  rows: Row[];
+}
+const { label, columns, marks, rows } = Astro.props;
+const flags = [
+  { key: "streaming", label: columns.streaming },
+  { key: "voice", label: columns.voice },
+  { key: "media", label: columns.media },
+] as const;
+---
+
+<div class="crc drum-texture" data-reveal>
+  <table class="crc__table">
+    <caption class="sr-only">{label}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="crc__h crc__h--name">{columns.channel}</th>
+        <th scope="col" class="crc__h">{columns.connect}</th>
+        <th scope="col" class="crc__h">{columns.chats}</th>
+        {flags.map((f) => <th scope="col" class="crc__h crc__h--flag">{f.label}</th>)}
+        <th scope="col" class="crc__h crc__h--note">{columns.note}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr class="crc__row">
+          <th scope="row" class="crc__name">
+            <span class="crc__name-in">
+              <span class="crc__mark-brand"><BrandMark brand={r.brand} name={r.name} size={20} /></span>
+              <span>{r.name}</span>
+            </span>
+          </th>
+          <td class="crc__cell" data-label={columns.connect}>{r.connect}</td>
+          <td class="crc__cell" data-label={columns.chats}>{r.chats}</td>
+          {flags.map((f) => {
+            const v = r[f.key];
+            return (
+              <td class="crc__cell crc__flag" data-label={f.label}>
+                {v === true && (
+                  <span class="crc__yes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 13 C 5.5 14.5, 7.5 17, 9 19.5 C 12 12, 16 7, 21 3.5" /></svg><span class="sr-only">{marks.yes}</span></span>
+                )}
+                {v === false && <span class="crc__no"><span aria-hidden="true">—</span><span class="sr-only">{marks.no}</span></span>}
+                {v === "opt-in" && <span class="chip chip--warning crc__opt">{marks.optIn}</span>}
+              </td>
+            );
+          })}
+          <td class="crc__cell crc__note" data-label={columns.note}>{r.note}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .crc {
+    --cell: 10px;
+    border: 1px solid var(--rule); border-radius: var(--radius-4); background-color: var(--surface); box-shadow: var(--shadow-2);
+    overflow: hidden;
+  }
+  .crc__table { inline-size: 100%; border-collapse: collapse; table-layout: fixed; }
+  .crc__h {
+    padding: var(--space-4) var(--space-3); text-align: start; vertical-align: bottom; border-block-end: 1.5px solid var(--rule-strong);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .crc__h:first-child, .crc__name { padding-inline-start: var(--space-5); }
+  .crc__h:last-child, .crc__note { padding-inline-end: var(--space-5); }
+  .crc__h--name { inline-size: 17%; }
+  .crc__h--flag { inline-size: 8.5%; text-align: center; }
+  .crc__h--note { inline-size: 26%; }
+
+  .crc__row + .crc__row > * { border-block-start: 1px dashed var(--rule); }
+  .crc__row:hover > * { background: color-mix(in oklab, var(--accent-soft) 40%, transparent); }
+  .crc__name, .crc__cell { padding: var(--space-4) var(--space-3); vertical-align: top; text-align: start; font-size: var(--step--1); line-height: 1.5; }
+  .crc__name { font-weight: 600; color: var(--ink); }
+  .crc__name-in { display: flex; align-items: center; gap: var(--space-2); }
+  .crc__mark-brand { display: grid; place-items: center; flex: none; inline-size: 1.5rem; color: var(--accent-ink); }
+  .crc__cell { color: var(--ink-2); }
+  .crc__note { color: var(--ink-3); }
+  .crc__flag { text-align: center; }
+
+  .crc__yes { display: inline-grid; place-items: center; color: var(--seal); }
+  .crc__yes svg { inline-size: 1.4rem; block-size: 1.4rem; overflow: visible; }
+  .crc__yes path { fill: none; stroke: currentColor; stroke-width: 2.75; stroke-linecap: round; stroke-linejoin: round; }
+  .crc__no { color: var(--ink-3); }
+  .crc__opt { font-size: var(--step--2); white-space: nowrap; }
+
+  /* Tablets and phones: one card per channel, with the column name as a small label. */
+  @media (max-width: 1000px) {
+    .crc { background-image: none; }
+    .crc__table, .crc__table tbody, .crc__table tr, .crc__table th, .crc__table td { display: block; }
+    .crc__table thead { display: none; }
+    .crc__table .crc__row { display: grid; grid-template-columns: repeat(3, auto) 1fr; gap: var(--space-3) var(--space-5); padding: var(--space-5); }
+    .crc__row + .crc__row { border-block-start: 1.5px solid var(--rule-strong); }
+    .crc__row + .crc__row > * { border-block-start: 0; }
+    .crc__row:hover > * { background: none; }
+    .crc__table .crc__name, .crc__table .crc__cell { padding: 0; }
+    .crc__table .crc__name { grid-column: 1 / -1; font-size: var(--step-0); }
+    .crc__table .crc__cell:not(.crc__flag) { grid-column: 1 / -1; }
+    .crc__cell::before {
+      content: attr(data-label); display: block; margin-block-end: 0.15rem;
+      font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+    }
+    .crc__flag { text-align: start; }
+  }
+</style>

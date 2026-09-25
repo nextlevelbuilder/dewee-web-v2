@@ -1,0 +1,87 @@
+---
+/**
+ * A real screenshot of the dewee console, pinned into the notebook with a strip of tape.
+ * Renders the light and dark captures and shows the one that matches the site theme
+ * (the hidden one is lazy and `display: none`, so browsers skip downloading it).
+ * Props are plain strings; build them with `ccpShotProps(id, locale)`.
+ */
+import { CCP_SHOT, ccpShotSrc, type CcpScreenId } from "~/content/ccp-screens";
+
+interface Props {
+  id: CcpScreenId;
+  title: string;
+  caption?: string;
+  /** Console path shown in the address bar, e.g. /workspaces/acme/agents. */
+  path?: string;
+  /** Above the fold: load eagerly with high priority. */
+  eager?: boolean;
+  tape?: boolean;
+  /** Tilt a few degrees for a pinned-photo feel (desktop only). */
+  tilt?: "left" | "right" | "none";
+  sizes?: string;
+}
+const { id, title, caption, path, eager = false, tape = false, tilt = "none", sizes = "(min-width: 1200px) 1100px, 94vw" } = Astro.props;
+const srcset = (theme: "light" | "dark") => `${ccpShotSrc(id, theme, 1440)} 1440w, ${ccpShotSrc(id, theme, 2880)} 2880w`;
+const img = { width: CCP_SHOT.width, height: CCP_SHOT.height, sizes, decoding: "async" as const };
+---
+<figure class:list={["shot", `shot--tilt-${tilt}`, { "shot--tape": tape }]} data-reveal>
+  <div class="shot__frame">
+    <div class="shot__bar" aria-hidden="true">
+      <span class="shot__dots"><i></i><i></i><i></i></span>
+      <span class="shot__url">app.dewee.sh{path ?? ""}</span>
+    </div>
+    <div class="shot__img">
+      <img class="shot__light" src={ccpShotSrc(id, "light")} srcset={srcset("light")} alt={title} loading={eager ? "eager" : "lazy"} fetchpriority={eager ? "high" : undefined} {...img} />
+      <img class="shot__dark" src={ccpShotSrc(id, "dark")} srcset={srcset("dark")} alt={title} loading="lazy" {...img} />
+    </div>
+  </div>
+  {(caption || title) && (
+    <figcaption><b>{title}</b>{caption && <span>{caption}</span>}</figcaption>
+  )}
+</figure>
+<style>
+  .shot { position: relative; margin: 0; }
+  .shot__frame {
+    overflow: hidden; border: 1px solid var(--rule-strong); border-radius: var(--radius-3);
+    background: var(--surface); box-shadow: var(--shadow-3);
+  }
+  .shot__bar {
+    display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-2) var(--space-3); border-block-end: 1px solid var(--rule); background: var(--paper-2);
+  }
+  .shot__dots { display: inline-flex; gap: 6px; }
+  .shot__dots i { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--rule-strong); }
+  .shot__url {
+    flex: 1; min-inline-size: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3);
+  }
+  .shot__img { aspect-ratio: 1440 / 900; background: var(--paper-3); }
+  /* No `display` here: `.shot__img img` outranks a single class, so each capture sets its own. */
+  .shot__img img { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top left; }
+  .shot__light { display: block; }
+  .shot__dark { display: none; }
+  :global(:root[data-theme="dark"]) .shot__light { display: none; }
+  :global(:root[data-theme="dark"]) .shot__dark { display: block; }
+
+  .shot figcaption {
+    display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-2); margin-block-start: var(--space-3);
+    font-size: var(--step--1); color: var(--ink-3); line-height: var(--leading-snug);
+  }
+  .shot figcaption b { color: var(--ink); font-weight: 600; }
+
+  /* Washi tape across the top edge: the screenshot is pinned into the notebook. */
+  .shot--tape::before {
+    content: ""; position: absolute; z-index: 1; inset-block-start: calc(var(--space-3) * -1); inset-inline-start: 50%;
+    inline-size: clamp(5rem, 14%, 8rem); block-size: 1.6rem; translate: -50% 0; rotate: -2deg;
+    background: color-mix(in oklch, var(--accent-soft) 80%, transparent);
+    border-inline: 1px dashed color-mix(in oklch, var(--accent) 30%, transparent);
+  }
+  @media (min-width: 961px) {
+    .shot--tilt-left .shot__frame { rotate: -1.2deg; }
+    .shot--tilt-right .shot__frame { rotate: 1.2deg; }
+  }
+  @media (max-width: 560px) {
+    .shot__bar { padding-block: 6px; }
+    .shot__frame { border-radius: var(--radius-2); }
+  }
+</style>

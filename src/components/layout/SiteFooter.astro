@@ -1,0 +1,147 @@
+---
+import { localePath, pick, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { FOOTER_COLUMNS, SITE, SOCIAL } from "~/content/site";
+import { ECOSYSTEM } from "~/content/ecosystem";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import Wordmark from "~/components/ui/Wordmark.astro";
+import BrandMark from "~/components/ui/BrandMark.astro";
+import Icon from "~/components/ui/Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import PageActions from "./PageActions.astro";
+
+interface Props {
+  locale: Locale;
+  /** The current page, for the copy / share / ask-an-AI menu */
+  page?: { path: string; title: string };
+}
+const { locale, page } = Astro.props;
+const year = new Date().getFullYear();
+const socials = [
+  { ...SOCIAL.discord, brand: "discord" },
+  { ...SOCIAL.facebook, brand: "facebook" },
+  { ...SOCIAL.x, brand: "x" },
+  { ...SOCIAL.github, brand: "github" },
+];
+---
+
+<footer class="footer">
+  <div class="footer__edge" aria-hidden="true"></div>
+  <div class="container container--wide">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="footer__logo" href={localePath(locale, "/")} aria-label="dewee">
+          <DeweeMascot size={64} mood="happy" motion="idle" />
+          <Wordmark class="footer__word" />
+        </a>
+        <p class="footer__tagline">{pick(SITE.tagline, locale)}</p>
+        <p class="note">{t(locale, "footerTagline")}</p>
+        <ul class="footer__social" role="list">
+          {socials.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener" aria-label={s.label} title={s.label}>
+                <BrandMark brand={s.brand} name={s.label} size={18} />
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href={SOCIAL.email.href} aria-label={SITE.email} title={SITE.email}><Icon name="mail" size={18} /></a>
+          </li>
+        </ul>
+        {page && (
+          <div class="footer__ai">
+            <p class="footer__ai-label">{t(locale, "pageForAi")}</p>
+            <PageActions locale={locale} path={page.path} title={page.title} class="pa--start" />
+          </div>
+        )}
+      </div>
+
+      <nav class="footer__cols" aria-label={locale === "vi" ? "Liên kết chân trang" : "Footer"}>
+        {FOOTER_COLUMNS.map((col) => (
+          <div class="footer__col">
+            <p class="footer__head">{pick(col.label, locale)}</p>
+            <ul role="list">
+              {col.items.map((it) => (
+                <li><a href={it.href.endsWith(".txt") ? it.href : localePath(locale, it.href)}>{pick(it.label, locale)}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </div>
+
+    <div class="footer__eco">
+      <p class="footer__head">{t(locale, "ecosystem")}</p>
+      <ul role="list">
+        {ECOSYSTEM.map((p) => (
+          <li>
+            <a href={p.url} rel="noopener" title={pick(p.tagline, locale)}>
+              <img src={p.icon} alt="" width="20" height="20" loading="lazy" decoding="async" />
+              <span>{p.name}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="footer__bottom">
+      <p class="footer__legal">
+        © {year} <a href={SITE.ownerUrl} rel="noopener">{SITE.owner}</a>. {t(locale, "rights")}
+        <span class="footer__sep" aria-hidden="true">·</span>
+        {t(locale, "footerOwned")} <a href={SITE.ownerUrl} rel="noopener">NextLevelBuilder.io</a>
+      </p>
+      <ThemeToggle locale={locale} variant="segmented" />
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { position: relative; margin-block-start: var(--space-9); padding-block: var(--space-9) var(--space-6); background: var(--paper-2); border-block-start: 1px solid var(--rule); }
+  /* A page that already ends on a tinted band runs straight into the footer (same paper), without a stripe of page colour between them. */
+  :global(main:has(> .band:last-child)) + .footer { margin-block-start: 0; }
+  /* Torn-notebook-page perforation along the top edge */
+  .footer__edge {
+    position: absolute; inset-inline: 0; inset-block-start: -7px; block-size: 14px;
+    background: radial-gradient(circle at 7px 7px, var(--paper) 3.5px, transparent 4px) 0 0 / 22px 14px repeat-x;
+    opacity: 0.9;
+  }
+  .footer__top { display: grid; grid-template-columns: minmax(16rem, 1fr) 2.4fr; gap: var(--space-8); }
+  .footer__ai { display: grid; justify-items: start; gap: var(--space-2); margin-block-start: var(--space-5); }
+  .footer__ai-label { font-size: var(--step--1); color: var(--ink-2); }
+  .footer__logo { display: inline-flex; align-items: flex-end; gap: var(--space-3); text-decoration: none; }
+  .footer__logo :global(.footer__word) { inline-size: 7.5rem; margin-block-end: 0.35rem; }
+  .footer__tagline { margin-block-start: var(--space-4); font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.2; max-inline-size: 18ch; }
+  .footer__brand .note { margin-block-start: var(--space-2); }
+  .footer__social { display: flex; gap: var(--space-2); margin-block-start: var(--space-5); list-style: none; padding: 0; }
+  .footer__social a {
+    display: inline-grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: var(--radius-2);
+    border: 1px solid var(--rule); color: var(--ink-2); background: var(--surface);
+    transition: color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+  }
+  .footer__social a:hover { color: var(--accent-ink); border-color: var(--accent); transform: translateY(-2px); }
+  .footer__cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); }
+  .footer__head { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3); }
+  .footer__col ul { list-style: none; padding: 0; margin-block-start: var(--space-3); display: grid; gap: 0.15rem; }
+  .footer__col a { display: inline-block; padding-block: 0.3rem; font-size: var(--step--1); color: var(--ink-2); text-decoration: none; }
+  .footer__col a:hover { color: var(--accent-ink); text-decoration: underline; }
+
+  .footer__eco { margin-block-start: var(--space-8); padding-block-start: var(--space-5); border-block-start: 1px dashed var(--rule-strong); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+  .footer__eco ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); list-style: none; padding: 0; }
+  .footer__eco a { display: inline-flex; align-items: center; gap: 0.45rem; font-size: var(--step--1); color: var(--ink-2); text-decoration: none; padding-block: 0.25rem; }
+  .footer__eco a:hover { color: var(--ink); }
+  @media (max-width: 760px), (pointer: coarse) {
+    .footer__col a, .footer__eco a { padding-block: 0.6rem; }
+    .footer__social a { inline-size: 2.75rem; block-size: 2.75rem; }
+  }
+  .footer__eco img { inline-size: 20px; block-size: 20px; object-fit: contain; }
+
+  .footer__bottom { margin-block-start: var(--space-6); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); }
+  .footer__legal { font-size: var(--step--2); color: var(--ink-3); }
+  .footer__legal a { color: var(--ink-2); }
+  .footer__sep { margin-inline: 0.4rem; }
+
+  @media (max-width: 960px) {
+    .footer__top { grid-template-columns: 1fr; gap: var(--space-7); }
+    .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>

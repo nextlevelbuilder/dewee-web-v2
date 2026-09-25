@@ -1,0 +1,49 @@
+---
+/**
+ * A ruler of hard numbers. Every value must be measured, never estimated (see DESIGN.md → Content).
+ * The tick marks along the top edge make it read like a school ruler lying across the page.
+ */
+interface Props { items: { value: string; label: string }[]; label?: string }
+const { items, label } = Astro.props;
+---
+
+<section class="proof container" aria-label={label}>
+  <dl class="proof__list" data-reveal-group>
+    {items.map((it) => (
+      <div class="proof__item" data-reveal>
+        <dt class="proof__label">{it.label}</dt>
+        <dd class="proof__value">{it.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .proof { position: relative; }
+  .proof__list {
+    position: relative;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    border-block: 1px solid var(--rule-strong);
+    padding-block: var(--space-6) var(--space-5);
+  }
+  /* ruler ticks: a long tick every 4 short ones */
+  .proof__list::before {
+    content: ""; position: absolute; inset-inline: 0; inset-block-start: 0; block-size: 12px;
+    background:
+      repeating-linear-gradient(to right, var(--rule-strong) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px 10px);
+    background-size: 100% 12px, 100% 6px;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  .proof__item { display: flex; flex-direction: column-reverse; gap: var(--space-1); padding-inline: var(--space-4); }
+  .proof__item + .proof__item { border-inline-start: 1px dashed var(--rule); }
+  .proof__value { font-family: var(--font-display-stack); font-size: var(--step-4); line-height: 1; letter-spacing: var(--tracking-display); color: var(--ink); font-variant-numeric: lining-nums tabular-nums; }
+  .proof__label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  @media (max-width: 720px) {
+    .proof__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-5); }
+    .proof__item + .proof__item { border-inline-start: 0; }
+    .proof__item:nth-child(even) { border-inline-start: 1px dashed var(--rule); }
+    .proof__item:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+/**
+ * A docs article body: the post-processed Markdown HTML with real console screenshots
+ * (CcpShot) placed where the page wrote `::shot{id="…"}`. Also holds the prose extras that
+ * Markdown cannot style on its own: callouts, code blocks, heading anchors, Shiki colours.
+ */
+import CcpShot from "~/components/blocks/CcpShot.astro";
+import { ccpShotProps } from "~/content/ccp-screens";
+import type { Locale } from "~/i18n/config";
+import type { DocPart } from "./render-doc-html";
+
+interface Props { parts: DocPart[]; locale: Locale; copyLabels: { copy: string; copied: string; failed: string } }
+const { parts, locale, copyLabels } = Astro.props;
+---
+
+<div class="prose doc-body" data-copy-labels={JSON.stringify(copyLabels)}>
+  {parts.map((p) => (p.kind === "html" ? <Fragment set:html={p.html} /> : <div class="doc-body__shot"><CcpShot {...ccpShotProps(p.id, locale)} sizes="(min-width: 1200px) 720px, (min-width: 960px) 70vw, 94vw" /></div>))}
+</div>
+
+<script>
+  import { initCodeCopy } from "./code-copy-client";
+  const root = document.querySelector<HTMLElement>("[data-copy-labels]");
+  try {
+    if (root) initCodeCopy(JSON.parse(root.dataset.copyLabels ?? "{}"));
+  } catch {
+    /* labels are generated at build time; a parse failure only leaves the buttons hidden */
+  }
+</script>
+
+<style>
+  .doc-body { max-inline-size: 46rem; font-size: var(--step-0); }
+  .doc-body :global(h2) { scroll-margin-block-start: 6rem; padding-block-start: var(--space-2); }
+  .doc-body :global(h3) { scroll-margin-block-start: 6rem; }
+  .doc-body :global(li > p) { margin: 0; }
+  .doc-body :global(li > ul), .doc-body :global(li > ol) { margin-block-start: 0.4em; }
+  .doc-body__shot { margin-block: var(--space-6) var(--space-7); }
+
+  /* "#" self-links: quiet until the heading is hovered or the link is focused. */
+  .doc-body :global(.heading-anchor) {
+    margin-inline-start: 0.35em; color: var(--accent-ink); text-decoration: none; opacity: 0;
+    font-family: var(--font-mono-stack); font-size: 0.7em; transition: opacity var(--dur-2) var(--ease-out);
+  }
+  .doc-body :global(h2:hover .heading-anchor), .doc-body :global(h3:hover .heading-anchor), .doc-body :global(.heading-anchor:focus-visible) { opacity: 1; }
+
+  /* Callouts: a note pinned in the margin, tinted by kind. */
+  .doc-body :global(.callout) {
+    --callout: var(--accent); --callout-soft: var(--accent-soft); --callout-ink: var(--accent-ink);
+    padding: var(--space-4) var(--space-5); border: 1px solid color-mix(in oklch, var(--callout) 35%, var(--rule));
+    border-inline-start-width: 3px; border-inline-start-color: var(--callout); border-radius: var(--radius-2);
+    background: color-mix(in oklch, var(--callout-soft) 70%, var(--surface)); color: var(--ink-2);
+  }
+  .doc-body :global(.callout > * + *) { margin-block-start: 0.6em; }
+  .doc-body :global(.callout__title) {
+    display: flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--callout-ink); font-size: var(--step--1);
+  }
+  .doc-body :global(.callout--tip) { --callout: var(--success); --callout-soft: var(--success-soft); --callout-ink: color-mix(in oklch, var(--success) 65%, var(--ink)); }
+  .doc-body :global(.callout--warning) { --callout: var(--warning); --callout-soft: var(--warning-soft); --callout-ink: color-mix(in oklch, var(--warning) 60%, var(--ink)); }
+  .doc-body :global(.callout--caution) { --callout: var(--danger); --callout-soft: var(--danger-soft); --callout-ink: var(--danger); }
+
+  /* Code blocks: a label strip, a copy button and Shiki's css-variables theme mapped to tokens. */
+  .doc-body :global(.code-block) {
+    overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper-3);
+    --astro-code-foreground: var(--ink);
+    --astro-code-background: transparent;
+    --astro-code-token-comment: var(--ink-3);
+    --astro-code-token-keyword: var(--accent-ink);
+    /* On light paper the raw green and red sit near 3.8:1, so they are mixed toward ink to clear AA. */
+    --astro-code-token-string: color-mix(in oklch, var(--success) 70%, var(--ink));
+    --astro-code-token-string-expression: color-mix(in oklch, var(--success) 70%, var(--ink));
+    --astro-code-token-constant: color-mix(in oklch, var(--seal) 75%, var(--ink));
+    --astro-code-token-parameter: var(--ink-2);
+    --astro-code-token-function: var(--brand-blue);
+    --astro-code-token-punctuation: var(--ink-3);
+    --astro-code-token-link: var(--accent-ink);
+  }
+  :global(:root[data-theme="dark"]) .doc-body :global(.code-block) {
+    --astro-code-token-function: var(--warning);
+    --astro-code-token-string: var(--success);
+    --astro-code-token-string-expression: var(--success);
+    --astro-code-token-constant: var(--seal);
+  }
+  .doc-body :global(.code-block__bar) {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+    min-block-size: 2.25rem; padding-inline: var(--space-4) var(--space-2); border-block-end: 1px solid var(--rule); background: var(--paper-2);
+  }
+  .doc-body :global(.code-block__lang) { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .doc-body :global(.code-block__copy) {
+    display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: 2rem; padding-inline: var(--space-2);
+    border-radius: var(--radius-1); font-size: var(--step--2); font-weight: 500; color: var(--ink-2);
+  }
+  .doc-body :global(.code-block__copy[hidden]) { display: none; }
+  .doc-body :global(.code-block__copy:hover) { background: var(--surface-hover); color: var(--ink); }
+  .doc-body :global(.code-block__copy[data-state="copied"]) { color: var(--success); }
+  .doc-body :global(.code-block__copy .icon) { inline-size: 0.95rem; block-size: 0.95rem; }
+  .doc-body :global(.code-block pre) { margin: 0; border-radius: 0; background: transparent; padding: var(--space-4); font-size: var(--step--1); line-height: 1.65; }
+  @media (max-width: 959px), (pointer: coarse) {
+    .doc-body :global(.code-block__copy) { min-block-size: 2.75rem; min-inline-size: 2.75rem; justify-content: center; }
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+/**
+ * Memory as a stack of notebook sheets: L0 working memory on top, then episodic, then the
+ * semantic knowledge graph, each sliding a little further into the page. Beside them, the
+ * knowledge vault card with its search weights (drawn as ruler bars) and the background
+ * consolidation flow. Weights are fractions of 1.
+ */
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  label: string;
+  tiers: { level: string; name: string; body: string; meta: string }[];
+  recall: string;
+  flow: { label: string; steps: string[] };
+  vault: { title: string; body: string; scopes: string; weightsLabel: string; weights: { label: string; value: number }[] };
+}
+const { label, tiers, recall, flow, vault } = Astro.props;
+---
+
+<div class="mt" role="group" aria-label={label}>
+  <div class="mt__stack">
+    <ol class="mt__tiers" role="list" data-reveal-group>
+      {tiers.map((t, i) => (
+        <li class="mt__sheet" style={`--i:${i}`} data-reveal>
+          <span class="mt__level">{t.level}</span>
+          <div class="mt__copy">
+            <h3 class="mt__name">{t.name}</h3>
+            <p class="mt__body">{t.body}</p>
+          </div>
+          <span class="chip mono mt__meta">{t.meta}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="mt__recall" data-reveal><Icon name="sparkles" size={18} />{recall}</p>
+  </div>
+
+  <div class="mt__side">
+    <article class="card mt__vault" data-reveal>
+      <p class="mt__vault-head"><Icon name="library" size={22} /><span>{vault.title}</span></p>
+      <p class="mt__vault-body">{vault.body}</p>
+      <p class="mt__scopes">{vault.scopes}</p>
+      <div class="mt__weights">
+        <p class="mt__label">{vault.weightsLabel}</p>
+        <dl class="mt__bars">
+          {vault.weights.map((w) => (
+            <div class="mt__bar" style={`--w:${w.value}`}>
+              <dt>{w.label}</dt>
+              <dd><span class="mt__track" aria-hidden="true"><span class="mt__fill"></span></span><span class="mt__val">{w.value.toFixed(1)}</span></dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </article>
+
+    <div class="mt__flow" data-reveal>
+      <p class="mt__label">{flow.label}</p>
+      <ol class="mt__steps" role="list">
+        {flow.steps.map((s, i) => (
+          <li>
+            {i > 0 && <Icon name="arrow-right" size={14} class="mt__sep" />}
+            <span class="chip">{s}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mt { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 3vw, 4rem); align-items: start; }
+
+  .mt__tiers { display: grid; gap: var(--space-4); }
+  .mt__sheet {
+    --shift: calc(var(--i) * clamp(0.75rem, 0.25rem + 1.5vw, 2rem));
+    position: relative; margin-inline-start: var(--shift);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-4); align-items: start;
+    padding: var(--space-5); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-1);
+  }
+  /* a thin ruled edge on each sheet, like the top of a notebook page */
+  .mt__sheet::before {
+    content: ""; position: absolute; inset-block: var(--space-3); inset-inline-start: 0; inline-size: 3px;
+    border-radius: var(--radius-round); background: var(--bronze); opacity: 0.6;
+  }
+  .mt__level {
+    font-family: var(--font-display-stack); font-size: var(--step-3); line-height: 1; color: var(--accent-ink);
+    font-variant-numeric: lining-nums; min-inline-size: 2.6ch;
+  }
+  .mt__copy { display: grid; gap: var(--space-1); }
+  .mt__name { font-size: var(--step-1); line-height: var(--leading-snug); }
+  .mt__body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); }
+  .mt__meta { align-self: start; }
+  .mt__recall {
+    display: flex; gap: var(--space-2); align-items: flex-start; margin-block-start: var(--space-5);
+    padding-inline-start: calc(2 * clamp(0.75rem, 0.25rem + 1.5vw, 2rem));
+    font-size: var(--step--1); color: var(--ink-2);
+  }
+  .mt__recall :global(svg) { color: var(--accent-ink); flex: none; translate: 0 0.15em; }
+
+  .mt__side { display: grid; gap: var(--space-5); }
+  .mt__vault { display: grid; gap: var(--space-3); padding: var(--space-6); }
+  .mt__vault-head { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.1; color: var(--ink); }
+  .mt__vault-head :global(svg) { color: var(--accent-ink); flex: none; }
+  .mt__vault-body { color: var(--ink-2); font-size: var(--step--1); line-height: 1.6; }
+  .mt__scopes { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+  .mt__label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .mt__weights { display: grid; gap: var(--space-3); margin-block-start: var(--space-2); padding-block-start: var(--space-4); border-block-start: 1px dashed var(--rule); }
+  .mt__bars { display: grid; gap: var(--space-2); }
+  .mt__bar { display: grid; grid-template-columns: 7rem minmax(0, 1fr); align-items: center; gap: var(--space-3); font-size: var(--step--1); }
+  .mt__bar dt { color: var(--ink); font-weight: 500; }
+  .mt__bar dd { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); }
+  .mt__track {
+    position: relative; block-size: 10px; border-radius: var(--radius-round); background: var(--paper-3); overflow: hidden;
+    background-image: repeating-linear-gradient(to right, var(--rule-strong) 0 1px, transparent 1px 10%);
+  }
+  .mt__fill { position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: calc(var(--w) * 100%); background: var(--accent); border-radius: inherit; }
+  .mt__val { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  .mt__flow { display: grid; gap: var(--space-3); }
+  .mt__steps { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .mt__steps li { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .mt__steps :global(.mt__sep) { color: var(--ink-3); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .mt__vault .mt__fill { transform: scaleX(0); transform-origin: left; transition: transform 900ms var(--ease-out) 300ms; }
+    :global(html.js) .mt__vault.is-in .mt__fill { transform: none; }
+  }
+
+  @media (max-width: 960px) {
+    .mt { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .mt__sheet { grid-template-columns: auto minmax(0, 1fr); }
+    .mt__meta { grid-column: 2; justify-self: start; }
+    .mt__bar { grid-template-columns: 5.5rem minmax(0, 1fr); }
+    .mt__recall { padding-inline-start: 0; }
+  }
+</style>

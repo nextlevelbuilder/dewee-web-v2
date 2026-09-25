@@ -1,0 +1,199 @@
+---
+/**
+ * How a dedicated dewee deployment connects, sketched on a notebook page: the runtime gateway
+ * and the customer's own control plane are taped-in index cards joined by a hand-drawn
+ * two-way wire (API one way, WebSocket events both ways). The control plane's switches flip
+ * into place when the sketch scrolls in (billing off, licence-key guard on); below, the licence
+ * check-in hangs off the runtime and a sticky note shows the operator CLI.
+ * Pure HTML/CSS/SVG, so every label wraps and translates; the final state shows without JS.
+ */
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  label: string;
+  runtime: { title: string; where: string; chips: string[]; command: string; commandNote: string };
+  wire: string;
+  control: { title: string; where: string; billing: string; guard: string; off: string; on: string };
+  licence: { title: string; body: string };
+  cli: { label: string; command: string };
+  note?: string;
+}
+const { label, runtime, wire, control, licence, cli, note } = Astro.props;
+---
+
+<figure class="topo" aria-label={label} data-reveal>
+  <div class="topo__sheet drum-texture">
+    <div class="topo__map">
+      <div class="topo__node topo__node--runtime">
+        <p class="topo__title"><Icon name="server" size={20} />{runtime.title}</p>
+        <p class="topo__where">{runtime.where}</p>
+        <ul class="topo__chips" role="list">
+          {runtime.chips.map((c) => <li>{c}</li>)}
+        </ul>
+        <p class="topo__cmd"><code>$ {runtime.command}</code><span>{runtime.commandNote}</span></p>
+      </div>
+
+      <div class="topo__wire">
+        <p class="topo__wire-label">{wire}</p>
+        <svg class="topo__arrows topo__arrows--h" viewBox="0 0 160 42" aria-hidden="true">
+          <path class="topo__line" d="M12 14 C 48 6, 108 22, 146 12" />
+          <path class="topo__head" d="M137 5 L147 12 L138 20" />
+          <path class="topo__line topo__line--back" d="M148 28 C 112 36, 52 20, 14 30" />
+          <path class="topo__head" d="M23 22 L13 30 L22 37" />
+        </svg>
+        <svg class="topo__arrows topo__arrows--v" viewBox="0 0 42 90" aria-hidden="true">
+          <path class="topo__line" d="M14 8 C 6 30, 22 55, 12 80" />
+          <path class="topo__head" d="M5 71 L12 81 L19 72" />
+          <path class="topo__line topo__line--back" d="M30 82 C 38 60, 22 35, 32 10" />
+          <path class="topo__head" d="M25 19 L32 9 L39 18" />
+        </svg>
+      </div>
+
+      <div class="topo__node topo__node--control">
+        <p class="topo__title"><Icon name="layout-grid" size={20} />{control.title}</p>
+        <p class="topo__where">{control.where}</p>
+        <ul class="topo__flags" role="list">
+          <li>
+            <Icon name="receipt" size={16} /><span class="topo__flag">{control.billing}</span>
+            <span class="sw sw--off" aria-hidden="true"><span class="sw__knob"></span></span>
+            <span class="topo__state">{control.off}</span>
+          </li>
+          <li>
+            <Icon name="key-round" size={16} /><span class="topo__flag">{control.guard}</span>
+            <span class="sw sw--on" aria-hidden="true"><span class="sw__knob"></span></span>
+            <span class="topo__state topo__state--on">{control.on}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="topo__licence">
+        <p class="topo__cap"><Icon name="badge-check" size={16} />{licence.title}</p>
+        <p class="topo__licence-body">{licence.body}</p>
+      </div>
+
+      <div class="topo__cli">
+        <p class="topo__cap"><Icon name="square-terminal" size={16} />{cli.label}</p>
+        <pre class="topo__code"><code>{cli.command.split(/ (?=--)/).map((part, i) => <>{i > 0 && " "}<span>{part}</span></>)}</code></pre>
+        {note && <p class="note topo__note" aria-hidden="true">{note}</p>}
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .topo { margin: 0; }
+  .topo__sheet {
+    --cell: 10px;
+    --pad: clamp(1rem, 0.25rem + 3vw, 3rem);
+    --gap-y: clamp(2.5rem, 1.75rem + 2.5vw, 4rem);
+    position: relative;
+    padding: calc(var(--pad) + var(--space-3)) var(--pad) var(--pad) calc(var(--pad) + 2.25rem);
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3); box-shadow: var(--shadow-2);
+  }
+  /* the notebook's pink margin line */
+  .topo__sheet::before {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: 1.6rem; inline-size: 4px;
+    border-inline: 1px solid var(--bronze); opacity: 0.7;
+  }
+  .topo__map {
+    display: grid; grid-template-columns: minmax(0, 1fr) clamp(7rem, 3rem + 9vw, 12rem) minmax(0, 1fr);
+    grid-template-areas: "runtime wire control" "licence cli cli";
+    align-items: center; row-gap: var(--gap-y); column-gap: var(--space-3);
+  }
+
+  /* Index cards, taped into the notebook */
+  .topo__node {
+    position: relative; display: grid; gap: var(--space-3); align-content: start; align-self: stretch;
+    padding: var(--space-6) var(--space-5) var(--space-5); border-radius: var(--radius-2);
+    background: var(--surface); border: 1px solid var(--rule-strong); box-shadow: var(--shadow-2);
+  }
+  .topo__node::before {
+    content: ""; position: absolute; inset-block-start: -0.65rem; inset-inline-start: 50%;
+    inline-size: 4.5rem; block-size: 1.3rem; translate: -50% 0; rotate: -3deg;
+    background: var(--highlight); border-radius: 2px;
+  }
+  .topo__node--runtime { grid-area: runtime; rotate: -0.6deg; }
+  .topo__node--control { grid-area: control; rotate: 0.5deg; border-color: var(--accent); }
+  .topo__title { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.15; color: var(--ink); }
+  .topo__title :global(svg) { flex: none; color: var(--accent-ink); }
+  .topo__where { font-size: var(--step--1); color: var(--ink-3); }
+  .topo__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .topo__chips li { padding: 0.2rem 0.6rem; border-radius: var(--radius-round); border: 1px solid var(--rule); background: var(--paper-2); font-size: var(--step--2); color: var(--ink-2); }
+  .topo__cmd { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); margin-block-start: var(--space-1); font-size: var(--step--2); color: var(--ink-3); }
+  .topo__cmd code { font-size: var(--step--1); }
+
+  .topo__flags { display: grid; gap: var(--space-3); margin-block-start: var(--space-1); }
+  .topo__flags li { display: flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-2); }
+  .topo__flags li :global(svg) { flex: none; color: var(--accent-ink); }
+  .topo__flag { flex: 1 1 auto; min-inline-size: 0; }
+  .topo__state { flex: none; min-inline-size: 2rem; font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+  .topo__state--on { color: var(--success); font-weight: 500; }
+
+  /* Toggle switches, drawn in CSS; the final state is the default */
+  .sw { position: relative; flex: none; inline-size: 2.2rem; block-size: 1.25rem; border-radius: var(--radius-round); border: 1.5px solid var(--rule-strong); background: transparent; }
+  .sw__knob { position: absolute; inset-block: 0; margin-block: auto; inset-inline-start: 2px; inline-size: 0.8rem; block-size: 0.8rem; border-radius: 50%; background: var(--ink-3); }
+  .sw--on { background: var(--success); border-color: var(--success); }
+  .sw--on .sw__knob { translate: 0.95rem 0; background: var(--surface); }
+
+  /* The two-way wire */
+  .topo__wire { grid-area: wire; display: grid; justify-items: center; gap: var(--space-1); }
+  .topo__wire-label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); text-align: center; }
+  .topo__arrows { inline-size: 100%; block-size: auto; overflow: visible; }
+  .topo__arrows--v { display: none; }
+  .topo__line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 5 6; }
+  .topo__head { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* The licence check-in hangs off the runtime on a dashed thread */
+  .topo__licence {
+    grid-area: licence; position: relative; align-self: start; display: grid; gap: var(--space-2);
+    padding: var(--space-4) var(--space-5); border-radius: var(--radius-2); border: 1.5px dashed var(--rule-strong);
+    background: var(--paper);
+  }
+  .topo__licence::before {
+    content: ""; position: absolute; inset-block-end: 100%; inset-inline-start: 50%;
+    block-size: calc(var(--gap-y) - 0.25rem); border-inline-start: 2px dashed var(--rule-strong);
+  }
+  .topo__licence-body { font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; }
+  .topo__cap { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .topo__cap :global(svg) { flex: none; color: var(--accent-ink); }
+
+  /* Sticky note with the operator CLI */
+  .topo__cli {
+    grid-area: cli; position: relative; align-self: start; justify-self: end; inline-size: min(100%, 38rem);
+    display: grid; gap: var(--space-3); padding: var(--space-5); rotate: 0.8deg;
+    background: linear-gradient(var(--highlight), var(--highlight)), var(--surface);
+    border-radius: 2px var(--radius-2) 2px 2px; box-shadow: var(--shadow-2);
+  }
+  .topo__code { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--step--1); line-height: 1.6; color: var(--ink); }
+  /* Break between flags, never inside one (`--` is a line-break opportunity otherwise). */
+  .topo__code span { display: inline-block; }
+  .topo__note { justify-self: end; transform: rotate(-3deg); font-size: var(--step--1); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .topo__line { animation: topo-flow 1.4s linear infinite; }
+    .topo__line--back { animation-direction: reverse; }
+    @keyframes topo-flow { to { stroke-dashoffset: -22; } }
+    /* Before the sketch scrolls in, the switches sit the wrong way round, then flip into place. */
+    :global(html.js) .topo .sw, :global(html.js) .topo .sw__knob {
+      transition: background-color var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out), translate var(--dur-4) var(--ease-spring);
+      transition-delay: 700ms;
+    }
+    :global(html.js) .topo:not(.is-in) .sw--off { background: var(--success); border-color: var(--success); }
+    :global(html.js) .topo:not(.is-in) .sw--off .sw__knob { translate: 0.95rem 0; background: var(--surface); }
+    :global(html.js) .topo:not(.is-in) .sw--on { background: transparent; border-color: var(--rule-strong); }
+    :global(html.js) .topo:not(.is-in) .sw--on .sw__knob { translate: 0 0; background: var(--ink-3); }
+  }
+
+  @media (max-width: 900px) {
+    .topo__map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "runtime" "wire" "control" "licence" "cli"; row-gap: var(--space-5); }
+    .topo__wire { grid-auto-flow: column; align-items: center; justify-content: center; gap: var(--space-3); }
+    .topo__arrows--h { display: none; }
+    .topo__arrows--v { display: block; inline-size: 2.25rem; }
+    .topo__licence::before { display: none; }
+    .topo__cli { justify-self: stretch; inline-size: auto; }
+  }
+  @media (max-width: 560px) {
+    .topo__sheet { padding-inline-start: calc(var(--pad) + 1.5rem); }
+    .topo__sheet::before { inset-inline-start: 0.9rem; }
+    .topo__node, .topo__cli { rotate: none; }
+  }
+</style>

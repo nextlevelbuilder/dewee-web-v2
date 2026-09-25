@@ -1,0 +1,54 @@
+---
+/**
+ * Closing call to action: a letter pinned to the notebook, signed by the mascot.
+ * `secondary.chat` turns the second button into an "open the chat" trigger.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  title: string;
+  body?: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href?: string; chat?: boolean };
+  note?: string;
+}
+const { title, body, primary, secondary, note } = Astro.props;
+---
+
+<section class="section cta">
+  <div class="container">
+    <div class="cta__sheet drum-texture" data-reveal>
+      <div class="cta__mascot"><DeweeMascot size={112} mood="love" interactive /></div>
+      <h2 class="cta__title" set:html={inlineMarkup(title)} />
+      {body && <p class="lede cta__body">{body}</p>}
+      <div class="cta__actions">
+        <a class="btn btn--primary btn--lg" href={primary.href}>{primary.label}<Icon name="arrow-right" class="arrow" /></a>
+        {secondary && (secondary.chat ? (
+          <button class="btn btn--lg" type="button" data-open-chat><Icon name="message-circle" />{secondary.label}</button>
+        ) : (
+          <a class="btn btn--lg" href={secondary.href}>{secondary.label}</a>
+        ))}
+      </div>
+      {note && <p class="note cta__note">{note}</p>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta__sheet {
+    --cell: 10px;
+    position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; gap: var(--space-5);
+    padding: clamp(4rem, 3rem + 4vw, 6rem) clamp(1.25rem, 0.5rem + 4vw, 4rem) clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-4); box-shadow: var(--shadow-3);
+  }
+  .cta__mascot { position: absolute; inset-block-start: 0; inset-inline-start: 50%; translate: -50% -58%; }
+  .cta__title { max-inline-size: 16ch; font-size: var(--step-5); overflow-wrap: break-word; }
+  .cta__body { max-inline-size: 38rem; margin-inline: auto; }
+  .cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); margin-block-start: var(--space-2); }
+  .cta__note { transform: rotate(-2deg); font-size: var(--step-0); }
+  @media (max-width: 560px) {
+    .cta__actions { inline-size: 100%; }
+    .cta__actions > * { flex: 1 1 100%; min-inline-size: 0; white-space: normal; }
+  }
+</style>

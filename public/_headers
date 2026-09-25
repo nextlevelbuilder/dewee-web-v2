@@ -1,0 +1,19 @@
+# Static assets served directly by Workers Assets (they bypass the worker).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/brand/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/img/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/og/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400

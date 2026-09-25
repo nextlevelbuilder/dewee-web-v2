@@ -1,0 +1,83 @@
+---
+/**
+ * One docs article. Pages come from the `docs` content collection (src/content/docs/{en,vi});
+ * EN and VI share the same slug, and the build fails if either side is missing a page.
+ */
+import DocsLayout from "~/layouts/DocsLayout.astro";
+import DocBody from "~/components/docs/DocBody.astro";
+import type { DocsNavGroup, DocsPagerLink } from "~/components/docs/docs-types";
+import { renderDocHtml } from "~/components/docs/render-doc-html";
+import { assertDocsMirrored, getDocPages, type DocPage } from "~/lib/docs";
+import { DOC_SECTIONS, DOCS_UI } from "~/content/pages/docs";
+import { langPaths, LOCALES, pick, type Locale } from "~/i18n/config";
+import { SITE } from "~/content/site";
+import { techArticleJsonLd } from "~/lib/json-ld";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  await assertDocsMirrored();
+  const pages = Object.fromEntries(await Promise.all(LOCALES.map(async (l) => [l, await getDocPages(l)] as const))) as Record<Locale, DocPage[]>;
+  return langPaths((locale) => pages[locale].map((p) => ({ params: { slug: p.slug }, props: { slug: p.slug } })));
+}
+
+const { locale, slug } = Astro.props as { locale: Locale; slug: string };
+const ui = pick(DOCS_UI, locale);
+const pages = await getDocPages(locale);
+const index = pages.findIndex((p) => p.slug === slug);
+const page = pages[index];
+if (!page) throw new Error(`Docs page "${locale}/${slug}" vanished between getStaticPaths and render.`);
+const { entry } = page;
+
+const sectionTitle = (id: string) => pick(DOC_SECTIONS.find((s) => s.id === id)?.title ?? { en: id, vi: id }, locale);
+const groups: DocsNavGroup[] = DOC_SECTIONS.map((s) => ({
+  id: s.id,
+  title: pick(s.title, locale),
+  icon: s.icon,
+  pages: pages.filter((p) => p.entry.data.section === s.id).map((p) => ({ title: p.entry.data.title, url: p.url, current: p.slug === slug })),
+})).filter((g) => g.pages.length > 0);
+
+const toLink = (p: DocPage | undefined): DocsPagerLink | undefined =>
+  p ? { title: p.entry.data.title, url: p.url, section: sectionTitle(p.entry.data.section) } : undefined;
+
+const html = entry.rendered?.html ?? "";
+const parts = renderDocHtml(html, {
+  locale,
+  labels: { callouts: ui.callouts, copy: ui.code.copy, plain: ui.code.plain, anchor: ui.nav.anchor },
+  screens: entry.data.screens ?? [],
+  source: entry.filePath ?? entry.id,
+});
+const headings = (entry.rendered?.metadata?.headings ?? []) as { depth: number; slug: string; text: string }[];
+
+const sourcePath = entry.filePath ?? `src/content/docs/${entry.id}.md`;
+const editUrl = `https://github.com/nextlevelbuilder/dewee-web-v2/edit/dev/${sourcePath.replace(/^\.?\//, "")}`;
+const origin = (Astro.site?.toString() ?? SITE.url).replace(/\/$/, "");
+const url = `${origin}${page.url}`;
+const jsonLd = [
+  techArticleJsonLd({
+    title: entry.data.title,
+    description: entry.data.description,
+    url,
+    inLanguage: locale,
+    modified: entry.data.updated.toISOString().slice(0, 10),
+    section: sectionTitle(entry.data.section),
+  }),
+];
+---
+
+<DocsLayout
+  locale={locale}
+  title={entry.data.title}
+  description={entry.data.description}
+  path={`/docs/${slug}`}
+  section={sectionTitle(entry.data.section)}
+  groups={groups}
+  headings={headings}
+  updated={entry.data.updated}
+  editUrl={editUrl}
+  prev={toLink(pages[index - 1])}
+  next={toLink(pages[index + 1])}
+  jsonLd={jsonLd}
+>
+  <DocBody parts={parts} locale={locale} copyLabels={{ copy: ui.code.copy, copied: ui.code.copied, failed: ui.code.failed }} />
+</DocsLayout>

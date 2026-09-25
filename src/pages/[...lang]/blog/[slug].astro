@@ -1,0 +1,180 @@
+---
+/**
+ * One blog post, rendered on request from D1. The Markdown body goes through the safe renderer
+ * (raw HTML is escaped, links and images are filtered), never straight into the page.
+ * `author` holds a founder id (duy, cuong, viet) that links to the About page; anything else is
+ * shown as plain text, and an empty author is credited to the team.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import PageActions from "~/components/layout/PageActions.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { formatDate, localePath, pick } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { BLOG } from "~/content/pages/blog";
+import { FOUNDERS } from "~/content/founders";
+import { SITE } from "~/content/site";
+import { articleJsonLd } from "~/lib/json-ld";
+import { readingMinutes, renderMarkdown } from "~/lib/blocks/safe-markdown";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { adjacentPosts, getPublished, getPublishedTranslation } from "~/lib/server/pages/page-queries";
+import { slugError } from "~/lib/server/pages/slug-rules";
+
+export const prerender = false;
+
+const { lang, slug = "" } = Astro.params;
+if (lang !== undefined && lang !== "vi") return new Response(null, { status: 404 });
+const locale = lang === "vi" ? "vi" : "en";
+if (slugError(slug, "post")) return new Response(null, { status: 404 });
+const href = (p: string) => localePath(locale, p);
+
+let post;
+let translation;
+let around;
+try {
+  const db = platformEnv().DB;
+  post = await getPublished(db, "post", locale, slug);
+  if (post) [translation, around] = await Promise.all([getPublishedTranslation(db, post), adjacentPosts(db, post)]);
+} catch (err) {
+  console.error("blog post: lookup failed", err instanceof Error ? err.message : err);
+  return new Response(null, { status: 503, headers: { "retry-after": "30" } });
+}
+if (!post) return new Response(null, { status: 404 });
+
+Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, stale-while-revalidate=86400");
+
+const path = `/blog/${post.slug}`;
+const published = post.published_at ?? post.created_at;
+const body = renderMarkdown(post.body_md ?? "");
+const minutes = readingMinutes(post.body_md ?? "");
+const founder = post.author ? FOUNDERS.find((f) => f.id === post.author) : undefined;
+const author = founder
+  ? { name: founder.name, href: `${href("/about")}#founders` }
+  : post.author
+    ? { name: post.author, href: undefined }
+    : { name: pick(BLOG.labels.team, locale), href: href("/about") };
+const altLocale = locale === "en" ? "vi" : "en";
+const altHref = translation ? translation.url : localePath(altLocale, "/blog");
+// hreflang pairs the page with its published translation, whose slug may differ.
+const alternates = translation ? (locale === "en" ? { en: href(path), vi: translation.url } : { en: translation.url, vi: href(path) }) : undefined;
+const cover = post.cover || undefined;
+const L = BLOG.labels;
+const jsonLd = [
+  articleJsonLd({
+    title: post.seo.title || post.title,
+    description: post.seo.description || post.description || post.title,
+    url: new URL(href(path), SITE.url).href,
+    image: cover ? new URL(cover, SITE.url).href : undefined,
+    published,
+    modified: post.updated_at,
+    author: founder?.name ?? post.author ?? undefined,
+  }),
+];
+const older = around?.older ?? null;
+const newer = around?.newer ?? null;
+---
+
+<BaseLayout
+  pageActions={false}
+  title={post.seo.title || post.title}
+  description={post.seo.description || post.description || post.title}
+  locale={locale}
+  path={path}
+  altHref={altHref}
+  bilingual={translation?.slug === post.slug}
+  alternates={alternates}
+  type="article"
+  ogImage={post.seo.ogImage || cover}
+  noindex={post.seo.noindex}
+  published={published}
+  modified={post.updated_at}
+  jsonLd={jsonLd}
+  breadcrumbs={[{ name: pick(BLOG.meta.title, locale), path: "/blog" }, { name: post.title, path }]}
+>
+  <PageHero
+    back={{ label: pick(L.allPosts, locale), href: href("/blog") }}
+    eyebrow={pick(BLOG.hero.eyebrow, locale)}
+    title={post.title}
+    lede={post.description || undefined}
+    mascot={false}
+  />
+
+  <section class="section post">
+    <div class="container container--narrow post__wrap">
+      <div class="post__meta">
+        <p class="post__facts">
+          <span class="post__fact"><Icon name="user" size={16} />{pick(L.by, locale)}&nbsp;{author.href ? <a href={author.href}>{author.name}</a> : <span>{author.name}</span>}</span>
+          <span class="post__fact"><Icon name="calendar" size={16} /><time datetime={published}>{formatDate(published, locale)}</time></span>
+          <span class="post__fact"><Icon name="clock" size={16} />{minutes} {t(locale, "minutesRead")}</span>
+        </p>
+        <PageActions locale={locale} path={path} title={post.title} />
+      </div>
+      {cover && (
+        <figure class="post__cover">
+          <img src={cover} alt="" loading="eager" decoding="async" />
+        </figure>
+      )}
+      <article class="prose post__body" set:html={body} />
+      {post.tags.length > 0 && (
+        <ul class="post__tags" role="list" aria-label={pick(L.tags, locale)}>
+          <li aria-hidden="true"><Icon name="tag" size={16} /></li>
+          {post.tags.map((tag) => <li><a class="chip" href={`${href("/blog")}?tag=${encodeURIComponent(tag)}`}>{tag}</a></li>)}
+        </ul>
+      )}
+    </div>
+  </section>
+
+  {(older || newer) && (
+    <section class="section section--tight band">
+      <nav class="container container--narrow post__nav" aria-label={pick(L.postNav, locale)}>
+        {newer ? (
+          <a class="card card--link post__adj" href={href(`/blog/${newer.slug}`)} rel="prev">
+            <span class="post__adj-label"><Icon name="arrow-left" size={16} />{pick(L.newer, locale)}</span>
+            <span class="post__adj-title">{newer.title}</span>
+          </a>
+        ) : null}
+        {older ? (
+          <a class="card card--link post__adj post__adj--older" href={href(`/blog/${older.slug}`)} rel="next">
+            <span class="post__adj-label">{pick(L.older, locale)}<Icon name="arrow-right" size={16} /></span>
+            <span class="post__adj-title">{older.title}</span>
+          </a>
+        ) : null}
+      </nav>
+    </section>
+  )}
+
+  <CtaBand
+    title={pick(BLOG.cta.title, locale)}
+    body={pick(BLOG.cta.body, locale)}
+    primary={{ label: pick(BLOG.cta.primary.label, locale), href: href(BLOG.cta.primary.href) }}
+    secondary={{ label: pick(BLOG.cta.secondary.label, locale), chat: true }}
+  />
+</BaseLayout>
+
+<style>
+  .post { padding-block-start: 0; }
+  .post__wrap { display: grid; gap: var(--space-6); }
+  .post__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); padding-block-end: var(--space-4); border-block-end: 1px solid var(--rule); }
+  .post__facts { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: var(--step--1); color: var(--ink-3); }
+  .post__fact { display: inline-flex; align-items: center; gap: 0.4em; }
+  .post__fact a { color: var(--accent-ink); }
+  .post__cover { margin: 0; }
+  .post__cover img { inline-size: 100%; block-size: auto; border-radius: var(--radius-3); border: 1px solid var(--rule); }
+  .post__body { font-size: var(--step-0); }
+  .post__tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); color: var(--ink-3); }
+  .post__tags a { text-decoration: none; }
+  @media (pointer: coarse), (max-width: 960px) {
+    .post__tags a { min-block-size: 2.75rem; padding-inline: 0.9rem; }
+  }
+  .post__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .post__adj { display: grid; gap: var(--space-2); text-decoration: none; color: var(--ink); }
+  /* The older post keeps the right-hand column even when there is no newer one beside it. */
+  .post__adj--older { grid-column: 2; text-align: end; justify-items: end; }
+  .post__adj-label { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--step--1); color: var(--ink-3); }
+  .post__adj-title { font-family: var(--font-display-stack); font-size: var(--step-1); line-height: var(--leading-tight); }
+  @media (max-width: 640px) {
+    .post__nav { grid-template-columns: minmax(0, 1fr); }
+    .post__adj--older { grid-column: auto; text-align: start; justify-items: start; }
+  }
+</style>

@@ -1,0 +1,101 @@
+---
+/**
+ * One numbered section of a legal document: heading, the "short version" box, then the full text.
+ * Body blocks come from src/content/legal (see LegalBlock): paragraphs, sub-headings, bullet and
+ * numbered lists, term definitions and small tables. Text goes through the safe inline markup
+ * (*em*, [text](/path)) plus `code` spans; tables turn into labelled cards on narrow screens.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import type { LegalBlock } from "~/content/legal/types";
+import LegalShortVersion from "./LegalShortVersion.astro";
+interface Props {
+  /** 1-based position, shown as "01", "02", … */
+  index: number;
+  id: string;
+  title: string;
+  short: string;
+  shortLabel: string;
+  body: LegalBlock[];
+}
+const { index, id, title, short, shortLabel, body } = Astro.props;
+const num = String(index).padStart(2, "0");
+// inlineMarkup escapes HTML first, so the backtick pass only ever wraps already-escaped text.
+const md = (s: string) => inlineMarkup(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+---
+
+<section class="ls" id={id} aria-labelledby={`${id}-title`}>
+  <h2 class="ls__title" id={`${id}-title`}><span class="ls__num" aria-hidden="true">{num}</span><span>{title}</span></h2>
+  <LegalShortVersion label={shortLabel} text={short} />
+  <div class="prose ls__body">
+    {body.map((b) => {
+      if (typeof b === "string") return <p set:html={md(b)} />;
+      if ("sub" in b) return <h3>{b.sub}</h3>;
+      if ("list" in b) return <ul>{b.list.map((li) => <li set:html={md(li)} />)}</ul>;
+      if ("steps" in b) return <ol>{b.steps.map((li) => <li set:html={md(li)} />)}</ol>;
+      if ("defs" in b)
+        return (
+          <dl class="ls__defs">
+            {b.defs.map(([term, text]) => (
+              <div class="ls__def"><dt set:html={md(term)} /><dd set:html={md(text)} /></div>
+            ))}
+          </dl>
+        );
+      return (
+        <div class="ls__table">
+          <table>
+            <thead><tr>{b.table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+            <tbody>
+              {b.table.rows.map((row) => (
+                <tr>
+                  {row.map((cell, i) =>
+                    i === 0
+                      ? <th scope="row" data-label={b.table.head[0]} set:html={md(cell)} />
+                      : <td data-label={b.table.head[i]} set:html={md(cell)} />,
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .ls { display: grid; gap: var(--space-5); }
+  .ls + .ls { margin-block-start: clamp(2.5rem, 1.75rem + 2.5vw, 4rem); padding-block-start: clamp(2.5rem, 1.75rem + 2.5vw, 4rem); border-block-start: 1px dashed var(--rule-strong); }
+  .ls__title { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--step-3); line-height: 1.15; color: var(--ink); text-wrap: balance; }
+  .ls__num { flex: none; font-family: var(--font-mono-stack); font-size: var(--step--1); font-weight: 500; letter-spacing: 0.04em; color: var(--accent-ink); }
+  .ls__body { max-inline-size: none; }
+  .ls__body :global(h3) { font-size: var(--step-1); margin-block-start: 1.8em; }
+  .ls__body :global(code) { padding: 0.08em 0.35em; border-radius: var(--radius-1); background: var(--paper-3); color: var(--ink); font-size: 0.86em; overflow-wrap: anywhere; }
+
+  /* Term definitions: the term on its own line in ink, the explanation under it */
+  .ls__defs { display: grid; gap: var(--space-4); }
+  .ls__def { display: grid; gap: var(--space-1); padding-inline-start: var(--space-4); border-inline-start: 2px solid var(--accent-soft); }
+  .ls__def dt { font-weight: 600; color: var(--ink); }
+  .ls__def dd { margin: 0; }
+
+  /* Tables: full width on wide screens, one labelled card per row on narrow ones */
+  .ls__table { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); }
+  .ls__table table { display: table; inline-size: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  .ls__table th, .ls__table td { padding: 0.7rem 0.9rem; border-block-end: 1px solid var(--rule); text-align: start; vertical-align: top; line-height: 1.5; }
+  .ls__table thead th { background: var(--paper-2); font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  .ls__table tbody th { background: transparent; color: var(--ink); font-weight: 600; }
+  .ls__table tbody tr:last-child > * { border-block-end: 0; }
+
+  @media (max-width: 640px) {
+    .ls__table { overflow: visible; border: 0; background: transparent; }
+    .ls__table table, .ls__table tbody, .ls__table tr, .ls__table th, .ls__table td { display: block; }
+    .ls__table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .ls__table tbody { display: grid; gap: var(--space-3); }
+    .ls__table tbody tr { padding: var(--space-3) var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); }
+    .ls__table tbody th { padding: 0 0 var(--space-2); border-block-end: 1px dashed var(--rule); font-size: var(--step-0); }
+    .ls__table td { display: grid; gap: 0.15rem; padding: var(--space-2) 0 0; border: 0; }
+    .ls__table td::before {
+      content: attr(data-label); font-family: var(--font-mono-stack); font-size: var(--step--2);
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+    }
+  }
+</style>

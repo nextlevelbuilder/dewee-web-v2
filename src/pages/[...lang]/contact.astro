@@ -1,0 +1,78 @@
+---
+/**
+ * /contact: the contact form, direct channels and what happens after you write.
+ * Copy lives in src/content/pages/contact.ts; channel links come from src/content/site.ts.
+ * `?topic=` and `?plan=` pre-select the form (see lead-form-client.ts); without JavaScript the
+ * form posts to /api/leads and comes back with `?sent=1#contact-form-done`.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SITE, SOCIAL } from "~/content/site";
+import { CONTACT, LEAD_FORM_UI } from "~/content/pages/contact";
+import Icon from "~/components/ui/Icon.astro";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Steps from "~/components/blocks/Steps.astro";
+import LeadForm from "~/components/blocks/company/LeadForm.astro";
+import ContactChannels from "~/components/blocks/company/ContactChannels.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(CONTACT, locale);
+const ui = pick(LEAD_FORM_UI, locale);
+const href = (p: string) => localePath(locale, p);
+const bare = (url: string) => url.replace(/^https?:\/\//, "");
+const form = { fields: t.form.fields, submit: t.form.submit, success: t.form.success };
+const channels = [
+  { ...t.channels.email, value: SITE.email, href: SOCIAL.email.href, icon: "mail" },
+  { ...t.channels.discord, value: bare(SOCIAL.discord.href), href: SOCIAL.discord.href, brand: "discord", external: true },
+  { ...t.channels.facebook, value: bare(SOCIAL.facebook.href), href: SOCIAL.facebook.href, brand: "facebook", external: true },
+];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/contact" breadcrumbs={[{ name: t.meta.crumb, path: "/contact" }]}>
+  <PageHero eyebrow={t.hero.eyebrow} title={t.hero.title} lede={t.hero.lede} note={t.hero.note} mascot={{ mood: "awake", accessory: "headset" }} />
+
+  <section class="section section--tight" id="write">
+    <div class="container contact-grid">
+      <div class="contact-form">
+        <SectionHead eyebrow={t.form.eyebrow} title={t.form.title} lede={t.form.lede} />
+        <LeadForm id="contact-form" kind="contact" locale={locale} source={href("/contact")} privacyHref={href("/privacy")} copy={form} ui={ui} />
+      </div>
+      <div class="contact-side">
+        <ContactChannels title={t.channels.title} items={channels} chat={t.channels.chat} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="container contact-stack">
+      <SectionHead eyebrow={t.next.eyebrow} title={t.next.title} />
+      <Steps items={t.next.items} label={t.next.label} highlight={2} highlightNote={t.next.highlightNote} />
+      <nav class="contact-more" aria-labelledby="contact-more-title" data-reveal>
+        <p class="contact-more__title" id="contact-more-title">{t.more.title}</p>
+        <ul class="contact-more__links" role="list">
+          {t.more.links.map((l) => (
+            <li><a class="btn btn--ghost" href={href(l.href)}>{l.label}<Icon name="arrow-right" class="arrow" /></a></li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .contact-form { display: grid; gap: var(--space-7); }
+  .contact-side { position: sticky; inset-block-start: 7rem; }
+  .contact-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .contact-more { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-5); }
+  .contact-more__title { font-family: var(--font-display-stack); font-size: var(--step-2); color: var(--ink); }
+  .contact-more__links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  @media (max-width: 960px) {
+    .contact-grid { grid-template-columns: minmax(0, 1fr); }
+    .contact-side { position: static; }
+  }
+</style>

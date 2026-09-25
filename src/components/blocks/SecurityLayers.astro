@@ -1,0 +1,131 @@
+---
+/**
+ * Security on the blackboard: the five defence layers as concentric rings around your data,
+ * with a vermilion "10" seal. Hovering or focusing a layer in the list lights up its ring.
+ */
+import SectionHead from "./SectionHead.astro";
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  layers: { name: string; body: string }[];
+  core: string;
+  stamp?: string;
+  stampNote?: string;
+  cta?: { label: string; href: string };
+}
+const { eyebrow, title, lede, layers, core, stamp, stampNote, cta } = Astro.props;
+---
+
+<section class="section board sec">
+  <div class="sec__grain drum-sun" aria-hidden="true"></div>
+  <div class="container sec__grid">
+    <div class="sec__head">
+      <SectionHead eyebrow={eyebrow} title={title} lede={lede} />
+    </div>
+    <div class="sec__copy">
+      <ol class="sec__list" role="list" data-reveal-group>
+        {layers.map((l, i) => (
+          <li class="sec__item" data-layer={i} data-reveal>
+            <span class="sec__n">{String(i + 1).padStart(2, "0")}</span>
+            <div><p class="sec__name">{l.name}</p><p class="sec__body">{l.body}</p></div>
+          </li>
+        ))}
+      </ol>
+      {cta && <a class="btn btn--primary sec__cta" href={cta.href}>{cta.label}<Icon name="arrow-right" class="arrow" /></a>}
+    </div>
+
+    <div class="sec__viz" aria-hidden="true" data-reveal>
+      <div class="sec__rings">
+        {layers.map((l, i) => (
+          <div class="ring" data-layer={i} style={`--i:${i}`}><span class="ring__label">{l.name}</span></div>
+        ))}
+        <div class="sec__core"><Icon name="lock" size={22} /><span>{core}</span></div>
+      </div>
+      {stamp && (
+        <div class="sec__stamp">
+          <span class="sec__stamp-num seal">{stamp}</span>
+          {stampNote && <span class="sec__stamp-note">{stampNote}</span>}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .sec { overflow: hidden; }
+  .sec__grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.8; }
+  .sec__grid {
+    position: relative; display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); grid-template-areas: "head viz" "copy viz";
+    column-gap: clamp(2.5rem, 1rem + 5vw, 6rem); align-content: center;
+  }
+  .sec__head { grid-area: head; align-self: end; }
+  .sec__copy { grid-area: copy; align-self: start; }
+  .sec__viz { grid-area: viz; align-self: center; }
+  .sec__list { display: grid; margin-block-start: var(--space-6); border-block-start: 1px solid var(--rule); }
+  .sec__item {
+    display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4) var(--space-2);
+    border-block-end: 1px solid var(--rule); border-radius: var(--radius-1); cursor: default;
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+  .sec__item:hover, .sec__item:focus-visible { background: var(--paper-2); }
+  .sec__n { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); padding-block-start: 0.2rem; }
+  .sec__name { font-weight: 600; color: var(--ink); }
+  .sec__body { font-size: var(--step--1); color: var(--ink-2); margin-block-start: 2px; }
+  .sec__cta { margin-block-start: var(--space-6); }
+
+  .sec__viz { position: relative; }
+  .sec__rings { position: relative; aspect-ratio: 1; max-inline-size: 30rem; margin-inline: auto; }
+  .ring {
+    position: absolute; inset: calc(var(--i) * 8%); border-radius: calc(var(--radius-4) + (4 - var(--i)) * 8px);
+    border: 1.5px dashed var(--rule-strong); background: color-mix(in oklch, var(--accent) calc(4% + var(--i) * 3%), transparent);
+    transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+  }
+  .ring__label {
+    position: absolute; inset-block-start: 0; inset-inline-start: 50%; translate: -50% -50%;
+    padding: 0.1rem 0.55rem; border-radius: var(--radius-round); background: var(--paper); border: 1px solid var(--rule);
+    font-family: var(--font-mono-stack); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap;
+    transition: color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+  }
+  .sec__core {
+    position: absolute; inset: 40%; display: grid; place-items: center; align-content: center; gap: var(--space-1);
+    border-radius: var(--radius-3); background: var(--accent); color: var(--accent-contrast);
+    font-weight: 600; font-size: var(--step--2); text-align: center; line-height: 1.15; box-shadow: 0 0 0 6px color-mix(in oklch, var(--accent) 25%, transparent);
+  }
+  .sec__grid:has(.sec__item[data-layer="0"]:is(:hover, :focus-visible)) .ring[data-layer="0"],
+  .sec__grid:has(.sec__item[data-layer="1"]:is(:hover, :focus-visible)) .ring[data-layer="1"],
+  .sec__grid:has(.sec__item[data-layer="2"]:is(:hover, :focus-visible)) .ring[data-layer="2"],
+  .sec__grid:has(.sec__item[data-layer="3"]:is(:hover, :focus-visible)) .ring[data-layer="3"],
+  .sec__grid:has(.sec__item[data-layer="4"]:is(:hover, :focus-visible)) .ring[data-layer="4"] {
+    border-style: solid; border-color: var(--accent); background: color-mix(in oklch, var(--accent) 22%, transparent);
+  }
+  .sec__grid:has(.sec__item[data-layer="0"]:is(:hover, :focus-visible)) .ring[data-layer="0"] .ring__label,
+  .sec__grid:has(.sec__item[data-layer="1"]:is(:hover, :focus-visible)) .ring[data-layer="1"] .ring__label,
+  .sec__grid:has(.sec__item[data-layer="2"]:is(:hover, :focus-visible)) .ring[data-layer="2"] .ring__label,
+  .sec__grid:has(.sec__item[data-layer="3"]:is(:hover, :focus-visible)) .ring[data-layer="3"] .ring__label,
+  .sec__grid:has(.sec__item[data-layer="4"]:is(:hover, :focus-visible)) .ring[data-layer="4"] .ring__label { color: var(--ink); border-color: var(--accent); }
+
+  .sec__stamp { position: absolute; inset-block-end: -0.5rem; inset-inline-end: 0; display: grid; justify-items: center; transform: rotate(-10deg); color: var(--seal); }
+  .sec__stamp-num { --seal-size: 4.75rem; }
+  .sec__stamp-note { color: var(--seal); max-inline-size: 11rem; text-align: center; margin-block-start: var(--space-2); line-height: 1.4; font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .sec__viz .ring { opacity: 0; transform: scale(1.06); transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out), border-color var(--dur-2), background-color var(--dur-2); transition-delay: calc(200ms + var(--i) * 140ms), calc(200ms + var(--i) * 140ms), 0s, 0s; }
+    :global(html.js) .sec__viz.is-in .ring { opacity: 1; transform: none; }
+    :global(html.js) .sec__stamp { opacity: 0; transform: rotate(-10deg) scale(1.5); transition: opacity 200ms var(--ease-out) 1.3s, transform var(--dur-4) var(--ease-spring) 1.3s; }
+    :global(html.js) .sec__viz.is-in .sec__stamp { opacity: 1; transform: rotate(-10deg); }
+  }
+  @media (max-width: 960px) {
+    .sec__grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "viz" "copy"; row-gap: var(--space-7); }
+    .sec__viz { max-inline-size: 26rem; inline-size: 100%; justify-self: center; }
+    .sec__list { margin-block-start: 0; }
+  }
+  @media (max-width: 480px) {
+    .ring { inset: calc(var(--i) * 8.5%); }
+    .ring__label { font-size: 0.6rem; padding-inline: 0.4rem; }
+    .sec__core { inset: 38%; font-size: 0.68rem; }
+    .sec__stamp-num { --seal-size: 3.75rem; }
+    .sec__stamp-note { display: none; }
+  }
+</style>

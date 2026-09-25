@@ -1,0 +1,90 @@
+---
+/**
+ * Page shell shared by every public page: fonts, theme (no flash), SEO head,
+ * header/footer chrome, reveal-on-scroll, cookie badge,
+ * page actions (copy/share/ask AI) and the chat launcher.
+ */
+import { Font } from "astro:assets";
+import "~/styles/global.css";
+import { LOCALE_META, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import SeoHead from "~/components/layout/SeoHead.astro";
+import SiteHeader from "~/components/layout/SiteHeader.astro";
+import SiteFooter from "~/components/layout/SiteFooter.astro";
+import CookieBadge from "~/components/layout/CookieBadge.astro";
+import ChatLauncher from "~/components/chat/ChatLauncher.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Unprefixed path, e.g. "/features" */
+  path: string;
+  /** Explicit href for the language switch when the other locale has a different slug */
+  altHref?: string;
+  ogImage?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+  bilingual?: boolean;
+  /** Each locale's URL when the translation has a different path (forwarded to SeoHead for hreflang) */
+  alternates?: Partial<Record<Locale, string>>;
+  jsonLd?: Record<string, unknown>[];
+  breadcrumbs?: { name: string; path: string }[];
+  published?: string;
+  modified?: string;
+  chat?: boolean;
+  /** Copy/share/ask-an-AI menu in the footer; off for pages that carry their own (and for noindex pages) */
+  pageActions?: boolean;
+  bodyClass?: string;
+}
+
+const { locale, path, altHref, chat = true, pageActions = !Astro.props.noindex, bodyClass, ...seo } = Astro.props;
+const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
+---
+
+<!doctype html>
+<html lang={LOCALE_META[locale].htmlLang} data-theme="light" data-env={isStaging ? "staging" : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fbfaff" />
+    <meta name="generator" content={Astro.generator} />
+    <!-- Apply the saved theme before first paint so the page never flashes the wrong paper. -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, p = "system";
+        try { p = localStorage.getItem("dewee.theme") || "system"; } catch (e) {}
+        var dark = p === "dark" || (p === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        d.dataset.theme = dark ? "dark" : "light";
+        d.dataset.themePref = p;
+        d.classList.add("js");
+        if (dark) document.querySelector('meta[name="theme-color"]').setAttribute("content", "#1b1a2e");
+      })();
+    </script>
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-sign" />
+    <Font cssVariable="--font-mono" />
+    <link rel="icon" type="image/png" href="/brand/favicon.png" />
+    <link rel="apple-touch-icon" href="/brand/dewee-icon-144.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <SeoHead {...seo} locale={locale} path={path} noindex={seo.noindex || isStaging} />
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">{t(locale, "skip")}</a>
+    <SiteHeader locale={locale} path={path} altHref={altHref} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} page={pageActions ? { path, title: seo.title } : undefined} />
+    <CookieBadge locale={locale} />
+    {chat && <ChatLauncher locale={locale} />}
+    <script>
+      import { initReveal } from "~/scripts/reveal-on-scroll";
+      initReveal();
+    </script>
+    <script>import "~/components/webmcp/webmcp-public";</script>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+---
+/**
+ * Deployment topology, chalked on the blackboard: the runtime gateway and the Customer Control
+ * Plane joined by an API/WebSocket link, a licence-guard card, and a terminal showing how the
+ * gateway starts and how an operator reaches it remotely. Place it inside a `.board` section;
+ * it only uses tokens, so the board's re-pointed palette applies.
+ */
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+type Node = { title: string; where: string; body: string };
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  label: string;
+  runtime: Node;
+  link: { title: string; body: string };
+  ccp: Node;
+  guard: { title: string; points: string[]; note: string };
+  terminalLabel: string;
+  terminal: { kind: "comment" | "command"; text: string }[];
+}
+const { eyebrow, title, lede, label, runtime, link, ccp, guard, terminalLabel, terminal } = Astro.props;
+---
+
+<div class="dt">
+  <SectionHead eyebrow={eyebrow} title={title} lede={lede} />
+
+  <figure class="dt__map" aria-label={label} data-reveal>
+    <div class="dt__node">
+      <span class="dt__icon"><Icon name="server" size={24} /></span>
+      <p class="dt__title">{runtime.title}</p>
+      <p class="dt__where">{runtime.where}</p>
+      <p class="dt__body">{runtime.body}</p>
+    </div>
+    <div class="dt__link">
+      <svg class="dt__wire" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2 7 C 25 5, 60 9, 98 6.5" />
+        <path d="M98 13.5 C 70 15, 35 11.5, 2 13.5" />
+      </svg>
+      <p class="dt__link-title">{link.title}</p>
+      <p class="dt__link-body">{link.body}</p>
+    </div>
+    <div class="dt__node">
+      <span class="dt__icon"><Icon name="app-window" size={24} /></span>
+      <p class="dt__title">{ccp.title}</p>
+      <p class="dt__where mono">{ccp.where}</p>
+      <p class="dt__body">{ccp.body}</p>
+    </div>
+  </figure>
+
+  <div class="dt__below">
+    <div class="dt__guard" data-reveal>
+      <p class="dt__guard-title"><Icon name="lock" size={20} />{guard.title}</p>
+      <ul class="dt__points" role="list">
+        {guard.points.map((p) => <li>{p}</li>)}
+      </ul>
+      <p class="dt__guard-note">{guard.note}</p>
+    </div>
+
+    <div class="dt__term" data-reveal>
+      <p class="dt__term-bar"><span aria-hidden="true"><i></i><i></i><i></i></span>{terminalLabel}</p>
+      <pre class="dt__code"><code>{terminal.map((l) => (
+        l.kind === "comment"
+          ? <span class="dt__c">{l.text}{"\n"}</span>
+          : <span class="dt__cmd"><span class="dt__prompt" aria-hidden="true">$ </span>{l.text}{"\n"}</span>
+      ))}</code></pre>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dt { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+
+  .dt__map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.8fr) minmax(0, 1fr); align-items: center; gap: var(--space-4); margin: 0; }
+  .dt__node {
+    display: grid; gap: var(--space-2); align-content: start; padding: var(--space-6);
+    border: 1.5px solid var(--rule-strong); border-radius: var(--radius-3); background: var(--surface);
+  }
+  .dt__icon {
+    display: grid; place-items: center; inline-size: 3rem; block-size: 3rem; margin-block-end: var(--space-2); color: var(--accent-ink);
+    border: 1.5px solid currentColor; border-radius: 52% 48% 55% 45% / 47% 55% 45% 53%;
+  }
+  .dt__title { font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.15; color: var(--ink); }
+  .dt__where { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.04em; color: var(--accent-ink); }
+  .dt__body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); }
+
+  .dt__link { position: relative; display: grid; justify-items: center; gap: var(--space-2); padding-block: var(--space-6); text-align: center; }
+  .dt__wire { position: absolute; inset-inline: 0; inset-block-start: 50%; translate: 0 -50%; inline-size: 100%; block-size: 2.25rem; overflow: visible; color: var(--accent); pointer-events: none; }
+  .dt__wire path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 6; vector-effect: non-scaling-stroke; }
+  .dt__link-title, .dt__link-body { position: relative; padding: 0.15rem 0.6rem; border-radius: var(--radius-1); background: var(--paper); }
+  .dt__link-title { font-family: var(--font-mono-stack); font-size: var(--step--1); color: var(--ink); translate: 0 -1.6rem; }
+  .dt__link-body { font-size: var(--step--2); color: var(--ink-3); translate: 0 1.4rem; max-inline-size: 16ch; }
+
+  .dt__below { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: stretch; }
+  .dt__guard { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-6); border: 1.5px dashed var(--seal); border-radius: var(--radius-3); }
+  .dt__guard-title { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--ink); }
+  .dt__guard-title :global(svg) { color: var(--seal); }
+  .dt__points { display: grid; gap: var(--space-2); padding-inline-start: 1.1em; list-style: disc; color: var(--ink-2); font-size: var(--step--1); }
+  .dt__points li::marker { color: var(--seal); }
+  .dt__guard-note { font-size: var(--step--1); color: var(--ink-3); border-block-start: 1px solid var(--rule); padding-block-start: var(--space-3); }
+
+  .dt__term { display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--rule-strong); border-radius: var(--radius-3); background: var(--paper); overflow: hidden; }
+  .dt__term-bar {
+    display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-4); border-block-end: 1px solid var(--rule);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3);
+  }
+  .dt__term-bar span { display: inline-flex; gap: 6px; }
+  .dt__term-bar i { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--rule-strong); }
+  .dt__code {
+    margin: 0; padding: var(--space-5); font-family: var(--font-mono-stack); font-size: var(--step--1); line-height: 1.75;
+    white-space: pre-wrap; overflow-wrap: break-word; color: var(--ink); background: transparent; font-variant-ligatures: none;
+  }
+  .dt__c { color: var(--ink-3); }
+  .dt__cmd { color: var(--ink); }
+  .dt__prompt { color: var(--accent-ink); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .dt__map .dt__wire { opacity: 0; transition: opacity var(--dur-4) var(--ease-out) 400ms; }
+    :global(html.js) .dt__map.is-in .dt__wire { opacity: 1; }
+  }
+
+  @media (max-width: 900px) {
+    .dt__map { grid-template-columns: minmax(0, 1fr); }
+    .dt__link { padding-block: var(--space-6); }
+    .dt__wire { display: none; }
+    .dt__link::before {
+      content: ""; position: absolute; inset-block: calc(var(--space-4) * -1); inset-inline-start: 50%; translate: -50% 0;
+      inline-size: 12px; border-inline: 2px dashed var(--accent); pointer-events: none;
+    }
+    .dt__link-title, .dt__link-body { translate: none; }
+    .dt__below { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

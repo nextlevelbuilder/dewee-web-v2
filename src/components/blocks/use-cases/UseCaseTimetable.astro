@@ -1,0 +1,144 @@
+---
+/**
+ * The signature visual on /use-cases: a school timetable (thời khoá biểu) taped into the
+ * notebook, showing how the use cases could fill one working day. It is a real <table> with a
+ * caption; below 720px each period becomes a stacked card. A dashed "free period" row invites
+ * visitors to add their own job. No motion beyond the shared reveal.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+
+type Job = { title: string; team: string; href: string; icon: IconName; accent?: string };
+interface Props {
+  sheetTitle: string;
+  caption: string;
+  meta: { label: string; value: string }[];
+  cols: { time: string; period: string; jobs: string };
+  rows: { time: string; name: string; jobs: Job[] }[];
+  free: { time: string; name: string; label: string; href: string };
+  disclaimer?: string;
+}
+const { sheetTitle, caption, meta, cols, rows, free, disclaimer } = Astro.props;
+// The handwriting face has no digit glyphs, so values containing numbers are set in mono.
+const valueFont = (value: string) => (/\d/.test(value) ? "mono" : "hand");
+---
+
+<div class="tt" data-reveal>
+  <div class="tt__sheet">
+    <span class="tt__tape" aria-hidden="true"></span>
+    <header class="tt__head">
+      <p class="tt__title">{sheetTitle}</p>
+      <dl class="tt__meta">
+        {meta.map((m) => (
+          <div><dt>{m.label}</dt><dd class={valueFont(m.value)}>{m.value}</dd></div>
+        ))}
+      </dl>
+    </header>
+    <table class="tt__table">
+      <caption class="sr-only">{caption}</caption>
+      <thead>
+        <tr><th scope="col">{cols.time}</th><th scope="col">{cols.period}</th><th scope="col">{cols.jobs}</th></tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr>
+            <td class="tt__time mono">{r.time}</td>
+            <th scope="row" class="tt__period">{r.name}</th>
+            <td class="tt__jobs">
+              <ul role="list">
+                {r.jobs.map((j) => (
+                  <li style={j.accent}>
+                    <a class="tt__job" href={j.href}>
+                      <Icon name={j.icon} size={16} class="tt__icon" />
+                      <span><span class="tt__job-title">{j.title}</span> <span class="tt__team">{j.team}</span></span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </td>
+          </tr>
+        ))}
+        <tr class="tt__free">
+          <td class="tt__time mono">{free.time}</td>
+          <th scope="row" class="tt__period">{free.name}</th>
+          <td class="tt__jobs"><a class="tt__free-link hand" href={free.href}>{free.label}<Icon name="arrow-right" size={18} class="arrow" /></a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {disclaimer && <p class="tt__disclaimer">{disclaimer}</p>}
+</div>
+
+<style>
+  .tt { display: grid; gap: var(--space-3); max-inline-size: 60rem; margin-inline: auto; }
+  .tt__sheet {
+    position: relative; padding: var(--space-6) clamp(1rem, 0.5rem + 2.5vw, 2.5rem) var(--space-5);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-2); box-shadow: var(--shadow-2);
+  }
+  /* A strip of highlighter-coloured tape holding the sheet in the notebook */
+  .tt__tape {
+    position: absolute; inset-block-start: -0.9rem; inset-inline-start: 50%; inline-size: 8rem; block-size: 1.8rem;
+    background: var(--highlight); opacity: 0.85; transform: translateX(-50%) rotate(-2deg); border-radius: 2px;
+  }
+  .tt__head { display: grid; justify-items: center; gap: var(--space-3); margin-block-end: var(--space-5); text-align: center; }
+  .tt__title {
+    font-family: var(--font-display-stack); font-size: var(--step-3); line-height: 1.1; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink);
+  }
+  .tt__meta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-6); font-size: var(--step--1); }
+  .tt__meta div { display: flex; align-items: baseline; gap: var(--space-2); }
+  .tt__meta dt { color: var(--ink-3); }
+  .tt__meta dd {
+    min-inline-size: 6rem; padding-inline: var(--space-2); border-block-end: 1.5px dotted var(--rule-strong);
+    font-size: var(--step-1); line-height: 1.4; color: var(--accent-ink);
+  }
+  .tt__meta dd.mono { font-size: var(--step--1); line-height: 2.1; }
+
+  .tt__table { inline-size: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  .tt__table thead th {
+    padding: var(--space-2) var(--space-3); border-block: 2px solid var(--ink); text-align: start;
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: var(--tracking-caps);
+    text-transform: uppercase; color: var(--ink-2);
+  }
+  .tt__table tbody > tr { border-block-end: 1px solid var(--rule); }
+  .tt__table td, .tt__table tbody th { padding: var(--space-3); vertical-align: top; text-align: start; }
+  .tt__time { inline-size: 7.5rem; color: var(--ink-3); white-space: nowrap; }
+  .tt__period { inline-size: 12rem; font-weight: 600; color: var(--ink); border-inline-end: 1px solid var(--bronze); }
+  .tt__jobs ul { display: grid; gap: var(--space-2); }
+  .tt__jobs li { --area: var(--accent); }
+  .tt__job { display: grid; grid-template-columns: 1rem minmax(0, 1fr); gap: var(--space-2); align-items: start; color: var(--ink); text-decoration: none; }
+  .tt__job :global(.tt__icon) { margin-block-start: 0.2em; color: color-mix(in oklch, var(--area) 70%, var(--ink)); }
+  .tt__job-title { font-weight: 500; text-decoration: underline; text-decoration-color: color-mix(in oklch, currentColor 35%, transparent); text-underline-offset: 0.2em; }
+  .tt__job:hover .tt__job-title { color: var(--accent-ink); text-decoration-color: currentColor; }
+  .tt__team { font-size: var(--step--2); color: var(--ink-3); white-space: nowrap; }
+
+  .tt__free { border-block-end: 0 !important; }
+  .tt__free td, .tt__free th { color: var(--ink-3); }
+  .tt__free > * { border-block: 1.5px dashed var(--rule-strong); background: color-mix(in oklch, var(--highlight) 22%, transparent); }
+  .tt__free-link {
+    display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem;
+    font-size: var(--step-1); color: var(--accent-ink); text-decoration: none;
+  }
+  .tt__free-link:hover { text-decoration: underline; }
+  .tt__free-link :global(.arrow) { transition: transform var(--dur-2) var(--ease-out); }
+  .tt__free-link:hover :global(.arrow) { transform: translateX(3px); }
+  .tt__disclaimer { font-size: var(--step--2); color: var(--ink-3); text-align: center; }
+
+  @media (max-width: 720px) {
+    .tt__table thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .tt__table, .tt__table tbody, .tt__table tr, .tt__table td, .tt__table tbody th { display: block; inline-size: auto; }
+    .tt__table tbody > tr { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 var(--space-3); padding-block: var(--space-3); }
+    .tt__table td, .tt__table tbody th { padding: 0; }
+    .tt__time { grid-column: 1; grid-row: 1; }
+    .tt__period { grid-column: 2; grid-row: 1; border-inline-end: 0; }
+    .tt__jobs { grid-column: 1 / -1; margin-block-start: var(--space-1); }
+    .tt__jobs ul { gap: 0; }
+    /* Each job becomes a full-width, 44px tap row on narrow screens */
+    .tt__job { min-block-size: 2.75rem; padding-block: 0.6rem; }
+    .tt__free > * { border-block: 0; background: none; }
+    .tt__free { border: 1.5px dashed var(--rule-strong) !important; border-radius: var(--radius-2); padding-inline: var(--space-3) !important; margin-block-start: var(--space-3); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tt__free-link:hover :global(.arrow) { transform: none; }
+  }
+</style>

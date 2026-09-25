@@ -1,0 +1,44 @@
+---
+/**
+ * A ruled timeline. Horizontal on wide screens (dates on a line, like marks on a ruler),
+ * vertical on phones or when `vertical` is set. The last entry pulses as "now".
+ */
+interface Props { items: { date: string; text: string }[]; vertical?: boolean; label?: string }
+const { items, vertical = false, label } = Astro.props;
+---
+
+<ol class:list={["tl", { "tl--v": vertical }]} role="list" aria-label={label} data-reveal-group>
+  {items.map((it, i) => (
+    <li class:list={["tl__item", { "tl__item--now": i === items.length - 1 }]} data-reveal>
+      <span class="tl__dot" aria-hidden="true"></span>
+      <time class="tl__date">{it.date}</time>
+      <p class="tl__text">{it.text}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .tl { --dot: 13px; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); position: relative; }
+  .tl::before { content: ""; position: absolute; inset-inline: 0; inset-block-start: calc(var(--dot) / 2); block-size: 1px; background: var(--rule-strong); }
+  .tl__item { position: relative; display: grid; gap: var(--space-2); align-content: start; padding-inline-end: var(--space-4); }
+  .tl__dot { inline-size: var(--dot); block-size: var(--dot); border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); margin-block-end: var(--space-2); position: relative; }
+  .tl__item--now .tl__dot { background: var(--accent); }
+  .tl__item--now .tl__dot::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; }
+  .tl__date { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); letter-spacing: 0.04em; }
+  .tl__text { font-size: var(--step--1); color: var(--ink-2); line-height: 1.5; }
+  .tl__item--now .tl__text { color: var(--ink); font-weight: 600; }
+  @media (prefers-reduced-motion: no-preference) {
+    .tl__item--now .tl__dot::after { animation: tl-pulse 2.4s var(--ease-out) infinite; }
+    @keyframes tl-pulse { 0% { opacity: 0.8; transform: scale(0.6); } 100% { opacity: 0; transform: scale(1.5); } }
+  }
+  .tl--v { grid-auto-flow: row; gap: var(--space-5); padding-inline-start: calc(var(--dot) + var(--space-4)); }
+  .tl--v::before { inset-inline: auto; inset-inline-start: calc(var(--dot) / 2); inset-block: 0.4rem; inline-size: 1px; block-size: auto; }
+  .tl--v .tl__item { padding-inline-end: 0; gap: var(--space-1); }
+  .tl--v .tl__dot { position: absolute; inset-inline-start: calc((var(--dot) + var(--space-4)) * -1); inset-block-start: 0.25rem; margin: 0; }
+  @media (max-width: 760px) {
+    .tl { grid-auto-flow: row; gap: var(--space-5); padding-inline-start: calc(var(--dot) + var(--space-4)); }
+    .tl::before { inset-inline: auto; inset-inline-start: calc(var(--dot) / 2); inset-block: 0.4rem; inline-size: 1px; block-size: auto; }
+    .tl__item { padding-inline-end: 0; gap: var(--space-1); }
+    .tl__dot { position: absolute; inset-inline-start: calc((var(--dot) + var(--space-4)) * -1); inset-block-start: 0.25rem; margin: 0; }
+  }
+</style>

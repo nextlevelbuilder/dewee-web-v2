@@ -1,0 +1,59 @@
+---
+/**
+ * The trust story of a use case, on the page's single blackboard (`.board`): where a person
+ * stays in charge, approvals and hard limits. Each guardrail is a chalk line with a shield
+ * tick; a handwritten note sits in the margin. Renders its own section.
+ */
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  note?: string;
+  items: string[];
+  id?: string;
+}
+const { eyebrow, title, lede, note, items, id } = Astro.props;
+---
+
+<section class="section board gr" aria-labelledby={id}>
+  <div class="gr__bg drum-sun" aria-hidden="true"></div>
+  <div class="container gr__grid">
+    <div class="gr__head">
+      <SectionHead eyebrow={eyebrow} title={title} lede={lede} id={id} />
+      {note && <p class="note gr__note" aria-hidden="true" data-reveal>{note}</p>}
+    </div>
+    <ul class="gr__list" role="list" data-reveal-group>
+      {items.map((it) => (
+        <li class="gr__item" data-reveal>
+          <span class="gr__icon" aria-hidden="true"><Icon name="shield-check" size={20} /></span>
+          <p>{it}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gr { isolation: isolate; overflow: hidden; }
+  .gr__bg { position: absolute; inset: 0; z-index: -1; opacity: 0.6; }
+  .gr__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .gr__head { display: grid; gap: var(--space-5); justify-items: start; }
+  .gr__note { font-size: var(--step-1); transform: rotate(-3deg); transform-origin: 0 50%; }
+  .gr__list { display: grid; gap: var(--space-3); }
+  .gr__item {
+    display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: var(--space-3); align-items: start;
+    padding: var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface);
+  }
+  .gr__item p { font-size: var(--step-0); line-height: 1.6; color: var(--ink); }
+  .gr__icon {
+    display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent-ink);
+  }
+
+  @media (max-width: 900px) {
+    .gr__grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

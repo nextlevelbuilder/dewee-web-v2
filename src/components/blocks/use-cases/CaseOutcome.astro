@@ -1,0 +1,67 @@
+---
+/**
+ * What changes, written like the teacher's remarks ("lời phê") at the bottom of a graded page:
+ * a red-pen label in the margin, the outcome in display italics, then the channels the use
+ * case runs on with a link to all integrations. Qualitative copy only; no scores or grades.
+ */
+import BrandMark from "~/components/ui/BrandMark.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props {
+  eyebrow: string;
+  remark: string;
+  text: string;
+  runsOn: string;
+  channels: { brand: string; name: string }[];
+  more: { label: string; href: string };
+  id?: string;
+}
+const { eyebrow, remark, text, runsOn, channels, more, id } = Astro.props;
+---
+
+<div class="oc" data-reveal>
+  <p class="eyebrow" id={id}>{eyebrow}</p>
+  <div class="oc__sheet">
+    <p class="oc__remark note note--seal" aria-hidden="true">{remark}</p>
+    <p class="oc__text">{text}</p>
+  </div>
+  <div class="oc__runs">
+    <p class="oc__runs-label">{runsOn}</p>
+    <ul class="oc__channels" role="list">
+      {channels.map((c) => (
+        <li class="chip"><BrandMark brand={c.brand} name={c.name} size={16} />{c.name}</li>
+      ))}
+    </ul>
+    <a class="link oc__more" href={more.href}>{more.label}<Icon name="arrow-right" size={16} class="arrow" /></a>
+  </div>
+</div>
+
+<style>
+  .oc { display: grid; gap: var(--space-5); max-inline-size: 52rem; margin-inline: auto; }
+  .oc__sheet {
+    position: relative; padding: var(--space-5) 0 var(--space-5) clamp(1.25rem, 0.5rem + 3vw, 3rem);
+    border-inline-start: 2px solid var(--bronze);
+  }
+  .oc__remark {
+    font-size: var(--step-1); line-height: 1; transform: rotate(-4deg); transform-origin: 0 50%;
+    margin-block-end: var(--space-3);
+  }
+  .oc__text {
+    font-family: var(--font-display-stack); font-style: italic; font-size: var(--step-2); line-height: 1.35;
+    color: var(--ink); text-wrap: pretty;
+  }
+  .oc__runs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+  .oc__runs-label { font-size: var(--step--1); color: var(--ink-3); }
+  .oc__channels { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .oc__channels .chip { font-size: var(--step--1); padding: 0.3rem 0.75rem; }
+  .oc__more { display: inline-flex; align-items: center; gap: 0.3rem; min-block-size: 2.75rem; margin-inline-start: auto; font-size: var(--step--1); }
+  .oc__more :global(.arrow) { transition: transform var(--dur-2) var(--ease-out); }
+  .oc__more:hover :global(.arrow) { transform: translateX(3px); }
+
+  @media (max-width: 640px) {
+    .oc__more { margin-inline-start: 0; inline-size: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .oc__more:hover :global(.arrow) { transform: none; }
+  }
+</style>

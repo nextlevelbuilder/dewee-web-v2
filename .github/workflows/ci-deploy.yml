@@ -1,0 +1,67 @@
+# Checks every PR; deploys `dev` to staging.dewee.sh and `main` to dewee.sh + www.dewee.sh.
+# Deploys run only when the repo variable DEPLOY_ENABLED is "true" and the repo-level
+# CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets point at the dewee.sh account
+# (the org-level secrets belong to a different Cloudflare account).
+name: CI / Deploy
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: ${{ github.event_name == 'push' && (github.ref_name == 'main' && 'production' || 'staging') || null }}
+    env:
+      # push to dev → staging config; everything else builds the production config.
+      CLOUDFLARE_ENV: ${{ github.event_name == 'push' && github.ref_name == 'dev' && 'staging' || '' }}
+      SITE_URL: ${{ github.event_name == 'push' && github.ref_name == 'dev' && 'https://staging.dewee.sh' || 'https://dewee.sh' }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm check
+      - run: pnpm build
+
+      - name: Deploy gate
+        id: gate
+        if: github.event_name == 'push'
+        run: |
+          if [ "${{ vars.DEPLOY_ENABLED }}" = "true" ] && [ -n "$CLOUDFLARE_API_TOKEN" ]; then echo "ok=true" >> "$GITHUB_OUTPUT";
+          else echo "::notice::Deploys are disabled (set the DEPLOY_ENABLED repo variable to true); skipping."; fi
+      - name: Apply D1 migrations
+        if: steps.gate.outputs.ok == 'true'
+        run: pnpm exec wrangler d1 migrations apply DB --remote
+      - name: Deploy worker
+        if: steps.gate.outputs.ok == 'true'
+        run: pnpm exec wrangler deploy
+      - name: Smoke test
+        if: steps.gate.outputs.ok == 'true'
+        run: |
+          # A fresh deploy can answer 5xx for a few seconds while the edge picks it up; retry before failing.
+          sleep 10
+          for p in / /vi /index.md; do
+            for try in 1 2 3 4 5; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL$p")
+              [ "$code" = "200" ] && break; sleep 6
+            done
+            echo "$p → $code"; [ "$code" = "200" ] || exit 1
+          done

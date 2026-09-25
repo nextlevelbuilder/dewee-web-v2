@@ -1,0 +1,34 @@
+---
+/** A boxed aside: note, tip, warning or success. `title` is plain text; `body` takes inline markup. */
+import { inlineMarkup } from "~/lib/inline-markup";
+import Icon from "~/components/ui/Icon.astro";
+interface Props { tone?: "note" | "tip" | "warning" | "success"; title?: string; body: string }
+const { tone = "note", title, body } = Astro.props;
+const icons = { note: "info", tip: "lightbulb", warning: "triangle-alert", success: "circle-check" } as const;
+---
+
+<aside class:list={["co", `co--${tone}`]} data-reveal>
+  <span class="co__icon" aria-hidden="true"><Icon name={icons[tone]} size={20} /></span>
+  <div class="co__text">
+    {title && <p class="co__title">{title}</p>}
+    <p class="co__body" set:html={inlineMarkup(body)} />
+  </div>
+</aside>
+
+<style>
+  .co {
+    --co-ink: var(--accent-ink);
+    --co-bg: var(--accent-soft);
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3);
+    max-inline-size: var(--measure); padding: var(--space-4) var(--space-5);
+    border: 1px solid color-mix(in oklch, var(--co-ink) 25%, transparent); border-inline-start-width: 4px;
+    border-radius: var(--radius-2); background: color-mix(in oklch, var(--co-bg) 70%, var(--surface));
+  }
+  .co--tip { --co-ink: var(--success); --co-bg: var(--success-soft); }
+  .co--success { --co-ink: var(--success); --co-bg: var(--success-soft); }
+  .co--warning { --co-ink: color-mix(in oklch, var(--warning) 70%, var(--ink)); --co-bg: var(--warning-soft); }
+  .co__icon { color: var(--co-ink); padding-block-start: 0.15em; }
+  .co__title { font-weight: 600; color: var(--ink); }
+  .co__body { color: var(--ink-2); }
+  .co__title + .co__body { margin-block-start: var(--space-1); }
+</style>

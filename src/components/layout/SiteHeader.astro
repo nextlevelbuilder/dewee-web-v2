@@ -1,0 +1,242 @@
+---
+import { localePath, pick, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import { NAV_COMPANY, NAV_PRODUCT, NAV_TOP } from "~/content/site";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import Wordmark from "~/components/ui/Wordmark.astro";
+import Icon from "~/components/ui/Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props { locale: Locale; path: string; altHref?: string }
+const { locale, path, altHref } = Astro.props;
+const other: Locale = locale === "en" ? "vi" : "en";
+const switchHref = altHref ?? localePath(other, path);
+const groups = [NAV_PRODUCT, NAV_COMPANY];
+const isActive = (href: string) => path === href || (href !== "/" && path.startsWith(`${href}/`));
+---
+
+<header class="site-header" data-header>
+  <div class="container container--wide site-header__bar">
+    <a class="brand" href={localePath(locale, "/")} aria-label="dewee — home">
+      <DeweeMascot size={40} motion="still" class="brand__mascot" />
+      <Wordmark class="brand__word" />
+    </a>
+
+    <nav class="nav" aria-label={locale === "vi" ? "Điều hướng chính" : "Main"}>
+      <ul class="nav__list" role="list">
+        {groups.map((g, gi) => (
+          <li class="nav__item nav__item--menu" data-menu>
+            <button class="nav__link nav__trigger" type="button" aria-expanded="false" aria-controls={`menu-${gi}`}>
+              {pick(g.label, locale)}
+              <Icon name="chevron-down" class="nav__chev" />
+            </button>
+            <div class="nav__panel" id={`menu-${gi}`} data-panel hidden>
+              <ul role="list" class="nav__grid">
+                {g.items.map((it) => (
+                  <li>
+                    <a class="nav__entry" href={localePath(locale, it.href)} aria-current={isActive(it.href) ? "page" : undefined}>
+                      <span class="nav__entry-title">{pick(it.label, locale)}</span>
+                      {it.description && <span class="nav__entry-desc">{pick(it.description, locale)}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ))}
+        {NAV_TOP.map((it) => (
+          <li class="nav__item">
+            <a class="nav__link" href={localePath(locale, it.href)} aria-current={isActive(it.href) ? "page" : undefined}>{pick(it.label, locale)}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__tools">
+      <a class="lang" href={switchHref} hreflang={other} lang={other} title={t(locale, "switchTo")}>
+        <Icon name="languages" />
+        <span>{other.toUpperCase()}</span>
+      </a>
+      <ThemeToggle locale={locale} />
+      <a class="btn btn--primary btn--sm site-header__cta" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" data-burger>
+        <span class="sr-only">{t(locale, "menu")}</span>
+        <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+    <div class="container mobile-nav__inner">
+      {groups.map((g) => (
+        <section class="mobile-nav__group">
+          <p class="eyebrow">{pick(g.label, locale)}</p>
+          <ul role="list">
+            {g.items.map((it) => (
+              <li><a href={localePath(locale, it.href)} aria-current={isActive(it.href) ? "page" : undefined}>{pick(it.label, locale)}</a></li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <section class="mobile-nav__group">
+        <p class="eyebrow">dewee</p>
+        <ul role="list">
+          {NAV_TOP.map((it) => (
+            <li><a href={localePath(locale, it.href)} aria-current={isActive(it.href) ? "page" : undefined}>{pick(it.label, locale)}</a></li>
+          ))}
+        </ul>
+      </section>
+      <div class="mobile-nav__cta">
+        <a class="btn btn--primary btn--lg" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
+        <a class="btn btn--lg" href={switchHref} hreflang={other}>{t(locale, "switchTo")}</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background: color-mix(in oklch, var(--paper) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-block-end: 1px solid transparent;
+    transition: border-color var(--dur-3) var(--ease-out), background-color var(--dur-3) var(--ease-out);
+  }
+  .site-header.is-scrolled { border-block-end-color: var(--rule); }
+  .site-header__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    block-size: var(--header-h);
+  }
+  .brand { display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; flex: none; }
+  .brand :global(.brand__mascot) { transition: transform var(--dur-3) var(--ease-spring); }
+  .brand:hover :global(.brand__mascot) { transform: translateY(-3px) rotate(-6deg); }
+  .brand :global(.brand__word) { inline-size: 5.4rem; margin-block-start: -2px; }
+
+  .nav { margin-inline-start: var(--space-4); }
+  .nav__list { display: flex; align-items: center; gap: var(--space-1); list-style: none; padding: 0; }
+  .nav__item { position: relative; }
+  .nav__link {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.5rem 0.75rem; border-radius: var(--radius-2);
+    font-size: var(--step--1); font-weight: 500; color: var(--ink-2); text-decoration: none;
+    transition: color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+  }
+  .nav__link:hover, .nav__trigger[aria-expanded="true"] { color: var(--ink); background: var(--accent-soft); }
+  .nav__link[aria-current="page"] { color: var(--accent-ink); }
+  .nav__chev { transition: transform var(--dur-2) var(--ease-out); opacity: 0.7; }
+  .nav__trigger[aria-expanded="true"] .nav__chev { transform: rotate(180deg); }
+  .nav__panel {
+    position: absolute; inset-block-start: calc(100% + 0.5rem); inset-inline-start: -0.5rem;
+    inline-size: min(34rem, 80vw); padding: var(--space-3);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3);
+    box-shadow: var(--shadow-3);
+    animation: panel-in var(--dur-3) var(--ease-out);
+  }
+  .nav__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1); list-style: none; padding: 0; }
+  .nav__entry { display: grid; gap: 0.1rem; padding: var(--space-3); border-radius: var(--radius-2); text-decoration: none; transition: background-color var(--dur-2) var(--ease-out); }
+  .nav__entry:hover { background: var(--paper-2); }
+  .nav__entry-title { font-weight: 600; font-size: var(--step--1); color: var(--ink); }
+  .nav__entry-desc { font-size: var(--step--2); color: var(--ink-3); line-height: 1.45; }
+  .nav__entry[aria-current="page"] .nav__entry-title { color: var(--accent-ink); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  .site-header__tools { display: flex; align-items: center; gap: var(--space-2); margin-inline-start: auto; }
+  .lang {
+    display: inline-flex; align-items: center; gap: 0.3rem; min-block-size: 2.25rem; padding: 0 0.6rem;
+    border-radius: var(--radius-2); font: 500 var(--step--2) / 1 var(--font-mono-stack); color: var(--ink-2); text-decoration: none;
+    letter-spacing: 0.06em;
+  }
+  .lang:hover { background: var(--accent-soft); color: var(--ink); }
+
+  .burger { display: none; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-2); place-items: center; }
+  .burger:hover { background: var(--accent-soft); }
+  .burger__lines { position: relative; inline-size: 1.25rem; block-size: 0.75rem; }
+  .burger__lines i { position: absolute; inset-inline: 0; block-size: 1.75px; background: var(--ink); border-radius: 2px; transition: transform var(--dur-3) var(--ease-out), inset-block-start var(--dur-3) var(--ease-out); }
+  .burger__lines i:first-child { inset-block-start: 0; }
+  .burger__lines i:last-child { inset-block-start: calc(100% - 1.75px); }
+  .burger[aria-expanded="true"] .burger__lines i:first-child { inset-block-start: calc(50% - 1px); transform: rotate(45deg); }
+  .burger[aria-expanded="true"] .burger__lines i:last-child { inset-block-start: calc(50% - 1px); transform: rotate(-45deg); }
+
+  .mobile-nav {
+    position: fixed; inset: 4.25rem 0 0 0; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--paper); border-block-start: 1px solid var(--rule);
+    animation: panel-in var(--dur-3) var(--ease-out);
+  }
+  .mobile-nav__inner { display: grid; gap: var(--space-6); padding-block: var(--space-6) var(--space-9); }
+  .mobile-nav__group ul { list-style: none; padding: 0; margin-block-start: var(--space-2); display: grid; }
+  .mobile-nav__group a { display: block; padding: 0.7rem 0; font-family: var(--font-display-stack); font-size: var(--step-2); text-decoration: none; border-block-end: 1px solid var(--rule); }
+  .mobile-nav__group a[aria-current="page"] { color: var(--accent-ink); }
+  .mobile-nav__cta { display: grid; gap: var(--space-3); }
+
+  @media (max-width: 1080px) {
+    .nav, .site-header__cta { display: none; }
+    .burger { display: inline-grid; }
+  }
+  @media (max-width: 420px) {
+    .lang span { display: none; }
+  }
+  /* Touch screens get full 44px targets for every header control. */
+  @media (max-width: 760px), (pointer: coarse) {
+    .lang { min-block-size: 2.75rem; min-inline-size: 2.75rem; justify-content: center; }
+  }
+</style>
+
+<script>
+  function initHeader() {
+    const header = document.querySelector<HTMLElement>("[data-header]");
+    if (!header || header.dataset.wired) return;
+    header.dataset.wired = "1";
+
+    const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    // Desktop menus: click or hover opens, Escape/outside click closes, focus stays reachable.
+    const menus = Array.from(header.querySelectorAll<HTMLElement>("[data-menu]"));
+    const closeAll = (except?: HTMLElement) => {
+      for (const m of menus) {
+        if (m === except) continue;
+        m.querySelector("button")?.setAttribute("aria-expanded", "false");
+        m.querySelector<HTMLElement>("[data-panel]")?.setAttribute("hidden", "");
+      }
+    };
+    for (const m of menus) {
+      const btn = m.querySelector("button")!;
+      const panel = m.querySelector<HTMLElement>("[data-panel]")!;
+      let hoverTimer: number | undefined;
+      const open = () => { closeAll(m); btn.setAttribute("aria-expanded", "true"); panel.removeAttribute("hidden"); };
+      const close = () => { btn.setAttribute("aria-expanded", "false"); panel.setAttribute("hidden", ""); };
+      btn.addEventListener("click", () => (btn.getAttribute("aria-expanded") === "true" ? close() : open()));
+      m.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { window.clearTimeout(hoverTimer); open(); } });
+      m.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") hoverTimer = window.setTimeout(close, 160); });
+      m.addEventListener("focusout", (e) => { if (!m.contains(e.relatedTarget as Node)) close(); });
+    }
+    document.addEventListener("click", (e) => { if (!header.contains(e.target as Node)) closeAll(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      const openBtn = header.querySelector<HTMLButtonElement>('.nav__trigger[aria-expanded="true"]');
+      closeAll();
+      openBtn?.focus();
+      if (burger?.getAttribute("aria-expanded") === "true") toggleMobile(false);
+    });
+
+    // Mobile sheet
+    const burger = header.querySelector<HTMLButtonElement>("[data-burger]");
+    const sheet = header.querySelector<HTMLElement>("[data-mobile-nav]");
+    const toggleMobile = (force?: boolean) => {
+      if (!burger || !sheet) return;
+      const next = force ?? burger.getAttribute("aria-expanded") !== "true";
+      burger.setAttribute("aria-expanded", String(next));
+      sheet.toggleAttribute("hidden", !next);
+      document.documentElement.style.overflow = next ? "hidden" : "";
+    };
+    burger?.addEventListener("click", () => toggleMobile());
+    window.matchMedia("(min-width: 1081px)").addEventListener("change", (e) => { if (e.matches) toggleMobile(false); });
+  }
+  initHeader();
+</script>

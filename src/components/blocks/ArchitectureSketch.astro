@@ -1,0 +1,125 @@
+---
+/**
+ * The architecture as a whiteboard sketch: channels flow into the gateway, through the
+ * 8-stage agent loop (with memory, tools and teammates beside it), out to model providers,
+ * and every step lands in traces. Pure HTML/CSS so labels wrap and translate cleanly.
+ */
+import BrandMark from "~/components/ui/BrandMark.astro";
+import Icon from "~/components/ui/Icon.astro";
+type Item = { brand: string; name: string };
+interface Props {
+  labels: { channels: string; gateway: string; pipeline: string; memory: string; tools: string; teams: string; providers: string; traces: string; stages: string };
+  channels: Item[];
+  providers: Item[];
+  more: (n: number) => string;
+  label: string;
+}
+const { labels, channels, providers, more, label } = Astro.props;
+const stages = labels.stages.split(" · ");
+const shownChannels = channels.slice(0, 6);
+const shownProviders = providers.slice(0, 6);
+---
+
+<figure class="arch" aria-label={label} data-reveal>
+  <div class="arch__side">
+    <p class="arch__cap">{labels.channels}</p>
+    <ul class="arch__chips" role="list">
+      {shownChannels.map((c) => <li><BrandMark brand={c.brand} name={c.name} size={16} />{c.name}</li>)}
+      {channels.length > shownChannels.length && <li class="is-more">{more(channels.length - shownChannels.length)}</li>}
+    </ul>
+  </div>
+
+  <div class="arch__wire" aria-hidden="true"><span></span></div>
+
+  <div class="arch__core">
+    <p class="arch__cap arch__cap--core"><Icon name="server" size={16} />{labels.gateway}</p>
+    <div class="arch__loop">
+      <p class="arch__loop-title"><Icon name="refresh-cw" size={15} />{labels.pipeline}</p>
+      <ol class="arch__stages" role="list">
+        {stages.map((s, i) => <li style={`--i:${i}`}><span>{i + 1}</span>{s}</li>)}
+      </ol>
+    </div>
+    <ul class="arch__aux" role="list">
+      <li><Icon name="brain" size={16} />{labels.memory}</li>
+      <li><Icon name="plug" size={16} />{labels.tools}</li>
+      <li><Icon name="users" size={16} />{labels.teams}</li>
+    </ul>
+  </div>
+
+  <div class="arch__wire" aria-hidden="true"><span></span></div>
+
+  <div class="arch__side">
+    <p class="arch__cap">{labels.providers}</p>
+    <ul class="arch__chips" role="list">
+      {shownProviders.map((c) => <li><BrandMark brand={c.brand} name={c.name} size={16} />{c.name}</li>)}
+      {providers.length > shownProviders.length && <li class="is-more">{more(providers.length - shownProviders.length)}</li>}
+    </ul>
+  </div>
+
+  <p class="arch__traces"><Icon name="scan-eye" size={16} />{labels.traces}</p>
+</figure>
+
+<style>
+  .arch {
+    display: grid; grid-template-columns: minmax(0, 1fr) 3.5rem minmax(0, 2.1fr) 3.5rem minmax(0, 1fr);
+    align-items: center; row-gap: var(--space-5);
+    padding: clamp(1.25rem, 0.5rem + 3vw, 2.5rem); border: 1px solid var(--rule); border-radius: var(--radius-4);
+    background: var(--surface); box-shadow: var(--shadow-2);
+  }
+  .arch__cap { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-block-end: var(--space-3); }
+  .arch__chips { display: grid; gap: var(--space-2); }
+  .arch__chips li {
+    display: flex; align-items: center; gap: var(--space-2); padding: 0.4rem 0.65rem; border-radius: var(--radius-2);
+    border: 1px solid var(--rule); background: var(--paper); font-size: var(--step--1); color: var(--ink-2); line-height: 1.2;
+  }
+  .arch__chips .is-more { justify-content: center; border-style: dashed; color: var(--ink-3); background: transparent; }
+
+  .arch__wire { position: relative; block-size: 2px; align-self: center; }
+  .arch__wire span {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(to right, var(--accent) 0 6px, transparent 6px 12px);
+    background-size: 24px 2px;
+  }
+  .arch__wire::after { content: ""; position: absolute; inset-inline-end: -2px; inset-block-start: 50%; translate: 0 -50%; border: 5px solid transparent; border-inline-start: 7px solid var(--accent); }
+
+  .arch__core { padding: var(--space-5); border-radius: var(--radius-3); background: var(--accent-soft); border: 1.5px solid var(--accent); }
+  .arch__cap--core { color: var(--accent-ink); font-weight: 600; }
+  .arch__loop { padding: var(--space-4); border-radius: var(--radius-2); background: var(--surface); border: 1px solid var(--rule); }
+  .arch__loop-title { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; font-size: var(--step--1); color: var(--ink); margin-block-end: var(--space-3); }
+  .arch__stages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); counter-reset: s; }
+  .arch__stages li {
+    display: flex; align-items: center; gap: var(--space-2); padding: 0.35rem 0.5rem; border-radius: var(--radius-1);
+    background: var(--paper-2); font-size: var(--step--2); color: var(--ink-2); line-height: 1.2; min-inline-size: 0;
+  }
+  .arch__stages span { flex: none; display: grid; place-items: center; inline-size: 1.3rem; block-size: 1.3rem; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-mono-stack); font-size: 0.65rem; font-weight: 600; }
+  .arch__aux { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); margin-block-start: var(--space-3); }
+  .arch__aux li { display: flex; align-items: center; gap: var(--space-2); padding: 0.45rem 0.6rem; border-radius: var(--radius-2); background: var(--surface); border: 1px dashed var(--rule-strong); font-size: var(--step--2); color: var(--ink-2); line-height: 1.2; }
+  .arch__aux :global(svg), .arch__cap :global(svg), .arch__loop-title :global(svg) { color: var(--accent-ink); flex: none; }
+
+  .arch__traces {
+    grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+    padding: var(--space-3); border-radius: var(--radius-2); border: 1px dashed var(--rule-strong);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+    background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--paper-2) 8px 9px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .arch__wire span { animation: wire-flow 1.2s linear infinite; }
+    @keyframes wire-flow { to { background-position: 24px 0; } }
+    :global(html.js) .arch .arch__stages li { opacity: 0.35; transition: opacity var(--dur-3) var(--ease-out); transition-delay: calc(600ms + var(--i) * 110ms); }
+    :global(html.js) .arch.is-in .arch__stages li { opacity: 1; }
+  }
+
+  @media (max-width: 1000px) {
+    .arch { grid-template-columns: minmax(0, 1fr); }
+    .arch__wire { block-size: 2.5rem; inline-size: 2px; justify-self: center; }
+    .arch__wire span { background: repeating-linear-gradient(to bottom, var(--accent) 0 6px, transparent 6px 12px); background-size: 2px 24px; }
+    .arch__wire::after { inset-inline-end: auto; inset-inline-start: 50%; inset-block-start: auto; inset-block-end: -4px; translate: -50% 0; border: 5px solid transparent; border-block-start: 7px solid var(--accent); }
+    .arch__chips { grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); }
+    @media (prefers-reduced-motion: no-preference) { @keyframes wire-flow { to { background-position: 0 24px; } } }
+  }
+  @media (max-width: 560px) {
+    .arch__stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .arch__aux { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

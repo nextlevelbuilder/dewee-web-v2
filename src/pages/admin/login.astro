@@ -1,0 +1,136 @@
+---
+/**
+ * Super-admin sign-in. Two routes in: Cloudflare Access (the assertion header signs you in on any
+ * /admin request) or an emailed 6-digit code. The "code sent" answer is identical for every
+ * address, so the form never reveals who is on the allowlist.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { clientIp, field, privateHeaders, safeNext } from "~/components/admin/admin-guard";
+import { platformEnv, isProduction } from "~/lib/server/api/platform-env";
+import { adminSession, cfAccessConfigured } from "~/lib/server/auth/request-auth";
+import { emailLoginAvailable } from "~/lib/server/auth/login-mailer";
+import { requestLoginCode, verifyLoginCode } from "~/lib/server/auth/otp-store";
+import { createSession, purgeExpiredSessions, setSessionCookie } from "~/lib/server/auth/session-store";
+import { audit } from "~/lib/server/auth/audit-log";
+
+export const prerender = false;
+
+privateHeaders(Astro);
+const env = platformEnv();
+const ip = clientIp(Astro);
+let next = safeNext(Astro.url.searchParams.get("next"));
+
+const existing = await adminSession({ request: Astro.request, cookies: Astro.cookies, locals: Astro.locals, clientAddress: ip });
+if (existing) return Astro.redirect(next, 303);
+
+const emailAvailable = emailLoginAvailable(env);
+const accessAvailable = cfAccessConfigured();
+let step: "email" | "code" = "email";
+let email = "";
+let message: { kind: "error" | "success"; text: string } | null = null;
+
+if (Astro.request.method === "POST") {
+  let form: FormData | null = null;
+  try {
+    form = await Astro.request.formData();
+  } catch {
+    message = { kind: "error", text: ADMIN.errors.generic };
+  }
+  if (form) {
+    next = safeNext(field(form, "next"));
+    email = field(form, "email").slice(0, 254);
+    const action = field(form, "step");
+    try {
+      if (action === "request") {
+        const waitUntil = (p: Promise<unknown>) => Astro.locals.cfContext?.waitUntil(p);
+        const result = await requestLoginCode(env, email, ip, waitUntil);
+        if (result === "sent") {
+          step = "code";
+          message = { kind: "success", text: ADMIN.login.sent };
+        } else {
+          message = { kind: "error", text: result === "rate_limited" ? ADMIN.login.rateLimited : ADMIN.login.unavailable };
+        }
+      } else if (action === "verify") {
+        step = "code";
+        const result = await verifyLoginCode(env, email, field(form, "code"), ip);
+        if (result.ok) {
+          await purgeExpiredSessions(env.DB);
+          const { token, expiresAt } = await createSession(env.DB, result.email, "email");
+          setSessionCookie(Astro.cookies, token, expiresAt);
+          await audit(env.DB, result.email, "auth.sign_in", null, { method: "email", ip });
+          return Astro.redirect(next, 303);
+        }
+        message = { kind: "error", text: result.reason === "rate_limited" ? ADMIN.login.rateLimited : ADMIN.login.invalid };
+      }
+    } catch (err) {
+      console.error("admin login failed", err instanceof Error ? err.message : err);
+      message = { kind: "error", text: ADMIN.errors.generic };
+    }
+  }
+}
+const devHint = step === "code" && !isProduction(env) && !env.RESEND_API_KEY;
+---
+
+<AdminLayout title={ADMIN.login.title} current="login">
+  <section class="adm-login">
+    <div class="adm-panel adm-login__card">
+      <div>
+        <h1 class="adm-login__title">{ADMIN.login.title}</h1>
+        <p class="adm-login__lede">{ADMIN.login.lede}</p>
+      </div>
+
+      {message && <p class="adm-alert" data-kind={message.kind} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p>}
+
+      {emailAvailable ? (
+        step === "email" ? (
+          <form method="post" class="adm-login__form">
+            <input type="hidden" name="step" value="request" />
+            <input type="hidden" name="next" value={next} />
+            <div class="field">
+              <label for="login-email">{ADMIN.login.email}</label>
+              <input id="login-email" name="email" type="email" autocomplete="email" required maxlength="254" value={email} autofocus />
+            </div>
+            <button class="btn btn--primary" type="submit"><Icon name="mail" />{ADMIN.login.sendCode}</button>
+          </form>
+        ) : (
+          <form method="post" class="adm-login__form">
+            <input type="hidden" name="step" value="verify" />
+            <input type="hidden" name="next" value={next} />
+            <input type="hidden" name="email" value={email} />
+            <div class="field">
+              <label for="login-code">{ADMIN.login.code}</label>
+              <input id="login-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,7}" maxlength="7" required autofocus class="adm-login__code" />
+              <p class="hint">{ADMIN.login.codeHint}</p>
+              {devHint && <p class="hint">{ADMIN.login.devLog}</p>}
+            </div>
+            <button class="btn btn--primary" type="submit"><Icon name="log-in" />{ADMIN.login.verify}</button>
+            <a href={`/admin/login?next=${encodeURIComponent(next)}`} class="adm-login__alt">{ADMIN.login.otherEmail}</a>
+          </form>
+        )
+      ) : (
+        <p class="adm-alert">{ADMIN.login.unavailable}</p>
+      )}
+
+      {accessAvailable && (
+        <div class="adm-login__access">
+          <a class="btn" href={next}><Icon name="shield-check" />{ADMIN.login.useAccess}</a>
+          <p class="hint">{ADMIN.login.accessHint}</p>
+        </div>
+      )}
+    </div>
+  </section>
+</AdminLayout>
+
+<style>
+  .adm-login { display: grid; place-items: center; min-block-size: 60vh; }
+  .adm-login__card { inline-size: min(100%, 28rem); gap: var(--space-5); }
+  .adm-login__title { font-size: var(--step-3); }
+  .adm-login__lede { color: var(--ink-3); margin-block-start: var(--space-2); }
+  .adm-login__form { display: grid; gap: var(--space-4); }
+  .adm-login__code { font-family: var(--font-mono-stack); font-size: var(--step-2); letter-spacing: 0.3em; }
+  .adm-login__alt { font-size: var(--step--1); color: var(--ink-3); justify-self: start; }
+  .adm-login__access { display: grid; gap: var(--space-2); padding-block-start: var(--space-4); border-block-start: 1px solid var(--rule); }
+  .hint { font-size: var(--step--2); color: var(--ink-3); }
+</style>

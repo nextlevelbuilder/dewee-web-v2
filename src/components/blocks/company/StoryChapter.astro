@@ -1,0 +1,74 @@
+---
+/**
+ * One chapter of a long-form story, laid out like a notebook page: the chapter number sits
+ * large in the margin column with its date and a handwritten aside; the title and paragraphs
+ * run in the text column. The default slot holds the chapter's visual; `wide` lets it span
+ * both columns. `tone` picks the surface so a page can alternate paper, band and board.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+interface Props {
+  id: string;
+  /** "Chapter" / "Chương" */
+  label: string;
+  number: number;
+  title: string;
+  body: string[];
+  date?: string;
+  note?: string;
+  tone?: "paper" | "band" | "board";
+  wide?: boolean;
+}
+const { id, label, number, title, body, date, note, tone = "paper", wide = false } = Astro.props;
+const hasVisual = Astro.slots.has("default");
+---
+
+<section class:list={["section", "chap", { band: tone === "band", board: tone === "board" }]} id={id} aria-labelledby={`${id}-title`}>
+  {tone === "board" && <div class="chap__grain drum-sun" aria-hidden="true"></div>}
+  <div class="container chap__grid">
+    <div class="chap__margin" data-reveal>
+      <p class="chap__num"><span class="chap__label">{label}</span><span class="chap__n">{number}</span></p>
+      {date && <p class="chap__date">{date}</p>}
+      {note && <p class="note chap__note" aria-hidden="true">{note}</p>}
+    </div>
+    <div class="chap__text">
+      <h2 class="chap__title" id={`${id}-title`} data-reveal set:html={inlineMarkup(title)} />
+      <div class="chap__prose" data-reveal>
+        {body.map((p) => <p set:html={inlineMarkup(p)} />)}
+      </div>
+    </div>
+    {hasVisual && <div class:list={["chap__visual", { "chap__visual--wide": wide }]}><slot /></div>}
+  </div>
+</section>
+
+<style>
+  .chap { isolation: isolate; }
+  .chap__grain { position: absolute; inset: 0; z-index: -1; opacity: 0.6; }
+  .chap__grid {
+    display: grid; grid-template-columns: minmax(8rem, 2fr) minmax(0, 7fr) minmax(0, 1.5fr);
+    gap: var(--space-6) clamp(1.5rem, 0.5rem + 3vw, 4rem); align-items: start;
+  }
+  .chap__margin { display: grid; gap: var(--space-2); justify-items: start; position: sticky; inset-block-start: 7rem; }
+  .chap__num { display: grid; line-height: 1; color: var(--accent-ink); }
+  .chap__label { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+  .chap__n { font-family: var(--font-display-stack); font-style: italic; font-weight: 400; font-size: clamp(3.5rem, 2.5rem + 4vw, 6.5rem); letter-spacing: -0.04em; }
+  .chap__date { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.04em; }
+  .chap__note { font-size: var(--step-0); transform: rotate(-3deg); transform-origin: 0 50%; max-inline-size: 12rem; margin-block-start: var(--space-3); }
+  .chap__text { display: grid; gap: var(--space-5); }
+  .chap__title { font-size: var(--step-5); max-inline-size: 18ch; }
+  .chap__prose { display: grid; gap: 1.1em; max-inline-size: var(--measure); color: var(--ink-2); font-size: var(--step-0); line-height: 1.75; }
+  .chap__prose :global(em) { color: var(--ink); }
+  .chap__prose :global(a) { color: var(--accent-ink); }
+  .chap__visual { grid-column: 2 / -1; margin-block-start: var(--space-5); min-inline-size: 0; }
+  .chap__visual--wide { grid-column: 1 / -1; }
+
+  @media (max-width: 900px) {
+    .chap__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+    .chap__margin { position: static; grid-auto-flow: column; justify-content: start; align-items: end; gap: var(--space-4); }
+    .chap__n { font-size: clamp(3rem, 2rem + 6vw, 4rem); }
+    .chap__note { margin-block-start: 0; max-inline-size: none; }
+    .chap__visual, .chap__visual--wide { grid-column: 1; margin-block-start: var(--space-2); }
+  }
+  @media (max-width: 480px) {
+    .chap__margin { grid-auto-flow: row; }
+  }
+</style>

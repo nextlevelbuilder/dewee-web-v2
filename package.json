@@ -1,0 +1,42 @@
+{
+  "name": "dewee-web-v2",
+  "private": true,
+  "type": "module",
+  "version": "2.0.0",
+  "description": "dewee.sh marketing site, docs and page builder on Cloudflare Workers",
+  "scripts": {
+    "dev": "astro dev --port 4388",
+    "build": "astro build",
+    "preview": "wrangler dev --port 4389",
+    "check": "astro check",
+    "test": "vitest run",
+    "deploy:staging": "pnpm build:staging && wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "deploy:production": "pnpm build && wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "build:staging": "CLOUDFLARE_ENV=staging SITE_URL=https://staging.dewee.sh astro build",
+    "changelog:snapshot": "node scripts/snapshot-releases.ts",
+    "seo:postbuild": "node scripts/postbuild-markdown-and-og.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
+    "astro": "^7.3.5",
+    "marked": "^18.0.14",
+    "node-html-parser": "^9.0.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@cloudflare/workers-types": "^5.20260923.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^24.13.6",
+    "lucide-static": "^1.47.0",
+    "satori": "^0.33.5",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.1",
+    "wrangler": "^4.138.0"
+  },
+  "packageManager": "pnpm@12.4.2"
+}

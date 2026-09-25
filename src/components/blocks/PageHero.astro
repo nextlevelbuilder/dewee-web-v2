@@ -1,0 +1,95 @@
+---
+/**
+ * Intro for every inner page: eyebrow, serif title with inline markup, lede, a handwritten
+ * margin note and up to two actions. An optional mascot peeks from the right edge, and the
+ * `aside` slot replaces it with any visual (a chat card, a stamp, a diagram) on wide screens.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+type Action = { label: string; href: string; variant?: "primary" | "ink" | "ghost"; chat?: boolean };
+type Mood = "happy" | "awake" | "wink" | "sleepy" | "love" | "surprised" | "focused";
+type Accessory = "none" | "glasses" | "headset" | "cap";
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  note?: string;
+  actions?: Action[];
+  /** Small back-link above the eyebrow, e.g. "← All use cases" on a detail page */
+  back?: { label: string; href: string };
+  mascot?: { mood?: Mood; accessory?: Accessory } | false;
+  /** Turn the drum face behind the hero (default true) */
+  grid?: boolean;
+  align?: "start" | "center";
+}
+const { eyebrow, title, lede, note, actions = [], back, mascot = { mood: "happy" }, grid = true, align = "start" } = Astro.props;
+const hasAside = Astro.slots.has("aside");
+---
+
+<section class:list={["page-hero", "ph", `ph--${align}`, { "ph--aside": hasAside || mascot }]}>
+  {grid && <div class="ph__bg drum-sun" aria-hidden="true"></div>}
+  <div class="container ph__grid">
+    <div class="ph__copy">
+      {back && (
+        <a class="ph__back" href={back.href}><Icon name="arrow-left" size={16} />{back.label}</a>
+      )}
+      {eyebrow && <p class="eyebrow" data-reveal>{eyebrow}</p>}
+      <h1 class="ph__title" data-reveal set:html={inlineMarkup(title)} />
+      {lede && <p class="lede ph__lede" data-reveal set:html={inlineMarkup(lede)} />}
+      {actions.length > 0 && (
+        <div class="page-hero__actions" data-reveal>
+          {actions.map((a, i) =>
+            a.chat ? (
+              <button type="button" class:list={["btn", `btn--${a.variant ?? (i === 0 ? "primary" : "ghost")}`, "btn--lg"]} data-open-chat>
+                <Icon name="message-circle" />{a.label}
+              </button>
+            ) : (
+              <a class:list={["btn", `btn--${a.variant ?? (i === 0 ? "primary" : "ghost")}`, "btn--lg"]} href={a.href}>
+                {a.label}{i === 0 && <Icon name="arrow-right" class="arrow" />}
+              </a>
+            ),
+          )}
+        </div>
+      )}
+      {note && <p class="note ph__note" aria-hidden="true" data-reveal>{note}</p>}
+    </div>
+    {hasAside ? (
+      <div class="ph__aside" data-reveal><slot name="aside" /></div>
+    ) : mascot ? (
+      <div class="ph__aside ph__aside--mascot" aria-hidden="true">
+        <DeweeMascot size="clamp(96px, 10vw, 150px)" mood={mascot.mood ?? "happy"} accessory={mascot.accessory ?? "none"} motion="drop" interactive />
+      </div>
+    ) : null}
+  </div>
+</section>
+
+<style>
+  .ph { isolation: isolate; }
+  .ph__bg { position: absolute; inset: 0; z-index: -1; }
+  .ph__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .ph--aside .ph__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); }
+  .ph__copy { display: grid; justify-items: start; }
+  .ph--center .ph__copy { justify-items: center; text-align: center; }
+  .ph--center .ph__lede { margin-inline: auto; }
+  .ph__title { max-inline-size: 18ch; text-wrap: balance; }
+  .ph__back {
+    display: inline-flex; align-items: center; gap: 0.35rem; margin-block-end: var(--space-5);
+    min-block-size: 2.75rem; font-size: var(--step--1); color: var(--ink-3); text-decoration: none;
+  }
+  .ph__back:hover { color: var(--accent-ink); }
+  .ph__note { margin-block-start: var(--space-5); font-size: var(--step-1); transform: rotate(-2deg); transform-origin: 0 50%; }
+  .ph__aside { justify-self: center; inline-size: 100%; }
+  .ph__aside--mascot { display: grid; place-items: center; min-block-size: 12rem; }
+
+  @media (max-width: 900px) {
+    .ph--aside .ph__grid { grid-template-columns: minmax(0, 1fr); }
+    .ph__aside--mascot { display: none; }
+  }
+  /* Stacked on phones: full-width buttons, so the secondary one lines up instead of floating indented. */
+  @media (max-width: 560px) {
+    .page-hero__actions { inline-size: 100%; }
+    .page-hero__actions .btn { flex: 1 1 100%; }
+  }
+</style>

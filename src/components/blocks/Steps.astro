@@ -1,0 +1,46 @@
+---
+/**
+ * Numbered steps written as notebook exercises ("Exercise 1", "Bài 1").
+ * `highlight` marks the step we take on, with a handwritten aside.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+interface Props { items: { title: string; body: string }[]; label: string; highlight?: number; highlightNote?: string }
+const { items, label, highlight, highlightNote } = Astro.props;
+---
+
+<ol class="steps" role="list" data-reveal-group>
+  {items.map((it, i) => (
+    <li class:list={["step", { "step--hl": i === highlight }]} data-reveal>
+      <p class="step__label"><span>{label} {i + 1}</span></p>
+      <h3 class="step__title" set:html={inlineMarkup(it.title)} />
+      <p class="step__body">{it.body}</p>
+      {i === highlight && highlightNote && <p class="note step__note" aria-hidden="true">{highlightNote}</p>}
+    </li>
+  ))}
+</ol>
+
+<style>
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); position: relative; }
+  .step {
+    position: relative; display: grid; gap: var(--space-3); align-content: start;
+    padding: var(--space-6) var(--space-5); border-radius: var(--radius-3);
+    border: 1px dashed var(--rule-strong);
+  }
+  .step__label span {
+    font-family: var(--font-display-stack); font-style: italic; font-size: var(--step-1); color: var(--accent-ink);
+    border-block-end: 2px solid currentColor; padding-block-end: 2px;
+  }
+  .step__title { font-size: var(--step-2); line-height: 1.2; }
+  .step__body { color: var(--ink-2); font-size: var(--step--1); line-height: 1.65; }
+  .step--hl { background: var(--surface); border: 1px solid var(--accent); box-shadow: var(--shadow-2); }
+  .step__note { position: absolute; inset-block-end: calc(100% + 0.1rem); inset-inline-end: var(--space-3); transform: rotate(-3deg); font-size: var(--step-0); line-height: 1.3; }
+  /* arrows between exercises */
+  .step + .step::before {
+    content: "→"; position: absolute; inset-inline-start: calc(var(--space-5) * -0.5); inset-block-start: 50%;
+    translate: -50% -50%; color: var(--ink-3); font-family: var(--font-display-stack); font-size: var(--step-1);
+  }
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+    .step + .step::before { content: "↓"; inset-inline-start: 50%; inset-block-start: calc(var(--space-7) * -0.5); }
+  }
+</style>

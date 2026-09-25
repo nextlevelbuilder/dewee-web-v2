@@ -1,0 +1,64 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Production worker: dewee.sh + www.dewee.sh. Staging lives under env.staging.
+  "name": "dewee-web-v2",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-09-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/client",
+    "not_found_handling": "none",
+    // Pages, Markdown twins, redirects and APIs go through the worker (www→apex, security headers,
+    // brand links). Fingerprinted and static media files skip it and are served straight from the edge.
+    "run_worker_first": ["/*", "!/_astro/*", "!/brand/*", "!/img/*", "!/og/*", "!/fonts/*", "!/shots/*"]
+  },
+  "routes": [
+    { "pattern": "dewee.sh", "custom_domain": true },
+    { "pattern": "www.dewee.sh", "custom_domain": true }
+  ],
+  "vars": {
+    "SITE_URL": "https://dewee.sh",
+    "CDN_URL": "https://cdn.dewee.sh",
+    "ENVIRONMENT": "production",
+    "CHANGELOG_REPO": "nextlevelbuilder/dewee"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "dewee-web-v2", "database_id": "46e17095-7779-4881-b927-0cd1fb318932", "migrations_dir": "migrations" }
+  ],
+  "kv_namespaces": [
+    { "binding": "KV", "id": "2668d74d0ee84ee787a173976a6ba32a" },
+    { "binding": "SESSION", "id": "2668d74d0ee84ee787a173976a6ba32a" }
+  ],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn" }],
+  "durable_objects": {
+    "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ChatRoom"] }],
+  "triggers": { "crons": ["17 * * * *"] },
+  "env": {
+    "staging": {
+      "name": "dewee-web-v2-staging",
+      "routes": [{ "pattern": "staging.dewee.sh", "custom_domain": true }],
+      "vars": {
+        "SITE_URL": "https://staging.dewee.sh",
+        "CDN_URL": "https://cdn.dewee.sh",
+        "ENVIRONMENT": "staging",
+        "CHANGELOG_REPO": "nextlevelbuilder/dewee"
+      },
+      "d1_databases": [
+        { "binding": "DB", "database_name": "dewee-web-v2-staging", "database_id": "73c97265-f207-435a-9cb3-2e231f02fb5d", "migrations_dir": "migrations" }
+      ],
+      "kv_namespaces": [
+        { "binding": "KV", "id": "d4d8211f3fd249098ab37e16590743d4" },
+        { "binding": "SESSION", "id": "d4d8211f3fd249098ab37e16590743d4" }
+      ],
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn-staging" }],
+      "durable_objects": {
+        "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }]
+      },
+      "triggers": { "crons": ["23 * * * *"] }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+---
+/**
+ * Floating support chat. The mascot (wearing a headset) is the launcher; the panel talks to
+ * the ChatRoom Durable Object over a WebSocket (/api/chat/ws). The socket opens only when the
+ * visitor opens the panel. When no agent/human is attached, the room answers from a small FAQ
+ * and asks for an email so the team can follow up.
+ */
+import { pick, type Bi, type Locale } from "~/i18n/config";
+import { t } from "~/i18n/ui";
+import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
+import Icon from "~/components/ui/Icon.astro";
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const suggestions: Bi[] = [
+  { en: "How much does dewee cost?", vi: "dewee giá bao nhiêu?" },
+  { en: "Can we run it on-premises?", vi: "Có cài on-premises được không?" },
+  { en: "How is our data kept safe?", vi: "Dữ liệu được bảo vệ thế nào?" },
+  { en: "I'd like to talk to a human", vi: "Mình muốn nói chuyện với người thật" },
+];
+const strings = {
+  connecting: t(locale, "chatConnecting"),
+  online: t(locale, "chatOnline"),
+  offline: t(locale, "chatOffline"),
+  emailPrompt: t(locale, "chatEmailPrompt"),
+  emailSave: t(locale, "chatEmailSave"),
+  emailThanks: locale === "vi" ? "Cảm ơn! Đội ngũ sẽ email cho bạn sớm." : "Thanks! Our team will email you soon.",
+  error: locale === "vi" ? "Mất kết nối. Đang thử lại…" : "Connection lost. Retrying…",
+  you: locale === "vi" ? "Bạn" : "You",
+};
+---
+
+<div class="chat" data-chat data-locale={locale} data-strings={JSON.stringify(strings)}>
+  <button class="chat__launcher" type="button" aria-expanded="false" aria-controls="chat-panel" data-chat-toggle>
+    <DeweeMascot size={60} accessory="headset" motion="idle" class="chat__mascot" />
+    <span class="sr-only">{t(locale, "chatOpen")}</span>
+    <span class="chat__ping" aria-hidden="true"></span>
+  </button>
+
+  <section class="chat__panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title" data-chat-panel hidden>
+    <header class="chat__head">
+      <DeweeMascot size={40} accessory="headset" motion="still" mood="awake" />
+      <div class="chat__who">
+        <p class="chat__title" id="chat-title">{t(locale, "chatTitle")}</p>
+        <p class="chat__status" data-chat-status><span class="chat__dot" aria-hidden="true"></span><span data-chat-status-text>{t(locale, "chatSubtitle")}</span></p>
+      </div>
+      <button class="chat__close" type="button" data-chat-close aria-label={t(locale, "close")}><Icon name="x" size={18} /></button>
+    </header>
+
+    <ol class="chat__log" role="log" aria-live="polite" data-chat-log>
+      <li class="msg msg--agent"><p>{t(locale, "chatWelcome")}</p></li>
+    </ol>
+
+    <div class="chat__suggest" data-chat-suggest>
+      {suggestions.map((s) => <button type="button" class="chip" data-suggest>{pick(s, locale)}</button>)}
+    </div>
+
+    <form class="chat__email" data-chat-email hidden>
+      <label for="chat-email">{t(locale, "chatEmailPrompt")}</label>
+      <div class="chat__row">
+        <input id="chat-email" name="email" type="email" autocomplete="email" required placeholder="you@company.com" />
+        <button class="btn btn--ink btn--sm" type="submit">{t(locale, "chatEmailSave")}</button>
+      </div>
+    </form>
+
+    <form class="chat__compose" data-chat-form>
+      <label class="sr-only" for="chat-input">{t(locale, "chatPlaceholder")}</label>
+      <textarea id="chat-input" name="text" rows="1" maxlength="2000" placeholder={t(locale, "chatPlaceholder")} required></textarea>
+      <button class="chat__send" type="submit" aria-label={t(locale, "chatSend")}><Icon name="send" size={18} /></button>
+    </form>
+  </section>
+</div>
+
+<style>
+  .chat { position: fixed; z-index: var(--z-chat); inset-inline-end: var(--space-4); inset-block-end: var(--space-4); }
+  .chat__launcher {
+    position: relative; display: grid; place-items: center; inline-size: 4.25rem; block-size: 4.25rem; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-2);
+    transition: transform var(--dur-3) var(--ease-spring), box-shadow var(--dur-2) var(--ease-out);
+  }
+  .chat__launcher:hover { transform: translateY(-3px) rotate(-4deg); box-shadow: var(--shadow-3); }
+  .chat__launcher[aria-expanded="true"] { transform: scale(0.92); }
+  .chat__launcher :global(.chat__mascot) { margin-block-start: 4px; }
+  .chat__ping { position: absolute; inset-block-start: 4px; inset-inline-end: 4px; inline-size: 12px; block-size: 12px; border-radius: 50%; background: var(--bronze); border: 2px solid var(--surface); }
+  .chat[data-seen] .chat__ping { display: none; }
+
+  .chat__panel {
+    position: absolute; inset-inline-end: 0; inset-block-end: calc(100% + var(--space-3));
+    inline-size: min(24rem, calc(100vw - 2 * var(--space-4))); block-size: min(36rem, calc(100dvh - 7.5rem));
+    display: grid; grid-template-rows: auto 1fr auto auto auto; overflow: hidden;
+    background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-4); box-shadow: var(--shadow-3);
+    transform-origin: bottom right; animation: chat-in var(--dur-3) var(--ease-out);
+  }
+  .chat__panel[hidden] { display: none; }
+  @keyframes chat-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+
+  .chat__head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4); border-block-end: 1px solid var(--rule); background: var(--paper-2); }
+  .chat__who { flex: 1; min-inline-size: 0; }
+  .chat__title { font-weight: 600; font-size: var(--step--1); }
+  .chat__status { display: flex; align-items: center; gap: 0.4rem; font-size: var(--step--2); color: var(--ink-3); }
+  .chat__dot { inline-size: 7px; block-size: 7px; border-radius: 50%; background: var(--ink-3); }
+  .chat[data-state="online"] .chat__dot { background: var(--success); }
+  .chat[data-state="offline"] .chat__dot { background: var(--warning); }
+  .chat__close { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: var(--radius-2); color: var(--ink-2); }
+  .chat__close:hover { background: var(--accent-soft); color: var(--ink); }
+
+  .chat__log {
+    list-style: none; margin: 0; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); overflow-y: auto; overscroll-behavior: contain;
+    background: var(--paper-2);
+  }
+  .chat__log :global(.msg) { max-inline-size: 85%; padding: 0.6rem 0.85rem; border-radius: var(--radius-3); font-size: var(--step--1); line-height: var(--leading-snug); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .chat__log :global(.msg p) { margin: 0; }
+  .chat__log :global(.msg a) { color: inherit; text-decoration: underline; text-underline-offset: 0.15em; }
+  .chat__log :global(.msg--agent) { align-self: flex-start; background: var(--surface); border: 1px solid var(--rule); border-end-start-radius: 4px; }
+  .chat__log :global(.msg--user) { align-self: flex-end; background: var(--accent); color: var(--accent-contrast); border-end-end-radius: 4px; }
+  .chat__log :global(.msg--system) { align-self: center; max-inline-size: 100%; background: none; padding: 0; font-size: var(--step--2); color: var(--ink-3); font-family: var(--font-mono-stack); }
+  .chat__log :global(.msg--typing) { display: inline-flex; gap: 4px; }
+  .chat__log :global(.msg--typing i) { inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--ink-3); animation: typing 1s infinite ease-in-out; }
+  .chat__log :global(.msg--typing i:nth-child(2)) { animation-delay: 0.15s; }
+  .chat__log :global(.msg--typing i:nth-child(3)) { animation-delay: 0.3s; }
+  @keyframes typing { 50% { transform: translateY(-3px); opacity: 0.5; } }
+
+  .chat__suggest { display: flex; gap: var(--space-2); padding: 0 var(--space-4) var(--space-3); overflow-x: auto; scrollbar-width: none; }
+  .chat__suggest[hidden] { display: none; }
+  .chat__suggest .chip { flex: none; cursor: pointer; min-block-size: 2rem; }
+  .chat__suggest .chip:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+  .chat__email { padding: var(--space-3) var(--space-4); border-block-start: 1px dashed var(--rule-strong); font-size: var(--step--2); color: var(--ink-2); }
+  .chat__email[hidden] { display: none; }
+  .chat__row { display: flex; gap: var(--space-2); margin-block-start: var(--space-2); }
+  .chat__row input { flex: 1; min-inline-size: 0; }
+
+  .chat__compose { display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-3); border-block-start: 1px solid var(--rule); background: var(--surface); }
+  .chat__compose textarea { flex: 1; resize: none; max-block-size: 8rem; min-block-size: 2.75rem; border: 0; background: transparent; padding: 0.6rem 0.5rem; font: inherit; font-size: var(--step--1); color: var(--ink); }
+  .chat__compose textarea:focus { outline: none; }
+  .chat__compose:focus-within { box-shadow: inset 0 2px 0 var(--accent); }
+  .chat__send { display: grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-2); background: var(--accent); color: var(--accent-contrast); flex: none; }
+  .chat__send:hover { background: color-mix(in oklch, var(--accent) 86%, var(--ink)); }
+
+  @media (max-width: 520px) {
+    .chat { inset-inline-end: var(--space-3); inset-block-end: var(--space-3); }
+    .chat__launcher { inline-size: 3.75rem; block-size: 3.75rem; }
+    .chat__panel { position: fixed; inset: auto var(--space-2) calc(var(--space-3) + 4.5rem); inline-size: auto; block-size: min(34rem, calc(100dvh - 6.5rem)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .chat__panel { animation: none; } .chat__launcher:hover { transform: none; } }
+</style>
+
+<script>
+  import { initChatWidget } from "./chat-widget-client";
+  initChatWidget();
+</script>
