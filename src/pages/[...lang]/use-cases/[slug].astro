@@ -193,8 +193,8 @@ const jsonLd = [
   .ucd-stack { display: grid; gap: clamp(2rem, 1rem + 3vw, 3.5rem); }
   .ucd-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   .ucd-split__head { position: sticky; inset-block-start: calc(var(--header-h) + var(--space-5)); }
-  .ucd-flow { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); min-inline-size: 0; }
-  .ucd-console { display: grid; gap: var(--space-4); }
+  .ucd-flow { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); min-inline-size: 0; }
+  .ucd-console { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
   .ucd-chat { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 4.5rem); align-items: start; }
 
   @media (max-width: 900px) {
