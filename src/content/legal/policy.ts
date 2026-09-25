@@ -3,7 +3,7 @@
  * and the Terms, `#licences` from the Terms. Licence facts come from the dewee licence runbook
  * (5-minute heartbeat with activation id + runtime token, 24-hour grace capped at the licence
  * year, revoke/expire closes admission, suspended licences resume by re-enrolling the same key).
- * The VI version is On-Premises only.
+ * The VI version covers the Self-install licence and On-Premises.
  */
 import type { Bi } from "~/i18n/config";
 import type { LegalDoc } from "./types";
@@ -35,12 +35,14 @@ export const POLICY: Bi<LegalDoc> = {
       {
         id: "refunds",
         title: "Refund policy",
-        short: "AaaS: a full refund within 14 days, no questions asked. Dedicated and On-Premises: as set out in your order form or contract.",
+        short: "AaaS and Self-install licences: a full refund within 14 days. Dedicated and On-Premises: as set out in your order form or contract.",
         body: [
           { sub: "AaaS" },
           "If dewee is not right for you, ask for a refund within 14 days of your purchase and we will refund it in full, no questions asked. The only exception is fraud or clear abuse, such as chargeback abuse or reselling access.",
           { sub: "Dedicated on TOSE.sh" },
           "A Dedicated order has two parts: the $500 yearly licence and the $99 TOSE credit deposit, which we pass to TOSE.sh as credit for your runtime. What we can refund depends on whether your runtime has already been provisioned and on the credit already passed on or used. The exact terms are in your order form.",
+          { sub: "Self-install licence" },
+          "Ask within 14 days of buying a Self-install licence and we refund what you paid in full, including an Early Access price; the key is revoked when the refund is made. After 14 days we do not give partial or prorated refunds, and the licence stays active until the end of its year. Installing dewee itself is free, so there is nothing else to refund.",
           { sub: "On-Premises" },
           "On-Premises work is quoted individually. Payment stages and refund terms are written into your quote and contract, and we agree them with you before any work starts.",
           { sub: "How to ask for a refund" },
@@ -136,8 +138,10 @@ export const POLICY: Bi<LegalDoc> = {
       {
         id: "refunds",
         title: "Chính sách hoàn tiền",
-        short: "Lịch thanh toán và điều kiện hoàn tiền được ghi rõ trong báo giá và hợp đồng, thống nhất với bạn trước khi bắt đầu.",
+        short: "License Tự cài đặt: hoàn toàn bộ trong 14 ngày. On-Premises: lịch thanh toán và điều kiện hoàn tiền ghi rõ trong báo giá và hợp đồng.",
         body: [
+          { sub: "License Tự cài đặt" },
+          "Nếu bạn yêu cầu trong vòng 14 ngày kể từ khi mua license Tự cài đặt, chúng tôi hoàn lại toàn bộ số tiền bạn đã trả, kể cả giá Early Access; license key bị thu hồi khi hoàn tiền. Sau 14 ngày, chúng tôi không hoàn tiền một phần hay theo tỉ lệ thời gian, và license vẫn dùng được đến hết năm. Việc cài dewee là miễn phí nên không có khoản nào khác cần hoàn.",
           { sub: "Gói On-Premises" },
           "Mỗi dự án On-Premises có báo giá riêng. Các đợt thanh toán và điều kiện hoàn tiền được ghi trong báo giá và hợp đồng, và chúng tôi thống nhất với bạn trước khi bắt tay vào việc.",
           { sub: "Cách yêu cầu hoàn tiền" },
