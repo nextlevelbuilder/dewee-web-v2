@@ -21,7 +21,9 @@ export function initReveal() {
         io.unobserve(e.target);
       }
     },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+    // A ratio threshold never fires for blocks taller than the viewport (a long changelog), so any
+    // overlap past the bottom margin counts.
+    { rootMargin: "0px 0px -8% 0px", threshold: 0 },
   );
   targets.forEach((el) => io.observe(el));
   // Safety net: never leave content hidden if the observer misses something (e.g. print, zoom).
