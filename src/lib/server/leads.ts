@@ -7,11 +7,12 @@
  * through `:target` even without JavaScript.
  *
  * Order of checks: origin → content type → size → parse → honeypot → rate limit → schema →
- * D1 insert → team notification (after the response, via waitUntil).
+ * D1 insert → Discord notification and Resend email (after the response, via waitUntil).
  */
 import { z } from "zod";
 import type { Plan } from "../../content/plans";
 import { localePath, type Locale } from "../../i18n/config";
+import { sendLeadMail } from "./lead-mail";
 import { EMAIL_RE, notifyTeam } from "./notify";
 
 export const LEAD_KINDS = ["contact", "partner", "newsletter"] as const;
@@ -156,14 +157,17 @@ export async function handleLeadRequest(request: Request, env: Env, ctx?: WaitUn
     return reply("server_error", 500);
   }
 
-  const notify = notifyTeam(env, notifyTitle(lead), {
+  const fields = {
     Email: lead.email,
     Name: lead.name,
     Company: leadCompany(lead),
     Locale: lead.locale,
     Source: lead.source,
     ...Object.fromEntries(Object.entries(leadPayload(lead)).map(([k, v]) => [k[0].toUpperCase() + k.slice(1), v])),
-  }).catch((err) => console.warn("lead notify failed", err instanceof Error ? err.message : err));
+  };
+  const notify = Promise.all([notifyTeam(env, notifyTitle(lead), fields), sendLeadMail(env, lead, fields)])
+    .then(() => undefined)
+    .catch((err) => console.warn("lead notify failed", err instanceof Error ? err.message : err));
   if (ctx) ctx.waitUntil(notify);
   else await notify;
 

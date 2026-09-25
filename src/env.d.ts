@@ -20,6 +20,8 @@ interface Env {
   CF_ACCESS_AUD?: string;
   /** Resend key for admin sign-in codes (optional; API-key sign-in works without it). */
   RESEND_API_KEY?: string;
+  /** Sender for Resend mail, e.g. `dewee <hi@dewee.sh>` (optional; defaults to noreply@dewee.sh). */
+  RESEND_FROM_EMAIL?: string;
   /** Discord webhook that receives new chat sessions, leads and partner applications (optional). */
   DISCORD_WEBHOOK_URL?: string;
   /** Where visitor chat messages are forwarded for dewee's own agent to answer (optional). */
