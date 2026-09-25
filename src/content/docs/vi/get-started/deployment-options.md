@@ -27,7 +27,7 @@ Thông tin giá cũng có trên [trang bảng giá](/pricing).
 Bạn cài dewee lên máy Mac, máy Linux hoặc máy chủ của mình bằng script cài đặt của chúng tôi, dưới dạng binary độc lập hoặc Docker, rồi tự thiết lập mọi thứ trong dashboard cục bộ.
 
 - **Bạn nhận được:** runtime cùng dashboard tại `http://localhost:4321`, nơi bạn tạo tài khoản chủ sở hữu, thêm LLM provider và xây dựng agent. Việc cài đặt và dùng agent, provider, skill đều miễn phí.
-- **License key:** để kết nối các kênh như Zalo, Telegram, Discord hay Slack, bạn cần license dewee giá $500/năm, kích hoạt ngay trong dashboard. Chương trình Early Access giảm 50% năm đầu cho 50 license đầu tiên, đến hết ngày 15/10/2026; xem [bảng giá](/pricing).
+- **License key:** để kết nối các kênh như Zalo, Telegram, Discord hay Slack, bạn cần license dewee giá $500/năm, kích hoạt ngay trong dashboard. Chương trình Early Access giảm 50% năm đầu cho 50 license đầu tiên, đến 23:59 ngày 15/10/2026 (giờ Việt Nam); xem [bảng giá](/pricing).
 - **Đánh đổi:** không kèm hỗ trợ cài đặt, và bạn tự lo việc cập nhật, sao lưu. Nếu muốn chúng tôi cài giúp, hãy chọn On-Premises.
 
 Tự cài đặt phù hợp khi bạn muốn thử dewee trên phần cứng của mình ngay hôm nay, hoặc khi bạn tự tin vận hành runtime. Trang [Tự cài đặt dewee](/docs/get-started/self-install) hướng dẫn từng bước.

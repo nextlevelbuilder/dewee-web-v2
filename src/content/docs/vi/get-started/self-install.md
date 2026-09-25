@@ -64,7 +64,7 @@ Lần mở đầu tiên sẽ dẫn bạn qua các bước onboarding:
 Agent, provider và skill dùng được mà không cần license. Để kết nối các kênh như Zalo, Telegram, Discord hay Slack, bạn cần license key của dewee cho workspace đó, giá $500/năm; mỗi workspace cần một license riêng. Khi có key, bạn dán nó vào dashboard để kích hoạt, sau đó có thể kết nối kênh. [Kích hoạt license](/docs/runtime/licence) giải thích key dùng để làm gì.
 
 > [!TIP]
-> Early Access: 50 license đầu tiên được giảm 50% năm đầu, còn $250 thay vì $500, đến hết ngày 15/10/2026 theo giờ Việt Nam. Xem [bảng giá](/pricing).
+> Early Access: 50 license đầu tiên được giảm 50% năm đầu, còn $250 thay vì $500, đến 23:59 ngày 15/10/2026 (giờ Việt Nam). Xem [bảng giá](/pricing).
 
 ## Cấu hình tối thiểu
 
