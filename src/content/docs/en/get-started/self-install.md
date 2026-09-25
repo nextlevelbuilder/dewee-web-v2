@@ -28,6 +28,8 @@ On macOS or Linux, run the install script in a terminal:
 curl -fsSL https://dewee.sh/install.sh | bash
 ```
 
+The standalone install needs PostgreSQL. If none is found, the script asks before installing it. For an unattended install, add `--yes --install-postgres`; `--yes` alone never installs PostgreSQL.
+
 ## Install with Docker
 
 On macOS or Linux, download the Compose file and start dewee:

@@ -28,6 +28,8 @@ Trên macOS hoặc Linux, chạy script cài đặt trong terminal:
 curl -fsSL https://dewee.sh/install.sh | bash
 ```
 
+Bản độc lập cần PostgreSQL. Nếu máy chưa có, script sẽ hỏi trước khi cài. Muốn cài không cần hỏi, thêm `--yes --install-postgres`; riêng `--yes` không bao giờ tự cài PostgreSQL.
+
 ## Cài bằng Docker
 
 Trên macOS hoặc Linux, tải file Compose rồi khởi động dewee:
