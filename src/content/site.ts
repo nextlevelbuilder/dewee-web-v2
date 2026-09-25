@@ -10,6 +10,8 @@ export const SITE = {
   ownerUrl: "https://nextlevelbuilder.io",
   appUrl: "https://app.dewee.sh",
   cdn: "https://cdn.dewee.sh",
+  /** Google Tag Manager container; loaded on production only, behind Consent Mode (see GoogleTagManager.astro). */
+  gtmId: "GTM-TQX8KNXV",
   tagline: {
     en: "The hard part is ours. The future is yours.",
     vi: "Phần khó để chúng tôi lo. Tương lai là của bạn.",

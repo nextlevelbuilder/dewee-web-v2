@@ -22,7 +22,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Legal · Privacy",
       title: "Your data, *explained*.",
-      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, no trackers, and we would rather collect too little than too much.",
+      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, analytics only with your consent, and we would rather collect too little than too much.",
     },
     sections: [
       {
@@ -52,7 +52,7 @@ export const PRIVACY: Bi<LegalDoc> = {
               ],
             },
           },
-          "We do not use advertising or analytics trackers, we do not sell personal data, and we do not use it for advertising. The fonts on this site are served from our own domain, so loading a page does not send your IP address to a font service.",
+          "We use Google Analytics, through Google Tag Manager, only if you press “Accept” on our cookie notice; until then it sets no cookies. We do not sell personal data and we do not use it for advertising. The fonts on this site are served from our own domain, so loading a page does not send your IP address to a font service.",
         ],
       },
       {
@@ -84,6 +84,7 @@ export const PRIVACY: Bi<LegalDoc> = {
           {
             defs: [
               ["Cloudflare", "Hosts this website. Enquiries, chat summaries and admin sign-in sessions are stored in Cloudflare’s databases (D1 and KV), and each chat transcript in its own Cloudflare Durable Object."],
+              ["Google", "If you accept analytics cookies, Google Analytics (loaded through Google Tag Manager) receives anonymous page views and basic device data. See our [Cookie Policy](/cookies)."],
               ["Discord", "When you start a chat, our team receives your first message in a private Discord channel. If you leave your email, we also receive it with the latest lines of the conversation."],
               ["dewee support agent", "Your chat messages, with the recent conversation, may be passed to dewee’s own support agent or to a person on our team so they can reply."],
               ["Your AI providers", "When your agents call a model, your content goes to the provider you configured, with your own API key."],
@@ -170,7 +171,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Pháp lý · Quyền riêng tư",
       title: "Dữ liệu của bạn, *nói rõ*.",
-      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, không theo dõi, và thà thu thập ít còn hơn thu thập thừa.",
+      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, chỉ phân tích khi bạn đồng ý, và thà thu thập ít còn hơn thu thập thừa.",
     },
     sections: [
       {
@@ -199,7 +200,7 @@ export const PRIVACY: Bi<LegalDoc> = {
               ],
             },
           },
-          "Chúng tôi không dùng công cụ quảng cáo hay theo dõi, không bán dữ liệu cá nhân và không dùng dữ liệu đó để quảng cáo. Phông chữ trên website được tải từ chính tên miền của chúng tôi, nên việc mở trang không gửi địa chỉ IP của bạn tới dịch vụ phông chữ nào.",
+          "Chúng tôi chỉ dùng Google Analytics, qua Google Tag Manager, khi bạn bấm “Đồng ý” trên thông báo cookie; trước đó công cụ này không đặt cookie nào. Chúng tôi không bán dữ liệu cá nhân và không dùng dữ liệu đó để quảng cáo. Phông chữ trên website được tải từ chính tên miền của chúng tôi, nên việc mở trang không gửi địa chỉ IP của bạn tới dịch vụ phông chữ nào.",
         ],
       },
       {
@@ -231,6 +232,7 @@ export const PRIVACY: Bi<LegalDoc> = {
           {
             defs: [
               ["Cloudflare", "Vận hành website này. Yêu cầu tư vấn, tóm tắt các cuộc chat và phiên đăng nhập quản trị được lưu trong cơ sở dữ liệu của Cloudflare (D1 và KV); nội dung từng cuộc chat lưu trong một Cloudflare Durable Object riêng."],
+              ["Google", "Nếu bạn đồng ý cookie phân tích, Google Analytics (tải qua Google Tag Manager) nhận lượt xem trang ẩn danh và thông tin thiết bị cơ bản. Xem [Chính sách cookie](/vi/cookies)."],
               ["Discord", "Khi bạn bắt đầu chat, đội ngũ nhận tin nhắn đầu tiên trong một kênh Discord nội bộ. Nếu bạn để lại email, chúng tôi nhận email đó kèm các dòng chat gần nhất."],
               ["Trợ lý hỗ trợ dewee", "Tin nhắn của bạn, kèm phần hội thoại gần đây, có thể được chuyển tới trợ lý hỗ trợ của chính dewee hoặc một thành viên trong đội để trả lời."],
               ["Nhà cung cấp AI của bạn", "Khi agent gọi mô hình, nội dung được gửi tới nhà cung cấp bạn đã cấu hình, bằng API key của chính bạn."],
