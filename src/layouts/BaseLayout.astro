@@ -1,7 +1,7 @@
 ---
 /**
  * Page shell shared by every public page: fonts, theme (no flash), SEO head,
- * header/footer chrome, the notebook margin rule, reveal-on-scroll, cookie badge,
+ * header/footer chrome, reveal-on-scroll, cookie badge,
  * page actions (copy/share/ask AI) and the chat launcher.
  */
 import { Font } from "astro:assets";
@@ -32,15 +32,13 @@ interface Props {
   breadcrumbs?: { name: string; path: string }[];
   published?: string;
   modified?: string;
-  /** Show the ô-ly grid behind the whole page */
-  grid?: boolean;
   chat?: boolean;
   /** Copy/share/ask-an-AI menu in the footer; off for pages that carry their own (and for noindex pages) */
   pageActions?: boolean;
   bodyClass?: string;
 }
 
-const { locale, path, altHref, grid = false, chat = true, pageActions = !Astro.props.noindex, bodyClass, ...seo } = Astro.props;
+const { locale, path, altHref, chat = true, pageActions = !Astro.props.noindex, bodyClass, ...seo } = Astro.props;
 const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
 ---
 
@@ -66,7 +64,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     </script>
     <Font cssVariable="--font-display" preload />
     <Font cssVariable="--font-body" preload />
-    <Font cssVariable="--font-hand" />
+    <Font cssVariable="--font-sign" />
     <Font cssVariable="--font-mono" />
     <link rel="icon" type="image/png" href="/brand/favicon.png" />
     <link rel="apple-touch-icon" href="/brand/dewee-icon-144.png" />
@@ -74,9 +72,8 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <SeoHead {...seo} locale={locale} path={path} noindex={seo.noindex || isStaging} />
     <slot name="head" />
   </head>
-  <body class:list={[bodyClass, { "paper-grid": grid }]}>
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">{t(locale, "skip")}</a>
-    <div class="margin-rule" aria-hidden="true"></div>
     <SiteHeader locale={locale} path={path} altHref={altHref} />
     <main id="main" tabindex="-1">
       <slot />

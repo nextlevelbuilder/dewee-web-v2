@@ -67,7 +67,7 @@ const { parts, locale, copyLabels } = Astro.props;
     /* On light paper the raw green and red sit near 3.8:1, so they are mixed toward ink to clear AA. */
     --astro-code-token-string: color-mix(in oklch, var(--success) 70%, var(--ink));
     --astro-code-token-string-expression: color-mix(in oklch, var(--success) 70%, var(--ink));
-    --astro-code-token-constant: color-mix(in oklch, var(--redpen) 75%, var(--ink));
+    --astro-code-token-constant: color-mix(in oklch, var(--seal) 75%, var(--ink));
     --astro-code-token-parameter: var(--ink-2);
     --astro-code-token-function: var(--brand-blue);
     --astro-code-token-punctuation: var(--ink-3);
@@ -77,7 +77,7 @@ const { parts, locale, copyLabels } = Astro.props;
     --astro-code-token-function: var(--warning);
     --astro-code-token-string: var(--success);
     --astro-code-token-string-expression: var(--success);
-    --astro-code-token-constant: var(--redpen);
+    --astro-code-token-constant: var(--seal);
   }
   .doc-body :global(.code-block__bar) {
     display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);

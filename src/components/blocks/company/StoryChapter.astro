@@ -23,7 +23,7 @@ const hasVisual = Astro.slots.has("default");
 ---
 
 <section class:list={["section", "chap", { band: tone === "band", board: tone === "board" }]} id={id} aria-labelledby={`${id}-title`}>
-  {tone === "board" && <div class="chap__grain paper-grid" aria-hidden="true"></div>}
+  {tone === "board" && <div class="chap__grain drum-sun" aria-hidden="true"></div>}
   <div class="container chap__grid">
     <div class="chap__margin" data-reveal>
       <p class="chap__num"><span class="chap__label">{label}</span><span class="chap__n">{number}</span></p>

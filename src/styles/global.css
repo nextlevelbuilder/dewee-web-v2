@@ -68,7 +68,7 @@ code, kbd, samp, pre { font-family: var(--font-mono-stack); font-size: 0.9em; }
 .muted { color: var(--ink-3); }
 .ink-2 { color: var(--ink-2); }
 .mono { font-family: var(--font-mono-stack); }
-.hand { font-family: var(--font-hand-stack); font-weight: 300; letter-spacing: 0; }
+.hand { font-family: var(--font-sign-stack); font-weight: 400; font-size-adjust: var(--font-sign-adjust); letter-spacing: 0; }
 .nowrap { white-space: nowrap; }
 
 a { color: inherit; text-decoration-color: color-mix(in oklch, currentColor 35%, transparent); text-underline-offset: 0.2em; text-decoration-thickness: 1px; transition: color var(--dur-2) var(--ease-out), text-decoration-color var(--dur-2) var(--ease-out); }
@@ -95,16 +95,17 @@ a:hover { text-decoration-color: currentColor; }
   opacity: 0.6;
 }
 
-/* Handwritten marginalia (the author's notes in the margin) */
+/* The author's signed aside: a pen signature, never a school hand */
 .note {
-  font-family: var(--font-hand-stack);
-  font-weight: 300;
+  font-family: var(--font-sign-stack);
+  font-weight: 400;
   font-size: var(--step--1);
-  line-height: 1.7;
+  font-size-adjust: var(--font-sign-adjust);
+  line-height: 1.5;
   color: var(--accent-ink);
   letter-spacing: 0;
 }
-.note--red { color: var(--redpen); }
+.note--seal { color: var(--seal); }
 
 /* Highlighter stroke behind a phrase (bút dạ quang) */
 .mark {
@@ -141,39 +142,72 @@ a:hover { text-decoration-color: currentColor; }
 .skip-link:focus { inset-block-start: var(--space-3); }
 
 /*
- * Notebook page: fine ô-ly grid (4 thin rows + 1 bold row) with vertical rulings.
- * Used as a quiet texture on hero and feature bands; masked to fade at the edges.
+ * Bronze-drum relief: part of the Đông Sơn drum face rises from the top-right corner of a card or
+ * sheet, like the edge of a drum set behind it. `--drum-size` sets how big the face is.
  */
-.paper-grid {
-  --cell: 8px;
-  background-image:
-    linear-gradient(to bottom, var(--grid-bold) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-fine) 1px, transparent 1px),
-    linear-gradient(to right, var(--grid-fine) 1px, transparent 1px);
-  background-size: 100% calc(var(--cell) * 4), 100% var(--cell), calc(var(--cell) * 4) 100%;
-  background-position: 0 0, 0 0, 0 0;
-}
-.paper-grid--fade {
-  -webkit-mask-image: radial-gradient(120% 90% at 50% 30%, #000 40%, transparent 100%);
-  mask-image: radial-gradient(120% 90% at 50% 30%, #000 40%, transparent 100%);
+.drum-texture {
+  --drum-size: clamp(22rem, 16rem + 16vw, 34rem);
+  background-image: var(--drum-face);
+  background-repeat: no-repeat;
+  background-size: var(--drum-size);
+  background-position: right calc(var(--drum-size) * -0.5) top calc(var(--drum-size) * -0.5);
 }
 
 /*
- * The notebook margin: a double pink rule running down the page just left of the content column.
- * It sits behind everything (bands and cards cover it, as paper would) and only appears when the
- * viewport leaves room for it.
+ * The drum as a sun: the whole face behind a hero or a dark band, turning once every six minutes.
+ * Put it on an absolutely positioned background layer; `--drum-x` / `--drum-y` place the centre
+ * and the layer clips it, so it never widens the page.
  */
-.margin-rule {
-  position: absolute;
-  z-index: -1;
-  inset-block: 0;
-  inset-inline-start: calc((100% - var(--page-max)) / 2 - 1.75rem);
-  inline-size: 5px;
-  border-inline: 1px solid var(--margin-rule);
-  opacity: 0.5;
+.drum-sun {
+  --drum-size: clamp(30rem, 18rem + 42vw, 64rem);
+  --drum-x: 78%;
+  --drum-y: 40%;
+  overflow: clip;
   pointer-events: none;
 }
-@media (max-width: 1359px) { .margin-rule { display: none; } }
+.drum-sun::before {
+  content: "";
+  position: absolute;
+  inline-size: var(--drum-size);
+  aspect-ratio: 1;
+  inset-inline-start: calc(var(--drum-x) - var(--drum-size) / 2);
+  inset-block-start: calc(var(--drum-y) - var(--drum-size) / 2);
+  background: var(--drum-face) center / contain no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .drum-sun::before { animation: drum-turn 360s linear infinite; }
+}
+@keyframes drum-turn { to { transform: rotate(-1turn); } }
+
+/*
+ * A vermilion seal (con dấu son): a square stamp with a double border, pressed slightly askew.
+ * `--seal-size` sets the stamp; the mark inside scales with it.
+ */
+.seal {
+  --seal-size: 4.5rem;
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--seal-size);
+  aspect-ratio: 1;
+  border: 3px solid currentColor;
+  border-radius: 5px;
+  outline: 1.5px solid currentColor;
+  outline-offset: -8px;
+  color: var(--seal);
+  background: color-mix(in oklab, var(--seal) 7%, transparent);
+  font-family: var(--font-display-stack);
+  font-style: italic;
+  font-weight: 500;
+  font-size: calc(var(--seal-size) * 0.44);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* A strip of the drum's bands (tangent circles over a ladder), used as an ornamental rule. */
+.drum-band {
+  block-size: 24px;
+  background: var(--drum-tile) 0 0 / 48px 24px repeat-x;
+}
 
 /* ── Buttons ───────────────────────────────────────────────────────── */
 .btn {
@@ -321,7 +355,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); inlin
 .prose ul, .prose ol { padding-inline-start: 1.3em; }
 .prose li + li { margin-block-start: 0.4em; }
 .prose li::marker { color: var(--accent-ink); }
-.prose blockquote { border-inline-start: 3px solid var(--margin-rule); padding-inline-start: var(--space-4); font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); font-style: italic; }
+.prose blockquote { border-inline-start: 3px solid var(--bronze); padding-inline-start: var(--space-4); font-family: var(--font-display-stack); font-size: var(--step-1); color: var(--ink); font-style: italic; }
 .prose pre { padding: var(--space-4); border-radius: var(--radius-2); background: var(--paper-3); overflow-x: auto; font-size: var(--step--1); line-height: 1.6; color: var(--ink); }
 .prose img { border-radius: var(--radius-2); border: 1px solid var(--rule); }
 .prose table { inline-size: 100%; font-size: var(--step--1); display: block; overflow-x: auto; }
@@ -330,7 +364,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); inlin
 .prose hr { margin-block: 2.5em; }
 
 /*
- * Blackboard band: a chalk-on-slate surface for the "serious" sections (security, CTA).
+ * Night band: the drum by lamplight, a deep ink surface for the "serious" sections (security, CTA).
  * It re-points the ink tokens locally, so every component inside just works.
  */
 .board {
@@ -345,14 +379,15 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); inlin
   --ink-inverse: oklch(0.2 0.03 278);
   --rule: oklch(0.38 0.045 278);
   --rule-strong: oklch(0.48 0.05 278);
-  --grid-fine: oklch(0.95 0.02 285 / 0.05);
-  --grid-bold: oklch(0.95 0.03 285 / 0.09);
+  --drum-face: url("/patterns/dong-son-drum-dark.svg");
+  --drum-tile: url("/patterns/dong-son-tile-dark.svg");
+  --bronze: oklch(0.76 0.08 78);
   --accent: oklch(0.70 0.17 282);
   --accent-ink: oklch(0.82 0.11 285);
   --accent-soft: oklch(0.34 0.08 280);
   --accent-contrast: oklch(0.16 0.03 278);
   --highlight: oklch(0.78 0.12 95 / 0.3);
-  --redpen: oklch(0.74 0.15 25);
+  --seal: oklch(0.74 0.15 25);
   --focus: oklch(0.80 0.13 285);
   background: var(--paper);
   color: var(--ink);

@@ -122,7 +122,7 @@ const jsonLd = [
         <a class="btn btn--ghost sec-closed__cta" href={href("/story")}>{t.closedSource.cta}<Icon name="arrow-right" class="arrow" /></a>
       </div>
 
-      <article class="card sec-disclose paper-grid" id="disclosure" aria-labelledby="disclosure-title" data-reveal>
+      <article class="card sec-disclose drum-texture" id="disclosure" aria-labelledby="disclosure-title" data-reveal>
         <p class="sec-disclose__eyebrow"><Icon name="bug" size={16} />{t.disclosure.eyebrow}</p>
         <SectionHead title={t.disclosure.title} size="m" id="disclosure-title" />
         <p class="sec-disclose__body">{t.disclosure.body}</p>
@@ -131,7 +131,7 @@ const jsonLd = [
           {t.disclosure.include.map((it) => <li><Icon name="check" size={16} stroke={2.25} />{it}</li>)}
         </ul>
         <a class="btn btn--primary sec-disclose__cta" href={`mailto:${CONTACT_EMAIL}`}><Icon name="mail" size={18} />{t.disclosure.cta}</a>
-        <p class="note note--red sec-disclose__note">{t.disclosure.note}</p>
+        <p class="note note--seal sec-disclose__note">{t.disclosure.note}</p>
       </article>
     </div>
   </section>
@@ -168,7 +168,7 @@ const jsonLd = [
   }
   .sec-disclose__eyebrow {
     display: inline-flex; align-items: center; gap: var(--space-2);
-    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--redpen);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--seal);
   }
   .sec-disclose__body { color: var(--ink-2); line-height: 1.65; }
   .sec-disclose__label { margin-block-start: var(--space-2); font-weight: 600; font-size: var(--step--1); color: var(--ink); }

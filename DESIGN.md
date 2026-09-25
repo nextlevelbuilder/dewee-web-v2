@@ -1,25 +1,28 @@
 # dewee.sh — Design system
 
-> **"Vở ô ly · mực tím"**: a Vietnamese school notebook written in purple ink.
-> The dark theme is **"bảng đen"**, a blackboard with chalk marginalia.
+> **"Trống đồng · mực tím"**: purple ink on warm paper, under the face of a Đông Sơn bronze drum.
+> The dark theme is the same drum by lamplight: deep ink, pale gold ornament.
 
 This file is the contract for anyone, human or agent, who adds a page or block.
 Tokens live in `src/styles/tokens.css`, utilities in `src/styles/global.css`, and blocks in
 `src/components/blocks/`. If a value you need is not a token, change the design, not the scale.
 
-## 1. Why a notebook
+## 1. Why a bronze drum
 
-dewee's mascot is a drop of ink, or dew. Its story is a builder's notebook: GoClaw was the
-rough draft and dewee is the fair copy. The promise to customers is the one every
-Vietnamese student knows: *we did the homework, so you don't have to.*
+dewee's mascot is a drop of ink, or dew. Its story is craft handed down: GoClaw was the rough
+draft and dewee is the fair copy. The Đông Sơn drum is the oldest piece of Vietnamese craft
+everyone recognises: concentric, precise, made to last, and made for a community. It carries
+the brand's promise better than a school notebook, which read as childish.
 
-The notebook lets the site show the care behind the product without saying "we care":
-
-- **Ô-ly grid paper** behind heroes. It is structure you can see.
-- **The pink margin rule** down the left of wide screens. It is the teacher's margin, where corrections go.
-- **Purple ink** for emphasis. Italic serif words and hand-drawn underlines that write themselves.
-- **Red pen** only for grades and ticks: the "10" circle, the signature, the stamp. It is praise, never errors.
-- **Handwritten notes** (Playwrite VN) in the margins. Short, warm asides, at most one per section.
+- **The drum face** (`scripts/patterns/dong-son-drum.ts`): a fourteen-ray sun, bands of tangent
+  circles, ladders and zigzags, and Lạc herons flying anticlockwise. It turns slowly behind heroes
+  and dark bands (`.drum-sun`) and rises from the corner of cards and sheets (`.drum-texture`).
+- **Bronze** (`--bronze`) for ornament lines only. It never carries text.
+- **Purple ink** for emphasis. Italic serif words and underlines that write themselves.
+- **The vermilion seal** (`.seal`, `--seal`): a square con dấu son, pressed askew, for grades
+  and verdicts ("10"). It is praise, never an error colour.
+- **Signed asides** (Ms Madi, a pen signature) in the margins. Short, warm, at most one per
+  section, never for technical text such as cipher names or numbers.
 
 ## 2. Brief (fixed)
 
@@ -28,10 +31,10 @@ Register:  Brand
 Scene:     Founders, CTOs and ops leads in SEA companies evaluating an AI-agent platform;
            laptop in an office by day, phone in a Grab at night; skeptical and busy,
            they want proof and warmth, not hype.
-Direction: Vở ô ly · mực tím (light) / bảng đen (dark)
-Color:     Committed: iris owns the brand. Paper, ink, iris accent, rose margin, red pen.
-Type:      Newsreader (display serif) + Be Vietnam Pro (body) + Playwrite VN (hand) + JetBrains Mono
-Signature: The ink-drop mascot living in the margin, plus the margin rule and ô-ly grid
+Direction: Trống đồng · mực tím (light) / the drum by lamplight (dark)
+Color:     Committed: iris owns the brand. Paper, ink, iris accent, bronze ornament, vermilion seal.
+Type:      Newsreader (display serif) + Be Vietnam Pro (body) + Ms Madi (signature) + JetBrains Mono
+Signature: The ink-drop mascot in front of a slowly turning Đông Sơn drum face
 Dials:     variance 7 · motion 6 · density 3
 ```
 
@@ -39,7 +42,7 @@ Dials:     variance 7 · motion 6 · density 3
 
 | | English (default) | Tiếng Việt |
 |---|---|---|
-| We / you | we / you | **chúng tôi / bạn** in body copy; **tụi mình** only in handwritten notes |
+| We / you | we / you | **chúng tôi / bạn** in body copy; **tụi mình** only in signed asides |
 | Sentences | Short. Concrete. One idea each. | Natural Vietnamese, not a translation; keep technical terms in English (agent, prompt, tenant) |
 | Humour | Dry, warm, one wink per section | Playful but respectful, with school and office references |
 | Numbers | Only verified facts (see `src/content/site.ts` comments) | Vietnamese number format (637.225) |
@@ -50,7 +53,7 @@ Dials:     variance 7 · motion 6 · density 3
 **Always:** say what the agent *does* ("drafts the quote, you approve it"); name the human
 in the loop; end sections with a next step.
 
-**Pricing rule:** the VI locale shows **On-Premises only** (`plansFor("vi")`). EN shows SaaS, Dedicated
+**Pricing rule:** the VI locale shows **On-Premises only** (`plansFor("vi")`). EN shows AaaS (AI as a Service), Dedicated
 (TOSE) and On-Premises. Prices live only in `src/content/plans.ts`.
 
 ## 4. Tokens
@@ -59,9 +62,10 @@ in the loop; end sections with a next step.
 |---|---|---|
 | Paper | `--paper` `--paper-2` `--paper-3` `--surface` `--surface-hover` | page, band, deep band, cards |
 | Ink | `--ink` `--ink-2` `--ink-3` `--ink-inverse` | text 100 / 80 / 60 %; `--ink-3` is the minimum for text |
-| Rules | `--rule` `--rule-strong` `--grid-fine` `--grid-bold` `--margin-rule` | hairlines and grid |
+| Rules | `--rule` `--rule-strong` `--bronze` | hairlines; bronze for drum ornament |
+| Ornament | `--drum-face` `--drum-tile` | drum SVGs per theme, generated into `public/patterns/` |
 | Accent | `--accent` `--accent-ink` `--accent-soft` `--accent-contrast` | iris. Use `--accent-ink` for text on paper |
-| Marks | `--highlight` `--redpen` | highlighter and teacher's red pen |
+| Marks | `--highlight` `--seal` | highlighter and the vermilion seal |
 | State | `--success(-soft)` `--warning(-soft)` `--danger(-soft)` `--focus` | |
 | Brand | `--brand-*` `--mascot-gradient` | mascot and logo only |
 | Type | `--step--2 … --step-6` `--leading-*` `--tracking-*` `--font-*-stack` | fluid 1.25 scale |
@@ -72,7 +76,7 @@ in the loop; end sections with a next step.
 | Layout | `--page-max` `--page-wide` `--measure` `--measure-narrow` `--z-*` | |
 
 Dark theme (`:root[data-theme="dark"]`) re-points the same tokens. `.board` re-points them
-locally for a blackboard band inside a light page. Never hard-code a colour in a component.
+locally for a night band (the drum by lamplight) inside a light page. Never hard-code a colour in a component.
 
 ## 5. Type
 
@@ -80,8 +84,9 @@ locally for a blackboard band inside a light page. Never hard-code a colour in a
   renders as italic purple ink. Use it for the one word that carries the promise.
 - **Body**: Be Vietnam Pro 400; lede uses `.lede` (step-1, `--ink-2`, narrow measure).
 - **Eyebrow**: `.eyebrow`, JetBrains Mono uppercase with a short rule before it.
-- **Hand**: `.note` (purple) or `.note--red`. At most one per section, never for information
-  that is only there.
+- **Signature**: `.note` (purple) or `.note--seal`, Ms Madi with `font-size-adjust` so its tiny
+  x-height matches the body. At most one per section, never for information that is only there.
+- **Seal**: `.seal` with `--seal-size`; the numeral is Newsreader italic.
 - **Mono**: code, numbers in labels, metadata.
 
 Headings are written as sentences, and the last word pair stays together (see `HomeHero`).
@@ -123,7 +128,7 @@ architecture, `headset` on contact and support, `love` on CTAs, `sleepy` on 404.
 
 - `.container` (page max), `.container--wide`, `.container--narrow` (prose).
 - `.section` (fluid 96–160 px rhythm), `.section--tight`, `.band` (paper-2), `.band--deep`.
-- Alternate plain and `.band` sections. Use at most one `.board` (blackboard) section per page.
+- Alternate plain and `.band` sections. Use at most one `.board` (night band) section per page.
 - Heroes are asymmetric (7/5 or 7/4). Content grids collapse at 960 px and 560 px.
 - Touch targets are ≥ 44 px on touch and narrow screens. Test at 375, 768 and 1440.
 
@@ -138,12 +143,12 @@ builder can render the same component from stored JSON.
 | `HomeHero` | homepage promise + live chat card | eyebrow, title, lede, primary, secondary, note, chat{channel, label, lines} |
 | `SectionHead` | section heading | eyebrow, title, lede, note, align, level, size (xl/l/m) |
 | `ProofStrip` | ruler of verified numbers | items[{value, label}], label |
-| `HomeworkChecklist` | notebook page with ticks and a red "10" | eyebrow, title, lede, items[{text, detail?}], grade, gradeLabel, signature |
+| `HomeworkChecklist` | sheet of ticks under a drum edge, sealed "10" | eyebrow, title, lede, items[{text, detail?}], grade, gradeLabel, signature |
 | `FeatureGrid` | numbered feature cells | items[{icon, title, body, href?}], columns 2 \| 3 |
 | `TocIndex` | table-of-contents list with dot leaders | items[{title, meta, href, icon}] |
 | `Steps` | "exercises" in sequence | items[{title, body}], label, highlight, highlightNote |
 | `ArchitectureSketch` | channels → gateway → providers diagram | labels, channels, providers, more(n), label |
-| `SecurityLayers` | blackboard rings of defence | eyebrow, title, lede, layers[{name, body}], core, stamp, stampNote, cta |
+| `SecurityLayers` | night band, rings of defence, sealed "10" | eyebrow, title, lede, layers[{name, body}], core, stamp, stampNote, cta |
 | `LogoWall` | integration tiles and chips | groups[{label, size l/s, items[{brand, name, note?}]}] |
 | `DeployPlans` | plan cards (single plan becomes a wide sheet) | plans[], includesLabel, tradeoffsLabel, badge |
 | `Timeline` | ruler timeline | items[{date, text}], vertical, label |

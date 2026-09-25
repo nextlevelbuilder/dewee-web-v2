@@ -98,6 +98,7 @@ export async function runSeoPostbuild(opts: { dir: string; site: string; log?: L
   // The renderer source is part of the key, so a layout change re-renders every card.
   const designKey = OG_TEMPLATE_VERSION + hashFiles([
     join(ROOT, "scripts/og/og-card-renderer.ts"),
+    join(ROOT, "scripts/patterns/dong-son-drum.ts"),
     ...readdirSync(fontsDir).filter((f) => f.endsWith(".ttf")).sort().map((f) => join(fontsDir, f)),
     join(brandDir, "dewee-icon.png"),
     join(brandDir, "dewee-wordmark-360.png"),

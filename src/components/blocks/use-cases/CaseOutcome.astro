@@ -22,7 +22,7 @@ const { eyebrow, remark, text, runsOn, channels, more, id } = Astro.props;
 <div class="oc" data-reveal>
   <p class="eyebrow" id={id}>{eyebrow}</p>
   <div class="oc__sheet">
-    <p class="oc__remark note note--red" aria-hidden="true">{remark}</p>
+    <p class="oc__remark note note--seal" aria-hidden="true">{remark}</p>
     <p class="oc__text">{text}</p>
   </div>
   <div class="oc__runs">
@@ -40,7 +40,7 @@ const { eyebrow, remark, text, runsOn, channels, more, id } = Astro.props;
   .oc { display: grid; gap: var(--space-5); max-inline-size: 52rem; margin-inline: auto; }
   .oc__sheet {
     position: relative; padding: var(--space-5) 0 var(--space-5) clamp(1.25rem, 0.5rem + 3vw, 3rem);
-    border-inline-start: 2px solid var(--margin-rule);
+    border-inline-start: 2px solid var(--bronze);
   }
   .oc__remark {
     font-size: var(--step-1); line-height: 1; transform: rotate(-4deg); transform-origin: 0 50%;

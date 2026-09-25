@@ -36,7 +36,7 @@ const byDay = new Map(
 
 <div class="rm">
   <div class="rm__side">
-    <div class="rm__sheet paper-grid" data-reveal>
+    <div class="rm__sheet drum-texture" data-reveal>
       <span class="rm__rings" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       <table class="rm__cal" aria-label={calendarLabel}>
         <caption class="rm__month">{monthLabel}</caption>
@@ -67,7 +67,7 @@ const byDay = new Map(
         </tbody>
       </table>
     </div>
-    {note && <p class="note note--red rm__note" aria-hidden="true">{note}</p>}
+    {note && <p class="note note--seal rm__note" aria-hidden="true">{note}</p>}
   </div>
 
   <div class="rm__list">
@@ -122,7 +122,7 @@ const byDay = new Map(
     padding-block: var(--space-2); border-block-end: 1px solid var(--rule-strong);
     font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
   }
-  .rm__cal th:nth-child(7), .rm__day:nth-child(7) .rm__num { color: var(--redpen); }
+  .rm__cal th:nth-child(7), .rm__day:nth-child(7) .rm__num { color: var(--seal); }
   .rm__day { block-size: clamp(2.9rem, 2.4rem + 1.6vw, 3.9rem); padding: 0; vertical-align: middle; border-block-end: 1px dashed var(--rule); }
   .rm__num { font-family: var(--font-display-stack); font-size: var(--step-0); color: var(--ink-2); font-variant-numeric: lining-nums tabular-nums; }
   .rm__day--release .rm__num { color: var(--ink); font-weight: 600; }
@@ -134,11 +134,11 @@ const byDay = new Map(
   .rm__hit:hover { background: var(--accent-soft); }
   .rm__circle {
     position: absolute; inset-block-start: 6%; inset-inline: 8%; inline-size: 84%; block-size: 62%;
-    overflow: visible; pointer-events: none; color: var(--redpen);
+    overflow: visible; pointer-events: none; color: var(--seal);
   }
   /* No non-scaling-stroke here: with it, Chrome measures the dash in screen space and a pathLength=1 dash stops short. */
   .rm__circle path { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
-  .rm__tag { font-family: var(--font-mono-stack); font-size: 0.66rem; line-height: 1; color: var(--redpen); letter-spacing: 0; }
+  .rm__tag { font-family: var(--font-mono-stack); font-size: 0.66rem; line-height: 1; color: var(--seal); letter-spacing: 0; }
   .rm__note { justify-self: end; font-size: var(--step-0); transform: rotate(-2deg); max-inline-size: 26ch; text-align: end; }
 
   @media (prefers-reduced-motion: no-preference) {

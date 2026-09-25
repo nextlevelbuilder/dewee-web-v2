@@ -1,11 +1,11 @@
 /// <reference types="node" />
 /**
- * Social cards (1200×630 PNG) in the site's "vở ô ly · mực tím" art direction: ô-ly grid paper,
- * the pink double margin rule, a purple-ink eyebrow, the page title in Newsreader, the
- * description in Be Vietnam Pro, the dewee wordmark and the ink-drop mascot.
+ * Social cards (1200×630 PNG) in the site's "trống đồng · mực tím" art direction: warm paper with
+ * the Đông Sơn drum face rising from the top-right corner, a purple-ink eyebrow, the page title in
+ * Newsreader, the description in Be Vietnam Pro, the dewee wordmark and the ink-drop mascot.
  *
  * satori lays the text out (it needs TTF/OTF fonts, committed under ./fonts with their OFL
- * licences) and resvg rasterises the SVG. The grid and the margin rule are plain SVG injected
+ * licences) and resvg rasterises the SVG. The drum is plain SVG (shared with the site) injected
  * behind satori's output, which keeps them crisp and cheap. Run by Node with type stripping,
  * so this file only uses erasable TypeScript.
  */
@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import satori, { type Font } from "satori";
 import { Resvg } from "@resvg/resvg-js";
+import { DRUM_INK, drumFaceSvg } from "../patterns/dong-son-drum.ts";
 
 export type OgCardInput = {
   title: string;
@@ -27,14 +28,12 @@ export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
 /** Light-theme tokens from src/styles/tokens.css, converted from OKLCH to sRGB. */
-const INK = { paper: "#fafafe", ink: "#141b3c", ink2: "#3f455f", ink3: "#66697c", accentInk: "#4437ce", margin: "#ec7385", grid: "#5c88c1" };
+const INK = { paper: "#fafafe", ink: "#141b3c", ink2: "#3f455f", ink3: "#66697c", accentInk: "#4437ce" };
 
-const MARGIN_X = 132;
 const PAD_LEFT = 188;
-const CELL = 12;
 
 /** Bumped whenever the design changes so cached cards are re-rendered. */
-export const OG_TEMPLATE_VERSION = "3";
+export const OG_TEMPLATE_VERSION = "4";
 
 type El = { type: string; props: { style?: Record<string, string | number>; children?: unknown; src?: string; width?: number; height?: number } };
 const el = (type: string, style: Record<string, string | number>, children?: unknown, extra: Record<string, unknown> = {}): El => ({ type, props: { style, children, ...extra } });
@@ -57,20 +56,18 @@ export function titleSize(title: string): number {
   return 50;
 }
 
+/** Paper plus the drum face, restated with presentation attributes since resvg ignores classes. */
 function paperBackground(): string {
-  const lines = [];
-  for (let y = CELL; y < OG_HEIGHT; y += CELL) {
-    const bold = y % (CELL * 4) === 0;
-    lines.push(`<rect x="0" y="${y}" width="${OG_WIDTH}" height="1" fill="${INK.grid}" fill-opacity="${bold ? 0.22 : 0.1}"/>`);
-  }
-  for (let x = CELL * 4; x < OG_WIDTH; x += CELL * 4) {
-    lines.push(`<rect x="${x}" y="0" width="1" height="${OG_HEIGHT}" fill="${INK.grid}" fill-opacity="0.1"/>`);
-  }
+  const { color } = DRUM_INK.light;
+  const drum = drumFaceSvg(color)
+    .replace(/^<svg[^>]*>/, "")
+    .replace(/<\/svg>$/, "")
+    .replace(/<style>.*?<\/style>/, "")
+    .replace('<g class="o">', `<g fill="none" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.2">`)
+    .replace(/class="[sd]"/g, `fill="${color}" stroke="none"`);
   return [
     `<rect width="${OG_WIDTH}" height="${OG_HEIGHT}" fill="${INK.paper}"/>`,
-    ...lines,
-    `<rect x="${MARGIN_X}" y="0" width="1.5" height="${OG_HEIGHT}" fill="${INK.margin}" fill-opacity="0.75"/>`,
-    `<rect x="${MARGIN_X + 6}" y="0" width="1.5" height="${OG_HEIGHT}" fill="${INK.margin}" fill-opacity="0.75"/>`,
+    `<svg x="790" y="-360" width="800" height="800" viewBox="-500 -500 1000 1000">${drum}</svg>`,
   ].join("");
 }
 

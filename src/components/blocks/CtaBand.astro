@@ -18,7 +18,7 @@ const { title, body, primary, secondary, note } = Astro.props;
 
 <section class="section cta">
   <div class="container">
-    <div class="cta__sheet paper-grid" data-reveal>
+    <div class="cta__sheet drum-texture" data-reveal>
       <div class="cta__mascot"><DeweeMascot size={112} mood="love" interactive /></div>
       <h2 class="cta__title" set:html={inlineMarkup(title)} />
       {body && <p class="lede cta__body">{body}</p>}

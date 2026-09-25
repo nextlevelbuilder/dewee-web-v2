@@ -1,6 +1,8 @@
 /*
- * dewee design tokens — "Vở ô ly · mực tím" (notebook paper, purple ink).
- * Light theme = a Vietnamese school notebook. Dark theme = the classroom blackboard.
+ * dewee design tokens — "Trống đồng · mực tím" (bronze drum, purple ink).
+ * Light theme = warm paper under a faint Đông Sơn drum face. Dark theme = the drum by lamplight.
+ * Ornament comes from the drum (sun, tangent circles, ladders, Lạc herons); asides are signed in a
+ * pen signature.
  * Every color, size, space, radius, shadow and duration used by components comes from here.
  * If a value is missing, change the design, not the scale (see DESIGN.md).
  */
@@ -29,15 +31,15 @@
   --ink-inverse: oklch(0.985 0.005 290);
   --rule: oklch(0.885 0.018 282);              /* hairline */
   --rule-strong: oklch(0.80 0.030 280);
-  --grid-fine: oklch(0.62 0.10 255 / 0.10);    /* ô ly fine line (blue, like real notebooks) */
-  --grid-bold: oklch(0.58 0.12 262 / 0.20);    /* ô ly bold line every 4 rows */
-  --margin-rule: oklch(0.70 0.15 12);          /* the pink/red margin line */
+  --bronze: oklch(0.60 0.085 70);              /* Đông Sơn bronze: ornament lines and rules */
+  --drum-face: url("/patterns/dong-son-drum-light.svg");   /* see scripts/patterns/dong-son-drum.ts */
+  --drum-tile: url("/patterns/dong-son-tile-light.svg");
   --accent: var(--brand-iris);
   --accent-ink: oklch(0.46 0.22 277);          /* accent as text on paper, AA */
   --accent-soft: oklch(0.935 0.035 282);       /* tinted fill */
   --accent-contrast: oklch(0.99 0.005 290);    /* text on accent */
   --highlight: oklch(0.93 0.09 95 / 0.75);     /* highlighter marker (bút dạ quang) */
-  --redpen: oklch(0.56 0.19 25);               /* teacher's red pen, used for grades */
+  --seal: oklch(0.53 0.19 28);                 /* son (vermilion lacquer) of a seal stamp */
   --success: oklch(0.55 0.13 155);
   --success-soft: oklch(0.95 0.04 155);
   --warning: oklch(0.62 0.14 70);
@@ -55,7 +57,8 @@
   /* ── Type ────────────────────────────────────────────────────────── */
   --font-display-stack: var(--font-display), "Newsreader", Georgia, serif;
   --font-body-stack: var(--font-body), "Be Vietnam Pro", system-ui, sans-serif;
-  --font-hand-stack: var(--font-hand), "Playwrite VN", cursive;
+  --font-sign-stack: var(--font-sign), "Ms Madi", cursive;
+  --font-sign-adjust: 0.5;                      /* the signature face has a tiny x-height; match the body's */
   --font-mono-stack: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
 
   /* Fluid scale, ratio ≈1.25 on phones → ≈1.333 on desktop (320px → 1440px) */
@@ -94,7 +97,6 @@
   --header-h: 4.25rem;                             /* sticky site header height */
   --page-max: 78rem;                               /* 1248px */
   --page-wide: 88rem;
-  --margin-col: clamp(0rem, -6rem + 12vw, 7.5rem); /* notebook margin column, 0 on phones */
 
   /* ── Shape ───────────────────────────────────────────────────────── */
   --radius-1: 6px;
@@ -119,7 +121,7 @@
   --z-toast: 80;
 }
 
-/* ── Blackboard (dark) ─────────────────────────────────────────────── */
+/* ── The drum by lamplight (dark) ──────────────────────────────────── */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --paper: oklch(0.195 0.028 278);
@@ -127,21 +129,21 @@
   --paper-3: oklch(0.26 0.036 278);
   --surface: oklch(0.235 0.034 278);
   --surface-hover: oklch(0.27 0.038 278);
-  --ink: oklch(0.955 0.012 285);               /* chalk */
+  --ink: oklch(0.955 0.012 285);
   --ink-2: oklch(0.84 0.022 283);
   --ink-3: oklch(0.72 0.028 282);
   --ink-inverse: oklch(0.2 0.03 278);
   --rule: oklch(0.34 0.035 280);
   --rule-strong: oklch(0.44 0.04 280);
-  --grid-fine: oklch(0.95 0.02 285 / 0.045);
-  --grid-bold: oklch(0.95 0.03 285 / 0.085);
-  --margin-rule: oklch(0.66 0.13 12 / 0.75);
+  --bronze: oklch(0.76 0.08 78);
+  --drum-face: url("/patterns/dong-son-drum-dark.svg");
+  --drum-tile: url("/patterns/dong-son-tile-dark.svg");
   --accent: oklch(0.68 0.18 282);
   --accent-ink: oklch(0.80 0.12 285);
   --accent-soft: oklch(0.30 0.07 282);
   --accent-contrast: oklch(0.16 0.03 278);
   --highlight: oklch(0.78 0.12 95 / 0.28);
-  --redpen: oklch(0.72 0.15 25);
+  --seal: oklch(0.70 0.16 30);
   --success: oklch(0.74 0.13 155);
   --success-soft: oklch(0.30 0.05 155);
   --warning: oklch(0.80 0.13 80);

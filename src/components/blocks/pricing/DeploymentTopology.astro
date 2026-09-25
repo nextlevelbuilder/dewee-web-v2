@@ -21,7 +21,7 @@ const { label, runtime, wire, control, licence, cli, note } = Astro.props;
 ---
 
 <figure class="topo" aria-label={label} data-reveal>
-  <div class="topo__sheet paper-grid">
+  <div class="topo__sheet drum-texture">
     <div class="topo__map">
       <div class="topo__node topo__node--runtime">
         <p class="topo__title"><Icon name="server" size={20} />{runtime.title}</p>
@@ -92,7 +92,7 @@ const { label, runtime, wire, control, licence, cli, note } = Astro.props;
   /* the notebook's pink margin line */
   .topo__sheet::before {
     content: ""; position: absolute; inset-block: 0; inset-inline-start: 1.6rem; inline-size: 4px;
-    border-inline: 1px solid var(--margin-rule); opacity: 0.7;
+    border-inline: 1px solid var(--bronze); opacity: 0.7;
   }
   .topo__map {
     display: grid; grid-template-columns: minmax(0, 1fr) clamp(7rem, 3rem + 9vw, 12rem) minmax(0, 1fr);

@@ -40,8 +40,8 @@ const { eyebrow, title, body, quote, cta, timeline, timelineLabel } = Astro.prop
 <style>
   .story { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: clamp(2.5rem, 1rem + 5vw, 6rem); align-items: start; }
   .story__body { display: grid; gap: var(--space-4); margin-block-start: var(--space-6); color: var(--ink-2); max-inline-size: var(--measure); }
-  .story__quote { position: relative; margin-block-start: var(--space-6); padding: var(--space-5) var(--space-5) var(--space-5) var(--space-7); border-inline-start: 3px solid var(--margin-rule); background: var(--paper-2); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
-  .story__quote :global(svg) { position: absolute; inset-inline-start: var(--space-4); inset-block-start: var(--space-4); color: var(--margin-rule); }
+  .story__quote { position: relative; margin-block-start: var(--space-6); padding: var(--space-5) var(--space-5) var(--space-5) var(--space-7); border-inline-start: 3px solid var(--bronze); background: var(--paper-2); border-radius: 0 var(--radius-2) var(--radius-2) 0; }
+  .story__quote :global(svg) { position: absolute; inset-inline-start: var(--space-4); inset-block-start: var(--space-4); color: var(--bronze); }
   .story__quote p { font-family: var(--font-display-stack); font-style: italic; font-size: var(--step-2); line-height: 1.3; color: var(--ink); }
   .story__cta { margin-block-start: var(--space-6); }
   .story__tl { position: sticky; inset-block-start: 7rem; padding: var(--space-6); border-radius: var(--radius-3); border: 1px solid var(--rule); background: var(--surface); box-shadow: var(--shadow-1); }

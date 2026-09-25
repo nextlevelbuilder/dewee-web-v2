@@ -20,7 +20,7 @@ const { label, topicLabel, open, closed, rows, footnoteTitle, footnote } = Astro
 ---
 
 <figure class="dc">
-  <div class="dc__spread paper-grid" data-reveal>
+  <div class="dc__spread drum-texture" data-reveal>
     <table class="dc__table">
       <caption class="sr-only">{label}</caption>
       <thead>
@@ -98,13 +98,13 @@ const { label, topicLabel, open, closed, rows, footnoteTitle, footnote } = Astro
   .dc__title { position: relative; display: flex; inline-size: fit-content; align-items: center; gap: var(--space-2); font-family: var(--font-display-stack); font-size: var(--step-2); line-height: 1.15; color: var(--ink); }
   .dc__title--open { color: var(--ink-3); }
   .dc__motto { display: block; max-inline-size: 38ch; font-size: var(--step--1); line-height: 1.55; color: var(--ink-2); }
-  .dc__note { display: block; color: var(--redpen); transform: rotate(-2deg); transform-origin: left center; }
+  .dc__note { display: block; color: var(--seal); transform: rotate(-2deg); transform-origin: left center; }
   .dc__tag { inline-size: fit-content; }
 
-  .dc__strike { position: absolute; inset-inline: -4%; inset-block-start: 50%; inline-size: 108%; block-size: 0.6em; translate: 0 -40%; overflow: visible; color: var(--redpen); pointer-events: none; }
+  .dc__strike { position: absolute; inset-inline: -4%; inset-block-start: 50%; inline-size: 108%; block-size: 0.6em; translate: 0 -40%; overflow: visible; color: var(--seal); pointer-events: none; }
   .dc__strike path, .dc__tick path { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
   .dc__strike path { stroke-width: 1.8; }
-  .dc__tick { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--redpen); overflow: visible; }
+  .dc__tick { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--seal); overflow: visible; }
   .dc__tick path { stroke-width: 2.75; }
 
   .dc__table tbody tr + tr > * { border-block-start: 1px dashed var(--rule); }
@@ -124,10 +124,10 @@ const { label, topicLabel, open, closed, rows, footnoteTitle, footnote } = Astro
 
   .dc__foot {
     display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); align-items: baseline;
-    padding: var(--space-4) var(--space-5); border: 1.5px dashed var(--redpen); border-radius: var(--radius-3); background: var(--surface);
+    padding: var(--space-4) var(--space-5); border: 1.5px dashed var(--seal); border-radius: var(--radius-3); background: var(--surface);
   }
   .dc__foot-title { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--ink); white-space: nowrap; }
-  .dc__foot-title :global(svg) { color: var(--redpen); flex: none; translate: 0 0.1em; }
+  .dc__foot-title :global(svg) { color: var(--seal); flex: none; translate: 0 0.1em; }
   .dc__foot-body { font-size: var(--step--1); line-height: 1.6; color: var(--ink-2); max-inline-size: 72ch; }
 
   @media (prefers-reduced-motion: no-preference) {

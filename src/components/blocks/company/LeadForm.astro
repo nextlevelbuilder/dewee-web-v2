@@ -31,7 +31,7 @@ const fieldId = (name: string) => `${id}-${name}`;
 ---
 
 <div class="lf" data-lead-form data-busy-label={busy} data-messages={JSON.stringify(errors)}>
-  <form id={id} class="lf__sheet paper-grid" action="/api/leads" method="post" accept-charset="utf-8">
+  <form id={id} class="lf__sheet drum-texture" action="/api/leads" method="post" accept-charset="utf-8">
     <input type="hidden" name="kind" value={kind} />
     <input type="hidden" name="locale" value={locale} />
     <input type="hidden" name="source" value={source} />
@@ -89,7 +89,7 @@ const fieldId = (name: string) => `${id}-${name}`;
     <p class="form-status lf__status" role="status" aria-live="polite" data-status></p>
   </form>
 
-  <div id={`${id}-done`} class="lf__done paper-grid" tabindex="-1" role="status" data-done-panel>
+  <div id={`${id}-done`} class="lf__done drum-texture" tabindex="-1" role="status" data-done-panel>
     <span class="lf__tick" aria-hidden="true"><svg viewBox="0 0 48 48"><path pathLength="1" d="M9 25 L20 35 L40 11" /></svg></span>
     <p class="lf__done-title">{success.title}</p>
     <p class="lf__done-body">{success.body}</p>
@@ -108,7 +108,7 @@ const fieldId = (name: string) => `${id}-${name}`;
   /* the pink margin line of a notebook sheet */
   .lf__sheet::before, .lf__done::before {
     content: ""; position: absolute; inset-block: 0; inset-inline-start: clamp(1rem, 0.5rem + 1.5vw, 1.75rem); inline-size: 4px;
-    border-inline: 1px solid var(--margin-rule); opacity: 0.6; pointer-events: none;
+    border-inline: 1px solid var(--bronze); opacity: 0.6; pointer-events: none;
   }
   .lf__hp { position: absolute; inset-inline-start: -10000px; inline-size: 1px; block-size: 1px; overflow: hidden; }
 

@@ -20,7 +20,7 @@ interface Props {
   /** Small back-link above the eyebrow, e.g. "← All use cases" on a detail page */
   back?: { label: string; href: string };
   mascot?: { mood?: Mood; accessory?: Accessory } | false;
-  /** Draw the ô-ly grid behind the hero (default true) */
+  /** Turn the drum face behind the hero (default true) */
   grid?: boolean;
   align?: "start" | "center";
 }
@@ -29,7 +29,7 @@ const hasAside = Astro.slots.has("aside");
 ---
 
 <section class:list={["page-hero", "ph", `ph--${align}`, { "ph--aside": hasAside || mascot }]}>
-  {grid && <div class="ph__bg paper-grid paper-grid--fade" aria-hidden="true"></div>}
+  {grid && <div class="ph__bg drum-sun" aria-hidden="true"></div>}
   <div class="container ph__grid">
     <div class="ph__copy">
       {back && (

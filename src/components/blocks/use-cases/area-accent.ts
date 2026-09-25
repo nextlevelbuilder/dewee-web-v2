@@ -7,7 +7,7 @@ import type { UseCaseArea } from "~/content/use-cases";
 
 export const AREA_ACCENT: Record<UseCaseArea, string> = {
   operations: "var(--accent)",
-  customers: "var(--margin-rule)",
+  customers: "var(--bronze)",
   marketing: "var(--warning)",
   research: "var(--success)",
   make: "var(--ink-2)",

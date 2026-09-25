@@ -48,11 +48,11 @@ export default defineConfig({
     },
     {
       provider: fontProviders.google(),
-      name: "Playwrite VN",
-      cssVariable: "--font-hand",
-      weights: [300, 400],
+      name: "Ms Madi",
+      cssVariable: "--font-sign",
+      weights: [400],
       styles: ["normal"],
-      subsets: ["fallback"],
+      subsets: ["latin", "latin-ext", "vietnamese"],
       fallbacks: ["cursive"],
     },
     {

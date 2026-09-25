@@ -13,7 +13,7 @@ interface Props {
 const { label, text } = Astro.props;
 ---
 
-<div class="lsv paper-grid" role="note" aria-label={label}>
+<div class="lsv" role="note" aria-label={label}>
   <p class="lsv__label">{label}</p>
   <p class="lsv__text" set:html={inlineMarkup(text)} />
 </div>
@@ -29,10 +29,10 @@ const { label, text } = Astro.props;
   /* the notebook's pink margin rule */
   .lsv::before {
     content: ""; position: absolute; inset-block: 0; inset-inline-start: 1.1rem; inline-size: 4px;
-    border-inline: 1px solid var(--margin-rule); opacity: 0.8;
+    border-inline: 1px solid var(--bronze); opacity: 0.8;
   }
   .lsv__label {
-    font-family: var(--font-hand-stack); font-weight: 300; font-size: var(--step-0); line-height: 1.4;
+    font-family: var(--font-sign-stack); font-weight: 400; font-size-adjust: var(--font-sign-adjust); font-size: var(--step-0); line-height: 1.4;
     color: var(--accent-ink); transform: rotate(-1.5deg); transform-origin: 0 50%;
   }
   .lsv__text { font-size: var(--step-0); line-height: 1.6; color: var(--ink); max-inline-size: 60ch; }

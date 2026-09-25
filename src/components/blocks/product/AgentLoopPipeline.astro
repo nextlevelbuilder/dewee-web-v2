@@ -30,7 +30,7 @@ const seats = [
 ];
 ---
 
-<figure class="alp paper-grid" aria-label={label}>
+<figure class="alp drum-texture" aria-label={label}>
   <span class="alp__margin" aria-hidden="true"></span>
 
   <div class="alp__row">
@@ -94,7 +94,7 @@ const seats = [
   /* the notebook's pink margin rule */
   .alp__margin {
     position: absolute; inset-block: 0; inset-inline-start: clamp(0.75rem, -0.25rem + 3vw, 2.75rem);
-    inline-size: 4px; border-inline: 1px solid var(--margin-rule); opacity: 0.55; pointer-events: none;
+    inline-size: 4px; border-inline: 1px solid var(--bronze); opacity: 0.55; pointer-events: none;
   }
 
   .alp__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--col-gap); align-items: end; padding-inline: var(--pad); }

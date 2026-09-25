@@ -32,7 +32,7 @@ const richText = (text: string) =>
 ---
 
 <section class="hero">
-  <div class="hero__bg paper-grid paper-grid--fade" aria-hidden="true"></div>
+  <div class="hero__bg drum-sun" aria-hidden="true"></div>
   <div class="container hero__grid">
     <div class="hero__copy">
       <p class="eyebrow" data-reveal>{eyebrow}</p>
@@ -79,7 +79,7 @@ const richText = (text: string) =>
 
 <style>
   .hero { position: relative; padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) clamp(3rem, 2rem + 4vw, 5.5rem); isolation: isolate; }
-  .hero__bg { position: absolute; inset: 0; z-index: -1; }
+  .hero__bg { position: absolute; inset: 0; z-index: -1; --drum-x: 76%; --drum-y: 46%; }
   .hero__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2.5rem, 1rem + 5vw, 6rem); align-items: center; }
   .hero__copy { display: grid; gap: var(--space-5); justify-items: start; }
   .hero__title { max-inline-size: 13ch; }
@@ -143,6 +143,7 @@ const richText = (text: string) =>
 
   @media (max-width: 960px) {
     .hero__grid { grid-template-columns: minmax(0, 1fr); }
+    .hero__bg { --drum-x: 50%; --drum-y: 72%; }
     .hero__title { max-inline-size: 16ch; }
     .hero__demo { max-inline-size: 34rem; inline-size: 100%; justify-self: center; }
     .hero__note { inset-inline-start: auto; inset-inline-end: 0; inset-block-end: -3rem; }

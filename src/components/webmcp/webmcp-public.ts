@@ -37,7 +37,7 @@ const tools: WebMcpTool[] = [
   },
   {
     name: "set_theme",
-    description: "Sets the colour theme: light (paper), dark (blackboard) or system.",
+    description: "Sets the colour theme: light, dark or system.",
     inputSchema: { type: "object", properties: { theme: { type: "string", enum: ["light", "dark", "system"] } }, required: ["theme"], additionalProperties: false },
     execute: async (args) => {
       const theme = str(args, "theme");

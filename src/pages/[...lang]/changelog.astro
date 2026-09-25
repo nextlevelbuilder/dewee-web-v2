@@ -84,7 +84,7 @@ const labels = { ...t.release };
           {groups.map((g) => <ChangelogGroup group={g} channel={channel} locale={locale} labels={labels} />)}
         </div>
       ) : (
-        <div class="changelog__empty paper-grid" role="status">
+        <div class="changelog__empty drum-texture" role="status">
           <h2 class="changelog__empty-title" set:html={inlineMarkup(t.empty.title)} />
           <p class="lede">{t.empty.body}</p>
           {channel !== "all" && (
