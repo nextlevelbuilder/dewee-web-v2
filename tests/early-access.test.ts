@@ -29,8 +29,8 @@ describe("Early Access terms", () => {
       expect(b.price).toEqual({ now: "$250", was: "$500", period: expect.stringContaining("$500") });
       expect(b.slotsLeft).toContain("{n}");
     }
-    expect(earlyAccessBlock("en", { cta: "/c" }).deadline).toBe("until October 15, 2026");
-    expect(earlyAccessBlock("vi", { cta: "/c" }).deadline).toBe("đến hết ngày 15/10/2026");
+    expect(earlyAccessBlock("en", { cta: "/c" }).deadline).toBe("until 23:59 on October 15, 2026, Vietnam time (GMT+7)");
+    expect(earlyAccessBlock("vi", { cta: "/c" }).deadline).toBe("đến 23:59 ngày 15/10/2026 (giờ Việt Nam)");
   });
 });
 
