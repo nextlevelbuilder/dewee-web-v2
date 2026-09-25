@@ -1,0 +1,35 @@
+---
+/**
+ * Google Tag Manager with Consent Mode v2. Every storage type starts "denied", so tags run
+ * cookieless until the visitor presses "Accept" on the cookie notice (CookieBadge stores
+ * `dewee.cookies = "all"` and sends the consent update). Loaded on production only, so
+ * staging traffic never reaches the container.
+ *   part="head": consent defaults + the GTM loader, as high in <head> as possible
+ *   part="body": the <noscript> fallback, right after <body>
+ */
+import { SITE } from "~/content/site";
+interface Props { part: "head" | "body" }
+const { part } = Astro.props;
+const id = SITE.gtmId;
+const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
+---
+
+{enabled && part === "head" && (
+  <script is:inline define:vars={{ id }}>
+    window.dataLayer = window.dataLayer || [];
+    // Global so the cookie notice can send the consent update later.
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    var granted = false;
+    try { granted = localStorage.getItem("dewee.cookies") === "all"; } catch (e) {}
+    var state = granted ? "granted" : "denied";
+    window.gtag("consent", "default", { analytics_storage: state, ad_storage: state, ad_user_data: state, ad_personalization: state, wait_for_update: 500 });
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',id);
+  </script>
+)}
+{enabled && part === "body" && (
+  <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${id}`} height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
+)}

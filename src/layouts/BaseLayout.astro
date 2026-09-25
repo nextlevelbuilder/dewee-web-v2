@@ -12,6 +12,7 @@ import SeoHead from "~/components/layout/SeoHead.astro";
 import SiteHeader from "~/components/layout/SiteHeader.astro";
 import SiteFooter from "~/components/layout/SiteFooter.astro";
 import CookieBadge from "~/components/layout/CookieBadge.astro";
+import GoogleTagManager from "~/components/layout/GoogleTagManager.astro";
 import ChatLauncher from "~/components/chat/ChatLauncher.astro";
 
 interface Props {
@@ -50,6 +51,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#fbfaff" />
     <meta name="generator" content={Astro.generator} />
+    <GoogleTagManager part="head" />
     <!-- Apply the saved theme before first paint so the page never flashes the wrong paper. -->
     <script is:inline>
       (function () {
@@ -73,6 +75,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <slot name="head" />
   </head>
   <body class={bodyClass}>
+    <GoogleTagManager part="body" />
     <a class="skip-link" href="#main">{t(locale, "skip")}</a>
     <SiteHeader locale={locale} path={path} altHref={altHref} />
     <main id="main" tabindex="-1">

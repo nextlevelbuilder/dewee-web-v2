@@ -1,7 +1,8 @@
 ---
 /**
- * Informational cookie notice. dewee only sets essential cookies (theme is localStorage,
- * admin session is strictly necessary), so there is nothing to opt into — just a note.
+ * Cookie notice. Essential storage needs no consent; analytics (Google Tag Manager, production
+ * only) stays in cookieless Consent Mode until the visitor presses "Accept". The choice is kept
+ * in `dewee.cookies` ("all" or "essential") and the notice does not come back once answered.
  */
 import { localePath, type Locale } from "~/i18n/config";
 import { t } from "~/i18n/ui";
@@ -16,13 +17,16 @@ const { locale } = Astro.props;
     {t(locale, "cookieText")}
     <a href={localePath(locale, "/cookies")}>{t(locale, "cookieDetails")}</a>
   </p>
-  <button type="button" class="btn btn--ink btn--sm" data-cookie-ok>{t(locale, "cookieOk")}</button>
+  <div class="cookie__actions">
+    <button type="button" class="btn btn--ghost btn--sm" data-cookie-choice="essential">{t(locale, "cookieEssential")}</button>
+    <button type="button" class="btn btn--ink btn--sm" data-cookie-choice="all">{t(locale, "cookieOk")}</button>
+  </div>
 </div>
 
 <style>
   .cookie {
     position: fixed; z-index: var(--z-toast); inset-inline-start: var(--space-4); inset-block-end: var(--space-4);
-    display: flex; align-items: center; gap: var(--space-3); max-inline-size: min(30rem, calc(100vw - 2 * var(--space-4) - 4.5rem));
+    display: flex; align-items: center; gap: var(--space-3); max-inline-size: min(34rem, calc(100vw - 2 * var(--space-4) - 4.5rem));
     padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4); border-radius: var(--radius-3);
     background: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-2);
     font-size: var(--step--2); line-height: var(--leading-snug); color: var(--ink-2);
@@ -32,31 +36,41 @@ const { locale } = Astro.props;
   .cookie :global(.cookie__icon) { flex: none; color: var(--accent-ink); }
   .cookie p { margin: 0; }
   .cookie a { color: var(--ink); margin-inline-start: 0.25rem; }
-  .cookie .btn { flex: none; }
+  .cookie__actions { flex: none; display: flex; gap: var(--space-1); }
   @keyframes cookie-in { from { opacity: 0; transform: translateY(12px); } }
   @media (max-width: 520px) {
     .cookie { inset-inline-start: var(--space-3); inset-block-end: var(--space-3); max-inline-size: calc(100vw - 2 * var(--space-3) - 4.25rem); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); }
     .cookie :global(.cookie__icon) { display: none; }
+    .cookie { flex-wrap: wrap; }
+    .cookie__actions { inline-size: 100%; justify-content: flex-end; }
   }
   @media (prefers-reduced-motion: reduce) { .cookie { animation: none; } }
 </style>
 
 <script>
   const KEY = "dewee.cookies";
+  type Choice = "all" | "essential";
   const el = document.querySelector<HTMLElement>("[data-cookie]");
-  let seen = false;
-  try { seen = localStorage.getItem(KEY) === "ok"; } catch { seen = false; }
-  if (el && !seen) {
+  let saved: string | null = null;
+  try { saved = localStorage.getItem(KEY); } catch { saved = null; }
+  if (el && saved !== "all" && saved !== "essential") {
     // Only show the notice once the visitor is past the first screen, and tuck it away again
     // near the top, so it never covers the hero's call to action. Pages too short to scroll
     // show it after a short pause instead.
     const onScroll = () => { el.hidden = scrollY <= innerHeight * 0.6; };
     if (document.documentElement.scrollHeight < innerHeight * 1.6) setTimeout(() => { el.hidden = false; }, 2500);
     else addEventListener("scroll", onScroll, { passive: true });
-    el.querySelector("[data-cookie-ok]")?.addEventListener("click", () => {
-      try { localStorage.setItem(KEY, "ok"); } catch { /* still hide for this page */ }
-      removeEventListener("scroll", onScroll);
-      el.hidden = true;
-    });
+    el.querySelectorAll<HTMLButtonElement>("[data-cookie-choice]").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        const choice = btn.dataset.cookieChoice as Choice;
+        try { localStorage.setItem(KEY, choice); } catch { /* still hide for this page */ }
+        if (choice === "all") {
+          const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+          w.gtag?.("consent", "update", { analytics_storage: "granted", ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted" });
+        }
+        removeEventListener("scroll", onScroll);
+        el.hidden = true;
+      }),
+    );
   }
 </script>

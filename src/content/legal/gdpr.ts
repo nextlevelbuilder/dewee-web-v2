@@ -102,6 +102,7 @@ export const GDPR: Bi<LegalDoc> = {
               head: ["Company", "What they do for us", "Data involved", "Where"],
               rows: [
                 ["Cloudflare, Inc.", "Hosts this website, its database, the website chat and security protections", "Enquiries, chat messages, admin sessions, technical logs", "Global network"],
+                ["Google LLC", "Website analytics through Google Tag Manager, only after you accept analytics cookies", "Anonymous page views and basic device data", "United States"],
                 ["Discord Inc.", "Notifies our team about new chats and enquiries", "Your first chat message; your email and recent chat lines if you leave an email", "United States"],
                 ["TOSE.sh", "Hosts Dedicated runtimes (Dedicated customers only)", "Workspace content in the customer’s runtime", "Where the customer’s TOSE.sh runtime runs"],
               ],
@@ -128,7 +129,7 @@ export const GDPR: Bi<LegalDoc> = {
               "AI provider keys, MCP keys, tool environment variables, CLI credentials and OAuth tokens are encrypted at rest with AES-256-GCM.",
               "API keys are stored only as SHA-256 hashes.",
               "Workspaces are isolated from each other, with role-based access control, traces of agent actions and human approval for sensitive steps.",
-              "This website stores only essential data in your browser and loads no third-party trackers or fonts.",
+              "This website stores only essential data in your browser by default and loads no third-party fonts. Google Analytics cookies are set only with your consent (Article 6(1)(a)).",
             ],
           },
           "If a personal data breach occurs, we will notify the competent supervisory authority within 72 hours of becoming aware of it where the GDPR requires, and tell affected people without undue delay when the breach is likely to put their rights at high risk.",
@@ -233,6 +234,7 @@ export const GDPR: Bi<LegalDoc> = {
               head: ["Đơn vị", "Công việc", "Dữ liệu liên quan", "Nơi xử lý"],
               rows: [
                 ["Cloudflare, Inc.", "Vận hành website, cơ sở dữ liệu, khung chat và các lớp bảo vệ", "Yêu cầu tư vấn, tin nhắn chat, phiên quản trị, nhật ký kỹ thuật", "Mạng lưới toàn cầu"],
+                ["Google LLC", "Phân tích website qua Google Tag Manager, chỉ sau khi bạn đồng ý cookie phân tích", "Lượt xem trang ẩn danh và thông tin thiết bị cơ bản", "Hoa Kỳ"],
                 ["Discord Inc.", "Báo cho đội ngũ khi có cuộc chat hoặc yêu cầu mới", "Tin nhắn chat đầu tiên; email và các dòng chat gần nhất nếu bạn để lại email", "Hoa Kỳ"],
               ],
             },
@@ -258,7 +260,7 @@ export const GDPR: Bi<LegalDoc> = {
               "API key của nhà cung cấp AI, key MCP, biến môi trường của công cụ, thông tin đăng nhập CLI và OAuth token được mã hoá khi lưu trữ bằng AES-256-GCM.",
               "API key chỉ được lưu dưới dạng mã băm SHA-256.",
               "Các workspace được tách biệt, có phân quyền theo vai trò, truy vết hành động của agent và yêu cầu người phê duyệt với các bước nhạy cảm.",
-              "Website này chỉ lưu dữ liệu thiết yếu trên trình duyệt và không tải công cụ theo dõi hay phông chữ của bên thứ ba.",
+              "Mặc định, website này chỉ lưu dữ liệu thiết yếu trên trình duyệt và không tải phông chữ của bên thứ ba. Cookie Google Analytics chỉ được đặt khi bạn đồng ý (Điều 6(1)(a)).",
             ],
           },
           "Nếu xảy ra vi phạm dữ liệu cá nhân, chúng tôi sẽ thông báo cho cơ quan có thẩm quyền trong vòng 72 giờ kể từ khi phát hiện, theo yêu cầu của GDPR và pháp luật Việt Nam, và báo cho người bị ảnh hưởng không chậm trễ khi sự cố có nguy cơ cao tới quyền lợi của họ.",
