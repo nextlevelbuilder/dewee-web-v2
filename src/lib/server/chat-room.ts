@@ -3,18 +3,26 @@
  * Holds the transcript in its own SQLite storage and fans messages out between:
  *   - visitor sockets (the website widget),
  *   - agent sockets (dewee's own support agent or a human operator, via the API),
- *   - an optional webhook (CHAT_AGENT_WEBHOOK_URL) for agents that answer through REST.
- * With nobody attached it answers from the FAQ and asks for an email.
+ *   - an optional webhook (CHAT_AGENT_WEBHOOK_URL) for agents that answer through REST,
+ *   - the dewee advisor agent on the dewee runtime (DEWEE_CHAT_AGENT_*), behind a daily budget.
+ * With nobody attached, or the agent off or out of budget, it answers from the FAQ and asks for an email.
+ * Limits: 30 messages / 10 min per room, 40 turns per conversation, 60 messages / hour per visitor IP.
  * Uses the hibernation API so idle conversations cost nothing.
  */
 import { DurableObject } from "cloudflare:workers";
+import { agentConfig, HISTORY_LINES } from "./chat-agent-client";
+import { agentReply } from "./chat-agent-turn";
 import { answerFromFaq } from "./chat-faq";
-import { EMAIL_RE, notifyTeam } from "./notify";
+import { emailIn, replyAsksForEmail, wantsHuman } from "./chat-handoff";
+import { CHAT_LIMITS } from "./chat-limits";
+import { ipAllowsMessage } from "./chat-limiter";
+import { forwardToWebhook, notifyHandoff, recordChatLead, recordReply, recordVisitorMessage, systemLine, type SystemLine } from "./chat-room-records";
+import { EMAIL_RE } from "./notify";
 
 type Role = "user" | "agent" | "system";
 export type ChatMessage = { role: Role; text: string; at: number };
 
-const MAX_TEXT = 2000;
+const MAX_TEXT = CHAT_LIMITS.maxChars;
 const RATE_WINDOW_MS = 10 * 60_000;
 const RATE_MAX = 30;
 
@@ -40,6 +48,9 @@ export class ChatRoom extends DurableObject<Env> {
     if (role === "visitor") {
       this.setMeta("sid", sid);
       this.setMeta("locale", url.searchParams.get("locale") === "vi" ? "vi" : "en");
+      // Hashed visitor IP from the verified session token; absent when sessions are unsigned.
+      const ipHash = url.searchParams.get("ih");
+      if (ipHash && /^[0-9a-f]{32}$/.test(ipHash)) this.setMeta("ih", ipHash);
     }
     const { 0: client, 1: server } = new WebSocketPair();
     this.ctx.acceptWebSocket(server, [role]);
@@ -64,14 +75,19 @@ export class ChatRoom extends DurableObject<Env> {
 
     const text = frame.text.trim().slice(0, MAX_TEXT);
     if (!text) return;
-    if (this.recentUserMessages() >= RATE_MAX) {
+    if (this.count("user") >= CHAT_LIMITS.turnsPerConversation) {
+      ws.send(JSON.stringify({ type: "message", msg: this.systemMsg("turns"), askEmail: !this.getMeta("email") }));
+      return;
+    }
+    if (this.recentUserMessages() >= RATE_MAX || !(await ipAllowsMessage(this.env, this.getMeta("ih")))) {
       ws.send(JSON.stringify({ type: "message", msg: this.systemMsg("slow") }));
       return;
     }
     const msg = this.insert("user", text);
     const first = this.count("user") === 1;
     this.broadcast("agent", { type: "message", msg });
-    await this.touchSession(text, first);
+    await recordVisitorMessage(this.env, this.getMeta("sid"), this.locale(), text, first);
+    await this.handoff(ws, text);
 
     if (this.ctx.getWebSockets("agent").length) {
       ws.send(JSON.stringify({ type: "typing" }));
@@ -79,9 +95,23 @@ export class ChatRoom extends DurableObject<Env> {
     }
     if (this.env.CHAT_AGENT_WEBHOOK_URL) {
       ws.send(JSON.stringify({ type: "typing" }));
-      const ok = await this.forwardToAgent(text);
+      const ok = await forwardToWebhook(this.env.CHAT_AGENT_WEBHOOK_URL, { sid: this.getMeta("sid"), locale: this.locale(), text, history: this.history(20) });
       if (ok) return;
     }
+    if (!agentConfig(this.env)) return this.answerFromFaq(ws, text);
+    ws.send(JSON.stringify({ type: "typing" }));
+    const answer = await agentReply(this.env, this.history(HISTORY_LINES), this.locale(), this.getMeta("sid") ?? "", (textSoFar) => {
+      try { ws.send(JSON.stringify({ type: "delta", text: textSoFar })); } catch { /* visitor left */ }
+    });
+    if (answer) {
+      const reply = this.insert("agent", answer);
+      ws.send(JSON.stringify({ type: "message", msg: reply, askEmail: !this.getMeta("email") && replyAsksForEmail(answer) }));
+      return;
+    }
+    return this.answerFromFaq(ws, text);
+  }
+
+  private answerFromFaq(ws: WebSocket, text: string) {
     const answer = answerFromFaq(text, this.locale(), Boolean(this.getMeta("email")));
     const reply = this.insert("agent", answer.text);
     ws.send(JSON.stringify({ type: "message", msg: reply, askEmail: answer.askEmail }));
@@ -98,7 +128,7 @@ export class ChatRoom extends DurableObject<Env> {
     const msg = this.insert("agent", text.trim().slice(0, MAX_TEXT * 2));
     this.broadcast("visitor", { type: "message", msg });
     this.broadcast("agent", { type: "message", msg });
-    await this.env.DB.prepare("UPDATE chat_sessions SET last_at = ?1, messages = messages + 1 WHERE sid = ?2").bind(new Date().toISOString(), this.getMeta("sid")).run().catch(() => undefined);
+    await recordReply(this.env, this.getMeta("sid"));
     return msg;
   }
 
@@ -111,43 +141,22 @@ export class ChatRoom extends DurableObject<Env> {
     const clean = email.trim().toLowerCase();
     if (!EMAIL_RE.test(clean)) return;
     this.setMeta("email", clean);
-    const sid = this.getMeta("sid");
-    const now = new Date().toISOString();
-    await this.env.DB.batch([
-      this.env.DB.prepare("UPDATE chat_sessions SET email = ?1, last_at = ?2 WHERE sid = ?3").bind(clean, now, sid),
-      this.env.DB.prepare("INSERT INTO leads (kind, email, locale, source, payload, created_at) VALUES ('chat', ?1, ?2, 'chat-widget', ?3, ?4)").bind(clean, this.locale(), JSON.stringify({ sid }), now),
-    ]).catch((err) => console.error("chat email save failed", err));
-    await notifyTeam(this.env, "New chat lead", { Email: clean, Session: sid ?? undefined, Transcript: this.history(8).map((m) => `${m.role}: ${m.text}`).join("\n") });
+    await recordChatLead(this.env, this.getMeta("sid"), this.locale(), clean, this.history(8));
     ws.send(JSON.stringify({ type: "ack-email" }));
   }
 
-  private async forwardToAgent(text: string): Promise<boolean> {
-    try {
-      const res = await fetch(this.env.CHAT_AGENT_WEBHOOK_URL!, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ sid: this.getMeta("sid"), locale: this.locale(), text, history: this.history(20) }),
-        signal: AbortSignal.timeout(8000),
-      });
-      return res.ok;
-    } catch {
-      return false;
-    }
-  }
-
-  private async touchSession(text: string, first: boolean) {
-    const now = new Date().toISOString();
-    const sid = this.getMeta("sid");
-    await this.env.DB.prepare(
-      `INSERT INTO chat_sessions (sid, locale, first_message, messages, status, created_at, last_at) VALUES (?1, ?2, ?3, 1, 'open', ?4, ?4)
-       ON CONFLICT(sid) DO UPDATE SET messages = messages + 1, last_at = ?4`,
-    ).bind(sid, this.locale(), text.slice(0, 500), now).run().catch((err) => console.error("chat session upsert failed", err));
-    if (first) await notifyTeam(this.env, "New website chat", { Locale: this.locale(), Message: text, Session: sid ?? undefined });
+  /** An email typed into the chat becomes a lead; asking for a person pings the team once. */
+  private async handoff(ws: WebSocket, text: string) {
+    const email = emailIn(text);
+    if (email && !this.getMeta("email")) return this.saveEmail(ws, email);
+    if (!wantsHuman(text) || this.getMeta("handoff")) return;
+    this.setMeta("handoff", "1");
+    await notifyHandoff(this.env, this.getMeta("sid"), this.getMeta("email"), this.history(8));
   }
 
   private online(excludingClosing = false) {
     const agents = this.ctx.getWebSockets("agent").length - (excludingClosing ? 1 : 0);
-    return agents > 0 || Boolean(this.env.CHAT_AGENT_WEBHOOK_URL);
+    return agents > 0 || Boolean(this.env.CHAT_AGENT_WEBHOOK_URL) || agentConfig(this.env) !== null;
   }
 
   private insert(role: Role, text: string): ChatMessage {
@@ -169,10 +178,8 @@ export class ChatRoom extends DurableObject<Env> {
     return this.sql.exec<{ n: number }>("SELECT COUNT(*) AS n FROM messages WHERE role = 'user' AND at > ?", Date.now() - RATE_WINDOW_MS).one().n;
   }
 
-  private systemMsg(kind: "slow"): ChatMessage {
-    const vi = this.locale() === "vi";
-    const text = kind === "slow" ? (vi ? "Bạn gửi hơi nhanh, đợi vài phút rồi thử lại nhé." : "You're typing faster than we can read. Try again in a few minutes.") : "";
-    return { role: "system", text, at: Date.now() };
+  private systemMsg(kind: SystemLine): ChatMessage {
+    return { role: "system", text: systemLine(kind, this.locale()), at: Date.now() };
   }
 
   private broadcast(tag: "visitor" | "agent", payload: unknown) {

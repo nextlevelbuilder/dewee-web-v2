@@ -7,6 +7,7 @@ import { handleEdge, withSecurityHeaders } from "./lib/server/edge-routes";
 import { syncChangelog } from "./lib/server/changelog-sync";
 
 export { ChatRoom } from "./lib/server/chat-room";
+export { ChatLimiter } from "./lib/server/chat-limiter";
 
 export default {
   async fetch(request, env, ctx) {
