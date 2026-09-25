@@ -70,7 +70,7 @@ Trang chi tiết chỉ cho xem và đã được che dữ liệu nhạy cảm tr
 - **Runtime is not reachable**: chờ một lúc rồi tải lại trang, sau đó kiểm tra **Sức khoẻ runtime**.
 
 > [!NOTE]
-> Workspace On-Premises, hình thức được cung cấp tại Việt Nam, không có mục thanh toán hay hoàn tiền. Trên workspace SaaS, việc hoàn tiền sẽ tắt chat, API key và thiết lập provider; xem [Hỗ trợ và thanh toán](/docs/console/support-and-billing).
+> Workspace On-Premises, hình thức được cung cấp tại Việt Nam, không có mục thanh toán hay hoàn tiền. Trên workspace AaaS, việc hoàn tiền sẽ tắt chat, API key và thiết lập provider; xem [Hỗ trợ và thanh toán](/docs/console/support-and-billing).
 
 ## Liên quan
 

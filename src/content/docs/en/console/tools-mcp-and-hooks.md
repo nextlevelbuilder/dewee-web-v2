@@ -73,7 +73,7 @@ The **History** tab shows past runs, with secret-looking values redacted. Global
 
 ## Runtime packages
 
-**Runtime packages** shows the package policy for your deployment mode. On SaaS, packages are curated by the operator for all workspaces, so you request new ones through support. On Dedicated and On-Premises, your runtime is isolated, so packages can be installed into it directly while the licence is active, or requested for the operator to review. The **CLI Credentials** tab pairs a developer terminal with the workspace runtime; you approve the pairing in the pairing inbox.
+**Runtime packages** shows the package policy for your deployment mode. On AaaS, packages are curated by the operator for all workspaces, so you request new ones through support. On Dedicated and On-Premises, your runtime is isolated, so packages can be installed into it directly while the licence is active, or requested for the operator to review. The **CLI Credentials** tab pairs a developer terminal with the workspace runtime; you approve the pairing in the pairing inbox.
 
 ## Voice (TTS & STT)
 

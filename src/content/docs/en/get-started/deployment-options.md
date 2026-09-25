@@ -1,6 +1,6 @@
 ---
 title: Choose a deployment
-description: Compare the three ways to run dewee (SaaS on our shared cloud, a dedicated runtime on TOSE, or On-Premises on your hardware) with prices and trade-offs.
+description: Compare the three ways to run dewee (AaaS on our shared cloud, a dedicated runtime on TOSE, or On-Premises on your hardware) with prices and trade-offs.
 section: get-started
 order: 3
 updated: 2026-09-25
@@ -10,7 +10,7 @@ dewee is the same product in every deployment: the same console, the same agents
 
 ## At a glance
 
-| | SaaS | Dedicated on TOSE | On-Premises |
+| | AaaS | Dedicated on TOSE | On-Premises |
 |---|---|---|---|
 | **Runtime runs on** | Our shared cloud | Your own isolated runtime on TOSE.sh | Your VPS, server or Mac mini |
 | **Price** | $500 per year | $500 per year licence + $99 TOSE credit deposit | From $5K, quoted per project, includes the $500/year licence |
@@ -22,7 +22,7 @@ dewee is the same product in every deployment: the same console, the same agents
 
 Prices are also on the [pricing page](/pricing). In Vietnam, dewee is offered as On-Premises only.
 
-## SaaS
+## AaaS (AI as a Service)
 
 Your workspace runs on a hosted, multi-tenant runtime that we operate. Tenant isolation keeps your agents, sessions and memory apart from other customers (see [Multi-tenant isolation](/docs/concepts/multi-tenancy)).
 
@@ -30,16 +30,16 @@ Your workspace runs on a hosted, multi-tenant runtime that we operate. Tenant is
 - **Billing:** one annual plan at $500 per year. There is no free trial; instead, the workspace owner can ask for a full refund within 14 days. A refund immediately turns off chat, API keys and provider setup for that workspace.
 - **Trade-offs:** the infrastructure is shared, and you cannot install your own runtime packages or CLIs; the runtime offers a curated set.
 
-Choose SaaS when you want agents running today and do not need custom packages or control over where the runtime lives.
+Choose AaaS when you want agents running today and do not need custom packages or control over where the runtime lives.
 
 ## Dedicated on TOSE
 
 Each workspace gets its own Docker runtime on [TOSE.sh](https://tose.sh), isolated from other customers, managed from the same console.
 
-- **What you get:** everything in SaaS, plus a runtime that is yours alone, starting at 1 vCPU and 2 GB of memory, where you can install the packages and command-line tools your agents need.
+- **What you get:** everything in AaaS, plus a runtime that is yours alone, starting at 1 vCPU and 2 GB of memory, where you can install the packages and command-line tools your agents need.
 - **Billing:** the $500 per year licence, plus a $99 TOSE credit deposit that pays for hosting. Top up TOSE credits as usage grows.
 - **Licence key:** the runtime activates with a licence key bound in the console. See [Licence activation](/docs/runtime/licence).
-- **Trade-offs:** a higher running cost than SaaS, and a little more to learn about the runtime.
+- **Trade-offs:** a higher running cost than AaaS, and a little more to learn about the runtime.
 
 Choose Dedicated when you need isolation or custom tooling but do not want to run servers yourself.
 
@@ -61,8 +61,8 @@ Choose On-Premises when data must not leave your network, when you want agents t
 
 - **Where must the data live?** If the answer is "inside our network", only On-Premises fits.
 - **Do agents need your own tools?** Custom CLIs, language runtimes or system packages need Dedicated or On-Premises.
-- **Who will operate the runtime?** SaaS and Dedicated leave hosting to us and TOSE; On-Premises puts the hardware in your hands.
-- **How soon do you need it?** SaaS starts the same day; On-Premises is a short project.
+- **Who will operate the runtime?** AaaS and Dedicated leave hosting to us and TOSE; On-Premises puts the hardware in your hands.
+- **How soon do you need it?** AaaS starts the same day; On-Premises is a short project.
 
 Not sure yet? [Talk to us](/contact) and describe your constraints; we will suggest a fit.
 

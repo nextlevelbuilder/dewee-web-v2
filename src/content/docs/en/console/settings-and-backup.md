@@ -44,7 +44,7 @@ Each setting shows whether it uses the **Runtime default** or is **Overridden** 
 
 Pairing messages can include placeholders. The request message supports `{{senderId}}`, `{{pairingCode}}` and `{{channel}}`; the approval message supports `{{botName}}`, `{{senderId}}` and `{{channel}}`.
 
-**General** shows the workspace ID, the edition (hosted SaaS or self-hosted), the runtime tenant with a **Copy reference** button, and the onboarding status. Set the **Default time zone** here and select **Save time zone**. New schedules, and members without their own preference, use this zone; leave it blank to use each viewer's browser zone.
+**General** shows the workspace ID, the edition (hosted AaaS or self-hosted), the runtime tenant with a **Copy reference** button, and the onboarding status. Set the **Default time zone** here and select **Save time zone**. New schedules, and members without their own preference, use this zone; leave it blank to use each viewer's browser zone.
 
 **Access** shows your role and how many members the workspace has, and **Related** links to Members, Roles, API keys and Billing.
 
@@ -52,7 +52,7 @@ Pairing messages can include placeholders. The request message supports `{{sende
 
 **Backup** starts with a summary: deployment mode, backup policy, runtime tenant and whether a self-service export endpoint is set up. How backups work depends on the mode:
 
-- **Shared SaaS**: backups are operator-managed. Exports go through support so the operator can confirm the request belongs to your workspace.
+- **Shared AaaS**: backups are operator-managed. Exports go through support so the operator can confirm the request belongs to your workspace.
 - **Dedicated** and **On-Premises**: backups are self-serve. **Export backup** works once your operator has configured the export endpoint; until then, request the export through support.
 
 ::shot{id="backup"}
@@ -72,7 +72,7 @@ To get your data back:
 
 ## Owner pages on Dedicated and On-Premises
 
-On these deployments the workspace owns its runtime, so the owner gets four more pages. On Shared SaaS they show **Not available in this deployment**, because the platform operator runs the runtime; ask support for changes there. Each page also waits until onboarding is finished.
+On these deployments the workspace owns its runtime, so the owner gets four more pages. On Shared AaaS they show **Not available in this deployment**, because the platform operator runs the runtime; ask support for changes there. Each page also waits until onboarding is finished.
 
 - **License binding**: enter the annual license key from your order and select **Bind license to this workspace**. The key is used once and never shown again. Binding claims your entitlement but does not use up an activation slot; each runtime machine still activates separately. On a self-hosted install, bind the key in the hosted customer portal instead.
 - **System Configuration**: deployment-wide runtime settings, with credential values masked.

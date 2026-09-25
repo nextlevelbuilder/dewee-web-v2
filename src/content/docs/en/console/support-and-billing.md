@@ -1,20 +1,20 @@
 ---
 title: Support and billing
-description: Open support tickets, request runtime packages and reach your operator, then manage the Annual plan, invoices and refunds on a dewee SaaS workspace.
+description: Open support tickets, request runtime packages and reach your operator, then manage the Annual plan, invoices and refunds on a dewee AaaS workspace.
 section: console
 order: 14
 screens: [support, billing]
 updated: 2026-09-25
 ---
 
-**Support** is where you ask for help with your workspace: open a ticket, request a runtime package, or find out how to reach your operator. **Billing** is where a SaaS workspace manages its subscription, invoices and refunds. On Dedicated and On-Premises, access comes from your annual licence instead, so there is no plan to buy here.
+**Support** is where you ask for help with your workspace: open a ticket, request a runtime package, or find out how to reach your operator. **Billing** is where a AaaS workspace manages its subscription, invoices and refunds. On Dedicated and On-Premises, access comes from your annual licence instead, so there is no plan to buy here.
 
 ## Who can use it
 
 | Area | Who |
 |---|---|
 | Support, tickets and package requests | `packages.request` |
-| Billing: subscribe, invoices, billing portal | `billing.manage`, on SaaS only |
+| Billing: subscribe, invoices, billing portal | `billing.manage`, on AaaS only |
 | Refund | Workspace owner only, even if a custom role grants `billing.manage` |
 
 See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
@@ -47,7 +47,7 @@ If the ticket center is not set up for your deployment, the panel says so. Use a
 4. Explain the **Reason** in at least 10 characters, and add **Security notes** if the reviewer should know something.
 5. Select **Submit request**. The operator reviews it.
 
-The page also says whether runtime package installs are enabled for your workspace, and lists the **Current curated profile**. On SaaS, packages come from a profile the operator curates, so a request is how you get a new one. See [Built-in tools, MCP servers and hooks](/docs/console/tools-mcp-and-hooks).
+The page also says whether runtime package installs are enabled for your workspace, and lists the **Current curated profile**. On AaaS, packages come from a profile the operator curates, so a request is how you get a new one. See [Built-in tools, MCP servers and hooks](/docs/console/tools-mcp-and-hooks).
 
 ### Contact your operator
 
@@ -55,12 +55,12 @@ For urgent issues, billing questions or anything outside self-service, contact y
 
 ## Billing
 
-Billing appears on dewee SaaS, where a workspace is either on the free plan or the single **Annual** plan, billed at $500 a year. There is no free trial, and a 14-day refund window applies.
+Billing appears on dewee AaaS, where a workspace is either on the free plan or the single **Annual** plan, billed at $500 a year. There is no free trial, and a 14-day refund window applies.
 
 ::shot{id="billing"}
 
 > [!NOTE]
-> The plan names, prices, usage bars and payment card in this screenshot are sample data. dewee SaaS has one Annual plan; see [Pricing](/pricing) for current prices.
+> The plan names, prices, usage bars and payment card in this screenshot are sample data. dewee AaaS has one Annual plan; see [Pricing](/pricing) for current prices.
 
 The current plan panel shows **Plan**, **Status**, **Renewal** and **Billing owner**.
 

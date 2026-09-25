@@ -43,7 +43,7 @@ The callback value is never shown in the timeline, the table or audit metadata. 
 
 ### Providers that need host setup
 
-Claude CLI, Ollama and ACP cannot be connected by pasting a key, because something must already exist on the runtime host: the Claude CLI, a running Ollama instance or an ACP proxy endpoint. On Dedicated and On-Premises, the catalog lists the host steps an operator performs first. On SaaS these providers are not available, because workspaces share a runtime host.
+Claude CLI, Ollama and ACP cannot be connected by pasting a key, because something must already exist on the runtime host: the Claude CLI, a running Ollama instance or an ACP proxy endpoint. On Dedicated and On-Premises, the catalog lists the host steps an operator performs first. On AaaS these providers are not available, because workspaces share a runtime host.
 
 ## Change a provider
 
@@ -62,7 +62,7 @@ Select **Delete** in the provider's detail. The confirmation tells you how many 
 > [!WARNING]
 > Before you delete a provider, move the agents that use it to another provider. Otherwise they are left without the model they were set up with.
 
-On SaaS, a refunded subscription also turns off provider setup for the workspace; see [Support and billing](/docs/console/support-and-billing).
+On AaaS, a refunded subscription also turns off provider setup for the workspace; see [Support and billing](/docs/console/support-and-billing).
 
 ## Related
 

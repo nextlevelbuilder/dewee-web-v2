@@ -1,7 +1,7 @@
 /**
  * /gdpr: rights under the GDPR and how to use them. `#rights`, `#dpa` and `#sub-processors` are
  * linked from the Privacy Policy and the Terms. The sub-processor list reflects what this codebase
- * and the plans actually use; the SaaS runtime host and TOSE.sh's processor role are open
+ * and the plans actually use; the AaaS runtime host and TOSE.sh's processor role are open
  * questions (see report). The VI version is On-Premises only and also points to Vietnamese
  * personal-data law, without citing article numbers.
  */
@@ -41,7 +41,7 @@ export const GDPR: Bi<LegalDoc> = {
           {
             defs: [
               ["We are the controller", "for enquiries, website chat, customer and billing records, and licence check-ins. NextLevelBuilder decides why and how this data is processed."],
-              ["We are a processor", "for the workspace content of customers on our shared SaaS cloud. We process it only on the customer’s instructions, to run dewee for them."],
+              ["We are a processor", "for the workspace content of customers on our shared AaaS cloud. We process it only on the customer’s instructions, to run dewee for them."],
               ["Your organisation is the controller", "of its workspace content on every plan. In a Dedicated runtime that content lives in the customer’s own runtime on TOSE.sh. With On-Premises it stays on the customer’s machines and we only see it if they give us access for setup or maintenance."],
             ],
           },

@@ -1,20 +1,20 @@
 ---
 title: Hỗ trợ và thanh toán
-description: Mở ticket hỗ trợ, yêu cầu cài runtime package và liên hệ người vận hành; hiểu trang Thanh toán trên SaaS và cách gắn license khi chạy On-Premises tại Việt Nam.
+description: Mở ticket hỗ trợ, yêu cầu cài runtime package và liên hệ người vận hành; hiểu trang Thanh toán trên AaaS và cách gắn license khi chạy On-Premises tại Việt Nam.
 section: console
 order: 14
 screens: [support, billing]
 updated: 2026-09-25
 ---
 
-**Hỗ trợ** là nơi bạn nhờ trợ giúp cho workspace của mình: mở ticket, yêu cầu cài một runtime package, hoặc tìm cách liên hệ người vận hành. **Thanh toán** là nơi workspace SaaS quản lý gói đăng ký, hoá đơn và hoàn tiền. Tại Việt Nam, dewee chỉ được triển khai On-Premises: quyền sử dụng đến từ license thường niên mà bạn gắn vào workspace, nên bạn không mua gói nào trên trang này.
+**Hỗ trợ** là nơi bạn nhờ trợ giúp cho workspace của mình: mở ticket, yêu cầu cài một runtime package, hoặc tìm cách liên hệ người vận hành. **Thanh toán** là nơi workspace AaaS quản lý gói đăng ký, hoá đơn và hoàn tiền. Tại Việt Nam, dewee chỉ được triển khai On-Premises: quyền sử dụng đến từ license thường niên mà bạn gắn vào workspace, nên bạn không mua gói nào trên trang này.
 
 ## Ai được dùng
 
 | Khu vực | Ai được dùng |
 |---|---|
 | Hỗ trợ, ticket và yêu cầu package | `packages.request` |
-| Thanh toán: đăng ký gói, hoá đơn, cổng thanh toán | `billing.manage`, chỉ trên SaaS |
+| Thanh toán: đăng ký gói, hoá đơn, cổng thanh toán | `billing.manage`, chỉ trên AaaS |
 | Hoàn tiền | Chỉ chủ workspace, kể cả khi một vai trò tuỳ chỉnh đã cấp `billing.manage` |
 
 Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
@@ -47,7 +47,7 @@ Nếu hình thức triển khai của bạn chưa thiết lập ticket center, p
 4. Giải thích **Reason** trong ít nhất 10 ký tự, và thêm **Security notes** nếu người duyệt cần biết điều gì.
 5. Chọn **Submit request**. Người vận hành sẽ xem xét yêu cầu.
 
-Trang cũng cho biết workspace của bạn đã được phép tự cài runtime package hay chưa, và liệt kê **Current curated profile**. Trên SaaS, package lấy từ một bộ do người vận hành tuyển chọn, nên gửi yêu cầu là cách để có package mới. Xem [Tool tích hợp, MCP server và hook](/docs/console/tools-mcp-and-hooks).
+Trang cũng cho biết workspace của bạn đã được phép tự cài runtime package hay chưa, và liệt kê **Current curated profile**. Trên AaaS, package lấy từ một bộ do người vận hành tuyển chọn, nên gửi yêu cầu là cách để có package mới. Xem [Tool tích hợp, MCP server và hook](/docs/console/tools-mcp-and-hooks).
 
 ### Liên hệ người vận hành
 
@@ -55,12 +55,12 @@ Với sự cố khẩn cấp, câu hỏi về thanh toán hay những việc n�
 
 ## Thanh toán
 
-Trang **Thanh toán** chỉ xuất hiện trên bản dewee SaaS. Bản SaaS không được cung cấp tại Việt Nam, nên với workspace On-Premises bạn sẽ không thấy trang này trên menu. Trên SaaS, một workspace dùng gói miễn phí hoặc gói **Annual** duy nhất, không có dùng thử miễn phí và có thời hạn hoàn tiền 14 ngày.
+Trang **Thanh toán** chỉ xuất hiện trên bản dewee AaaS. Bản AaaS không được cung cấp tại Việt Nam, nên với workspace On-Premises bạn sẽ không thấy trang này trên menu. Trên AaaS, một workspace dùng gói miễn phí hoặc gói **Annual** duy nhất, không có dùng thử miễn phí và có thời hạn hoàn tiền 14 ngày.
 
 ::shot{id="billing"}
 
 > [!NOTE]
-> Tên gói, giá, thanh mức sử dụng và thẻ thanh toán trong ảnh chụp là dữ liệu mẫu. Bản SaaS chỉ có một gói Annual; xem [Bảng giá](/pricing) để biết các lựa chọn hiện có.
+> Tên gói, giá, thanh mức sử dụng và thẻ thanh toán trong ảnh chụp là dữ liệu mẫu. Bản AaaS chỉ có một gói Annual; xem [Bảng giá](/pricing) để biết các lựa chọn hiện có.
 
 Phần gói hiện tại hiển thị **Plan**, **Status**, **Renewal** và **Billing owner**.
 
@@ -95,7 +95,7 @@ Mỗi người chỉ được hoàn tiền tự phục vụ một lần. Khi đ�
 
 ### Dedicated và On-Premises
 
-Workspace chạy trên hạ tầng do bạn quản lý dùng license thay cho gói đăng ký. Nếu trang Thanh toán hiện ra, gói sẽ là **Self-hosted**, kèm lời nhắc rằng việc thanh toán đi qua license của bạn chứ không qua trang này. Tại Việt Nam, mọi workspace đều theo cách này. Chủ workspace gắn license key thường niên ở trang **License binding**; trên SaaS, nút **Open activation** trong phần **Dedicated runtime** cũng dẫn tới trang đó. Xem [Cài đặt và sao lưu](/docs/console/settings-and-backup).
+Workspace chạy trên hạ tầng do bạn quản lý dùng license thay cho gói đăng ký. Nếu trang Thanh toán hiện ra, gói sẽ là **Self-hosted**, kèm lời nhắc rằng việc thanh toán đi qua license của bạn chứ không qua trang này. Tại Việt Nam, mọi workspace đều theo cách này. Chủ workspace gắn license key thường niên ở trang **License binding**; trên AaaS, nút **Open activation** trong phần **Dedicated runtime** cũng dẫn tới trang đó. Xem [Cài đặt và sao lưu](/docs/console/settings-and-backup).
 
 ## Liên quan
 

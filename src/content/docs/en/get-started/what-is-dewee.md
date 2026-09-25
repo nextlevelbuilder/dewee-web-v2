@@ -45,7 +45,7 @@ The runtime can live on our shared cloud, on a dedicated runtime on TOSE, or on 
 ## Where to go next
 
 1. [How dewee works](/docs/get-started/how-it-works): the path of one message through the system.
-2. [Choose a deployment](/docs/get-started/deployment-options): SaaS, Dedicated on TOSE or On-Premises.
+2. [Choose a deployment](/docs/get-started/deployment-options): AaaS, Dedicated on TOSE or On-Premises.
 3. [Quickstart](/docs/get-started/quickstart): from sign-in to your first agent reply.
 
 Prefer a product overview first? The [features page](/features) and the [security page](/security) summarise the same ground for a wider audience.

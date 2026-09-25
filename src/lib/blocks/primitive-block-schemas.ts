@@ -79,7 +79,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
     render: "section",
     description: "Two or three columns of Markdown, each with an optional title.",
     schema: columns,
-    example: { columns: [{ title: "SaaS", markdown: "Ready the same day." }, { title: "On-Premises", markdown: "Runs on your hardware." }] },
+    example: { columns: [{ title: "AaaS", markdown: "Ready the same day." }, { title: "On-Premises", markdown: "Runs on your hardware." }] },
   },
   {
     type: "Divider",

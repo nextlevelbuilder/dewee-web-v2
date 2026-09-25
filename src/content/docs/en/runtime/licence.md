@@ -6,7 +6,7 @@ order: 3
 updated: 2026-09-25
 ---
 
-Dedicated and On-Premises runtimes carry an annual licence key; SaaS workspaces do not, because the subscription covers them. The key ties a runtime you operate to the workspace and order it belongs to. It is an entitlement record, not a security boundary: your data stays protected by the gateway token, API keys and roles described in [Security overview](/docs/security/overview).
+Dedicated and On-Premises runtimes carry an annual licence key; AaaS workspaces do not, because the subscription covers them. The key ties a runtime you operate to the workspace and order it belongs to. It is an entitlement record, not a security boundary: your data stays protected by the gateway token, API keys and roles described in [Security overview](/docs/security/overview).
 
 Licence enforcement is opt-in on the runtime and off by default. It is switched on for licensed deployments with `DEWEE_LICENSE_REQUIRED=1`.
 

@@ -1,6 +1,6 @@
 /**
  * /pricing copy. Prices and per-plan facts live in src/content/plans.ts; this file holds the
- * page's words around them. The VI locale is On-Premises only and never names SaaS or TOSE.
+ * page's words around them. The VI locale is On-Premises only and never names AaaS or TOSE.
  * Sources: the founders' deployment diagram, dewee docs/commercial-runtime-control-plane.md,
  * docs/runbooks/license-activation-and-revocation.md (heartbeat: activation id + runtime token,
  * every 5 minutes, never the raw key) and cmd/root.go (`--server`, `--token` flags).
@@ -34,8 +34,8 @@ export type PricingPage = {
 export const PRICING: Bi<PricingPage> = {
   en: {
     meta: {
-      title: "Pricing: SaaS, Dedicated on TOSE and On-Premises",
-      description: "dewee pricing in plain numbers: SaaS at $500 a year, a dedicated runtime on TOSE.sh, or On-Premises from $5K. Compare isolation, setup and data location.",
+      title: "Pricing: AaaS, Dedicated on TOSE and On-Premises",
+      description: "dewee pricing, plainly: AaaS (AI as a Service) at $500 a year, a dedicated runtime on TOSE.sh, or On-Premises from $5K. Compare isolation, setup and data.",
       crumb: "Pricing",
     },
     hero: {
@@ -98,7 +98,7 @@ export const PRICING: Bi<PricingPage> = {
       title: "If it is not right, *say so*.",
       lede: "The short version of our refund policy. The full text has the details.",
       items: [
-        { label: "SaaS", text: "Full refund within 14 days of purchase. No questions asked." },
+        { label: "AaaS", text: "Full refund within 14 days of purchase. No questions asked." },
         { label: "Dedicated on TOSE", text: "The $99 deposit becomes TOSE credit for your runtime. What can be refunded depends on what has been provisioned and used; see your order form." },
         { label: "On-Premises", text: "Set out in your quote and contract before any work starts." },
       ],
@@ -108,11 +108,11 @@ export const PRICING: Bi<PricingPage> = {
       eyebrow: "Money questions",
       title: "Asked before *every* purchase.",
       items: [
-        { q: "Is there a free trial?", a: "No. Instead, SaaS comes with a 14-day refund: if dewee is not right for your team, email us within 14 days of purchase and we refund you in full, no questions asked." },
+        { q: "Is there a free trial?", a: "No. Instead, AaaS comes with a 14-day refund: if dewee is not right for your team, email us within 14 days of purchase and we refund you in full, no questions asked." },
         { q: "Do the prices include AI model costs?", a: "No. You bring your own keys for Anthropic, OpenAI, Gemini or any of the 20+ supported providers and pay them directly, so there is no markup on your tokens." },
         { q: "What is the $99 TOSE deposit for?", a: "It is your first TOSE.sh credit. We collect it with your licence and pass it on to TOSE, where it pays for the servers your dedicated runtime runs on. When it runs low, TOSE emails you and you top up directly with them." },
         { q: "What does the On-Premises price include?", a: "Installing dewee on your VPS or Mac mini, 5 custom workflows built with your team, the $500 licence for the first year, and a year of maintenance and updates. Prices start at $5K; your quote depends on the work involved." },
-        { q: "Do we need a licence key?", a: "Only for Dedicated and On-Premises. The key activates your runtime, which then checks in with our licence server every 5 minutes using an activation ID and a runtime token, never the raw key. SaaS needs no key." },
+        { q: "Do we need a licence key?", a: "Only for Dedicated and On-Premises. The key activates your runtime, which then checks in with our licence server every 5 minutes using an activation ID and a runtime token, never the raw key. AaaS needs no key." },
         { q: "What happens after the first year?", a: "Licences are annual, at $500 a year. For On-Premises, maintenance after the first year is agreed in your contract." },
         { q: "Why is Vietnam On-Premises only?", a: "Because we want company data in Vietnam to stay inside the company. There, dewee runs on your own VPS or Mac mini, and we do the setup with you." },
       ],

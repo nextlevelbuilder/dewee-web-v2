@@ -31,7 +31,7 @@ export const PRIVACY: Bi<LegalDoc> = {
         short: "NextLevelBuilder, the team behind dewee, is responsible for the data on this website. Inside your own workspace, your organisation is in charge of its data.",
         body: [
           "NextLevelBuilder (“we”, “us”) is the controller of the personal data we collect through dewee.sh, the website chat, our sales conversations and our customer relationship with you. You can reach us about privacy at " + mail + ".",
-          "When your organisation uses dewee, it decides what data goes into its workspace. For that content your organisation is the controller, and, on our shared SaaS cloud, we process it on its behalf. In a Dedicated runtime the data lives in your own runtime on TOSE.sh. With On-Premises it stays on your own machines and we do not receive it.",
+          "When your organisation uses dewee, it decides what data goes into its workspace. For that content your organisation is the controller, and, on our shared AaaS cloud, we process it on its behalf. In a Dedicated runtime the data lives in your own runtime on TOSE.sh. With On-Premises it stays on your own machines and we do not receive it.",
         ],
       },
       {
@@ -87,7 +87,7 @@ export const PRIVACY: Bi<LegalDoc> = {
               ["Discord", "When you start a chat, our team receives your first message in a private Discord channel. If you leave your email, we also receive it with the latest lines of the conversation."],
               ["dewee support agent", "Your chat messages, with the recent conversation, may be passed to dewee’s own support agent or to a person on our team so they can reply."],
               ["Your AI providers", "When your agents call a model, your content goes to the provider you configured, with your own API key."],
-              ["Your runtime", "SaaS runtimes run on shared servers we operate. Dedicated runtimes run on TOSE.sh. On-Premises runtimes run on your own machines."],
+              ["Your runtime", "AaaS runtimes run on shared servers we operate. Dedicated runtimes run on TOSE.sh. On-Premises runtimes run on your own machines."],
             ],
           },
           "The full list of the companies that process personal data for us is on our [GDPR page](/gdpr#sub-processors).",

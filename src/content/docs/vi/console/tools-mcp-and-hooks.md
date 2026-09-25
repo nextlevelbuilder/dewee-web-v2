@@ -73,7 +73,7 @@ Tab **History** hiển thị các lần chạy trước, với những giá tr�
 
 ## Gói runtime
 
-**Gói runtime** hiển thị chính sách cài gói theo hình thức triển khai của bạn. Trên SaaS, người vận hành chọn lọc gói chung cho mọi workspace, nên bạn yêu cầu gói mới qua bộ phận hỗ trợ. Trên Dedicated và On-Premises, runtime của bạn tách biệt, nên có thể cài gói trực tiếp khi license còn hiệu lực, hoặc gửi yêu cầu để người vận hành xem xét. Tab **CLI Credentials** ghép cặp terminal của lập trình viên với runtime của workspace; bạn duyệt yêu cầu ghép cặp trong hộp ghép cặp.
+**Gói runtime** hiển thị chính sách cài gói theo hình thức triển khai của bạn. Trên AaaS, người vận hành chọn lọc gói chung cho mọi workspace, nên bạn yêu cầu gói mới qua bộ phận hỗ trợ. Trên Dedicated và On-Premises, runtime của bạn tách biệt, nên có thể cài gói trực tiếp khi license còn hiệu lực, hoặc gửi yêu cầu để người vận hành xem xét. Tab **CLI Credentials** ghép cặp terminal của lập trình viên với runtime của workspace; bạn duyệt yêu cầu ghép cặp trong hộp ghép cặp.
 
 ## Giọng nói (TTS & STT)
 

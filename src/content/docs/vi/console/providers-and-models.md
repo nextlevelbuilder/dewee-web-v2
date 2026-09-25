@@ -43,7 +43,7 @@ Giá trị callback không bao giờ xuất hiện trong dòng thời gian, bả
 
 ### Provider cần thiết lập trên máy chủ
 
-Claude CLI, Ollama và ACP không kết nối được bằng cách dán key, vì cần có sẵn một thành phần trên máy chủ runtime: Claude CLI, một Ollama đang chạy hoặc một endpoint ACP proxy. Trên Dedicated và On-Premises, catalog liệt kê các bước mà người vận hành cần làm trên máy chủ trước. Trên SaaS, các provider này không khả dụng vì các workspace dùng chung máy chủ runtime.
+Claude CLI, Ollama và ACP không kết nối được bằng cách dán key, vì cần có sẵn một thành phần trên máy chủ runtime: Claude CLI, một Ollama đang chạy hoặc một endpoint ACP proxy. Trên Dedicated và On-Premises, catalog liệt kê các bước mà người vận hành cần làm trên máy chủ trước. Trên AaaS, các provider này không khả dụng vì các workspace dùng chung máy chủ runtime.
 
 ## Thay đổi provider
 
@@ -62,7 +62,7 @@ Chọn **Delete** trong trang chi tiết của provider. Hộp xác nhận cho b
 > [!WARNING]
 > Trước khi xoá một provider, hãy chuyển các agent đang dùng nó sang provider khác. Nếu không, các agent đó sẽ mất model mà chúng được thiết lập để dùng.
 
-Trên SaaS, việc hoàn tiền gói đăng ký cũng tắt phần thiết lập provider của workspace; xem [Hỗ trợ và thanh toán](/docs/console/support-and-billing).
+Trên AaaS, việc hoàn tiền gói đăng ký cũng tắt phần thiết lập provider của workspace; xem [Hỗ trợ và thanh toán](/docs/console/support-and-billing).
 
 ## Liên quan
 

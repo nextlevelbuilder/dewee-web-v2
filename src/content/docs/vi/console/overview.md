@@ -40,12 +40,12 @@ Mỗi khu vực được bảo vệ bằng một khoá quyền, ví dụ `agents
 
 ## Những gì phụ thuộc vào hình thức triển khai
 
-dewee có ba hình thức triển khai: SaaS, Dedicated và On-Premises (xem [Các hình thức triển khai](/docs/get-started/deployment-options)). Tại Việt Nam, dewee chỉ được cung cấp dưới hình thức On-Premises. Console giống nhau ở cả ba hình thức, chỉ khác ở các điểm sau:
+dewee có ba hình thức triển khai: AaaS, Dedicated và On-Premises (xem [Các hình thức triển khai](/docs/get-started/deployment-options)). Tại Việt Nam, dewee chỉ được cung cấp dưới hình thức On-Premises. Console giống nhau ở cả ba hình thức, chỉ khác ở các điểm sau:
 
-- **Thanh toán** chỉ xuất hiện ở workspace SaaS, nên bạn sẽ không thấy mục này trên workspace On-Premises.
+- **Thanh toán** chỉ xuất hiện ở workspace AaaS, nên bạn sẽ không thấy mục này trên workspace On-Premises.
 - **Cấu hình hệ thống**, **Workstation** và **Nhập / Xuất** chỉ có trên Dedicated và On-Premises, và chỉ chủ workspace mới dùng được.
 - **Gắn license** cũng chỉ có trên Dedicated và On-Premises, chỉ dành cho chủ workspace, và không nằm trên thanh menu; xem [Kích hoạt license](/docs/runtime/licence).
-- **Sao lưu** do đội vận hành quản lý trên SaaS, còn trên Dedicated và On-Premises thì bạn tự thực hiện.
+- **Sao lưu** do đội vận hành quản lý trên AaaS, còn trên Dedicated và On-Premises thì bạn tự thực hiện.
 
 ## Trạng thái runtime
 

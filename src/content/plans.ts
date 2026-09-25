@@ -27,10 +27,10 @@ export const PLANS: Plan[] = [
   {
     id: "saas",
     icon: "cloud",
-    name: { en: "SaaS", vi: "SaaS" },
+    name: { en: "AaaS", vi: "AaaS" },
     price: { en: "$500", vi: "$500" },
     period: { en: "per year · about $42 a month", vi: "mỗi năm" },
-    tagline: { en: "Start today on our shared cloud.", vi: "Bắt đầu ngay trên cloud dùng chung." },
+    tagline: { en: "AI as a Service: start today on our shared cloud.", vi: "Bắt đầu ngay trên cloud dùng chung." },
     includes: {
       en: ["Hosted runtime gateway", "Customer control plane at app.dewee.sh", "Agent, channel and skill templates", "Role-based access for your team", "14-day refund, no questions asked"],
       vi: ["Runtime gateway được vận hành sẵn", "Bảng điều khiển tại app.dewee.sh", "Mẫu agent, kênh và skill", "Phân quyền theo vai trò", "Hoàn tiền trong 14 ngày"],
@@ -39,7 +39,7 @@ export const PLANS: Plan[] = [
       en: ["Shared infrastructure, so a small chance of data exposure", "No custom runtime packages"],
       vi: ["Hạ tầng dùng chung, vẫn có một rủi ro nhỏ lộ dữ liệu", "Không cài thêm package cho runtime"],
     },
-    cta: { en: "Start with SaaS", vi: "Bắt đầu với SaaS" },
+    cta: { en: "Start with AaaS", vi: "Bắt đầu với AaaS" },
     vietnam: false,
     priceUsd: 500,
   },
@@ -55,8 +55,8 @@ export const PLANS: Plan[] = [
       vi: ["Runtime tách biệt trên TOSE.sh (từ 1 vCPU / 2 GB)", "Tự cài package và CLI cần thiết", "Cùng bảng điều khiển và mẫu", "Kích hoạt bằng license key", "Nạp thêm credit TOSE khi mở rộng"],
     },
     tradeoffs: {
-      en: ["Higher running cost than SaaS", "You look after your packages and credits", "Longer setup and a little more to learn"],
-      vi: ["Chi phí vận hành cao hơn SaaS", "Bạn tự quản lý package và credit", "Triển khai lâu hơn, cần làm quen thêm"],
+      en: ["Higher running cost than AaaS", "You look after your packages and credits", "Longer setup and a little more to learn"],
+      vi: ["Chi phí vận hành cao hơn AaaS", "Bạn tự quản lý package và credit", "Triển khai lâu hơn, cần làm quen thêm"],
     },
     cta: { en: "Set up a dedicated runtime", vi: "Tạo runtime riêng" },
     highlight: true,

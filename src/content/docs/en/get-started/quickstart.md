@@ -25,7 +25,7 @@ Open `app.dewee.sh` and choose **Continue with GitHub**, **Continue with Google*
 
 ### 2. Wait for the runtime
 
-A new workspace first gets its runtime. On SaaS this happens automatically. On Dedicated and On-Premises, the runtime connects once its licence key is bound (see [Licence activation](/docs/runtime/licence)). The status pill at the top of the console shows when the runtime is online.
+A new workspace first gets its runtime. On AaaS this happens automatically. On Dedicated and On-Premises, the runtime connects once its licence key is bound (see [Licence activation](/docs/runtime/licence)). The status pill at the top of the console shows when the runtime is online.
 
 ### 3. Connect a model provider
 

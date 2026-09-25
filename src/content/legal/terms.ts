@@ -41,7 +41,7 @@ export const TERMS: Bi<LegalDoc> = {
           "dewee is an operating layer for AI agents: a runtime that runs your agents, channels and workflows, and a control plane where your team configures and watches them. You can use it in one of three ways:",
           {
             defs: [
-              ["SaaS", "The runtime runs on shared servers that we operate, and your team uses the control plane at app.dewee.sh."],
+              ["AaaS", "The runtime runs on shared servers that we operate, and your team uses the control plane at app.dewee.sh."],
               ["Dedicated on TOSE.sh", "Your own isolated runtime on TOSE.sh, activated with a licence key and connected to your own control plane."],
               ["On-Premises", "The runtime and control plane run on your own VPS or Mac mini. We do the setup and build the custom workflows agreed in your quote."],
             ],
@@ -107,7 +107,7 @@ export const TERMS: Bi<LegalDoc> = {
           "Prices are listed on the [pricing page](/pricing) in US dollars, per year:",
           {
             list: [
-              "SaaS: $500 per year.",
+              "AaaS: $500 per year.",
               "Dedicated on TOSE.sh: a $500 yearly licence plus a $99 TOSE credit deposit. We pass the deposit to TOSE.sh as credit for your runtime; after that you top up credit directly with TOSE.sh.",
               "On-Premises: a custom quote from $5,000, which includes the first year’s $500 licence, five custom workflows and one year of maintenance.",
             ],
@@ -132,7 +132,7 @@ export const TERMS: Bi<LegalDoc> = {
         body: [
           {
             defs: [
-              ["SaaS", "We run and maintain the shared runtime. Custom runtime packages cannot be installed; ask support and we can add a curated package."],
+              ["AaaS", "We run and maintain the shared runtime. Custom runtime packages cannot be installed; ask support and we can add a curated package."],
               ["Dedicated on TOSE.sh", "We support dewee. You look after the packages you install and keep your TOSE credit topped up."],
               ["On-Premises", "The first year of maintenance and updates is included. After that, maintenance continues as agreed at renewal."],
             ],

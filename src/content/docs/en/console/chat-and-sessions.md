@@ -70,7 +70,7 @@ The detail view is read-only and redacted before it reaches your browser:
 - **Runtime is not reachable**: wait a moment and refresh, then check **Runtime health**.
 
 > [!NOTE]
-> On SaaS, a refunded subscription turns off chat, API keys and provider setup for the workspace. See [Support and billing](/docs/console/support-and-billing).
+> On AaaS, a refunded subscription turns off chat, API keys and provider setup for the workspace. See [Support and billing](/docs/console/support-and-billing).
 
 ## Related
 

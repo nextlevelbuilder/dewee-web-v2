@@ -30,7 +30,7 @@ Telegram has been validated with real users. Slack, Discord, WhatsApp, Feishu/La
 
 ### Where is our data stored?
 
-In the runtime's database and file storage, wherever the runtime runs. On shared SaaS that is our cloud; with Dedicated it is a runtime reserved for you on TOSE; with On-Premises it is your own VPS or Mac mini. In Vietnam, On-Premises is the only option we offer. See [Choose a deployment](/docs/get-started/deployment-options).
+In the runtime's database and file storage, wherever the runtime runs. On shared AaaS that is our cloud; with Dedicated it is a runtime reserved for you on TOSE; with On-Premises it is your own VPS or Mac mini. In Vietnam, On-Premises is the only option we offer. See [Choose a deployment](/docs/get-started/deployment-options).
 
 ### What does an On-Premises runtime send to you?
 

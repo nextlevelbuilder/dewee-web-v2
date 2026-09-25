@@ -8,7 +8,7 @@ type Entry = { match: RegExp; en: string; vi: string };
 const ENTRIES: Entry[] = [
   {
     match: /pric|cost|how much|\$|plan|giá|bao nhiêu|chi phí|gói/i,
-    en: "Three ways to run dewee:\n• SaaS: $500/year on our shared cloud, 14-day refund.\n• Dedicated on TOSE.sh: $500/year licence + $99 TOSE credit deposit.\n• On-premises: from ~$5K, including setup, 5 custom workflows and a year of care.\nDetails: https://dewee.sh/pricing",
+    en: "Three ways to run dewee:\n• AaaS: $500/year on our shared cloud, 14-day refund.\n• Dedicated on TOSE.sh: $500/year licence + $99 TOSE credit deposit.\n• On-premises: from ~$5K, including setup, 5 custom workflows and a year of care.\nDetails: https://dewee.sh/pricing",
     vi: "Tại Việt Nam, dewee được triển khai On-Premises: cài trên máy chủ / Mac mini của bạn, báo giá theo nhu cầu, từ khoảng $5K gồm cài đặt, 5 quy trình tuỳ chỉnh và 1 năm bảo trì, cập nhật.\nChi tiết: https://dewee.sh/vi/pricing",
   },
   {

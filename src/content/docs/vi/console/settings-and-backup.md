@@ -44,7 +44,7 @@ Mỗi cài đặt cho biết nó đang dùng **Runtime default** hay đã đư�
 
 Tin nhắn ghép cặp có thể chứa biến thay thế. Tin nhắn yêu cầu hỗ trợ `{{senderId}}`, `{{pairingCode}}` và `{{channel}}`; tin nhắn sau khi duyệt hỗ trợ `{{botName}}`, `{{senderId}}` và `{{channel}}`.
 
-**General** hiển thị workspace ID, phiên bản (SaaS hay tự triển khai), runtime tenant kèm nút **Copy reference**, và trạng thái onboarding. Bạn đặt **Default time zone** ở đây rồi chọn **Save time zone**. Lịch chạy mới, và những thành viên chưa tự chọn múi giờ, sẽ dùng múi giờ này; để trống nếu muốn mỗi người xem theo múi giờ của trình duyệt.
+**General** hiển thị workspace ID, phiên bản (AaaS hay tự triển khai), runtime tenant kèm nút **Copy reference**, và trạng thái onboarding. Bạn đặt **Default time zone** ở đây rồi chọn **Save time zone**. Lịch chạy mới, và những thành viên chưa tự chọn múi giờ, sẽ dùng múi giờ này; để trống nếu muốn mỗi người xem theo múi giờ của trình duyệt.
 
 **Access** cho biết vai trò của bạn và số thành viên của workspace, còn **Related** liên kết tới Members, Roles, API keys và Billing.
 
@@ -52,7 +52,7 @@ Tin nhắn ghép cặp có thể chứa biến thay thế. Tin nhắn yêu cầu
 
 Trang **Sao lưu & xuất dữ liệu** mở đầu bằng phần tóm tắt: hình thức triển khai, chính sách sao lưu, runtime tenant, và endpoint xuất dữ liệu tự phục vụ đã được thiết lập hay chưa. Cách sao lưu hoạt động tuỳ theo hình thức triển khai:
 
-- **Shared SaaS** (không cung cấp tại Việt Nam): việc sao lưu do người vận hành quản lý. Yêu cầu xuất dữ liệu đi qua bộ phận hỗ trợ để người vận hành xác nhận yêu cầu thuộc về workspace của bạn.
+- **Shared AaaS** (không cung cấp tại Việt Nam): việc sao lưu do người vận hành quản lý. Yêu cầu xuất dữ liệu đi qua bộ phận hỗ trợ để người vận hành xác nhận yêu cầu thuộc về workspace của bạn.
 - **Dedicated** và **On-Premises**: bạn tự sao lưu. **Export backup** dùng được khi người vận hành đã cấu hình endpoint xuất dữ liệu; trước đó, hãy yêu cầu xuất dữ liệu qua bộ phận hỗ trợ.
 
 ::shot{id="backup"}
@@ -72,7 +72,7 @@ Phần **Backup preflight** kiểm tra runtime tenant đã kết nối chưa, en
 
 ## Trang của owner trên Dedicated và On-Premises
 
-Trên các hình thức triển khai này, workspace sở hữu runtime của riêng mình, nên owner có thêm bốn trang. Trên Shared SaaS, các trang này hiển thị **Not available in this deployment** vì người vận hành nền tảng chạy runtime; khi đó hãy nhờ bộ phận hỗ trợ nếu cần thay đổi. Mỗi trang cũng chỉ dùng được sau khi onboarding hoàn tất.
+Trên các hình thức triển khai này, workspace sở hữu runtime của riêng mình, nên owner có thêm bốn trang. Trên Shared AaaS, các trang này hiển thị **Not available in this deployment** vì người vận hành nền tảng chạy runtime; khi đó hãy nhờ bộ phận hỗ trợ nếu cần thay đổi. Mỗi trang cũng chỉ dùng được sau khi onboarding hoàn tất.
 
 - **License binding**: nhập license key thường niên từ đơn hàng của bạn rồi chọn **Bind license to this workspace**. Key chỉ được dùng một lần và không bao giờ hiển thị lại. Việc gắn license xác nhận quyền sử dụng của bạn nhưng không tiêu tốn lượt kích hoạt; mỗi máy chạy runtime vẫn kích hoạt riêng. Với bản tự triển khai, hãy gắn key trong cổng khách hàng được host thay vì ở đây.
 - **System Configuration**: cài đặt runtime cho toàn bộ hệ thống triển khai, với các giá trị chứa thông tin xác thực được che.

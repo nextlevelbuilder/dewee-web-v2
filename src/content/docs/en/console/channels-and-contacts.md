@@ -19,7 +19,7 @@ Channels put your agents where your customers and colleagues already talk: Teleg
 Changing the pairing expiry policy also needs the workspace owner or an admin. See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
 
 > [!NOTE]
-> On SaaS, channels need the Annual plan. Without it the page shows a locked banner; ask the workspace owner to subscribe in [Support and billing](/docs/console/support-and-billing).
+> On AaaS, channels need the Annual plan. Without it the page shows a locked banner; ask the workspace owner to subscribe in [Support and billing](/docs/console/support-and-billing).
 
 ## Channels
 

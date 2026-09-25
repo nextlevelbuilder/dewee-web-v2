@@ -15,7 +15,7 @@ export const POLICY: Bi<LegalDoc> = {
   en: {
     meta: {
       title: "Policies: refunds, licences and packages",
-      description: "How dewee handles refunds for SaaS, Dedicated on TOSE and On-Premises, how licence keys check in, which runtime packages you can install and how to report bugs.",
+      description: "How dewee handles refunds for AaaS, Dedicated on TOSE and On-Premises, how licence keys check in, which runtime packages you can install and how to report bugs.",
       crumb: "Policies",
     },
     hero: {
@@ -35,9 +35,9 @@ export const POLICY: Bi<LegalDoc> = {
       {
         id: "refunds",
         title: "Refund policy",
-        short: "SaaS: a full refund within 14 days, no questions asked. Dedicated and On-Premises: as set out in your order form or contract.",
+        short: "AaaS: a full refund within 14 days, no questions asked. Dedicated and On-Premises: as set out in your order form or contract.",
         body: [
-          { sub: "SaaS" },
+          { sub: "AaaS" },
           "If dewee is not right for you, ask for a refund within 14 days of your purchase and we will refund it in full, no questions asked. The only exception is fraud or clear abuse, such as chargeback abuse or reselling access.",
           { sub: "Dedicated on TOSE.sh" },
           "A Dedicated order has two parts: the $500 yearly licence and the $99 TOSE credit deposit, which we pass to TOSE.sh as credit for your runtime. What we can refund depends on whether your runtime has already been provisioned and on the credit already passed on or used. The exact terms are in your order form.",
@@ -47,7 +47,7 @@ export const POLICY: Bi<LegalDoc> = {
           {
             steps: [
               "Email " + mail + " from the address you used to buy.",
-              "Include your order reference and the plan. For SaaS within 14 days you do not need to give a reason.",
+              "Include your order reference and the plan. For AaaS within 14 days you do not need to give a reason.",
               "We may ask you to confirm that you own the account before we process the refund.",
             ],
           },
@@ -60,7 +60,7 @@ export const POLICY: Bi<LegalDoc> = {
         title: "Licence keys and activation",
         short: "Dedicated and On-Premises runtimes need a licence key. They check in every five minutes, keep working for up to a day offline, and stop taking new work when a licence ends.",
         body: [
-          "SaaS does not use a licence key. Dedicated and On-Premises runtimes are activated with one, and then:",
+          "AaaS does not use a licence key. Dedicated and On-Premises runtimes are activated with one, and then:",
           {
             defs: [
               ["Check-in", "Every five minutes the runtime sends our licence server an activation ID and a runtime token. It never sends the raw licence key, and never your conversations, files or settings."],
@@ -75,11 +75,11 @@ export const POLICY: Bi<LegalDoc> = {
       {
         id: "packages",
         title: "Runtime packages",
-        short: "On SaaS we install curated packages for you. On Dedicated and On-Premises you can install what your agents need.",
+        short: "On AaaS we install curated packages for you. On Dedicated and On-Premises you can install what your agents need.",
         body: [
           {
             defs: [
-              ["SaaS", "The runtime is shared, so installing packages is blocked by default. If your agents need a tool, ask support and we can add a curated package."],
+              ["AaaS", "The runtime is shared, so installing packages is blocked by default. If your agents need a tool, ask support and we can add a curated package."],
               ["Dedicated on TOSE.sh", "Each workspace gets its own isolated runtime, so you can install the packages and CLIs you need. You are responsible for their licences, updates and security."],
               ["On-Premises", "It is your machine. We agree the packages with you during setup, and you can add more later."],
             ],

@@ -193,7 +193,7 @@ export const HOME: Bi<{
         { q: "Can we keep our data on our own servers?", a: "Yes. The On-Premises option runs the dewee runtime on your VPS or Mac mini, activated by a licence key. In Vietnam, On-Premises is the only option we offer." },
         { q: "Which AI models can we use?", a: "Anthropic, OpenAI, Gemini, DeepSeek, Qwen, Mistral, xAI, OpenRouter, Groq, Ollama and more: 20+ providers. You bring your own keys, and each agent can fall back to another provider automatically." },
         { q: "Do our people need to learn a new tool?", a: "Not really. Agents join the chat apps your team already uses, such as Telegram, Zalo, Slack, Lark or Discord. Admins get a control panel; everyone else just @mentions the agent." },
-        { q: "How long does it take to go live?", a: "A shared SaaS workspace is ready the same day. Dedicated and on-premises setups usually take one to three weeks, including the custom workflows we build with you." },
+        { q: "How long does it take to go live?", a: "A shared AaaS workspace is ready the same day. Dedicated and on-premises setups usually take one to three weeks, including the custom workflows we build with you." },
         { q: "What happens if an agent gets something wrong?", a: "Every run is traced, sensitive actions can require approval, and agents hand off to a human when they are unsure. You can see exactly what happened and why." },
       ],
     },

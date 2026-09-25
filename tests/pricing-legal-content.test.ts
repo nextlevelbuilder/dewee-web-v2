@@ -15,8 +15,8 @@ describe("pricing and legal content", () => {
     expect(plansFor("en").map((p) => p.id)).toEqual(PLANS.map((p) => p.id));
   });
 
-  it.each(Object.entries(PAGES))("%s: VI copy never sells SaaS or TOSE", (_name, page) => {
-    expect(JSON.stringify(page.vi)).not.toMatch(/\bSaaS\b|\bTOSE\b/);
+  it.each(Object.entries(PAGES))("%s: VI copy never sells AaaS or TOSE", (_name, page) => {
+    expect(JSON.stringify(page.vi)).not.toMatch(/\bSaaS\b|\bAaaS\b|\bTOSE\b/);
   });
 
   it.each(Object.entries(PAGES).flatMap(([name, page]) => (["en", "vi"] as const).map((l) => [`${name} (${l})`, page[l].meta] as const)))(

@@ -40,12 +40,12 @@ Each area is guarded by a permission key such as `agents.manage` or `observabili
 
 ## What depends on the deployment mode
 
-dewee runs as SaaS, Dedicated or On-Premises (see [Deployment options](/docs/get-started/deployment-options)). The console is the same in all three, with these differences:
+dewee runs as AaaS, Dedicated or On-Premises (see [Deployment options](/docs/get-started/deployment-options)). The console is the same in all three, with these differences:
 
-- **Billing** appears only on SaaS workspaces.
+- **Billing** appears only on AaaS workspaces.
 - **System configuration**, **Workstations** and **Import / export** appear only on Dedicated and On-Premises, and only the workspace owner can use them.
 - **License binding** is also Dedicated and On-Premises only and owner-only. It is not listed in the navigation; see [Licence activation](/docs/runtime/licence).
-- **Backup** is operator-managed on SaaS and self-serve on Dedicated and On-Premises.
+- **Backup** is operator-managed on AaaS and self-serve on Dedicated and On-Premises.
 
 ## Runtime status
 

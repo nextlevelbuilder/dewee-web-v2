@@ -120,7 +120,7 @@ export const STORY: Bi<StoryPage> = {
           { label: "Source", draft: "Open to everyone, CC BY-NC 4.0", fair: "Closed source, under licence" },
           { label: "Patches", strike: "same day, every time", draft: "as fast as a small team can", fair: "Stable and beta channels: six stable releases in September 2026" },
           { label: "Built for", draft: "Builders and self-hosters", fair: "Companies: multi-tenant, roles, audit trails" },
-          { label: "Price", draft: "Free, non-commercial", fair: "Licensed: SaaS, Dedicated or On-Premises" },
+          { label: "Price", draft: "Free, non-commercial", fair: "Licensed: AaaS, Dedicated or On-Premises" },
           { label: "Support", draft: "The community, when it can", fair: "A team that supports you, and custom workflows built with you" },
         ],
       },

@@ -56,7 +56,7 @@ export const CCP_SCREENS = [
   { id: "settings", group: "admin", route: "/workspaces/:ws/settings", title: { en: "Settings", vi: "Cài đặt" }, caption: { en: "Workspace name, time zone and runtime configuration.", vi: "Tên workspace, múi giờ và cấu hình runtime." } },
   { id: "backup", group: "admin", route: "/workspaces/:ws/backup", title: { en: "Backup & export", vi: "Sao lưu & xuất dữ liệu" }, caption: { en: "Export your data or request a restore.", vi: "Xuất dữ liệu hoặc yêu cầu khôi phục." } },
   { id: "support", group: "admin", route: "/workspaces/:ws/support", title: { en: "Support", vi: "Hỗ trợ" }, caption: { en: "Reach the team, open a ticket or request a package.", vi: "Liên hệ đội ngũ, mở ticket hoặc yêu cầu thêm gói." } },
-  { id: "billing", group: "admin", route: "/workspaces/:ws/billing", title: { en: "Billing", vi: "Thanh toán" }, caption: { en: "Current plan, renewal date and invoices (SaaS workspaces).", vi: "Gói hiện tại, ngày gia hạn và hoá đơn (workspace SaaS)." } },
+  { id: "billing", group: "admin", route: "/workspaces/:ws/billing", title: { en: "Billing", vi: "Thanh toán" }, caption: { en: "Current plan, renewal date and invoices (AaaS workspaces).", vi: "Gói hiện tại, ngày gia hạn và hoá đơn (workspace AaaS)." } },
 ] as const satisfies readonly CcpScreen[];
 
 export function ccpScreen(id: CcpScreenId): CcpScreen {
