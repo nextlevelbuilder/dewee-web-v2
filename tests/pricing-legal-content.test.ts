@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { PLAN_COMPARISON, PLANS, plansFor } from "../src/content/plans";
 import { PRICING } from "../src/content/pages/pricing";
+import { INSTALL } from "../src/content/pages/install";
 import { COOKIES } from "../src/content/legal/cookies";
 import { GDPR } from "../src/content/legal/gdpr";
 import { POLICY } from "../src/content/legal/policy";
 import { PRIVACY } from "../src/content/legal/privacy";
 import { TERMS } from "../src/content/legal/terms";
 
-const PAGES = { pricing: PRICING, terms: TERMS, policy: POLICY, privacy: PRIVACY, cookies: COOKIES, gdpr: GDPR };
+const PAGES = { pricing: PRICING, install: INSTALL, terms: TERMS, policy: POLICY, privacy: PRIVACY, cookies: COOKIES, gdpr: GDPR };
 
 describe("pricing and legal content", () => {
-  it("offers only On-Premises to the Vietnamese market", () => {
-    expect(plansFor("vi").map((p) => p.id)).toEqual(["on-premises"]);
+  it("offers Self-install and On-Premises to the Vietnamese market", () => {
+    expect(plansFor("vi").map((p) => p.id)).toEqual(["self-hosted", "on-premises"]);
     expect(plansFor("en").map((p) => p.id)).toEqual(PLANS.map((p) => p.id));
   });
 

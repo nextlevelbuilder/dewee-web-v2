@@ -2,7 +2,7 @@
 title: Glossary
 description: Short definitions of the terms used across the dewee docs and console, from agent and tenant to pairing, skills, traces and editions, with links to more.
 section: get-started
-order: 5
+order: 6
 updated: 2026-09-25
 ---
 

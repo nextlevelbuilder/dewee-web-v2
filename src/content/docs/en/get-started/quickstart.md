@@ -2,7 +2,7 @@
 title: Quickstart
 description: Go from sign-in to your first agent reply in the console, or start a runtime on your own machine and talk to it from the terminal. Both paths, step by step.
 section: get-started
-order: 4
+order: 5
 screens: [sign-in, providers, chat]
 updated: 2026-09-25
 ---
@@ -64,7 +64,7 @@ make up
 curl http://localhost:18790/health
 ```
 
-`prepare-env.sh` creates `.env` and generates the gateway token and the encryption key if they are missing. `make up` pulls the published image, starts PostgreSQL with pgvector, and upgrades the database schema. A healthy gateway answers `{"status":"ok","protocol":3}`. Open `http://localhost:18790` for the dashboard.
+`prepare-env.sh` creates `.env` and generates the gateway token and the encryption key if they are missing. `make up` pulls the published image, starts PostgreSQL with pgvector, and upgrades the database schema. A healthy gateway answers `{"status":"ok","protocol":3}`.
 
 ### From source
 
@@ -74,7 +74,7 @@ make build
 source .env.local && ./dewee
 ```
 
-`dewee onboard` asks for the PostgreSQL connection string, tests it, generates the gateway token and encryption key, runs the migrations and writes those secrets to `.env.local`. Running `dewee` with no subcommand starts the gateway. `make build` produces an API-only binary; `make build-full` also embeds the web dashboard.
+`dewee onboard` asks for the PostgreSQL connection string, tests it, generates the gateway token and encryption key, runs the migrations and writes those secrets to `.env.local`. Running `dewee` with no subcommand starts the gateway.
 
 ### Configure and chat from the terminal
 

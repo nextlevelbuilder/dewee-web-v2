@@ -1,0 +1,126 @@
+# Dewee self-install with Docker Compose (macOS, Linux, Windows).
+#
+#   curl -fsSL https://dewee.sh/docker-compose.yml -o docker-compose.yml
+#   docker compose up -d
+#
+# Then open http://localhost:4321. On the first run, create the owner account
+# with a one-time setup link (valid 30 minutes):
+#
+#   docker compose exec dewee dewee selfhost access-link --purpose setup
+#
+# Upgrade:   docker compose pull && docker compose up -d
+# Pin:       DEWEE_VERSION=v1.2.3 docker compose up -d   (default: latest)
+# Port/bind: DEWEE_APP_PORT=8080 DEWEE_BIND_ADDR=0.0.0.0 docker compose up -d
+#
+# No .env file is needed: secrets are generated on first start by the `init`
+# service into the `dewee-secrets` volume and kept across upgrades.
+# Docs: https://dewee.sh/docs
+
+name: dewee
+
+x-secrets-ro: &secrets-ro
+  type: volume
+  source: dewee-secrets
+  target: /secrets
+  read_only: true
+
+services:
+  init:
+    image: ghcr.io/nextlevelbuilder/dewee-selfhost:${DEWEE_VERSION:-latest}
+    # Root is required: init-secrets --docker gives the postgres password
+    # files group 999 (the database containers' user). dewee.env stays 0600.
+    user: "0:0"
+    entrypoint: ["/app/dewee", "selfhost", "init-secrets", "--out", "/secrets/dewee.env", "--docker"]
+    volumes:
+      - dewee-secrets:/secrets
+    restart: "no"
+
+  runtime-db:
+    image: pgvector/pgvector:pg18
+    environment:
+      POSTGRES_PASSWORD_FILE: /secrets/postgres_password
+    volumes:
+      - *secrets-ro
+      - runtime-db-data:/var/lib/postgresql
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  app-db:
+    image: pgvector/pgvector:pg18
+    environment:
+      POSTGRES_PASSWORD_FILE: /secrets/app_postgres_password
+    volumes:
+      - *secrets-ro
+      - app-db-data:/var/lib/postgresql
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  # Runtime. Not published on the host: the control panel reaches it over the
+  # compose network. The image fixes the channels licence gate and the hidden
+  # dashboard mount at build time; the variables below only document them.
+  dewee:
+    image: ghcr.io/nextlevelbuilder/dewee-selfhost:${DEWEE_VERSION:-latest}
+    environment:
+      DEWEE_LICENSE_GATE: channels
+      DEWEE_RGD_MOUNT: hidden
+      # `dewee selfhost access-link` reads /secrets/dewee.env through this.
+      DEWEE_HOME: /secrets
+    volumes:
+      - *secrets-ro
+      - dewee-data:/app/data
+      - dewee-workspace:/app/workspace
+    depends_on:
+      runtime-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Control panel, the only published service.
+  dewee-app:
+    image: digitop/dewee-app:${DEWEE_VERSION:-latest}
+    environment:
+      DEWEE_APP_EDITION: self_hosted
+      DEWEE_DEPLOYMENT_MODE: on_prem
+      DEWEE_LICENSE_MODE: channels_license
+      DEWEE_RUNTIME_URL: http://dewee:18790
+      DEWEE_RUNTIME_HTTP_URL: /_runtime
+      DEWEE_CUSTOMER_BUNDLE_DIR: /app/app-assets
+      DEWEE_SETUP_TOKEN_MODE: loopback
+      DEWEE_PUBLISHED_BIND_ADDR: ${DEWEE_BIND_ADDR:-127.0.0.1}
+      DEWEE_INVITE_EMAIL_PROVIDER: disabled
+    ports:
+      - "${DEWEE_BIND_ADDR:-127.0.0.1}:${DEWEE_APP_PORT:-4321}:4321"
+    volumes:
+      - *secrets-ro
+    depends_on:
+      app-db:
+        condition: service_healthy
+      dewee:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4321/readyz >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  dewee-secrets:
+  runtime-db-data:
+  app-db-data:
+  dewee-data:
+  dewee-workspace:

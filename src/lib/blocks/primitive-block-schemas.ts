@@ -63,7 +63,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
     render: "section",
     description: "A boxed aside (note, tip, warning or success). `body` supports inline markup.",
     schema: callout,
-    example: { tone: "tip", title: "Good to know", body: "In Vietnam, dewee is offered *On-Premises only*." },
+    example: { tone: "tip", title: "Good to know", body: "Installing dewee is *free*; a licence connects your chat channels." },
   },
   {
     type: "ButtonRow",

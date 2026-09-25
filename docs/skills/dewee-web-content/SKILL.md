@@ -28,7 +28,7 @@ The site's hand-built pages live in code (this repo). Custom pages (`/p/<slug>`)
    `get_block_schema`). Pages accept registered block types only; props are validated.
 3. **Write both languages.** Every page or post gets an EN and a VI version that share a
    `translation_key`. The Vietnamese is written for Vietnamese readers, not machine-translated.
-   Pricing in VI is On-Premises only.
+   Pricing in VI is Self-install and On-Premises only.
 4. **Save as a draft** (drafts are not public; a super-admin can open the live preview in
    `/admin`). Publish, then check the public URL at 375 px and 1440 px in light and dark. Pass
    `--version <n>` on updates; a `409 conflict` means someone saved first: re-read, merge, retry.

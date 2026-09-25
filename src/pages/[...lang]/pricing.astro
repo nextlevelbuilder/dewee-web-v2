@@ -1,20 +1,23 @@
 ---
 /**
- * Pricing & deployment. Plans and prices come from src/content/plans.ts (`plansFor` keeps the
- * VI locale On-Premises only); the words around them live in src/content/pages/pricing.ts.
- * Other pages deep-link to /pricing#saas, #dedicated and #on-premises.
+ * Pricing & deployment. Plans and prices come from src/content/plans.ts (`plansFor` shows the
+ * VI locale Self-install and On-Premises only); the words around them live in
+ * src/content/pages/pricing.ts. Other pages deep-link to /pricing#self-hosted, #saas, #dedicated,
+ * #on-premises and #early-access.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
 import { SITE } from "~/content/site";
 import { PLAN_COMPARISON, plansFor } from "~/content/plans";
 import { PRICING } from "~/content/pages/pricing";
+import { earlyAccessBlock } from "~/content/early-access";
 import { faqJsonLd, productJsonLd } from "~/lib/json-ld";
 import PageHero from "~/components/blocks/PageHero.astro";
 import SectionHead from "~/components/blocks/SectionHead.astro";
 import DeployPlans from "~/components/blocks/DeployPlans.astro";
 import Faq from "~/components/blocks/Faq.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
+import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
 import PlanComparison from "~/components/blocks/pricing/PlanComparison.astro";
 import DeploymentTopology from "~/components/blocks/pricing/DeploymentTopology.astro";
 import RefundNote from "~/components/blocks/pricing/RefundNote.astro";
@@ -38,7 +41,7 @@ const plans = source.map((p) => ({
   tagline: pick(p.tagline, locale),
   includes: pick(p.includes, locale),
   tradeoffs: pick(p.tradeoffs, locale),
-  cta: { label: pick(p.cta, locale), href: contact(p.id) },
+  cta: { label: pick(p.cta, locale), href: p.ctaPath ? href(p.ctaPath) : contact(p.id) },
   highlight: p.highlight,
 }));
 const comparison = PLAN_COMPARISON.map((r) => ({
@@ -47,9 +50,11 @@ const comparison = PLAN_COMPARISON.map((r) => ({
   values: source.map((p) => pick(r.values[p.id], locale)),
 }));
 
-const heroActions = vi
-  ? [{ label: t.hero.primary, href: contact("on-premises") }, { label: t.hero.secondary, href: "#on-premises" }]
-  : [{ label: t.hero.primary, href: "#compare" }, { label: t.hero.secondary, href: href("/contact") }];
+const heroActions = [
+  { label: t.hero.primary, href: "#compare" },
+  { label: t.hero.secondary, href: vi ? contact("on-premises") : href("/contact") },
+];
+const earlyAccess = earlyAccessBlock(locale, { cta: contact("self-hosted"), secondary: href("/install") });
 
 const product = productJsonLd({
   description: t.meta.description,
@@ -69,6 +74,8 @@ const jsonLd = [product, faqJsonLd(t.faq.items)];
     actions={heroActions}
     mascot={{ mood: "wink" }}
   />
+
+  <EarlyAccess {...earlyAccess} />
 
   <section class="section band" id="plans">
     <div class="container pr-stack">

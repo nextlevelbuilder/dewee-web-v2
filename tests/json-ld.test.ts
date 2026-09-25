@@ -4,6 +4,7 @@ import {
   breadcrumbJsonLd,
   crumbsForPath,
   faqJsonLd,
+  howToJsonLd,
   organizationJsonLd,
   productJsonLd,
   techArticleJsonLd,
@@ -68,19 +69,22 @@ describe("productJsonLd", () => {
     expect(onPrem?.priceSpecification).toMatchObject({ "@type": "PriceSpecification", minPrice: 5000 });
   });
 
-  it("says where each plan is not sold: only On-Premises is offered in Vietnam", () => {
+  it("says where each plan is not sold: only Self-install and On-Premises are offered in Vietnam", () => {
     const offers = offersOf(productJsonLd({ description: "d", url: `${site}/`, offers: PLANS.map((p) => ({ name: p.name.en, price: String(p.priceUsd) })) }));
     const byId = (id: string) => offers.find((o) => o.url === `${site}/pricing#${id}`);
     expect(byId("saas")?.ineligibleRegion).toBe("VN");
     expect(byId("dedicated")?.ineligibleRegion).toBe("VN");
+    expect(byId("self-hosted")).not.toHaveProperty("ineligibleRegion");
     expect(byId("on-premises")).not.toHaveProperty("ineligibleRegion");
   });
 
   it("links Vietnamese offers to the Vietnamese pricing page with Vietnamese terms", () => {
     const offers = offersOf(productJsonLd({ description: "d", url: `${site}/vi/pricing`, offers: plansFor("vi").map((p) => ({ name: p.name.vi, price: String(p.priceUsd) })) }));
-    expect(offers).toHaveLength(1);
-    expect(offers[0]).toMatchObject({ url: `${site}/vi/pricing#on-premises`, price: "5000" });
-    expect(String(offers[0].description)).toContain("báo giá");
+    expect(offers).toHaveLength(2);
+    expect(offers[0]).toMatchObject({ url: `${site}/vi/pricing#self-hosted`, price: "500" });
+    expect(String(offers[0].description)).toContain("license $500/năm");
+    expect(offers[1]).toMatchObject({ url: `${site}/vi/pricing#on-premises`, price: "5000" });
+    expect(String(offers[1].description)).toContain("báo giá");
   });
 
   it("keeps unknown offers as given and omits offers when there are none", () => {
@@ -100,5 +104,16 @@ describe("articles", () => {
 
   it("builds a TechArticle for docs with its section", () => {
     expect(techArticleJsonLd({ title: "Install", description: "D", url: `${site}/docs/install`, section: "Getting started" })).toMatchObject({ "@type": "TechArticle", articleSection: "Getting started" });
+  });
+});
+
+describe("howToJsonLd", () => {
+  it("numbers the steps in order and links each to its anchor", () => {
+    const node = howToJsonLd({ name: "Install dewee", description: "d", url: `${site}/install`, steps: [{ name: "Install", text: "Run it." }, { name: "Open", text: "Open it." }] });
+    expect(node).toMatchObject({ "@type": "HowTo", name: "Install dewee", url: `${site}/install` });
+    expect(node.step).toEqual([
+      { "@type": "HowToStep", position: 1, name: "Install", text: "Run it.", url: `${site}/install#step-1` },
+      { "@type": "HowToStep", position: 2, name: "Open", text: "Open it.", url: `${site}/install#step-2` },
+    ]);
   });
 });

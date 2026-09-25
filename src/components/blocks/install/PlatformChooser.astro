@@ -1,0 +1,132 @@
+---
+/**
+ * Install methods as tabs: one panel per route (standalone binary, Docker, Docker Desktop on
+ * Windows), each with copyable commands. Without JavaScript every panel is shown in order under
+ * its own heading and the tab strip stays hidden. With JavaScript it becomes an ARIA tablist
+ * (arrow keys, Home and End) that opens on the visitor's platform: Windows gets the Docker
+ * Desktop tab, everyone else the binary.
+ */
+import Icon from "~/components/ui/Icon.astro";
+import type { IconName } from "~/components/ui/icon-paths";
+import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
+interface Props {
+  /** Accessible name of the tab strip, e.g. "Install method" */
+  label: string;
+  copy: { copy: string; copied: string; failed: string };
+  routes: { id: string; tab: string; icon: string; title: string; body: string; samples: { label: string; code: string }[] }[];
+}
+const { label, copy, routes } = Astro.props;
+---
+
+<div class="pc" data-platform-chooser>
+  <div class="pc__tabs" role="tablist" aria-label={label} hidden data-pc-tabs>
+    {routes.map((r, i) => (
+      <button
+        class="pc__tab"
+        type="button"
+        role="tab"
+        id={`pc-tab-${r.id}`}
+        aria-controls={`pc-panel-${r.id}`}
+        aria-selected={i === 0 ? "true" : "false"}
+        tabindex={i === 0 ? 0 : -1}
+        data-route={r.id}
+      >
+        <Icon name={r.icon as IconName} size={18} />{r.tab}
+      </button>
+    ))}
+  </div>
+  {routes.map((r) => (
+    <section class="pc__panel" id={`pc-panel-${r.id}`} aria-labelledby={`pc-title-${r.id}`} data-route={r.id}>
+      <h3 class="pc__title" id={`pc-title-${r.id}`}>{r.title}</h3>
+      <p class="pc__body">{r.body}</p>
+      {r.samples.map((s) => <CodeSample label={s.label} code={s.code} copy={copy} />)}
+    </section>
+  ))}
+</div>
+
+<script>
+  /** Visitors on Windows start on the Docker Desktop tab; everyone else on the binary. */
+  function preferredRoute(): string {
+    const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.userAgent;
+    return /win/i.test(platform) && !/darwin|mac/i.test(platform) ? "windows" : "script";
+  }
+
+  function initChooser(root: HTMLElement) {
+    const strip = root.querySelector<HTMLElement>("[data-pc-tabs]");
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>(".pc__panel")];
+    if (!strip || !tabs.length || tabs.length !== panels.length) return;
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const on = i === index;
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        tab.tabIndex = on ? 0 : -1;
+        panels[i].hidden = !on;
+      });
+      if (focus) tabs[index].focus();
+    };
+
+    panels.forEach((panel, i) => {
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", tabs[i].id);
+      panel.tabIndex = -1;
+    });
+    strip.hidden = false;
+    root.classList.add("is-tabbed");
+    select(Math.max(0, tabs.findIndex((t) => t.dataset.route === preferredRoute())));
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("click", () => select(i));
+      tab.addEventListener("keydown", (e) => {
+        const last = tabs.length - 1;
+        const next = e.key === "ArrowRight" ? (i === last ? 0 : i + 1)
+          : e.key === "ArrowLeft" ? (i === 0 ? last : i - 1)
+          : e.key === "Home" ? 0
+          : e.key === "End" ? last
+          : -1;
+        if (next < 0) return;
+        e.preventDefault();
+        select(next, true);
+      });
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-platform-chooser]:not([data-pc-bound])").forEach((el) => {
+    el.dataset.pcBound = "";
+    initChooser(el);
+  });
+</script>
+
+<style>
+  .pc { display: grid; gap: var(--space-6); min-inline-size: 0; }
+  .pc__tabs {
+    display: flex; flex-wrap: wrap; gap: var(--space-1); justify-self: start; max-inline-size: 100%;
+    padding: var(--space-1); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--paper-2);
+  }
+  .pc__tabs[hidden] { display: none; }
+  .pc__tab {
+    display: inline-flex; align-items: center; gap: var(--space-2); min-block-size: 2.75rem; padding: 0.5rem 1rem;
+    border: 1px solid transparent; border-radius: var(--radius-2); background: transparent; color: var(--ink-2);
+    font: inherit; font-size: var(--step--1); font-weight: 600; cursor: pointer;
+    transition: background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+  }
+  .pc__tab:hover { color: var(--accent-ink); }
+  .pc__tab[aria-selected="true"] { background: var(--surface); color: var(--ink); border-color: var(--rule); box-shadow: var(--shadow-1); }
+  .pc__tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .pc__tab :global(svg) { flex: none; color: var(--accent-ink); }
+
+  .pc__panel { display: grid; gap: var(--space-4); min-inline-size: 0; }
+  .pc__panel[hidden] { display: none; }
+  .pc__panel:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: var(--radius-2); }
+  /* Without tabs, the stacked panels are separated like pages of the same exercise. */
+  .pc:not(.is-tabbed) .pc__panel + .pc__panel { padding-block-start: var(--space-6); border-block-start: 1px dashed var(--rule-strong); }
+  .pc__title { font-size: var(--step-2); }
+  .pc__body { color: var(--ink-2); max-inline-size: var(--measure); }
+
+  @media (max-width: 560px) {
+    .pc__tabs { display: grid; grid-template-columns: minmax(0, 1fr); justify-self: stretch; }
+    .pc__tabs[hidden] { display: none; }
+    .pc__tab { justify-content: flex-start; }
+  }
+</style>

@@ -19,7 +19,7 @@ Kênh đưa agent tới đúng nơi khách hàng và đồng nghiệp của bạ
 Để thay đổi chính sách hết hạn ghép cặp, bạn còn cần là chủ workspace hoặc admin. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
 > [!NOTE]
-> Trên bản AaaS, kênh cần gói Annual; nếu chưa có, trang hiển thị banner khoá và chủ workspace đăng ký trong [Hỗ trợ và thanh toán](/docs/console/support-and-billing). Bản AaaS không được cung cấp tại Việt Nam; tại Việt Nam, dewee chạy On-Premises và dùng license binding.
+> Trên bản AaaS, kênh cần gói Annual; nếu chưa có, trang hiển thị banner khoá và chủ workspace đăng ký trong [Hỗ trợ và thanh toán](/docs/console/support-and-billing). Bản AaaS không được cung cấp tại Việt Nam; tại Việt Nam, dewee chạy theo hình thức Tự cài đặt hoặc On-Premises và dùng license key. Với Tự cài đặt, chủ workspace kích hoạt license key trong console để kết nối kênh; xem [Tự cài đặt dewee](/docs/get-started/self-install).
 
 ## Kênh
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { linkSegments } from "../src/components/chat/chat-widget-client";
+import { linkSegments } from "../src/components/chat/chat-widget-links";
 
 describe("chat message links", () => {
   it("links http(s) URLs and leaves sentence punctuation outside", () => {

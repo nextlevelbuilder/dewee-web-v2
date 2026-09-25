@@ -53,8 +53,9 @@ Dials:     variance 7 · motion 6 · density 3
 **Always:** say what the agent *does* ("drafts the quote, you approve it"); name the human
 in the loop; end sections with a next step.
 
-**Pricing rule:** the VI locale shows **On-Premises only** (`plansFor("vi")`). EN shows AaaS (AI as a Service), Dedicated
-(TOSE) and On-Premises. Prices live only in `src/content/plans.ts`.
+**Pricing rule:** the VI locale shows **Self-install and On-Premises** (`plansFor("vi")`) and never names AaaS or TOSE.
+EN shows Self-install, AaaS (AI as a Service), Dedicated (TOSE) and On-Premises. Prices live only in
+`src/content/plans.ts`; Early Access terms (deadline, slots, discount) only in `src/content/early-access.ts`.
 
 ## 4. Tokens
 
@@ -150,7 +151,8 @@ builder can render the same component from stored JSON.
 | `ArchitectureSketch` | channels → gateway → providers diagram | labels, channels, providers, more(n), label |
 | `SecurityLayers` | night band, rings of defence, sealed "10" | eyebrow, title, lede, layers[{name, body}], core, stamp, stampNote, cta |
 | `LogoWall` | integration tiles and chips | groups[{label, size l/s, items[{brand, name, note?}]}] |
-| `DeployPlans` | plan cards (single plan becomes a wide sheet) | plans[], includesLabel, tradeoffsLabel, badge |
+| `DeployPlans` | plan cards (single plan becomes a wide sheet; four sit 4 / 2 / 1 across) | plans[], includesLabel, tradeoffsLabel, badge |
+| `EarlyAccess` | licence offer: seal, struck price, deadline, slot meter filled from the live endpoint; closes itself | eyebrow, title, lede, seal, sealLabel, price{now, was, period}, deadline, slotsTotal, slotsLeft, countdown, cta, secondary?, closed{title, body}, live{endpoint, endsAt, totalSlots, timeoutMs}, band (build with `earlyAccessBlock()`) |
 | `Timeline` | ruler timeline | items[{date, text}], vertical, label |
 | `StorySplit` | long story + sticky timeline | eyebrow, title, body[], quote, cta, timeline, timelineLabel |
 | `FounderCards` | ID-photo cards | founders[] |

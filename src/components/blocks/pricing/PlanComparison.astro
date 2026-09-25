@@ -3,8 +3,9 @@
  * The honest side-by-side: one row per question a buyer asks (infrastructure, isolation,
  * packages, setup, maintenance, data location, price), one column per plan.
  * Wide screens get a real table; narrow screens stack each row into a card whose cells are
- * labelled with the plan name, so nothing scrolls sideways. With a single plan (the Vietnam
- * market) it becomes a two-column spec sheet: question on the left, answer on the right.
+ * labelled with the plan name, so nothing scrolls sideways. The switch is a container query on
+ * the space the table gets (below 60rem), which keeps four plan columns readable. With a single plan it
+ * becomes a two-column spec sheet: question on the left, answer on the right.
  */
 import Icon from "~/components/ui/Icon.astro";
 import type { IconName } from "~/components/ui/icon-paths";
@@ -21,6 +22,7 @@ const single = plans.length === 1;
 const hl = (i: number) => !single && plans[i]?.highlight;
 ---
 
+<div class="cmp-frame">
 <div class:list={["cmp", { "cmp--single": single }]} data-reveal>
   <table>
     <caption class="sr-only">{caption}</caption>
@@ -46,8 +48,11 @@ const hl = (i: number) => !single && plans[i]?.highlight;
     </tbody>
   </table>
 </div>
+</div>
 
 <style>
+  /* Stack into cards before a plan column (up to four of them) gets too narrow to read. */
+  .cmp-frame { container: cmp / inline-size; }
   .cmp {
     background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-3);
     box-shadow: var(--shadow-1); overflow: hidden;
@@ -79,7 +84,7 @@ const hl = (i: number) => !single && plans[i]?.highlight;
   .cmp--single .cmp__corner { inline-size: 36%; }
   .cmp--single td { font-size: var(--step-0); }
 
-  @media (max-width: 760px) {
+  @container cmp (max-width: 60rem) {
     .cmp { background: transparent; border: 0; box-shadow: none; overflow: visible; border-radius: 0; }
     .cmp table, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; inline-size: auto; }
     .cmp thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

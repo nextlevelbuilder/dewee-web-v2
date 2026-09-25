@@ -2,7 +2,7 @@
 title: Bắt đầu nhanh
 description: Từ lúc đăng nhập tới câu trả lời đầu tiên của agent trong console, hoặc tự chạy runtime trên máy của bạn và trò chuyện qua terminal. Hai cách, từng bước một.
 section: get-started
-order: 4
+order: 5
 screens: [sign-in, providers, chat]
 updated: 2026-09-25
 ---
@@ -25,7 +25,7 @@ Mở `app.dewee.sh` và chọn **Continue with GitHub**, **Continue with Google*
 
 ### 2. Chờ runtime sẵn sàng
 
-Workspace mới cần có runtime trước. Với On-Premises, hình thức được cung cấp tại Việt Nam, runtime kết nối sau khi license key của nó được gắn vào workspace (xem [Kích hoạt license](/docs/runtime/licence)). Ô trạng thái ở đầu console cho biết khi nào runtime đã online.
+Workspace mới cần có runtime trước. Với On-Premises, runtime kết nối sau khi license key của nó được gắn vào workspace (xem [Kích hoạt license](/docs/runtime/licence)). Nếu bạn tự cài đặt, runtime chạy ngay trên máy của bạn; xem [Tự cài đặt dewee](/docs/get-started/self-install). Ô trạng thái ở đầu console cho biết khi nào runtime đã online.
 
 ### 3. Kết nối model provider
 
@@ -64,7 +64,7 @@ make up
 curl http://localhost:18790/health
 ```
 
-`prepare-env.sh` tạo file `.env` và sinh gateway token cùng encryption key nếu chúng chưa có. `make up` kéo image đã phát hành về, khởi động PostgreSQL có pgvector và nâng cấp schema cơ sở dữ liệu. Gateway khoẻ mạnh sẽ trả về `{"status":"ok","protocol":3}`. Mở `http://localhost:18790` để vào dashboard.
+`prepare-env.sh` tạo file `.env` và sinh gateway token cùng encryption key nếu chúng chưa có. `make up` kéo image đã phát hành về, khởi động PostgreSQL có pgvector và nâng cấp schema cơ sở dữ liệu. Gateway khoẻ mạnh sẽ trả về `{"status":"ok","protocol":3}`.
 
 ### Từ mã nguồn
 
@@ -74,7 +74,7 @@ make build
 source .env.local && ./dewee
 ```
 
-`dewee onboard` hỏi chuỗi kết nối PostgreSQL, kiểm tra nó, sinh gateway token và encryption key, chạy migration rồi ghi các secret đó vào `.env.local`. Chạy `dewee` không kèm lệnh con sẽ khởi động gateway. `make build` tạo binary chỉ có API; `make build-full` nhúng thêm dashboard web.
+`dewee onboard` hỏi chuỗi kết nối PostgreSQL, kiểm tra nó, sinh gateway token và encryption key, chạy migration rồi ghi các secret đó vào `.env.local`. Chạy `dewee` không kèm lệnh con sẽ khởi động gateway.
 
 ### Cấu hình và trò chuyện từ terminal
 

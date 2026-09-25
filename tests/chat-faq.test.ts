@@ -5,6 +5,8 @@ describe("answerFromFaq", () => {
   it("answers known topics in the visitor's language without asking for an email", () => {
     expect(answerFromFaq("How much does dewee cost?", "en")).toMatchObject({ askEmail: false, text: expect.stringContaining("$500/year") });
     expect(answerFromFaq("Có cài on-premises được không?", "vi")).toMatchObject({ askEmail: false, text: expect.stringContaining("VPS hoặc Mac mini") });
+    expect(answerFromFaq("Can I self-host dewee with Docker?", "en")).toMatchObject({ askEmail: false, text: expect.stringContaining("https://dewee.sh/install") });
+    expect(answerFromFaq("Làm sao để tự cài dewee?", "vi")).toMatchObject({ askEmail: false, text: expect.stringContaining("https://dewee.sh/vi/install") });
   });
 
   it("hands a request for a person, or an unknown question, to the team and asks for an email", () => {

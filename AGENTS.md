@@ -88,7 +88,7 @@ Use `pnpm preview` for anything that touches the worker (chat, API, MCP, redirec
 - **Copy never lives in `.astro` files.** Put it in `src/content/pages/<page>.ts`.
 - **Facts are verified.** Numbers and claims come from the dewee repo, the changelog or
   `src/content/site.ts`. Never invent customers, metrics or testimonials.
-- **VI pricing is On-Premises only.** Use `plansFor(locale)`.
+- **VI pricing is Self-install and On-Premises only.** Use `plansFor(locale)`.
 - **Tokens only.** No raw colours, sizes or durations in components (see `DESIGN.md`).
 - Files are named in kebab-case for TS and PascalCase for Astro components. Keep files under
   about 200 lines and split when a real boundary appears.

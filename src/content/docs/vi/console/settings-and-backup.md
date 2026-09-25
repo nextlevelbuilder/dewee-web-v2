@@ -7,7 +7,7 @@ screens: [settings, backup]
 updated: 2026-09-25
 ---
 
-**Cài đặt** chứa các tuỳ chọn áp dụng cho toàn workspace, từ tin nhắn ghép cặp tới múi giờ mặc định. **Sao lưu & xuất dữ liệu** cho biết dữ liệu của bạn được bảo vệ thế nào theo hình thức triển khai, và nơi yêu cầu xuất hay khôi phục dữ liệu. Trên Dedicated và On-Premises, chủ workspace còn có thêm vài trang để quản lý runtime do chính họ vận hành. Tại Việt Nam, dewee chỉ được triển khai On-Premises, nên bạn sẽ dùng các trang này.
+**Cài đặt** chứa các tuỳ chọn áp dụng cho toàn workspace, từ tin nhắn ghép cặp tới múi giờ mặc định. **Sao lưu & xuất dữ liệu** cho biết dữ liệu của bạn được bảo vệ thế nào theo hình thức triển khai, và nơi yêu cầu xuất hay khôi phục dữ liệu. Trên Dedicated và On-Premises, chủ workspace còn có thêm vài trang để quản lý runtime do chính họ vận hành. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises; với On-Premises, bạn sẽ dùng các trang này.
 
 ## Ai được dùng
 

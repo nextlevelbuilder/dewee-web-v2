@@ -2,7 +2,7 @@
 title: Thuật ngữ
 description: Định nghĩa ngắn các thuật ngữ dùng trong tài liệu và console của dewee, từ agent, tenant tới ghép cặp, skill, trace và edition, kèm liên kết tới trang chi tiết.
 section: get-started
-order: 5
+order: 6
 updated: 2026-09-25
 ---
 

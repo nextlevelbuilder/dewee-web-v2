@@ -1,13 +1,13 @@
 ---
 title: Hỗ trợ và thanh toán
-description: Mở ticket hỗ trợ, yêu cầu cài runtime package và liên hệ người vận hành; hiểu trang Thanh toán trên AaaS và cách gắn license khi chạy On-Premises tại Việt Nam.
+description: Mở ticket hỗ trợ, yêu cầu cài runtime package và liên hệ người vận hành; hiểu trang Thanh toán trên AaaS và cách gắn license khi bạn tự vận hành runtime.
 section: console
 order: 14
 screens: [support, billing]
 updated: 2026-09-25
 ---
 
-**Hỗ trợ** là nơi bạn nhờ trợ giúp cho workspace của mình: mở ticket, yêu cầu cài một runtime package, hoặc tìm cách liên hệ người vận hành. **Thanh toán** là nơi workspace AaaS quản lý gói đăng ký, hoá đơn và hoàn tiền. Tại Việt Nam, dewee chỉ được triển khai On-Premises: quyền sử dụng đến từ license thường niên mà bạn gắn vào workspace, nên bạn không mua gói nào trên trang này.
+**Hỗ trợ** là nơi bạn nhờ trợ giúp cho workspace của mình: mở ticket, yêu cầu cài một runtime package, hoặc tìm cách liên hệ người vận hành. **Thanh toán** là nơi workspace AaaS quản lý gói đăng ký, hoá đơn và hoàn tiền. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises: bạn không mua gói nào trên trang này. On-Premises dùng license thường niên gắn vào workspace, còn Tự cài đặt cần license key khi kết nối kênh.
 
 ## Ai được dùng
 
@@ -55,7 +55,7 @@ Với sự cố khẩn cấp, câu hỏi về thanh toán hay những việc n�
 
 ## Thanh toán
 
-Trang **Thanh toán** chỉ xuất hiện trên bản dewee AaaS. Bản AaaS không được cung cấp tại Việt Nam, nên với workspace On-Premises bạn sẽ không thấy trang này trên menu. Trên AaaS, một workspace dùng gói miễn phí hoặc gói **Annual** duy nhất, không có dùng thử miễn phí và có thời hạn hoàn tiền 14 ngày.
+Trang **Thanh toán** chỉ xuất hiện trên bản dewee AaaS. Bản AaaS không được cung cấp tại Việt Nam, nên với workspace Tự cài đặt hoặc On-Premises bạn sẽ không thấy trang này trên menu. Trên AaaS, một workspace dùng gói miễn phí hoặc gói **Annual** duy nhất, không có dùng thử miễn phí và có thời hạn hoàn tiền 14 ngày.
 
 ::shot{id="billing"}
 
@@ -95,7 +95,7 @@ Mỗi người chỉ được hoàn tiền tự phục vụ một lần. Khi đ�
 
 ### Dedicated và On-Premises
 
-Workspace chạy trên hạ tầng do bạn quản lý dùng license thay cho gói đăng ký. Nếu trang Thanh toán hiện ra, gói sẽ là **Self-hosted**, kèm lời nhắc rằng việc thanh toán đi qua license của bạn chứ không qua trang này. Tại Việt Nam, mọi workspace đều theo cách này. Chủ workspace gắn license key thường niên ở trang **License binding**; trên AaaS, nút **Open activation** trong phần **Dedicated runtime** cũng dẫn tới trang đó. Xem [Cài đặt và sao lưu](/docs/console/settings-and-backup).
+Workspace chạy trên hạ tầng do bạn quản lý dùng license thay cho gói đăng ký. Nếu trang Thanh toán hiện ra, gói sẽ là **Self-hosted**, kèm lời nhắc rằng việc thanh toán đi qua license của bạn chứ không qua trang này. Tại Việt Nam, mọi workspace On-Premises đều theo cách này; workspace Tự cài đặt kích hoạt license key ngay trong dashboard để kết nối kênh. Chủ workspace gắn license key thường niên ở trang **License binding**; trên AaaS, nút **Open activation** trong phần **Dedicated runtime** cũng dẫn tới trang đó. Xem [Cài đặt và sao lưu](/docs/console/settings-and-backup).
 
 ## Liên quan
 

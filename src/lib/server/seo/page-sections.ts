@@ -15,7 +15,7 @@ const RULES: Array<[RegExp, SectionId]> = [
   [/^\/use-cases(\/|$)/, "use-cases"],
   [/^\/(features|architecture|security|integrations|roadmap)(\/|$)/, "product"],
   [/^\/changelog(\/|$)/, "changelog"],
-  [/^\/pricing(\/|$)/, "pricing"],
+  [/^\/(pricing|install)(\/|$)/, "pricing"],
   [/^\/(terms|policy|privacy|cookies|gdpr)(\/|$)/, "legal"],
   [/^\/(story|about|partners|contact)(\/|$)/, "company"],
   [/^\/blog(\/|$)/, "blog"],

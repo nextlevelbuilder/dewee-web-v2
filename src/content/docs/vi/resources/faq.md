@@ -30,7 +30,7 @@ Telegram đã được kiểm chứng với người dùng thật. Slack, Discor
 
 ### Dữ liệu của chúng tôi nằm ở đâu?
 
-Trong cơ sở dữ liệu và bộ lưu trữ file của runtime, tức là trên hạ tầng của bạn. Tại Việt Nam, dewee chỉ được cung cấp dưới dạng On-Premises: runtime chạy trên VPS hoặc Mac mini do công ty bạn quản lý, và chúng tôi cài đặt cùng bạn. Xem [Chọn cách triển khai](/docs/get-started/deployment-options).
+Trong cơ sở dữ liệu và bộ lưu trữ file của runtime, tức là trên hạ tầng của bạn. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises: runtime chạy trên máy hoặc máy chủ của bạn, hay trên VPS hoặc Mac mini do công ty bạn quản lý khi chúng tôi cài đặt cùng bạn theo On-Premises. Xem [Chọn cách triển khai](/docs/get-started/deployment-options).
 
 ### Runtime On-Premises gửi gì về cho các bạn?
 

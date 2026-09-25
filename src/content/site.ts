@@ -22,6 +22,25 @@ export const SITE = {
   } satisfies Bi,
 } as const;
 
+/**
+ * The self-install route shown on /install. The port is where the install script and the Docker
+ * compose file start the dashboard (the customer control plane, dewee-app): it MUST match the
+ * product installer's `DEWEE_APP_PORT` default in the dewee repo (scripts/install-self-hosted.sh).
+ */
+const SELF_INSTALL_PORT = 4321;
+export const SELF_INSTALL = {
+  port: SELF_INSTALL_PORT,
+  dashboardUrl: `http://localhost:${SELF_INSTALL_PORT}`,
+  commands: {
+    /** Standalone binary on macOS or Linux (amd64 and arm64) */
+    script: "curl -fsSL https://dewee.sh/install.sh | bash",
+    /** Docker on macOS or Linux: fetch the compose file, then start it */
+    docker: ["curl -fsSL https://dewee.sh/docker-compose.yml -o docker-compose.yml", "docker compose up -d"],
+    /** Docker Desktop on Windows, in PowerShell */
+    dockerWindows: ["iwr https://dewee.sh/docker-compose.yml -OutFile docker-compose.yml", "docker compose up -d"],
+  },
+} as const;
+
 export const SOCIAL = {
   discord: { label: "Discord", href: "https://dewee.sh/discord", target: "https://discord.gg/eFtJerUrfw" },
   facebook: { label: "Facebook", href: "https://dewee.sh/facebook", target: "https://www.facebook.com/GoClawVietNam" },
@@ -48,6 +67,7 @@ export const NAV_PRODUCT: NavGroup = {
     { href: "/architecture", label: { en: "Architecture", vi: "Kiến trúc" }, description: { en: "Pipeline, memory, teams, tenancy", vi: "Pipeline, bộ nhớ, đội agent, đa người thuê" } },
     { href: "/security", label: { en: "Security", vi: "Bảo mật" }, description: { en: "Shut at the door, five layers deep", vi: "Đóng từ cửa, phòng thủ 5 lớp" } },
     { href: "/integrations", label: { en: "Integrations", vi: "Tích hợp" }, description: { en: "Channels, LLM providers, MCP", vi: "Kênh chat, nhà cung cấp LLM, MCP" } },
+    { href: "/install", label: { en: "Install", vi: "Cài đặt" }, description: { en: "Run dewee on your own machine, free", vi: "Tự cài dewee lên máy của bạn, miễn phí" } },
     { href: "/changelog", label: { en: "Changelog", vi: "Nhật ký thay đổi" }, description: { en: "Every stable and beta release, written down", vi: "Mọi bản stable và beta, ghi lại đầy đủ" } },
     { href: "/roadmap", label: { en: "Roadmap", vi: "Lộ trình" }, description: { en: "What we are building next", vi: "Những gì sắp ra lò" } },
   ],
@@ -80,6 +100,7 @@ export const FOOTER_COLUMNS: NavGroup[] = [
       { href: "/security", label: { en: "Security", vi: "Bảo mật" } },
       { href: "/integrations", label: { en: "Integrations", vi: "Tích hợp" } },
       { href: "/pricing", label: { en: "Pricing & deployment", vi: "Bảng giá & triển khai" } },
+      { href: "/install", label: { en: "Install dewee", vi: "Cài đặt dewee" } },
     ],
   },
   {

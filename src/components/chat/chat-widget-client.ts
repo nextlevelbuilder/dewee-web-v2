@@ -1,13 +1,17 @@
 /**
  * Browser side of the support chat. Protocol (JSON frames over /api/chat/ws):
  *   server → { type: "hello", online, history: Msg[] } | { type: "message", msg: Msg, askEmail? } | { type: "typing" }
- *          | { type: "presence", online } | { type: "ack-email" }
+ *          | { type: "delta", text } (agent reply so far) | { type: "presence", online } | { type: "ack-email" }
  *   client → { type: "message", text } | { type: "email", email }
  * A visitor keeps one session id (localStorage) so a refresh resumes the same conversation.
  * While the panel is open a dropped socket reconnects with backoff (at once when the browser
  * comes back online); messages typed meanwhile wait in an outbox, and replies sent while the
- * visitor was away arrive with the next "hello".
+ * visitor was away arrive with the next "hello". The socket opens with a signed session token
+ * (see chat-widget-session), fetched after a Turnstile check when the site requires one.
  */
+import { textWithLinks } from "./chat-widget-links";
+import { chatSessionToken, forgetChatSession } from "./chat-widget-session";
+
 type Role = "user" | "agent" | "system";
 type Msg = { role: Role; text: string; at: number };
 type Strings = Record<"connecting" | "online" | "offline" | "emailPrompt" | "emailSave" | "emailThanks" | "error" | "you", string>;
@@ -24,37 +28,6 @@ function sessionId(): string {
   } catch {
     return crypto.randomUUID();
   }
-}
-
-/** An http(s) URL in running text, without trailing punctuation that ends the sentence. */
-const URL_RE = /\bhttps?:\/\/[^\s<>"']+[^\s<>"'.,;:!?)\]]/g;
-
-/** Splits message text into plain runs and http(s) links (never any other scheme). */
-export function linkSegments(text: string): { text: string; href?: string }[] {
-  const out: { text: string; href?: string }[] = [];
-  let at = 0;
-  for (const match of text.matchAll(URL_RE)) {
-    let href: string;
-    try { href = new URL(match[0]).href; } catch { continue; }
-    if (match.index > at) out.push({ text: text.slice(at, match.index) });
-    out.push({ text: match[0], href });
-    at = match.index + match[0].length;
-  }
-  if (at < text.length) out.push({ text: text.slice(at) });
-  return out;
-}
-
-/** Message text as DOM nodes: links open in a new tab so the conversation stays in view. */
-function textWithLinks(text: string): Node[] {
-  return linkSegments(text).map((seg) => {
-    if (!seg.href) return document.createTextNode(seg.text);
-    const a = document.createElement("a");
-    a.href = seg.href;
-    a.textContent = seg.text;
-    a.target = "_blank";
-    a.rel = "noopener";
-    return a;
-  });
 }
 
 export function initChatWidget() {
@@ -77,6 +50,9 @@ export function initChatWidget() {
   let retries = 0;
   let retryTimer = 0;
   let typingEl: HTMLLIElement | null = null;
+  /** The agent's reply while it streams in; replaced by the final message. */
+  let draftEl: HTMLLIElement | null = null;
+  let opening = false;
   let hydrated = false;
   /** Newest server timestamp on screen: a reconnect's history shows only what came after it. */
   let lastServerAt = 0;
@@ -92,6 +68,21 @@ export function initChatWidget() {
   const clearTyping = () => {
     typingEl?.remove();
     typingEl = null;
+    draftEl?.remove();
+    draftEl = null;
+  };
+
+  const showDraft = (text: string) => {
+    typingEl?.remove();
+    typingEl = null;
+    if (!draftEl) {
+      draftEl = document.createElement("li");
+      draftEl.className = "msg msg--agent";
+      draftEl.appendChild(document.createElement("p"));
+      log.appendChild(draftEl);
+    }
+    draftEl.firstElementChild!.textContent = text;
+    scrollDown();
   };
 
   const render = (m: Msg, fromServer = false) => {
@@ -116,19 +107,41 @@ export function initChatWidget() {
     scrollDown();
   };
 
+  const retryLater = () => {
+    setState("connecting", strings.error);
+    const delay = Math.min(15000, 800 * 2 ** retries++);
+    retryTimer = window.setTimeout(connect, delay);
+  };
+
   const connect = () => {
-    if (ws && ws.readyState <= 1) return;
+    if ((ws && ws.readyState <= 1) || opening) return;
     clearTimeout(retryTimer);
     setState("connecting", retries ? strings.error : strings.connecting);
+    const sid = sessionId();
+    opening = true;
+    chatSessionToken(sid, log).then((token) => {
+      opening = false;
+      if (!panel.hidden) openSocket(sid, token);
+    }, () => {
+      opening = false;
+      forgetChatSession();
+      if (!panel.hidden) retryLater();
+    });
+  };
+
+  const openSocket = (sid: string, token: string) => {
     const proto = location.protocol === "https:" ? "wss" : "ws";
-    const socket = new WebSocket(`${proto}://${location.host}/api/chat/ws?sid=${encodeURIComponent(sessionId())}&locale=${locale}`);
+    const auth = token ? `&token=${encodeURIComponent(token)}` : "";
+    const socket = new WebSocket(`${proto}://${location.host}/api/chat/ws?sid=${encodeURIComponent(sid)}&locale=${locale}${auth}`);
     ws = socket;
+    let opened = false;
     socket.addEventListener("open", () => {
+      opened = true;
       retries = 0;
       while (outbox.length) socket.send(outbox.shift()!);
     });
     socket.addEventListener("message", (ev) => {
-      let data: { type: string; online?: boolean; history?: Msg[]; msg?: Msg; askEmail?: boolean };
+      let data: { type: string; online?: boolean; history?: Msg[]; msg?: Msg; askEmail?: boolean; text?: string };
       try { data = JSON.parse(String(ev.data)); } catch { return; }
       if (data.type === "hello") {
         setState(data.online ? "online" : "offline");
@@ -150,6 +163,8 @@ export function initChatWidget() {
         }
       } else if (data.type === "typing") {
         showTyping();
+      } else if (data.type === "delta" && typeof data.text === "string") {
+        showDraft(data.text);
       } else if (data.type === "presence") {
         setState(data.online ? "online" : "offline");
       } else if (data.type === "ack-email") {
@@ -161,10 +176,10 @@ export function initChatWidget() {
     socket.addEventListener("close", () => {
       // A socket replaced by a newer one says nothing about the current connection.
       if (ws !== socket || panel.hidden) return;
+      // Refused before opening: the session token expired or no longer matches, so get a new one.
+      if (!opened) forgetChatSession();
       clearTyping();
-      setState("connecting", strings.error);
-      const delay = Math.min(15000, 800 * 2 ** retries++);
-      retryTimer = window.setTimeout(connect, delay);
+      retryLater();
     });
   };
 

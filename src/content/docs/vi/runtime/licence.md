@@ -1,12 +1,15 @@
 ---
 title: Kích hoạt license
-description: Cách runtime On-Premises được gắn vào workspace và kích hoạt bằng license key hằng năm, cùng những gì xảy ra khi license bị tạm ngưng, hết hạn hoặc bị thu hồi.
+description: Cách runtime Tự cài đặt hoặc On-Premises được gắn vào workspace bằng license key hằng năm, và điều gì xảy ra khi license bị tạm ngưng, hết hạn hoặc thu hồi.
 section: runtime
 order: 3
 updated: 2026-09-25
 ---
 
-Tại Việt Nam, dewee được cung cấp theo hình thức On-Premises, và mỗi runtime On-Premises đi kèm một license key hằng năm. Key gắn runtime mà bạn vận hành với đúng workspace và đơn hàng của nó. Key là bản ghi quyền sử dụng, không phải lớp bảo mật: dữ liệu của bạn vẫn được bảo vệ bởi gateway token, API key và vai trò, như mô tả trong [Tổng quan bảo mật](/docs/security/overview).
+Tại Việt Nam, dewee được cung cấp theo hình thức Tự cài đặt và On-Premises, và mỗi runtime On-Premises đi kèm một license key hằng năm. Key gắn runtime mà bạn vận hành với đúng workspace và đơn hàng của nó. Key là bản ghi quyền sử dụng, không phải lớp bảo mật: dữ liệu của bạn vẫn được bảo vệ bởi gateway token, API key và vai trò, như mô tả trong [Tổng quan bảo mật](/docs/security/overview).
+
+> [!NOTE]
+> Runtime Tự cài đặt dùng cùng license key hằng năm, giá $500/năm, để kết nối kênh. Agent, provider và skill dùng được mà không cần key. Chủ workspace dán key vào dashboard để kích hoạt; xem [Tự cài đặt dewee](/docs/get-started/self-install).
 
 Việc kiểm tra license trên runtime là tuỳ chọn và mặc định tắt. Các triển khai có license bật nó bằng `DEWEE_LICENSE_REQUIRED=1`.
 

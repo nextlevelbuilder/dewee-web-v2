@@ -60,4 +60,4 @@ Khi lượt chạy kết thúc, dewee lưu các tin nhắn mới vào session v�
 | Key của provider và các secret khác | Mã hoá trong cơ sở dữ liệu bằng encryption key của runtime |
 | Đội ngũ, vai trò và workspace | Console |
 
-Tại Việt Nam, dewee được cung cấp dưới dạng On-Premises: runtime chạy trên hạ tầng của bạn. Xem [Chọn cách triển khai](/docs/get-started/deployment-options).
+Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises: runtime chạy trên hạ tầng của bạn. Xem [Chọn cách triển khai](/docs/get-started/deployment-options).
