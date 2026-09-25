@@ -1,26 +1,37 @@
 ---
 title: Choose a deployment
-description: Compare the three ways to run dewee (AaaS on our shared cloud, a dedicated runtime on TOSE, or On-Premises on your hardware) with prices and trade-offs.
+description: "Compare the four ways to run dewee: Self-install, AaaS on shared cloud, a dedicated runtime on TOSE, or On-Premises set up by us, with prices and trade-offs."
 section: get-started
 order: 3
 updated: 2026-09-25
 ---
 
-dewee is the same product in every deployment: the same console, the same agents, tools, memory and API. What changes is where the runtime gateway runs, who operates it, what you may install on it, and how it is licensed. This page lays the three options side by side so you can pick one before you start.
+dewee is the same product in every deployment: the same console, the same agents, tools, memory and API. What changes is where the runtime gateway runs, who operates it, what you may install on it, and how it is licensed. This page lays the four options side by side so you can pick one before you start. In Vietnam, we offer Self-install and On-Premises.
 
 ## At a glance
 
-| | AaaS | Dedicated on TOSE | On-Premises |
-|---|---|---|---|
-| **Runtime runs on** | Our shared cloud | Your own isolated runtime on TOSE.sh | Your VPS, server or Mac mini |
-| **Price** | $500 per year | $500 per year licence + $99 TOSE credit deposit | From $5K, quoted per project, includes the $500/year licence |
-| **Runtime size** | Shared | From 1 vCPU / 2 GB; top up TOSE credits as you grow | Your hardware |
-| **Extra packages and CLIs** | Curated set only | Install what you need | Install what you need |
-| **Licence key** | None | Yes | Yes |
-| **Setup** | Start the same day | Set up on TOSE.sh | 1 to 3 weeks, with our team |
-| **Where your data lives** | Our cloud | Your isolated runtime | Your network only |
+| | Self-install | AaaS | Dedicated on TOSE | On-Premises |
+|---|---|---|---|---|
+| **Runtime runs on** | Your own computer or server | Our shared cloud | Your own isolated runtime on TOSE.sh | Your VPS, server or Mac mini |
+| **Price** | Free to install; $500 per year licence to connect channels | $500 per year | $500 per year licence + $99 TOSE credit deposit | From $5K, quoted per project, includes the $500/year licence |
+| **Runtime size** | Your hardware, 2 GB RAM minimum | Shared | From 1 vCPU / 2 GB; top up TOSE credits as you grow | Your hardware |
+| **Extra packages and CLIs** | Install what you need | Curated set only | Install what you need | Install what you need |
+| **Licence key** | Needed to connect channels | None | Yes | Yes |
+| **Setup** | You run the install script | Start the same day | Set up on TOSE.sh | 1 to 3 weeks, with our team |
+| **Where your data lives** | Your machine or network | Our cloud | Your isolated runtime | Your network only |
+| **Offered in Vietnam** | Yes | No | No | Yes |
 
-Prices are also on the [pricing page](/pricing). In Vietnam, dewee is offered as On-Premises only.
+Prices are also on the [pricing page](/pricing).
+
+## Self-install
+
+You install dewee on your own Mac, Linux machine or server with our install script, as a standalone binary or with Docker, and set everything up yourself in the local dashboard.
+
+- **What you get:** the runtime and its dashboard at `http://localhost:4321`, where you create the owner account, add an LLM provider and build agents. Installing and using agents, providers and skills is free.
+- **Licence key:** connecting channels such as Zalo, Telegram, Discord or Slack needs a dewee licence at $500 per year, activated in the dashboard. Early Access takes 50% off the first year for the first 50 licences, until 15 October 2026; see [pricing](/pricing).
+- **Trade-offs:** no setup help is included, and updates and backups are yours to run. If you want us to do the install, choose On-Premises.
+
+Choose Self-install when you want to try dewee on your own hardware today, or when you are comfortable operating the runtime yourself. [Install dewee yourself](/docs/get-started/self-install) walks through it.
 
 ## AaaS (AI as a Service)
 
@@ -52,22 +63,23 @@ The runtime runs on hardware you own, inside your network. Our team does the set
 - **Your data:** conversations, memory, files and provider keys stay in your network.
 - **Trade-offs:** setup takes 1 to 3 weeks, and you own and look after the hardware.
 
-Choose On-Premises when data must not leave your network, when you want agents to use local models through Ollama inside that network, or when you are in Vietnam.
+Choose On-Premises when data must not leave your network and you want our team to set it up, or when you want agents to use local models through Ollama inside that network.
 
 > [!TIP]
-> Running the runtime yourself? [Install and run the gateway](/docs/runtime/install-and-run) lists what the host needs: Docker or a Go build, and PostgreSQL 18 with pgvector.
+> Self-installing? [Install dewee yourself](/docs/get-started/self-install) covers the install script and the dashboard. Operating the gateway for On-Premises? [Install and run the gateway](/docs/runtime/install-and-run) lists what the host needs: Docker or a Go build, and PostgreSQL 18 with pgvector.
 
 ## Questions to settle before you choose
 
-- **Where must the data live?** If the answer is "inside our network", only On-Premises fits.
-- **Do agents need your own tools?** Custom CLIs, language runtimes or system packages need Dedicated or On-Premises.
-- **Who will operate the runtime?** AaaS and Dedicated leave hosting to us and TOSE; On-Premises puts the hardware in your hands.
-- **How soon do you need it?** AaaS starts the same day; On-Premises is a short project.
+- **Where must the data live?** If the answer is "inside our network", choose Self-install or On-Premises.
+- **Do agents need your own tools?** Custom CLIs, language runtimes or system packages need Self-install, Dedicated or On-Premises.
+- **Who will operate the runtime?** AaaS and Dedicated leave hosting to us and TOSE; Self-install and On-Premises put the hardware in your hands, and with Self-install the setup and updates are yours too.
+- **How soon do you need it?** AaaS starts the same day, and you can run the Self-install script whenever you are ready; On-Premises is a short project.
 
 Not sure yet? [Talk to us](/contact) and describe your constraints; we will suggest a fit.
 
 ## Next steps
 
+- [Install dewee yourself](/docs/get-started/self-install): the Self-install route, step by step.
 - [Quickstart](/docs/get-started/quickstart): sign in and get your first agent reply.
-- [Licence activation](/docs/runtime/licence): how Dedicated and On-Premises runtimes are activated.
+- [Licence activation](/docs/runtime/licence): how Self-install, Dedicated and On-Premises runtimes are activated.
 - [Security model](/docs/security/overview): what each layer protects, whichever deployment you pick.

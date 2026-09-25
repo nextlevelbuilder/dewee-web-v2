@@ -10,7 +10,7 @@ The runtime is the part of dewee that does the work: agents, tools, channels, sc
 
 ## What you run
 
-- **The gateway**, a single Go binary called `dewee`. Running `dewee` with no subcommand starts it. By default it listens on port `18790` and serves the HTTP API, the WebSocket at `/ws` and, in builds that include it, the web dashboard at `/`.
+- **The gateway**, a single Go binary called `dewee`. Running `dewee` with no subcommand starts it. By default it listens on port `18790` and serves the HTTP API and the WebSocket at `/ws`.
 - **PostgreSQL 18 with pgvector.** The standard build refuses to start without `GOCLAW_POSTGRES_DSN`. The first migration enables the `pgcrypto` and `vector` extensions.
 - **Two secrets you generate once**: the gateway token, which clients send as a bearer token, and the encryption key for stored secrets.
 
@@ -37,7 +37,7 @@ curl http://localhost:18790/health
 | `make migrate` | Runs pending database migrations |
 | `make reset` | Stops everything and **deletes the data volumes** |
 
-The image is published as `ghcr.io/nextlevelbuilder/dewee`. The `latest` tag includes the web dashboard and Python, `latest-base` is API-only, `latest-full` adds every runtime and skill dependency, and `latest-otel` adds OpenTelemetry export. Optional extras are switched on with a variable, for example `make up WITH_OTEL=1`: `WITH_BROWSER`, `WITH_OTEL`, `WITH_SANDBOX`, `WITH_TAILSCALE`, `WITH_REDIS` and `WITH_CLAUDE_CLI`. `WITH_WEB_NGINX=1` serves the dashboard from a separate nginx on port 3000 when you need your own TLS or reverse proxy.
+The image is published as `ghcr.io/nextlevelbuilder/dewee`. The `latest` tag includes Python, `latest-base` is the minimal image, `latest-full` adds every runtime and skill dependency, and `latest-otel` adds OpenTelemetry export. Optional extras are switched on with a variable, for example `make up WITH_OTEL=1`: `WITH_BROWSER`, `WITH_OTEL`, `WITH_SANDBOX`, `WITH_TAILSCALE`, `WITH_REDIS` and `WITH_CLAUDE_CLI`.
 
 ## Run from source
 
@@ -49,9 +49,9 @@ make build
 source .env.local && ./dewee
 ```
 
-`dewee onboard` asks for the connection string and tests it, generates the gateway token and encryption key, runs the migrations and writes those values to `.env.local`. The `config.json` it saves holds no secrets. `make build` produces an API-only binary; `make build-full` builds the web dashboard first and embeds it, which is what you want in production.
+`dewee onboard` asks for the connection string and tests it, generates the gateway token and encryption key, runs the migrations and writes those values to `.env.local`. The `config.json` it saves holds no secrets.
 
-After the gateway starts, `./dewee setup` walks you through a provider, a model, an agent and a channel, or you can use the dashboard at `http://localhost:18790`.
+After the gateway starts, `./dewee setup` walks you through a provider, a model, an agent and a channel.
 
 ## Configuration
 

@@ -16,7 +16,7 @@ dewee là nền tảng để vận hành AI agent trong doanh nghiệp. Trong de
 | **Runtime gateway** | Một service Go duy nhất chạy vòng lặp agent, gọi các model provider, thực thi tool, lưu bộ nhớ trong PostgreSQL và cung cấp API HTTP, WebSocket (mặc định ở cổng `18790`). |
 | **Console** | Ứng dụng web tại `app.dewee.sh`, nơi đội ngũ của bạn quản lý agent, provider, kênh, thành viên và API key, đồng thời xem trace, mức sử dụng và nhật ký hoạt động. |
 
-Tại Việt Nam, dewee được cung cấp theo hình thức On-Premises: runtime chạy trên hạ tầng của chính bạn. [Chọn cách triển khai](/docs/get-started/deployment-options) giải thích chi tiết.
+Tại Việt Nam, dewee được cung cấp theo hai hình thức Tự cài đặt và On-Premises: runtime đều chạy trên hạ tầng của chính bạn. [Chọn cách triển khai](/docs/get-started/deployment-options) giải thích chi tiết.
 
 ::shot{id="overview"}
 
@@ -45,7 +45,7 @@ Tại Việt Nam, dewee được cung cấp theo hình thức On-Premises: runti
 ## Đọc tiếp
 
 1. [dewee hoạt động thế nào](/docs/get-started/how-it-works): hành trình của một tin nhắn qua hệ thống.
-2. [Chọn cách triển khai](/docs/get-started/deployment-options): hình thức On-Premises tại Việt Nam.
+2. [Chọn cách triển khai](/docs/get-started/deployment-options): Tự cài đặt và On-Premises tại Việt Nam.
 3. [Bắt đầu nhanh](/docs/get-started/quickstart): từ lúc đăng nhập tới câu trả lời đầu tiên của agent.
 
 Muốn xem tổng quan sản phẩm trước? [Trang tính năng](/features) và [trang bảo mật](/security) tóm tắt cùng nội dung cho người đọc rộng hơn.

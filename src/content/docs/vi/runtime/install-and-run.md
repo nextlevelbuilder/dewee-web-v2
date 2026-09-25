@@ -6,11 +6,11 @@ order: 1
 updated: 2026-09-25
 ---
 
-Runtime là phần làm việc thật sự của dewee: agent, tool, channel, lịch chạy và workflow đều chạy bên trong một tiến trình gateway duy nhất. Với On-Premises, hình thức được cung cấp tại Việt Nam, bạn vận hành gateway này trên hạ tầng của mình. Trang này dành cho người vận hành: cài đặt, trỏ tới cơ sở dữ liệu và giữ cho nó chạy ổn định.
+Runtime là phần làm việc thật sự của dewee: agent, tool, channel, lịch chạy và workflow đều chạy bên trong một tiến trình gateway duy nhất. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises; với On-Premises, bạn vận hành gateway này trên hạ tầng của mình. Nếu bạn tự cài đặt, hãy làm theo [Tự cài đặt dewee](/docs/get-started/self-install). Trang này dành cho người vận hành: cài đặt, trỏ tới cơ sở dữ liệu và giữ cho nó chạy ổn định.
 
 ## Bạn sẽ chạy những gì
 
-- **Gateway**, một file Go binary duy nhất tên `dewee`. Chạy `dewee` không kèm subcommand sẽ khởi động gateway. Mặc định nó lắng nghe ở cổng `18790`, phục vụ HTTP API, WebSocket tại `/ws` và, với bản build có kèm giao diện, web dashboard tại `/`.
+- **Gateway**, một file Go binary duy nhất tên `dewee`. Chạy `dewee` không kèm subcommand sẽ khởi động gateway. Mặc định nó lắng nghe ở cổng `18790`, phục vụ HTTP API và WebSocket tại `/ws`.
 - **PostgreSQL 18 có pgvector.** Bản build chuẩn sẽ không khởi động nếu thiếu `GOCLAW_POSTGRES_DSN`. Migration đầu tiên bật hai extension `pgcrypto` và `vector`.
 - **Hai secret tạo một lần**: gateway token, mà client gửi kèm dưới dạng bearer token, và khoá mã hoá cho các secret được lưu trữ.
 
@@ -37,7 +37,7 @@ curl http://localhost:18790/health
 | `make migrate` | Chạy các database migration còn chờ |
 | `make reset` | Dừng mọi thứ và **xoá luôn volume dữ liệu** |
 
-Image được phát hành tại `ghcr.io/nextlevelbuilder/dewee`. Tag `latest` có sẵn web dashboard và Python, `latest-base` chỉ có API, `latest-full` cài sẵn mọi runtime và phụ thuộc của skill, còn `latest-otel` có thêm xuất dữ liệu OpenTelemetry. Các phần bổ sung được bật bằng biến, ví dụ `make up WITH_OTEL=1`: `WITH_BROWSER`, `WITH_OTEL`, `WITH_SANDBOX`, `WITH_TAILSCALE`, `WITH_REDIS` và `WITH_CLAUDE_CLI`. `WITH_WEB_NGINX=1` phục vụ dashboard qua một nginx riêng ở cổng 3000 khi bạn cần TLS hoặc reverse proxy của riêng mình.
+Image được phát hành tại `ghcr.io/nextlevelbuilder/dewee`. Tag `latest` có sẵn Python, `latest-base` là image tối giản, `latest-full` cài sẵn mọi runtime và phụ thuộc của skill, còn `latest-otel` có thêm xuất dữ liệu OpenTelemetry. Các phần bổ sung được bật bằng biến, ví dụ `make up WITH_OTEL=1`: `WITH_BROWSER`, `WITH_OTEL`, `WITH_SANDBOX`, `WITH_TAILSCALE`, `WITH_REDIS` và `WITH_CLAUDE_CLI`.
 
 ## Chạy từ mã nguồn
 
@@ -49,9 +49,9 @@ make build
 source .env.local && ./dewee
 ```
 
-`dewee onboard` hỏi chuỗi kết nối và kiểm tra nó, sinh gateway token và khoá mã hoá, chạy migration rồi ghi các giá trị đó vào `.env.local`. File `config.json` mà lệnh lưu lại không chứa secret nào. `make build` tạo binary chỉ có API; `make build-full` build web dashboard trước rồi nhúng vào, đây là bản bạn nên dùng cho production.
+`dewee onboard` hỏi chuỗi kết nối và kiểm tra nó, sinh gateway token và khoá mã hoá, chạy migration rồi ghi các giá trị đó vào `.env.local`. File `config.json` mà lệnh lưu lại không chứa secret nào.
 
-Sau khi gateway chạy, `./dewee setup` dẫn bạn qua các bước chọn provider, model, agent và channel, hoặc bạn dùng dashboard tại `http://localhost:18790`.
+Sau khi gateway chạy, `./dewee setup` dẫn bạn qua các bước chọn provider, model, agent và channel.
 
 ## Cấu hình
 
