@@ -96,3 +96,25 @@ describe("helpers", () => {
     expect(fillTemplate("{n} of {total} {x}", { n: 3, total: 50 })).toBe("3 of 50 {x}");
   });
 });
+
+describe("Early Access proxy", () => {
+  const req = new Request("https://dewee.sh/api/early-access");
+  const upstream = (body: unknown, status = 200) => (async () => new Response(JSON.stringify(body), { status })) as unknown as typeof fetch;
+
+  it("passes through a valid upstream body, validated", async () => {
+    const { handleEarlyAccessRequest } = await import("../src/lib/server/early-access-proxy");
+    const res = await handleEarlyAccessRequest(req, upstream(valid));
+    expect(res.headers.get("cache-control")).toContain("max-age=60");
+    expect(await res.json()).toMatchObject({ remainingSlots: 37, checkoutUrl: valid.checkoutUrl });
+  });
+
+  it("answers null (200) when the upstream fails, is missing or is malformed", async () => {
+    const { handleEarlyAccessRequest } = await import("../src/lib/server/early-access-proxy");
+    const down = (async () => { throw new Error("offline"); }) as unknown as typeof fetch;
+    for (const f of [down, upstream({}, 404), upstream({ active: "yes" })]) {
+      const res = await handleEarlyAccessRequest(req, f);
+      expect(res.status).toBe(200);
+      expect(await res.json()).toBeNull();
+    }
+  });
+});

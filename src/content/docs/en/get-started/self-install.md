@@ -59,7 +59,7 @@ The first visit walks you through onboarding:
 
 ## Add a licence to connect channels
 
-Agents, providers and skills work without a licence. To connect channels such as Zalo, Telegram, Discord or Slack, you need a dewee licence key, which costs $500 per year. Once you have the key, paste it into the dashboard to activate it; channels then become available to connect. [Licence activation](/docs/runtime/licence) explains what the key does.
+Agents, providers and skills work without a licence. To connect channels such as Zalo, Telegram, Discord or Slack, you need a dewee licence key for that workspace, which costs $500 per year; each workspace needs its own. Once you have the key, paste it into the dashboard to activate it; channels then become available to connect. [Licence activation](/docs/runtime/licence) explains what the key does.
 
 > [!TIP]
 > Early Access: the first 50 licences get 50% off the first year, $250 instead of $500, until the end of 15 October 2026, Vietnam time. See [pricing](/pricing).

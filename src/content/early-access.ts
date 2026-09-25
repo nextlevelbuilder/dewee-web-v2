@@ -8,7 +8,10 @@ import { formatDate, pick, type Bi, type Locale } from "~/i18n/config";
 import { fillTemplate } from "~/lib/early-access";
 
 export const EARLY_ACCESS = {
-  endpoint: "https://app.dewee.sh/api/public/early-access",
+  /** The product's public state; only the site's worker calls it, so no browser CORS is needed. */
+  upstream: "https://app.dewee.sh/api/public/early-access",
+  /** Same-origin proxy the browser block reads (src/pages/api/early-access.ts). */
+  endpoint: "/api/early-access",
   /** 23:59:59 on 15 October 2026, Asia/Saigon (UTC+7) */
   endsAt: "2026-10-15T16:59:59Z",
   totalSlots: 50,
@@ -44,22 +47,22 @@ const COPY: Bi<EarlyAccessCopy> = {
   en: {
     eyebrow: "Early Access",
     title: "Half price for the *first {total}*.",
-    lede: "The licence that connects dewee to your chat channels is {price} a year. For the first {total} licences, the first year costs {discounted}.",
+    lede: "The licence that connects a dewee workspace to your chat channels is {price} a year. For the first {total} licences, the first year costs {discounted}.",
     sealLabel: "{percent}% off",
     period: "for the first year, then {price} a year",
     deadline: "until {date}",
     slotsTotal: "{total} slots in total",
     slotsLeft: "{n} of {total} slots left",
-    countdown: "{days} days {hours} hours left",
+    countdown: "Ends in {days}d {hours}h",
     cta: "Claim an Early Access licence",
     secondary: "Install dewee first",
     closedTitle: "Early Access has *closed*.",
-    closedBody: "The licence that connects chat channels is {price} a year. Installing dewee and building agents stays free.",
+    closedBody: "The licence that connects chat channels is {price} a year per workspace. Installing dewee and building agents stays free.",
   },
   vi: {
     eyebrow: "Early Access",
     title: "Giảm một nửa cho *{total} suất đầu tiên*.",
-    lede: "License để kết nối dewee với các kênh chat có giá {price} mỗi năm. Với {total} license đầu tiên, năm đầu chỉ còn {discounted}.",
+    lede: "License để kết nối một workspace dewee với các kênh chat có giá {price} mỗi năm. Với {total} license đầu tiên, năm đầu chỉ còn {discounted}.",
     sealLabel: "giảm {percent}%",
     period: "cho năm đầu, sau đó {price} mỗi năm",
     deadline: "đến hết ngày {date}",
@@ -69,7 +72,7 @@ const COPY: Bi<EarlyAccessCopy> = {
     cta: "Nhận license Early Access",
     secondary: "Cài dewee trước",
     closedTitle: "Early Access đã *kết thúc*.",
-    closedBody: "License để kết nối kênh chat có giá {price} mỗi năm. Cài đặt dewee và dựng agent vẫn miễn phí.",
+    closedBody: "License để kết nối kênh chat có giá {price} mỗi năm cho mỗi workspace. Cài đặt dewee và dựng agent vẫn miễn phí.",
   },
 };
 

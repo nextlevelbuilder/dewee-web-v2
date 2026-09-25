@@ -32,11 +32,11 @@ export const PLANS: Plan[] = [
     icon: "download",
     name: { en: "Self-install", vi: "Tự cài đặt" },
     price: { en: "$0", vi: "$0" },
-    period: { en: "to install · $500/year licence to connect channels", vi: "để cài đặt · license $500/năm để kết nối kênh chat" },
+    period: { en: "to install · $500/year per workspace to connect channels", vi: "để cài đặt · license $500/năm mỗi workspace để kết nối kênh chat" },
     tagline: { en: "Install dewee on your own machine and set it up yourself.", vi: "Tự cài dewee lên máy của bạn và tự thiết lập." },
     includes: {
-      en: ["Standalone binary for macOS and Linux, or Docker", "Runs on your laptop, server or VPS", "Dashboard with guided onboarding", "Agents, providers and skills without a licence", "Channels unlock with a $500/year licence", "Your data stays on your machine"],
-      vi: ["Bản chạy độc lập cho macOS, Linux, hoặc Docker", "Chạy trên laptop, máy chủ hoặc VPS của bạn", "Bảng điều khiển có hướng dẫn thiết lập từng bước", "Dùng agent, nhà cung cấp và skill không cần license", "Mở kết nối kênh chat với license $500/năm", "Dữ liệu nằm trên máy của bạn"],
+      en: ["Standalone binary for macOS and Linux, or Docker", "Runs on your laptop, server or VPS", "Dashboard with guided onboarding", "Agents, providers and skills without a licence", "Channels unlock with a $500/year licence per workspace", "Your data stays on your machine"],
+      vi: ["Bản chạy độc lập cho macOS, Linux, hoặc Docker", "Chạy trên laptop, máy chủ hoặc VPS của bạn", "Bảng điều khiển có hướng dẫn thiết lập từng bước", "Dùng agent, nhà cung cấp và skill không cần license", "Mở kết nối kênh chat với license $500/năm cho mỗi workspace", "Dữ liệu nằm trên máy của bạn"],
     },
     tradeoffs: {
       en: ["You run and update it yourself", "No setup help: On-Premises is the done-for-you option", "Chat channels need the licence"],
@@ -189,7 +189,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "receipt",
     label: { en: "Price", vi: "Giá" },
     values: {
-      "self-hosted": { en: "Free to install; $500 a year licence to connect channels", vi: "Cài đặt miễn phí; license $500 mỗi năm để kết nối kênh chat" },
+      "self-hosted": { en: "Free to install; $500 a year per workspace to connect channels", vi: "Cài đặt miễn phí; license $500 mỗi năm cho mỗi workspace để kết nối kênh chat" },
       saas: { en: "$500 a year", vi: "$500 mỗi năm" },
       dedicated: { en: "$500 a year + $99 TOSE credit deposit", vi: "$500 mỗi năm + $99 ký quỹ TOSE" },
       "on-premises": { en: "From $5K, custom quote, first-year licence included", vi: "Từ $5K theo báo giá, đã gồm license năm đầu" },
