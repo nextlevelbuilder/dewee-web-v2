@@ -1,10 +1,11 @@
 /**
  * Deployment models and prices, from the deployment diagram supplied by the founders and
- * dewee docs/commercial-runtime-control-plane.md. Vietnam: On-Premises only.
+ * dewee docs/commercial-runtime-control-plane.md. Self-install (free to install, a $500/year
+ * licence to connect channels) is the owners' decision. Vietnam: Self-install and On-Premises.
  */
 import type { Bi } from "~/i18n/config";
 
-export type PlanId = "saas" | "dedicated" | "on-premises";
+export type PlanId = "self-hosted" | "saas" | "dedicated" | "on-premises";
 
 export type Plan = {
   id: PlanId;
@@ -16,14 +17,36 @@ export type Plan = {
   includes: Bi<string[]>;
   tradeoffs: Bi<string[]>;
   cta: Bi;
+  /** Site path the plan's call to action opens; without it the CTA opens the contact form for the plan. */
+  ctaPath?: string;
   highlight?: boolean;
   /** Markets where this plan is offered; undefined = everywhere except where overridden */
   vietnam: boolean;
-  /** Numeric USD price for structured data (the starting price for quote-led plans) */
+  /** Numeric USD price for structured data (the starting price for quote-led plans, the licence for Self-install) */
   priceUsd: number;
 };
 
 export const PLANS: Plan[] = [
+  {
+    id: "self-hosted",
+    icon: "download",
+    name: { en: "Self-install", vi: "Tự cài đặt" },
+    price: { en: "$0", vi: "$0" },
+    period: { en: "to install · $500/year licence to connect channels", vi: "để cài đặt · license $500/năm để kết nối kênh chat" },
+    tagline: { en: "Install dewee on your own machine and set it up yourself.", vi: "Tự cài dewee lên máy của bạn và tự thiết lập." },
+    includes: {
+      en: ["Standalone binary for macOS and Linux, or Docker", "Runs on your laptop, server or VPS", "Dashboard with guided onboarding", "Agents, providers and skills without a licence", "Channels unlock with a $500/year licence", "Your data stays on your machine"],
+      vi: ["Bản chạy độc lập cho macOS, Linux, hoặc Docker", "Chạy trên laptop, máy chủ hoặc VPS của bạn", "Bảng điều khiển có hướng dẫn thiết lập từng bước", "Dùng agent, nhà cung cấp và skill không cần license", "Mở kết nối kênh chat với license $500/năm", "Dữ liệu nằm trên máy của bạn"],
+    },
+    tradeoffs: {
+      en: ["You run and update it yourself", "No setup help: On-Premises is the done-for-you option", "Chat channels need the licence"],
+      vi: ["Bạn tự vận hành và cập nhật", "Không kèm hỗ trợ cài đặt: muốn chúng tôi làm giúp, hãy chọn On-Premises", "Kết nối kênh chat cần license"],
+    },
+    cta: { en: "Install dewee", vi: "Cài đặt dewee" },
+    ctaPath: "/install",
+    vietnam: true,
+    priceUsd: 500,
+  },
   {
     id: "saas",
     icon: "cloud",
@@ -84,13 +107,13 @@ export const PLANS: Plan[] = [
   },
 ];
 
-/** Plans shown for a locale: Vietnamese visitors see On-Premises only. */
+/** Plans shown for a locale: Vietnamese visitors see the plans marked `vietnam` (Self-install and On-Premises). */
 export const plansFor = (locale: "en" | "vi") => (locale === "vi" ? PLANS.filter((p) => p.vietnam) : PLANS);
 
 /**
  * The honest side-by-side on /pricing. Each row answers one question a buyer asks, per plan.
  * Sources: the founders' deployment diagram (pros/cons), docs/commercial-runtime-control-plane.md
- * (isolation, packages, licence) and the homepage FAQ (setup time).
+ * (isolation, packages, licence), the homepage FAQ (setup time) and the owners' Self-install terms.
  */
 export type PlanComparisonRow = { key: string; icon: string; label: Bi; values: Record<PlanId, Bi> };
 
@@ -100,6 +123,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "server",
     label: { en: "Infrastructure", vi: "Hạ tầng" },
     values: {
+      "self-hosted": { en: "Your laptop, server or VPS", vi: "Laptop, máy chủ hoặc VPS của bạn" },
       saas: { en: "A shared VPS that we run", vi: "VPS dùng chung do chúng tôi vận hành" },
       dedicated: { en: "Your own runtime on TOSE.sh, from 1 vCPU / 2 GB", vi: "Runtime riêng trên TOSE.sh, từ 1 vCPU / 2 GB" },
       "on-premises": { en: "Your VPS or a Mac mini", vi: "VPS hoặc Mac mini của công ty bạn" },
@@ -110,6 +134,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "shield",
     label: { en: "Isolation", vi: "Mức tách biệt" },
     values: {
+      "self-hosted": { en: "Physical: it runs on your machine", vi: "Tách biệt vật lý: chạy trên máy của bạn" },
       saas: { en: "Per workspace, on shared servers: a small chance of exposure remains", vi: "Theo workspace trên máy chủ dùng chung, vẫn còn rủi ro nhỏ" },
       dedicated: { en: "One isolated runtime per workspace", vi: "Mỗi workspace một runtime riêng" },
       "on-premises": { en: "Physical: the machine is yours", vi: "Tách biệt vật lý: máy là của bạn" },
@@ -120,6 +145,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "package",
     label: { en: "Custom runtime packages", vi: "Cài package riêng cho runtime" },
     values: {
+      "self-hosted": { en: "Yes, it is your machine", vi: "Có, máy là của bạn" },
       saas: { en: "No. Ask support for a curated package", vi: "Không. Gửi yêu cầu để đội ngũ xem xét" },
       dedicated: { en: "Yes, install your own packages and CLIs", vi: "Có, tự cài package và CLI" },
       "on-premises": { en: "Yes, agreed with you during setup", vi: "Có, thống nhất cùng bạn khi triển khai" },
@@ -130,6 +156,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "timer",
     label: { en: "Setup time", vi: "Thời gian triển khai" },
     values: {
+      "self-hosted": { en: "Run the install script, then onboard in the dashboard", vi: "Chạy script cài đặt, rồi thiết lập theo hướng dẫn" },
       saas: { en: "Same day", vi: "Trong ngày" },
       dedicated: { en: "Longer: provisioning, licence activation, a learning curve", vi: "Lâu hơn: khởi tạo, kích hoạt license, làm quen" },
       "on-premises": { en: "Usually 1–3 weeks, workflows included", vi: "Thường 1–3 tuần, gồm cả quy trình tuỳ chỉnh" },
@@ -140,6 +167,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "wrench",
     label: { en: "Who maintains it", vi: "Ai bảo trì" },
     values: {
+      "self-hosted": { en: "You do: updates and backups are yours", vi: "Bạn tự lo cập nhật và sao lưu" },
       saas: { en: "We do, all of it", vi: "Chúng tôi lo toàn bộ" },
       dedicated: { en: "You do, while TOSE runs the servers", vi: "Bạn tự lo, TOSE vận hành máy chủ" },
       "on-premises": { en: "We do for the first year; you own the hardware", vi: "Chúng tôi bảo trì năm đầu, bạn sở hữu phần cứng" },
@@ -150,6 +178,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "database",
     label: { en: "Where your data lives", vi: "Dữ liệu nằm ở đâu" },
     values: {
+      "self-hosted": { en: "On your machine", vi: "Trên máy của bạn" },
       saas: { en: "On our shared servers", vi: "Trên máy chủ dùng chung của chúng tôi" },
       dedicated: { en: "In your runtime on TOSE.sh", vi: "Trong runtime riêng trên TOSE.sh" },
       "on-premises": { en: "Inside your company. It never leaves.", vi: "Trong công ty bạn, không đi đâu cả" },
@@ -160,6 +189,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
     icon: "receipt",
     label: { en: "Price", vi: "Giá" },
     values: {
+      "self-hosted": { en: "Free to install; $500 a year licence to connect channels", vi: "Cài đặt miễn phí; license $500 mỗi năm để kết nối kênh chat" },
       saas: { en: "$500 a year", vi: "$500 mỗi năm" },
       dedicated: { en: "$500 a year + $99 TOSE credit deposit", vi: "$500 mỗi năm + $99 ký quỹ TOSE" },
       "on-premises": { en: "From $5K, custom quote, first-year licence included", vi: "Từ $5K theo báo giá, đã gồm license năm đầu" },

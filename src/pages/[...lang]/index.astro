@@ -12,6 +12,7 @@ import { CHANNELS, PROVIDERS } from "~/content/integrations";
 import { FOUNDERS } from "~/content/founders";
 import { ECOSYSTEM } from "~/content/ecosystem";
 import { plansFor } from "~/content/plans";
+import { earlyAccessBlock } from "~/content/early-access";
 import { faqJsonLd, productJsonLd } from "~/lib/json-ld";
 import Icon from "~/components/ui/Icon.astro";
 import SectionHead from "~/components/blocks/SectionHead.astro";
@@ -30,6 +31,7 @@ import FounderCards from "~/components/blocks/FounderCards.astro";
 import EcosystemGrid from "~/components/blocks/EcosystemGrid.astro";
 import Faq from "~/components/blocks/Faq.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
+import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
 
 export const prerender = true;
 export const getStaticPaths = () => langPaths();
@@ -47,10 +49,11 @@ const plans = plansFor(locale).map((p) => ({
   tagline: pick(p.tagline, locale),
   includes: pick(p.includes, locale),
   tradeoffs: pick(p.tradeoffs, locale),
-  cta: { label: pick(p.cta, locale), href: href(`/pricing#${p.id}`) },
+  cta: { label: pick(p.cta, locale), href: href(p.ctaPath ?? `/pricing#${p.id}`) },
   highlight: p.highlight,
   priceUsd: p.priceUsd,
 }));
+const earlyAccess = earlyAccessBlock(locale, { cta: `${href("/contact")}?plan=self-hosted`, secondary: href("/install") });
 const jsonLd = [
   productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: String(p.priceUsd) })) }),
   faqJsonLd(t.faq.items),
@@ -195,6 +198,8 @@ const jsonLd = [
       <Faq items={t.faq.items} />
     </div>
   </section>
+
+  <EarlyAccess {...earlyAccess} band />
 
   <CtaBand
     title={t.cta.title}

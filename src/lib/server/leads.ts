@@ -17,7 +17,7 @@ import { EMAIL_RE, notifyTeam } from "./notify";
 export const LEAD_KINDS = ["contact", "partner", "newsletter"] as const;
 export const CONTACT_TOPICS = ["sales", "integration", "use-case", "partner", "press", "other"] as const;
 export const TEAM_SIZES = ["1-10", "11-50", "51-200", "201-1000", "1000+"] as const;
-export const PLAN_IDS = ["saas", "dedicated", "on-premises"] as const satisfies readonly Plan["id"][];
+export const PLAN_IDS = ["self-hosted", "saas", "dedicated", "on-premises"] as const satisfies readonly Plan["id"][];
 export const PARTNER_ROLES = ["solution", "bd", "not-sure"] as const;
 export const PARTNER_TIERS = ["elite", "master", "grandmaster", "legendary", "hunter", "closer", "commander", "warlord", "not-sure"] as const;
 

@@ -1,5 +1,5 @@
 /**
- * /terms: Terms of Service. The VI version covers the Vietnamese offer (On-Premises only) and
+ * /terms: Terms of Service. The VI version covers the Vietnamese offer (Self-install and On-Premises) and
  * never names the shared cloud or TOSE. Facts come from src/content/plans.ts and the dewee
  * licence runbook; the legal entity name, registered address and governing law are not known
  * yet, so the text stays neutral about them (see the pricing-legal report).
@@ -36,11 +36,12 @@ export const TERMS: Bi<LegalDoc> = {
       {
         id: "service",
         title: "What we provide",
-        short: "dewee comes three ways: our shared cloud, your own runtime on TOSE.sh, or your own hardware. The pricing page lists what each includes.",
+        short: "dewee comes four ways: installed by you, our shared cloud, your own runtime on TOSE.sh, or your own hardware set up by us. The pricing page lists what each includes.",
         body: [
-          "dewee is an operating layer for AI agents: a runtime that runs your agents, channels and workflows, and a control plane where your team configures and watches them. You can use it in one of three ways:",
+          "dewee is an operating layer for AI agents: a runtime that runs your agents, channels and workflows, and a control plane where your team configures and watches them. You can use it in one of four ways:",
           {
             defs: [
+              ["Self-install", "You install the runtime and its dashboard on your own machine and set it up yourself. Installing is free; connecting chat channels needs a yearly licence key, activated in the dashboard."],
               ["AaaS", "The runtime runs on shared servers that we operate, and your team uses the control plane at app.dewee.sh."],
               ["Dedicated on TOSE.sh", "Your own isolated runtime on TOSE.sh, activated with a licence key and connected to your own control plane."],
               ["On-Premises", "The runtime and control plane run on your own VPS or Mac mini. We do the setup and build the custom workflows agreed in your quote."],
@@ -107,6 +108,7 @@ export const TERMS: Bi<LegalDoc> = {
           "Prices are listed on the [pricing page](/pricing) in US dollars, per year:",
           {
             list: [
+              "Self-install: free to install; a $500 yearly licence to connect chat channels.",
               "AaaS: $500 per year.",
               "Dedicated on TOSE.sh: a $500 yearly licence plus a $99 TOSE credit deposit. We pass the deposit to TOSE.sh as credit for your runtime; after that you top up credit directly with TOSE.sh.",
               "On-Premises: a custom quote from $5,000, which includes the first year’s $500 licence, five custom workflows and one year of maintenance.",
@@ -192,7 +194,7 @@ export const TERMS: Bi<LegalDoc> = {
   vi: {
     meta: {
       title: "Điều khoản dịch vụ",
-      description: "Thoả thuận khi sử dụng dewee On-Premises: phạm vi dịch vụ, tài khoản, quy tắc sử dụng, license, dữ liệu, chi phí, hỗ trợ và giới hạn trách nhiệm, viết dễ hiểu.",
+      description: "Thoả thuận khi sử dụng dewee, tự cài đặt hay On-Premises: phạm vi dịch vụ, tài khoản, quy tắc sử dụng, license, dữ liệu, chi phí, hỗ trợ và trách nhiệm.",
       crumb: "Điều khoản dịch vụ",
     },
     hero: {
@@ -214,10 +216,10 @@ export const TERMS: Bi<LegalDoc> = {
       {
         id: "service",
         title: "Dịch vụ chúng tôi cung cấp",
-        short: "Tại Việt Nam, dewee được triển khai On-Premises: chạy trên VPS hoặc Mac mini của chính bạn, chúng tôi lo phần cài đặt.",
+        short: "Tại Việt Nam, dewee chạy trên máy của chính bạn: bạn tự cài đặt, hoặc chọn On-Premises để chúng tôi lo phần cài đặt.",
         body: [
           "dewee là lớp vận hành cho AI agent: một runtime chạy agent, kênh chat và quy trình của bạn, cùng một control plane để đội ngũ cấu hình và theo dõi chúng.",
-          "Tại Việt Nam, dewee được cung cấp theo hình thức On-Premises: runtime và control plane chạy trên VPS hoặc Mac mini của bạn. Chúng tôi cài đặt, kích hoạt license và xây dựng các quy trình tuỳ chỉnh đã thống nhất trong báo giá. Phạm vi chi tiết có trên [trang bảng giá](/vi/pricing) và trong báo giá của bạn.",
+          "Tại Việt Nam, dewee được cung cấp theo hai hình thức. Tự cài đặt: bạn cài runtime và bảng điều khiển lên máy của mình và tự thiết lập; việc cài đặt miễn phí, còn kết nối kênh chat cần license key hằng năm, kích hoạt trong bảng điều khiển. On-Premises: runtime và control plane chạy trên VPS hoặc Mac mini của bạn; chúng tôi cài đặt, kích hoạt license và xây dựng các quy trình tuỳ chỉnh đã thống nhất trong báo giá. Phạm vi chi tiết có trên [trang bảng giá](/vi/pricing) và trong báo giá của bạn.",
           "dewee được cải tiến liên tục nên tính năng có thể thay đổi theo thời gian.",
         ],
       },
@@ -273,8 +275,9 @@ export const TERMS: Bi<LegalDoc> = {
       {
         id: "fees",
         title: "Chi phí và gia hạn",
-        short: "Giá On-Premises từ $5K theo báo giá, đã gồm license năm đầu. Chi phí mô hình AI bạn trả trực tiếp cho nhà cung cấp. Hoàn tiền theo chính sách hoàn tiền.",
+        short: "Tự cài đặt miễn phí, license $500/năm để kết nối kênh chat. Giá On-Premises từ $5K theo báo giá, đã gồm license năm đầu. Chi phí mô hình AI bạn trả trực tiếp cho nhà cung cấp.",
         body: [
+          "Tự cài đặt: cài đặt miễn phí; license $500 mỗi năm để kết nối kênh chat.",
           "dewee On-Premises được tính theo báo giá, từ $5.000 (đô la Mỹ), đã gồm license $500 cho năm đầu, 5 quy trình tuỳ chỉnh và một năm bảo trì. Giá tham khảo có trên [trang bảng giá](/vi/pricing).",
           "License được tính theo từng năm. Giá và điều kiện gia hạn theo bảng giá tại thời điểm gia hạn, trừ khi đơn hàng của bạn quy định khác. Thuế (nếu có) phụ thuộc nơi bạn ở và được thể hiện trên báo giá hoặc hoá đơn.",
           "Việc hoàn tiền tuân theo [chính sách hoàn tiền](/vi/policy#refunds).",

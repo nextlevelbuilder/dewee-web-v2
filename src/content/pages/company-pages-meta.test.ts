@@ -1,7 +1,7 @@
 /**
  * SEO limits for the company pages (REVIEW.md §3): titles ≤ 60 characters and descriptions of
  * 140–160 characters, in both languages. Also guards the Vietnamese rule that plan choices offer
- * On-Premises only.
+ * Self-install and On-Premises only.
  */
 import { describe, expect, it } from "vitest";
 import { LOCALES } from "~/i18n/config";
@@ -34,10 +34,10 @@ describe("contact form plan choices", () => {
   };
 
   it("offers every deployment in English", () => {
-    expect(planValues("en")).toEqual(["saas", "dedicated", "on-premises"]);
+    expect(planValues("en")).toEqual(["self-hosted", "saas", "dedicated", "on-premises"]);
   });
 
-  it("offers On-Premises only in Vietnamese", () => {
-    expect(planValues("vi")).toEqual(["on-premises"]);
+  it("offers Self-install and On-Premises only in Vietnamese", () => {
+    expect(planValues("vi")).toEqual(["self-hosted", "on-premises"]);
   });
 });

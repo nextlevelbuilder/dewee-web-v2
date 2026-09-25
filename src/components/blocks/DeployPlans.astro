@@ -1,7 +1,8 @@
 ---
 /**
- * Deployment plans as index cards. With a single plan (the Vietnam market: On-Premises only)
- * the card spreads into a wide two-column sheet instead of a lonely narrow column.
+ * Deployment plans as index cards. With a single plan the card spreads into a wide two-column
+ * sheet instead of a lonely narrow column. Four plans (the English market) sit four across on
+ * wide screens and two by two below that, so a lone card never dangles on a row of its own.
  */
 import Icon from "~/components/ui/Icon.astro";
 import type { IconName } from "~/components/ui/icon-paths";
@@ -12,9 +13,10 @@ type Plan = {
 interface Props { plans: Plan[]; includesLabel: string; tradeoffsLabel: string; badge?: string }
 const { plans, includesLabel, tradeoffsLabel, badge } = Astro.props;
 const single = plans.length === 1;
+const four = plans.length === 4;
 ---
 
-<ul class:list={["plans", { "plans--single": single }]} role="list" data-reveal-group>
+<ul class:list={["plans", { "plans--single": single, "plans--four": four }]} role="list" data-reveal-group>
   {plans.map((p) => (
     <li id={p.id} class:list={["plan", { "plan--hl": p.highlight && !single }]} data-reveal>
       {p.highlight && !single && badge && <span class="plan__badge">{badge}</span>}
@@ -45,6 +47,11 @@ const single = plans.length === 1;
 
 <style>
   .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--space-5); align-items: stretch; }
+  .plans--four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
+  .plans--four .plan { padding: var(--space-5); }
+  .plans--four .plan__amount { font-size: var(--step-4); }
+  @media (max-width: 1180px) { .plans--four { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); } }
+  @media (max-width: 640px) { .plans--four { grid-template-columns: minmax(0, 1fr); } }
   .plan {
     position: relative; display: grid; grid-template-rows: auto 1fr; gap: var(--space-6);
     padding: var(--space-6); border-radius: var(--radius-3); background: var(--surface);

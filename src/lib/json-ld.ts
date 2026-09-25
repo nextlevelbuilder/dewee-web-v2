@@ -166,3 +166,14 @@ export function articleJsonLd(opts: ArticleInput): Node {
 export function techArticleJsonLd(opts: ArticleInput & { section?: string }): Node {
   return { ...articleBase("TechArticle", opts), ...(opts.section ? { articleSection: opts.section } : {}) };
 }
+
+/** A how-to guide (HowTo): numbered steps, each with a short name and one sentence. */
+export function howToJsonLd(opts: { name: string; description: string; url: string; steps: { name: string; text: string }[] }): Node {
+  return {
+    "@type": "HowTo",
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    step: opts.steps.map((s, i) => ({ "@type": "HowToStep", position: i + 1, name: s.name, text: s.text, url: `${opts.url}#step-${i + 1}` })),
+  };
+}

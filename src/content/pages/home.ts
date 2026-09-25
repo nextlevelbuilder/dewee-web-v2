@@ -154,7 +154,7 @@ export const HOME: Bi<{
     deploy: {
       eyebrow: "Deployment",
       title: "Your cloud, ours, or *somewhere in between*.",
-      lede: "Start on our shared cloud, move to a dedicated runtime, or keep everything on your own hardware. Same product, same care.",
+      lede: "Install it yourself for free, start on our shared cloud, move to a dedicated runtime, or have us set it up on your own hardware. Same product, same care.",
       cta: "Compare deployment options",
     },
     story: {
@@ -190,10 +190,10 @@ export const HOME: Bi<{
       title: "Things people ask us *first*.",
       items: [
         { q: "Is dewee just GoClaw with a new name?", a: "No. dewee grew out of GoClaw, but it is a separate, closed-source product with enterprise hardening, a customer control plane, licensing and a team that supports you. GoClaw remains open and free for non-commercial use." },
-        { q: "Can we keep our data on our own servers?", a: "Yes. The On-Premises option runs the dewee runtime on your VPS or Mac mini, activated by a licence key. In Vietnam, On-Premises is the only option we offer." },
+        { q: "Can we keep our data on our own servers?", a: "Yes. The On-Premises option runs the dewee runtime on your VPS or Mac mini, activated by a licence key. Or install dewee on your own machine yourself: installing is free, and a licence connects your chat channels. In Vietnam, these two are the options we offer." },
         { q: "Which AI models can we use?", a: "Anthropic, OpenAI, Gemini, DeepSeek, Qwen, Mistral, xAI, OpenRouter, Groq, Ollama and more: 20+ providers. You bring your own keys, and each agent can fall back to another provider automatically." },
         { q: "Do our people need to learn a new tool?", a: "Not really. Agents join the chat apps your team already uses, such as Telegram, Zalo, Slack, Lark or Discord. Admins get a control panel; everyone else just @mentions the agent." },
-        { q: "How long does it take to go live?", a: "A shared AaaS workspace is ready the same day. Dedicated and on-premises setups usually take one to three weeks, including the custom workflows we build with you." },
+        { q: "How long does it take to go live?", a: "Self-install takes as long as the install script and a guided setup in the dashboard. A shared AaaS workspace is ready the same day. Dedicated and on-premises setups usually take one to three weeks, including the custom workflows we build with you." },
         { q: "What happens if an agent gets something wrong?", a: "Every run is traced, sensitive actions can require approval, and agents hand off to a human when they are unsure. You can see exactly what happened and why." },
       ],
     },
@@ -326,8 +326,8 @@ export const HOME: Bi<{
     deploy: {
       eyebrow: "Triển khai",
       title: "Chạy ngay trên *hạ tầng của bạn*.",
-      lede: "Tại Việt Nam, dewee được triển khai On-Premises: cài trên máy chủ hoặc Mac mini của bạn, dữ liệu không rời khỏi công ty. Chúng tôi cài đặt, dựng quy trình và chăm sóc bạn suốt năm đầu.",
-      cta: "Xem chi tiết gói On-Premises",
+      lede: "Tại Việt Nam, dewee chạy trên máy chủ hoặc Mac mini của bạn, dữ liệu không rời khỏi công ty. Bạn tự cài miễn phí, hoặc chọn On-Premises để chúng tôi cài đặt, dựng quy trình và chăm sóc bạn suốt năm đầu.",
+      cta: "So sánh hai cách triển khai",
     },
     story: {
       eyebrow: "Câu chuyện",
@@ -362,10 +362,10 @@ export const HOME: Bi<{
       title: "Những điều mọi người hỏi *đầu tiên*.",
       items: [
         { q: "dewee có phải là GoClaw đổi tên không?", a: "Không. dewee lớn lên từ GoClaw nhưng là sản phẩm riêng, mã nguồn đóng, được gia cố cho doanh nghiệp, có bảng điều khiển khách hàng, license và đội ngũ hỗ trợ. GoClaw vẫn mở và miễn phí cho mục đích phi thương mại." },
-        { q: "Dữ liệu có nằm trên máy chủ của chúng tôi không?", a: "Có. Gói On-Premises chạy runtime dewee trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key. Tại Việt Nam, On-Premises là phương thức triển khai duy nhất." },
+        { q: "Dữ liệu có nằm trên máy chủ của chúng tôi không?", a: "Có. Gói On-Premises chạy runtime dewee trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key. Hoặc bạn tự cài dewee lên máy của mình: cài đặt miễn phí, license dùng để kết nối kênh chat. Tại Việt Nam, đây là hai cách triển khai chúng tôi cung cấp." },
         { q: "Dùng được những mô hình AI nào?", a: "Anthropic, OpenAI, Gemini, DeepSeek, Qwen, Mistral, xAI, OpenRouter, Groq, Ollama và hơn thế: hơn 20 nhà cung cấp. Bạn dùng khoá API của mình, và mỗi agent có thể tự chuyển sang nhà cung cấp dự phòng." },
         { q: "Nhân viên có phải học công cụ mới không?", a: "Gần như không. Agent vào ngay các ứng dụng chat đội ngũ đang dùng như Telegram, Zalo, Slack, Lark hay Discord. Quản trị viên có bảng điều khiển; mọi người khác chỉ cần @nhắc tên agent." },
-        { q: "Mất bao lâu để đi vào hoạt động?", a: "Bản On-Premises thường mất một đến ba tuần, gồm cả cài đặt và các quy trình tuỳ chỉnh chúng tôi dựng cùng bạn." },
+        { q: "Mất bao lâu để đi vào hoạt động?", a: "Tự cài đặt chỉ cần chạy script cài đặt rồi thiết lập theo hướng dẫn trong bảng điều khiển. Bản On-Premises thường mất một đến ba tuần, gồm cả cài đặt và các quy trình tuỳ chỉnh chúng tôi dựng cùng bạn." },
         { q: "Nếu agent làm sai thì sao?", a: "Mọi lần chạy đều có trace, thao tác nhạy cảm có thể yêu cầu phê duyệt, và agent chuyển cho người thật khi không chắc chắn. Bạn thấy rõ chuyện gì đã xảy ra và vì sao." },
       ],
     },

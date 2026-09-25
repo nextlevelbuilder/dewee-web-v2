@@ -8,13 +8,18 @@ type Entry = { match: RegExp; en: string; vi: string };
 const ENTRIES: Entry[] = [
   {
     match: /pric|cost|how much|\$|plan|giá|bao nhiêu|chi phí|gói/i,
-    en: "Three ways to run dewee:\n• AaaS: $500/year on our shared cloud, 14-day refund.\n• Dedicated on TOSE.sh: $500/year licence + $99 TOSE credit deposit.\n• On-premises: from ~$5K, including setup, 5 custom workflows and a year of care.\nDetails: https://dewee.sh/pricing",
-    vi: "Tại Việt Nam, dewee được triển khai On-Premises: cài trên máy chủ / Mac mini của bạn, báo giá theo nhu cầu, từ khoảng $5K gồm cài đặt, 5 quy trình tuỳ chỉnh và 1 năm bảo trì, cập nhật.\nChi tiết: https://dewee.sh/vi/pricing",
+    en: "Four ways to run dewee:\n• Self-install: free to install on your own machine; a $500/year licence connects chat channels.\n• AaaS: $500/year on our shared cloud, 14-day refund.\n• Dedicated on TOSE.sh: $500/year licence + $99 TOSE credit deposit.\n• On-premises: from ~$5K, including setup, 5 custom workflows and a year of care.\nDetails: https://dewee.sh/pricing",
+    vi: "Tại Việt Nam có hai cách triển khai dewee:\n• Tự cài đặt: cài miễn phí trên máy của bạn, license $500/năm để kết nối kênh chat.\n• On-Premises: chúng tôi cài trên máy chủ / Mac mini của bạn, báo giá theo nhu cầu, từ khoảng $5K gồm cài đặt, 5 quy trình tuỳ chỉnh và 1 năm bảo trì, cập nhật.\nChi tiết: https://dewee.sh/vi/pricing",
   },
   {
-    match: /on.?prem|self.?host|own server|mac mini|vps|air.?gap|tự cài|máy chủ riêng|nội bộ/i,
-    en: "Yes. On-premises runs the dewee runtime on your own VPS or Mac mini, activated by a licence key; your data never leaves your network. We install it, build 5 custom workflows with you and look after it for a year. https://dewee.sh/pricing#on-premises",
-    vi: "Được ạ. Bản On-Premises chạy runtime dewee ngay trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key, dữ liệu không rời khỏi hạ tầng của bạn. Đội ngũ sẽ cài đặt, dựng cùng bạn 5 quy trình tuỳ chỉnh và chăm sóc trong 1 năm. https://dewee.sh/vi/pricing",
+    match: /install|self.?host|docker|binary|windows|tự cài|cài đặt/i,
+    en: "Yes, you can install dewee yourself for free: one command on macOS or Linux, or Docker anywhere (Windows through Docker Desktop). Then the dashboard walks you through setup. A $500/year licence connects chat channels. https://dewee.sh/install",
+    vi: "Được ạ, bạn có thể tự cài dewee miễn phí: một lệnh trên macOS hoặc Linux, hoặc Docker trên mọi hệ điều hành (Windows dùng Docker Desktop). Sau đó bảng điều khiển hướng dẫn bạn thiết lập. License $500/năm dùng để kết nối kênh chat. https://dewee.sh/vi/install",
+  },
+  {
+    match: /on.?prem|own server|mac mini|vps|air.?gap|máy chủ riêng|nội bộ/i,
+    en: "Yes. On-premises runs the dewee runtime on your own VPS or Mac mini, activated by a licence key; your data never leaves your network. We install it, build 5 custom workflows with you and look after it for a year. Prefer to install it yourself? https://dewee.sh/install · https://dewee.sh/pricing#on-premises",
+    vi: "Được ạ. Bản On-Premises chạy runtime dewee ngay trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key, dữ liệu không rời khỏi hạ tầng của bạn. Đội ngũ sẽ cài đặt, dựng cùng bạn 5 quy trình tuỳ chỉnh và chăm sóc trong 1 năm. Muốn tự cài? https://dewee.sh/vi/install · https://dewee.sh/vi/pricing",
   },
   {
     match: /secur|safe|privacy|data|encrypt|gdpr|bảo mật|an toàn|dữ liệu|mã hoá/i,
