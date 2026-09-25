@@ -56,8 +56,12 @@ jobs:
       - name: Smoke test
         if: steps.gate.outputs.ok == 'true'
         run: |
+          # A fresh deploy can answer 5xx for a few seconds while the edge picks it up; retry before failing.
           sleep 10
           for p in / /vi /index.md; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL$p")
+            for try in 1 2 3 4 5; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL$p")
+              [ "$code" = "200" ] && break; sleep 6
+            done
             echo "$p → $code"; [ "$code" = "200" ] || exit 1
           done
