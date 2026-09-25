@@ -1,0 +1,232 @@
+---
+/**
+ * Early Access offer for the Self-install licence: a vermilion seal stamped with the discount,
+ * the price struck through, the deadline in serif italic and a meter of one mark per slot.
+ *
+ * Server-rendered with static, honest facts ("50 slots in total", "until 15 October 2026"), so
+ * it reads fully without JavaScript. In the browser it asks the live endpoint (with a timeout)
+ * for the remaining slots and the checkout URL; the meter fills only from live data. The offer
+ * closes itself after the deadline, when the endpoint says it is inactive or when no slot is
+ * left. The deadline is checked at render too, so a page built after it never advertises it.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+import { isEarlyAccessOpen } from "~/lib/early-access";
+import Icon from "~/components/ui/Icon.astro";
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  /** Text inside the seal, e.g. "−50%" */
+  seal: string;
+  /** Spoken version of the seal, e.g. "50% off" */
+  sealLabel: string;
+  price: { now: string; was: string; period: string };
+  /** Static deadline wording, e.g. "until 15 October 2026" */
+  deadline: string;
+  /** Shown until live data arrives, e.g. "50 slots in total" */
+  slotsTotal: string;
+  /** Live template with `{n}` and `{total}`, e.g. "{n} of {total} slots left" */
+  slotsLeft: string;
+  /** Live template with `{days}` and `{hours}` */
+  countdown: string;
+  cta: { label: string; href: string };
+  secondary?: { label: string; href: string };
+  closed: { title: string; body: string };
+  live: { endpoint: string; endsAt: string; totalSlots: number; timeoutMs: number };
+  /** Paint the section on the paper-2 band */
+  band?: boolean;
+  id?: string;
+}
+const { eyebrow, title, lede, seal, sealLabel, price, deadline, slotsTotal, slotsLeft, countdown, cta, secondary, closed, live, band = false, id = "early-access" } = Astro.props;
+const open = isEarlyAccessOpen(Date.now(), live.endsAt);
+const marks = Array.from({ length: live.totalSlots }, (_, i) => i);
+---
+
+<section
+  id={id}
+  class:list={["section", "ea", { band }]}
+  data-early-access
+  data-state={open ? "open" : "closed"}
+  data-endpoint={live.endpoint}
+  data-ends-at={live.endsAt}
+  data-timeout={live.timeoutMs}
+  data-slots-left={slotsLeft}
+  data-countdown={countdown}
+>
+  <div class="container">
+    <div class="ea__sheet drum-texture" data-reveal>
+      <div class="ea__seal seal" role="img" aria-label={sealLabel}>{seal}</div>
+
+      <div class="ea__copy">
+        <p class="eyebrow">{eyebrow}</p>
+        <h2 class="ea__title ea__when-open" set:html={inlineMarkup(title)} />
+        <p class="ea__lede ea__when-open">{lede}</p>
+        <h2 class="ea__title ea__when-closed" set:html={inlineMarkup(closed.title)} />
+        <p class="ea__lede ea__when-closed">{closed.body}</p>
+      </div>
+
+      <div class="ea__offer ea__when-open">
+        <p class="ea__price">
+          <span class="ea__now" data-ea-now>{price.now}</span>
+          <s class="ea__was" data-ea-was>{price.was}</s>
+          <span class="ea__period">{price.period}</span>
+        </p>
+        <p class="ea__deadline">
+          <span class="ea__date">{deadline}</span>
+          <span class="ea__countdown" data-ea-countdown hidden></span>
+        </p>
+        <div class="ea__slots">
+          <span class="ea__meter" aria-hidden="true">{marks.map(() => <i></i>)}</span>
+          <p class="ea__slots-text" data-ea-slots aria-live="polite">{slotsTotal}</p>
+        </div>
+      </div>
+
+      <div class:list={["ea__actions", { "ea__actions--offer-only": !secondary }]}>
+        <a class="btn btn--primary btn--lg ea__when-open" href={cta.href} data-ea-cta>{cta.label}<Icon name="arrow-right" class="arrow" /></a>
+        {secondary && <a class="btn btn--lg" href={secondary.href}>{secondary.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { fillTemplate, formatUsd, isEarlyAccessOpen, parseEarlyAccess, timeLeft, type EarlyAccessLive } from "~/lib/early-access";
+
+  const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /** Asks the live endpoint once; any failure (network, timeout, bad JSON) resolves to null. */
+  async function fetchLive(endpoint: string, timeoutMs: number): Promise<EarlyAccessLive | null> {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(endpoint, { signal: ctrl.signal, credentials: "omit", headers: { accept: "application/json" } });
+      if (!res.ok) return null;
+      return parseEarlyAccess(await res.json());
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function initEarlyAccess(root: HTMLElement) {
+    const d = root.dataset;
+    const staticEndsAt = d.endsAt ?? "";
+    const countdownEl = root.querySelector<HTMLElement>("[data-ea-countdown]");
+    const slotsEl = root.querySelector<HTMLElement>("[data-ea-slots]");
+    const cta = root.querySelector<HTMLAnchorElement>("[data-ea-cta]");
+    let live: EarlyAccessLive | null = null;
+    let ticker: ReturnType<typeof setInterval> | undefined;
+
+    const render = () => {
+      const now = Date.now();
+      const open = isEarlyAccessOpen(now, staticEndsAt, live);
+      root.dataset.state = open ? "open" : "closed";
+      if (!open) {
+        clearInterval(ticker);
+        return;
+      }
+      if (countdownEl) {
+        const { days, hours } = timeLeft(now, live?.endsAt ?? staticEndsAt);
+        countdownEl.textContent = fillTemplate(d.countdown ?? "", { days, hours });
+        countdownEl.hidden = false;
+      }
+      if (live && slotsEl) {
+        slotsEl.textContent = fillTemplate(d.slotsLeft ?? "", { n: live.remainingSlots, total: live.totalSlots });
+        const taken = live.totalSlots - live.remainingSlots;
+        root.querySelectorAll(".ea__meter i").forEach((mark, i) => mark.classList.toggle("is-taken", i < taken));
+      }
+      if (live) {
+        const nowEl = root.querySelector("[data-ea-now]");
+        const wasEl = root.querySelector("[data-ea-was]");
+        if (nowEl) nowEl.textContent = formatUsd(live.discountedPriceCents);
+        if (wasEl) wasEl.textContent = formatUsd(live.priceCents);
+      }
+      if (live?.checkoutUrl && cta) cta.href = live.checkoutUrl;
+    };
+
+    render();
+    // A live countdown ticks each minute; with reduced motion it is drawn once and left still.
+    if (!reduceMotion()) ticker = setInterval(render, 60_000);
+
+    const endpoint = d.endpoint;
+    if (!endpoint || root.dataset.state === "closed") return;
+    void fetchLive(endpoint, Number(d.timeout) || 4000).then((data) => {
+      if (!data) return; // keep the static, honest copy
+      live = data;
+      syncMarks(root, data.totalSlots);
+      render();
+    });
+  }
+
+  /** The server drew one mark per slot in its static total; redraw if the live total differs. */
+  function syncMarks(root: HTMLElement, total: number) {
+    const meter = root.querySelector(".ea__meter");
+    if (!meter || meter.children.length === total) return;
+    while (meter.firstChild) meter.removeChild(meter.firstChild);
+    for (let i = 0; i < total; i++) meter.appendChild(document.createElement("i"));
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-early-access]:not([data-ea-bound])").forEach((el) => {
+    el.dataset.eaBound = "";
+    initEarlyAccess(el);
+  });
+</script>
+
+<style>
+  .ea__sheet {
+    --drum-size: clamp(18rem, 12rem + 14vw, 28rem);
+    position: relative; display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--space-6) clamp(2rem, 1rem + 4vw, 4.5rem);
+    align-items: center; padding: clamp(2rem, 1.25rem + 3vw, 3.5rem);
+    background-color: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-4); box-shadow: var(--shadow-2);
+  }
+  .ea__seal {
+    --seal-size: 5rem;
+    position: absolute; inset-block-start: calc(var(--seal-size) * -0.35); inset-inline-end: clamp(1rem, 0.5rem + 2vw, 2.5rem);
+    font-size: calc(var(--seal-size) * 0.3); transform: rotate(-8deg);
+  }
+  .ea__copy { display: grid; gap: var(--space-3); align-content: start; }
+  .ea__title { font-size: var(--step-4); max-inline-size: 18ch; }
+  .ea__lede { color: var(--ink-2); max-inline-size: var(--measure-narrow); }
+
+  .ea__offer { display: grid; gap: var(--space-4); }
+  .ea__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); }
+  .ea__now { font-family: var(--font-display-stack); font-size: var(--step-6); line-height: 1; letter-spacing: var(--tracking-display); color: var(--ink); }
+  .ea__was { font-family: var(--font-display-stack); font-size: var(--step-2); color: var(--ink-3); text-decoration-color: var(--seal); text-decoration-thickness: 2px; }
+  .ea__period { flex-basis: 100%; font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); }
+  .ea__deadline { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); }
+  .ea__date { font-family: var(--font-display-stack); font-style: italic; font-size: var(--step-2); color: var(--accent-ink); }
+  .ea__countdown { font-family: var(--font-mono-stack); font-size: var(--step--1); color: var(--ink-2); }
+  .ea__countdown[hidden] { display: none; }
+
+  .ea__slots { display: grid; gap: var(--space-2); }
+  .ea__meter { display: grid; grid-template-columns: repeat(25, minmax(0, 1fr)); gap: 3px; max-inline-size: 24rem; }
+  .ea__meter :global(i) { display: block; block-size: 0.9rem; border: 1.5px solid var(--rule-strong); border-radius: 2px; }
+  .ea__meter :global(i.is-taken) { background: var(--accent); border-color: var(--accent); }
+  .ea__slots-text { font-size: var(--step--1); font-weight: 600; color: var(--ink); }
+
+  .ea__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+  /* Closed: the offer, the checkout and the meter step aside; the regular price and the install link stay. */
+  .ea[data-state="open"] .ea__when-closed,
+  .ea[data-state="closed"] .ea__when-open { display: none; }
+  .ea[data-state="closed"] .ea__seal { opacity: 0.45; filter: grayscale(1); }
+  .ea[data-state="closed"] .ea__actions--offer-only { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ea__meter :global(i) { transition: background-color var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out); }
+    :global(html.js) .ea__sheet .ea__seal { opacity: 0; transform: rotate(-8deg) scale(1.3); transition: opacity var(--dur-3) var(--ease-out) 0.5s, transform var(--dur-4) var(--ease-spring) 0.5s; }
+    :global(html.js) .ea__sheet.is-in .ea__seal { opacity: 1; transform: rotate(-8deg); }
+    :global(html.js) .ea[data-state="closed"] .ea__sheet.is-in .ea__seal { opacity: 0.45; }
+  }
+
+  @media (max-width: 860px) {
+    .ea__sheet { grid-template-columns: minmax(0, 1fr); padding-block-start: clamp(3rem, 2rem + 4vw, 4rem); }
+    .ea__title { padding-inline-end: 4.5rem; }
+  }
+  @media (max-width: 560px) {
+    .ea__seal { --seal-size: 4rem; }
+    .ea__title { padding-inline-end: 3rem; }
+    .ea__actions > * { flex: 1 1 100%; min-inline-size: 0; white-space: normal; }
+  }
+</style>
