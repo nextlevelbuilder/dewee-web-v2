@@ -1,0 +1,124 @@
+---
+/**
+ * /install: install dewee yourself (the Self-install plan). Copy lives in
+ * src/content/pages/install.ts; commands, the port and the dashboard URL come from SELF_INSTALL
+ * in src/content/site.ts, and licence numbers from src/content/early-access.ts.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { SELF_INSTALL, SITE } from "~/content/site";
+import { INSTALL, type InstallRouteId } from "~/content/pages/install";
+import { earlyAccessBlock, earlyAccessFacts } from "~/content/early-access";
+import { fillTemplate } from "~/lib/early-access";
+import { faqJsonLd, howToJsonLd } from "~/lib/json-ld";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
+import PlatformChooser from "~/components/blocks/install/PlatformChooser.astro";
+import InstallSteps from "~/components/blocks/install/InstallSteps.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(INSTALL, locale);
+const href = (p: string) => localePath(locale, p);
+const contact = (plan: string) => `${href("/contact")}?plan=${encodeURIComponent(plan)}`;
+
+const ROUTES: { id: InstallRouteId; icon: string; code: readonly string[] }[] = [
+  { id: "script", icon: "terminal", code: [SELF_INSTALL.commands.script] },
+  { id: "docker", icon: "container", code: SELF_INSTALL.commands.docker },
+  { id: "windows", icon: "monitor", code: SELF_INSTALL.commands.dockerWindows },
+];
+const routes = ROUTES.map((r) => {
+  const c = t.choose.routes[r.id];
+  return { id: r.id, icon: r.icon, tab: c.tab, title: c.title, body: c.body, samples: [{ label: c.label, code: r.code.join("\n") }] };
+});
+
+const facts = { ...earlyAccessFacts(locale), url: SELF_INSTALL.dashboardUrl };
+const steps = t.steps.items.map((s) => ({ title: s.title, body: fillTemplate(s.body, facts) }));
+const earlyAccess = earlyAccessBlock(locale, { cta: contact("self-hosted") });
+
+const pageUrl = `${SITE.url}${href("/install")}`;
+const jsonLd = [
+  howToJsonLd({ name: t.meta.title, description: t.meta.description, url: pageUrl, steps: steps.map((s) => ({ name: s.title, text: s.body })) }),
+  faqJsonLd(t.faq.items),
+];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/install"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/install" }]} jsonLd={jsonLd}>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[{ label: t.hero.primary, href: "#platform" }, { label: t.hero.secondary, href: href("/pricing#compare") }]}
+    mascot={{ mood: "focused", accessory: "glasses" }}
+  />
+
+  <section class="section" id="platform">
+    <div class="container in-stack">
+      <SectionHead eyebrow={t.choose.eyebrow} title={t.choose.title} lede={t.choose.lede} />
+      <div class="in-split">
+        <PlatformChooser label={t.choose.tabsLabel} copy={t.choose.copy} routes={routes} />
+        <aside class="in-req" aria-labelledby="in-req-title" data-reveal>
+          <h3 class="in-req__title" id="in-req-title">{t.requirements.title}</h3>
+          <dl class="in-req__list">
+            {t.requirements.items.map((it) => (
+              <div class="in-req__row">
+                <dt>{it.label}</dt>
+                <dd>{it.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="steps">
+    <div class="container in-stack">
+      <SectionHead eyebrow={t.steps.eyebrow} title={t.steps.title} lede={t.steps.lede} />
+      <InstallSteps label={t.steps.label} items={steps} />
+    </div>
+  </section>
+
+  <EarlyAccess {...earlyAccess} />
+
+  <section class="section band" id="faq">
+    <div class="container in-faq">
+      <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} size="m" />
+      <Faq items={t.faq.items} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: contact("on-premises") }}
+    secondary={{ label: t.cta.secondary, chat: true }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .in-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .in-split { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: clamp(2rem, 1rem + 4vw, 4.5rem); align-items: start; }
+  .in-req {
+    position: sticky; inset-block-start: 6.5rem; display: grid; gap: var(--space-4);
+    padding: var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); box-shadow: var(--shadow-1);
+  }
+  .in-req__title { font-size: var(--step-1); }
+  .in-req__list { display: grid; }
+  .in-req__row { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-block-start: 1px dashed var(--rule); }
+  .in-req__row dt { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .in-req__row dd { margin: 0; font-size: var(--step--1); color: var(--ink); line-height: 1.5; }
+  .in-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  @media (max-width: 900px) {
+    .in-split, .in-faq { grid-template-columns: minmax(0, 1fr); }
+    .in-req { position: static; }
+  }
+</style>

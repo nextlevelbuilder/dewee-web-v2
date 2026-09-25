@@ -1,0 +1,46 @@
+---
+/**
+ * The road from install to first agent as a numbered margin list: a serif-italic numeral on a
+ * bronze rule, a short title and one sentence each. Works for any number of steps, unlike the
+ * three-across `Steps` block.
+ */
+import { inlineMarkup } from "~/lib/inline-markup";
+interface Props {
+  /** Word before each number, e.g. "Step" */
+  label: string;
+  items: { title: string; body: string }[];
+}
+const { label, items } = Astro.props;
+---
+
+<ol class="isteps" role="list" data-reveal-group>
+  {items.map((it, i) => (
+    <li class="isteps__item" id={`step-${i + 1}`} data-reveal>
+      <p class="isteps__num"><span class="sr-only">{label} </span>{i + 1}</p>
+      <div class="isteps__text">
+        <h3 class="isteps__title" set:html={inlineMarkup(it.title)} />
+        <p class="isteps__body">{it.body}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .isteps { display: grid; gap: 0; max-inline-size: 48rem; }
+  .isteps__item {
+    position: relative; display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: var(--space-5);
+    padding-block: var(--space-5); border-block-start: 1px dashed var(--rule-strong); scroll-margin-block-start: 7rem;
+  }
+  .isteps__item:last-child { border-block-end: 1px dashed var(--rule-strong); }
+  .isteps__num {
+    font-family: var(--font-display-stack); font-style: italic; font-size: var(--step-4); line-height: 1;
+    color: var(--accent-ink); border-inline-end: 2px solid var(--bronze); padding-inline-end: var(--space-3); text-align: end;
+  }
+  .isteps__text { display: grid; gap: var(--space-2); min-inline-size: 0; }
+  .isteps__title { font-size: var(--step-2); line-height: 1.2; }
+  .isteps__body { color: var(--ink-2); line-height: 1.65; overflow-wrap: anywhere; }
+  @media (max-width: 560px) {
+    .isteps__item { grid-template-columns: 2.5rem minmax(0, 1fr); gap: var(--space-4); }
+    .isteps__num { font-size: var(--step-3); }
+  }
+</style>
