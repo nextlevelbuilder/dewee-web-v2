@@ -75,6 +75,7 @@ function wire(root: HTMLElement) {
       });
       const data = (await res.json().catch(() => ({}))) as LeadResponse;
       if (res.ok && data.ok) {
+        (window as unknown as { posthog?: { capture: (e: string, p?: object) => void } }).posthog?.capture("lead_submitted", { form: form.getAttribute("action") });
         form.reset();
         root.dataset.state = "done";
         donePanel?.focus();

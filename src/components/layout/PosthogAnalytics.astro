@@ -1,0 +1,57 @@
+---
+/**
+ * PostHog product analytics through the first-party /ingest proxy (see posthog-proxy). Loads
+ * on production only, like Google Tag Manager, so staging and local traffic stay out of the
+ * project. Until the visitor accepts cookies, PostHog keeps its id in memory only (nothing is
+ * stored); CookieBadge switches it to persistent storage on "Accept".
+ * Events: pageviews, plan CTAs, app/contact/outbound clicks, theme toggles, chat opens, leads.
+ */
+import { SITE } from "~/content/site";
+import type { Locale } from "~/i18n/config";
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
+const config = {
+  key: "phc_x3SRpJyREJK2UfZhvQGaqAxax94u6Aj7YLnQ3Xo7kp7m",
+  props: { site: "dewee-web-v2", locale },
+};
+---
+
+{enabled && (
+  <script is:inline define:vars={{ config }}>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}p||((p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",p.onerror=function(){p=null},(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r));var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="mu yu bu Su init Vu Gu zu Uu Ku il Wu Yu ju rh oh ah uh hh dh capture getExtension Zu pu gh calculateEventProperties ph register register_once register_for_session unregister unregister_for_session Hu mh getFeatureFlag getFeatureFlagPayload getFeatureFlagResult getAllFeatureFlags isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync wh identify setPersonProperties unsetPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset kh shutdown setIdentity clearIdentity get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException addExceptionStep captureLog startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty yh ih createPersonProfile setInternalOrTestUser bh xu Cu opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing th debug nl Os getPageViewId captureTraceFeedback captureTraceMetric Du".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    var consented = false;
+    try { consented = localStorage.getItem("dewee.cookies") === "all"; } catch (e) {}
+    posthog.init(config.key, {
+      api_host: location.origin + "/ingest",
+      ui_host: "https://us.posthog.com",
+      defaults: "2026-05-30",
+      person_profiles: "identified_only",
+      persistence: consented ? "localStorage+cookie" : "memory",
+    });
+    posthog.register(config.props);
+
+    // Delegated click tracking for conversion-relevant links and controls.
+    document.addEventListener("click", function (event) {
+      var target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (target.closest("[data-theme-toggle]")) {
+        setTimeout(function () { posthog.capture("theme_toggled", { theme: document.documentElement.dataset.theme }); }, 0);
+        return;
+      }
+      if (target.closest("[data-chat-toggle], [data-open-chat]")) { posthog.capture("chat_opened"); }
+      var link = target.closest("a[href]");
+      if (!link) return;
+      var url = new URL(link.href, location.href);
+      var props = {
+        href: url.href,
+        text: (link.textContent || "").trim().slice(0, 80),
+        location: link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main",
+      };
+      if (link.dataset.trackPlan) posthog.capture("pricing_plan_cta_clicked", Object.assign({ plan: link.dataset.trackPlan }, props));
+      if (url.hostname === "app.dewee.sh") posthog.capture("app_cta_clicked", props);
+      else if (url.protocol === "mailto:") posthog.capture("contact_email_clicked", props);
+      else if (url.origin !== location.origin && url.protocol.indexOf("http") === 0) posthog.capture("outbound_link_clicked", props);
+    }, { capture: true });
+  </script>
+)}

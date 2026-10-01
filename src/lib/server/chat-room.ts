@@ -84,22 +84,19 @@ export class ChatRoom extends DurableObject<Env> {
       return;
     }
     const msg = this.insert("user", text);
+    // Show "thinking" at once; recording the message and pinging the team can take a moment.
+    ws.send(JSON.stringify({ type: "typing" }));
     const first = this.count("user") === 1;
     this.broadcast("agent", { type: "message", msg });
     await recordVisitorMessage(this.env, this.getMeta("sid"), this.locale(), text, first);
     await this.handoff(ws, text);
 
-    if (this.ctx.getWebSockets("agent").length) {
-      ws.send(JSON.stringify({ type: "typing" }));
-      return;
-    }
+    if (this.ctx.getWebSockets("agent").length) return;
     if (this.env.CHAT_AGENT_WEBHOOK_URL) {
-      ws.send(JSON.stringify({ type: "typing" }));
       const ok = await forwardToWebhook(this.env.CHAT_AGENT_WEBHOOK_URL, { sid: this.getMeta("sid"), locale: this.locale(), text, history: this.history(20) });
       if (ok) return;
     }
     if (!agentConfig(this.env)) return this.answerFromFaq(ws, text);
-    ws.send(JSON.stringify({ type: "typing" }));
     const answer = await agentReply(this.env, this.history(HISTORY_LINES), this.locale(), this.getMeta("sid") ?? "", (textSoFar) => {
       try { ws.send(JSON.stringify({ type: "delta", text: textSoFar })); } catch { /* visitor left */ }
     });

@@ -25,7 +25,7 @@ const four = plans.length === 4;
         <h3 class="plan__name">{p.name}</h3>
         <p class="plan__tagline">{p.tagline}</p>
         <p class="plan__price"><span class="plan__amount">{p.price}</span><span class="plan__period">{p.period}</span></p>
-        <a class:list={["btn", p.highlight || single ? "btn--primary" : "btn--ink", "plan__cta"]} href={p.cta.href}>{p.cta.label}<Icon name="arrow-right" class="arrow" /></a>
+        <a class:list={["btn", p.highlight || single ? "btn--primary" : "btn--ink", "plan__cta"]} href={p.cta.href} data-track-plan={p.id}>{p.cta.label}<Icon name="arrow-right" class="arrow" /></a>
       </div>
       <div class="plan__lists">
         <div>

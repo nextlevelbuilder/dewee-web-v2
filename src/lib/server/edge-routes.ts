@@ -4,6 +4,7 @@
  *  - brand links (/discord, /facebook, /x, /github) → 302 to the social profile
  *  - /api/chat/session → a signed chat session (Turnstile + per-IP limit), see chat-session-route
  *  - /api/chat/ws → the visitor's ChatRoom Durable Object (WebSocket, same origin, signed session)
+ *  - /ingest/* → PostHog (first-party analytics proxy), see posthog-proxy
  *  - /media/<key> → R2 bucket MEDIA
  *  - <any page>.md → the page's Markdown twin
  *  - /_seo/* (build manifest for the discovery routes) → 404
@@ -12,6 +13,7 @@ import { BRAND_REDIRECTS } from "../../content/site";
 import { chatSessionRoute, sameOrigin, SID_RE } from "./chat-session-route";
 import { clientIp, hashIp, verifyChatSession } from "./chat-session-token";
 import { markdownTwin } from "./markdown-twin";
+import { POSTHOG_PROXY_PREFIX, proxyPosthog } from "./posthog-proxy";
 
 type Render = (req: Request) => Promise<Response>;
 
@@ -35,6 +37,8 @@ export async function handleEdge(request: Request, env: Env, _ctx: ExecutionCont
 
   if (url.pathname === "/api/chat/session") return withSecurityHeaders(await chatSessionRoute(request, env, url), env);
   if (url.pathname === "/api/chat/ws") return chatSocket(request, env, url);
+
+  if (url.pathname.startsWith(`${POSTHOG_PROXY_PREFIX}/`)) return proxyPosthog(request);
 
   if (url.pathname.startsWith("/media/") && (request.method === "GET" || request.method === "HEAD")) {
     return withSecurityHeaders(await serveMedia(request, env, decodeURIComponent(url.pathname.slice("/media/".length))), env);
