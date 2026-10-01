@@ -13,6 +13,7 @@ import SiteHeader from "~/components/layout/SiteHeader.astro";
 import SiteFooter from "~/components/layout/SiteFooter.astro";
 import CookieBadge from "~/components/layout/CookieBadge.astro";
 import GoogleTagManager from "~/components/layout/GoogleTagManager.astro";
+import PosthogAnalytics from "~/components/layout/PosthogAnalytics.astro";
 import ChatLauncher from "~/components/chat/ChatLauncher.astro";
 
 interface Props {
@@ -52,6 +53,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <meta name="theme-color" content="#fbfaff" />
     <meta name="generator" content={Astro.generator} />
     <GoogleTagManager part="head" />
+    <PosthogAnalytics locale={locale} />
     <!-- Apply the saved theme before first paint so the page never flashes the wrong paper. -->
     <script is:inline>
       (function () {

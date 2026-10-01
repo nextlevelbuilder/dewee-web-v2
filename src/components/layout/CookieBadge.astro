@@ -1,7 +1,7 @@
 ---
 /**
- * Cookie notice. Essential storage needs no consent; analytics (Google Tag Manager, production
- * only) stays in cookieless Consent Mode until the visitor presses "Accept". The choice is kept
+ * Cookie notice. Essential storage needs no consent; analytics (Google Tag Manager and PostHog,
+ * production only) stays in cookieless Consent Mode until the visitor presses "Accept". The choice is kept
  * in `dewee.cookies` ("all" or "essential") and the notice does not come back once answered.
  */
 import { localePath, type Locale } from "~/i18n/config";
@@ -65,8 +65,10 @@ const { locale } = Astro.props;
         const choice = btn.dataset.cookieChoice as Choice;
         try { localStorage.setItem(KEY, choice); } catch { /* still hide for this page */ }
         if (choice === "all") {
-          const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+          const w = window as unknown as { gtag?: (...args: unknown[]) => void; posthog?: { set_config: (c: Record<string, unknown>) => void } };
           w.gtag?.("consent", "update", { analytics_storage: "granted", ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted" });
+          // PostHog ran in memory until now; keep the visitor's id from here on.
+          w.posthog?.set_config({ persistence: "localStorage+cookie" });
         }
         removeEventListener("scroll", onScroll);
         el.hidden = true;
