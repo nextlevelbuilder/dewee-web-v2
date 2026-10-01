@@ -10,6 +10,7 @@
  * (see chat-widget-session), fetched after a Turnstile check when the site requires one.
  */
 import { textWithLinks } from "./chat-widget-links";
+import { appendNodes, renderMarkdown } from "./chat-widget-markdown";
 import { chatSessionToken, forgetChatSession } from "./chat-widget-session";
 
 type Role = "user" | "agent" | "system";
@@ -79,11 +80,11 @@ export function initChatWidget() {
     typingEl = null;
     if (!draftEl) {
       draftEl = document.createElement("li");
-      draftEl.className = "msg msg--agent";
-      draftEl.appendChild(document.createElement("p"));
+      draftEl.className = "msg msg--agent msg--md";
       log.appendChild(draftEl);
     }
-    draftEl.firstElementChild!.textContent = text;
+    draftEl.replaceChildren();
+    appendNodes(draftEl, renderMarkdown(text));
     scrollDown();
   };
 
@@ -91,10 +92,16 @@ export function initChatWidget() {
     if (fromServer) lastServerAt = Math.max(lastServerAt, m.at);
     clearTyping();
     const li = document.createElement("li");
-    li.className = `msg msg--${m.role}`;
-    const p = document.createElement("p");
-    for (const node of textWithLinks(m.text)) p.appendChild(node);
-    li.appendChild(p);
+    // Agent replies are Markdown; the visitor's own lines and system notes stay plain text.
+    if (m.role === "agent") {
+      li.className = "msg msg--agent msg--md";
+      appendNodes(li, renderMarkdown(m.text));
+    } else {
+      li.className = `msg msg--${m.role}`;
+      const p = document.createElement("p");
+      appendNodes(p, textWithLinks(m.text));
+      li.appendChild(p);
+    }
     log.appendChild(li);
     scrollDown();
     return li;
