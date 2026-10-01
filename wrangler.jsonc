@@ -27,7 +27,7 @@
     "CHAT_AGENT_ENABLED": "true",
     "CHAT_AGENT_DAILY_BUDGET": "500",
     "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
-    "DEWEE_CHAT_AGENT_ID": "dewee-web-advisor",
+    "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_"
   },
   "d1_databases": [
@@ -59,7 +59,7 @@
         "CHAT_AGENT_ENABLED": "true",
         "CHAT_AGENT_DAILY_BUDGET": "500",
         "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
-        "DEWEE_CHAT_AGENT_ID": "dewee-web-advisor",
+        "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
         "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_"
       },
       "d1_databases": [

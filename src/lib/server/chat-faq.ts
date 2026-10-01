@@ -48,6 +48,9 @@ const ENTRIES: Entry[] = [
   },
 ];
 
+/** A bare greeting or thanks: answer warmly instead of handing off. */
+const SMALL_TALK = /^\s*(hi+|hello|hey|yo|hola|good (morning|afternoon|evening)|thanks?|thank you|ok(ay)?|chào( bạn| shop| em| anh| chị)?|xin chào|alo|hello bạn|cảm ơn|cám ơn|ok nhé)[\s!.?~]*$/i;
+
 const HUMAN = /human|person|someone|sales|contact|call|demo|người thật|nhân viên|tư vấn|liên hệ|gọi/i;
 
 /**
@@ -55,6 +58,14 @@ const HUMAN = /human|person|someone|sales|contact|call|demo|người thật|nhâ
  * widget shows the email form); once the visitor has left it, the answer says the team has it.
  */
 export function answerFromFaq(text: string, locale: Locale, hasEmail = false): { text: string; askEmail: boolean } {
+  if (SMALL_TALK.test(text)) {
+    return {
+      text: locale === "vi"
+        ? "Chào bạn! Mình là dewee. Bạn muốn tìm hiểu tính năng, bảng giá hay cách triển khai?"
+        : "Hi there! I'm dewee. Want to know about features, pricing or how to deploy?",
+      askEmail: false,
+    };
+  }
   const hit = ENTRIES.find((e) => e.match.test(text));
   if (hit && !HUMAN.test(text)) return { text: hit[locale], askEmail: false };
   const vi = locale === "vi";

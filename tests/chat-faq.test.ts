@@ -22,3 +22,12 @@ describe("answerFromFaq", () => {
     }
   });
 });
+
+describe("answerFromFaq small talk", () => {
+  it("greets back instead of handing off", () => {
+    for (const text of ["hi", "Hello!", "xin chào", "cảm ơn"]) {
+      expect(answerFromFaq(text, "en").askEmail).toBe(false);
+    }
+    expect(answerFromFaq("hi, I need a human", "en").askEmail).toBe(true);
+  });
+});

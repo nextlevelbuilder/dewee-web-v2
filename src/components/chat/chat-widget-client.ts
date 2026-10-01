@@ -207,6 +207,8 @@ export function initChatWidget() {
     if (!clean) return;
     render({ role: "user", text: clean, at: Date.now() });
     suggest.hidden = true;
+    // "Thinking" dots right away; the server's typing/delta/message frames take it from here.
+    showTyping();
     send({ type: "message", text: clean });
   };
 
