@@ -57,6 +57,8 @@ export function initChatWidget() {
   /** Newest server timestamp on screen: a reconnect's history shows only what came after it. */
   let lastServerAt = 0;
   const outbox: string[] = [];
+  /** Lines the visitor sent before the first "hello": the stored history must go above them. */
+  const pending: HTMLLIElement[] = [];
 
   const setState = (state: "connecting" | "online" | "offline", text = strings[state]) => {
     root.dataset.state = state;
@@ -85,7 +87,7 @@ export function initChatWidget() {
     scrollDown();
   };
 
-  const render = (m: Msg, fromServer = false) => {
+  const render = (m: Msg, fromServer = false): HTMLLIElement => {
     if (fromServer) lastServerAt = Math.max(lastServerAt, m.at);
     clearTyping();
     const li = document.createElement("li");
@@ -95,6 +97,7 @@ export function initChatWidget() {
     li.appendChild(p);
     log.appendChild(li);
     scrollDown();
+    return li;
   };
 
   const showTyping = () => {
@@ -138,7 +141,6 @@ export function initChatWidget() {
     socket.addEventListener("open", () => {
       opened = true;
       retries = 0;
-      while (outbox.length) socket.send(outbox.shift()!);
     });
     socket.addEventListener("message", (ev) => {
       let data: { type: string; online?: boolean; history?: Msg[]; msg?: Msg; askEmail?: boolean; text?: string };
@@ -147,13 +149,20 @@ export function initChatWidget() {
         setState(data.online ? "online" : "offline");
         const history = data.history ?? [];
         if (!hydrated) {
+          // History renders in place, then lines typed while connecting move below it.
+          const typing = typingEl;
           history.forEach((m) => render(m, true));
+          pending.splice(0).forEach((el) => log.appendChild(el));
+          if (typing) { typingEl = typing; log.appendChild(typing); }
           if (history.length) suggest.hidden = true;
+          scrollDown();
         } else {
           // Back after a drop: show replies that arrived meanwhile (the visitor's own lines are on screen).
           history.filter((m) => m.at > lastServerAt && m.role !== "user").forEach((m) => render(m, true));
         }
         hydrated = true;
+        // Queued lines go out only after "hello", so the history above never already holds them.
+        while (outbox.length) socket.send(outbox.shift()!);
       } else if (data.type === "message" && data.msg) {
         render(data.msg, true);
         if (data.askEmail && !emailForm.dataset.done) {
@@ -198,14 +207,15 @@ export function initChatWidget() {
 
   const send = (frame: object) => {
     const raw = JSON.stringify(frame);
-    if (ws?.readyState === WebSocket.OPEN) ws.send(raw);
+    if (ws?.readyState === WebSocket.OPEN && hydrated) ws.send(raw);
     else { outbox.push(raw); connect(); }
   };
 
   const sendText = (text: string) => {
     const clean = text.trim().slice(0, 2000);
     if (!clean) return;
-    render({ role: "user", text: clean, at: Date.now() });
+    const el = render({ role: "user", text: clean, at: Date.now() });
+    if (!hydrated) pending.push(el);
     suggest.hidden = true;
     // "Thinking" dots right away; the server's typing/delta/message frames take it from here.
     showTyping();
