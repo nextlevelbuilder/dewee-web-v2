@@ -31,3 +31,12 @@ describe("answerFromFaq small talk", () => {
     expect(answerFromFaq("hi, I need a human", "en").askEmail).toBe(true);
   });
 });
+
+describe("answerFromFaq handoff flag (offline mode)", () => {
+  it("flags a request for a person so the room pings the team, and nothing else", () => {
+    expect(answerFromFaq("Can I talk to someone from sales?", "en").handoff).toBe(true);
+    expect(answerFromFaq("Mình muốn gặp nhân viên tư vấn", "vi").handoff).toBe(true);
+    expect(answerFromFaq("How much does dewee cost?", "en").handoff).toBe(false);
+    expect(answerFromFaq("hello", "en").handoff).toBe(false);
+  });
+});

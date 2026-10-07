@@ -9,7 +9,7 @@ opening a pull request.
 - **Astro 7** (`output: "server"`, pages opt in to `prerender = true`) on **Cloudflare Workers**
   via `@astrojs/cloudflare`. Custom worker entry: `src/worker.ts`.
 - Cloudflare bindings (`wrangler.jsonc`): D1 `DB`, KV `KV` + `SESSION`, R2 `MEDIA` (served at
-  `cdn.dewee.sh`), Durable Object `CHAT_ROOM`, static `ASSETS`, cron for the changelog sync.
+  `cdn.dewee.sh`), Durable Object `CHAT_ROOM`, static `ASSETS`, an hourly cron for the changelog sync and the daily chat digest.
 - No UI framework on public pages. Islands are small vanilla TypeScript modules.
 - Package manager: **pnpm**. Node ≥ 22.
 

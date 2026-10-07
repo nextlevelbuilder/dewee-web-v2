@@ -3,6 +3,7 @@
  * The runtime answers the last user message, so the bounded transcript travels inside that
  * message; the visitor's own words stay fenced as data, never as instructions.
  */
+import { defuseActions } from "./chat-agent-actions";
 
 export type AgentConfig = { url: string; apiKey: string; agentId: string };
 export type TranscriptLine = { role: "user" | "agent" | "system"; text: string };
@@ -22,14 +23,28 @@ export function agentConfig(env: Env): AgentConfig | null {
   return { url, apiKey, agentId };
 }
 
-/** One user message: earlier turns as context, then the visitor's newest message. */
-export function buildAgentMessage(history: TranscriptLine[], locale: "en" | "vi"): string {
+/** What the worker knows about the conversation that the agent cannot see in the transcript. */
+export type AgentTurnContext = { page?: string; visitorTurn: number; emailOnFile: boolean };
+
+/**
+ * One user message: a context line, earlier turns, then the visitor's newest message.
+ * Visitor lines have action markers defused; advisor lines were stored already stripped.
+ */
+export function buildAgentMessage(history: TranscriptLine[], locale: "en" | "vi", ctx?: AgentTurnContext): string {
   const lines = history.filter((m) => m.role !== "system").slice(-HISTORY_LINES);
   const last = lines.pop();
-  const clip = (t: string) => t.replace(/\s+/g, " ").trim().slice(0, LINE_CHARS);
+  const clip = (t: string) => defuseActions(t.replace(/\s+/g, " ").trim().slice(0, LINE_CHARS));
   const earlier = lines.map((m) => `${m.role === "user" ? "Visitor" : "Advisor"}: ${clip(m.text)}`).join("\n");
+  const facts = ctx
+    ? [
+      ctx.page ? `Visitor is on page ${ctx.page}.` : "",
+      `Visitor message number ${ctx.visitorTurn}.`,
+      ctx.emailOnFile ? "The visitor's email is already on file; do not ask for it again." : "No email on file yet.",
+    ].filter(Boolean).join(" ")
+    : "";
   return [
     `[Website chat on dewee.sh. Page language: ${locale === "vi" ? "Vietnamese" : "English"}. Reply in the visitor's language.]`,
+    facts ? `[Session: ${facts}]` : "",
     earlier ? `[Earlier in this conversation]\n${earlier}` : "",
     `[Visitor's new message]\n${last ? clip(last.text) : ""}`,
   ].filter(Boolean).join("\n\n");

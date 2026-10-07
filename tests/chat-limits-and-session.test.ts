@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyHit, CHAT_LIMITS, dailyBudget, HOUR_MS } from "../src/lib/server/chat-limits";
 import { hashIp, signChatSession, verifyChatSession } from "../src/lib/server/chat-session-token";
-import { emailIn, replyAsksForEmail, wantsHuman } from "../src/lib/server/chat-handoff";
+import { emailIn, emailsIn } from "../src/lib/server/chat-visitor-email";
 
 describe("applyHit (fixed window)", () => {
   it("allows up to the limit, then refuses without counting the refusal", () => {
@@ -66,21 +66,14 @@ describe("signed chat sessions", () => {
   });
 });
 
-describe("handoff signals", () => {
-  it("spots requests for a person in English and Vietnamese", () => {
-    expect(wantsHuman("I'd like to talk to a human")).toBe(true);
-    expect(wantsHuman("Mình muốn nói chuyện với người thật")).toBe(true);
-    expect(wantsHuman("How much does dewee cost?")).toBe(false);
-  });
-
+describe("visitor email parsing", () => {
   it("extracts an email typed into the chat", () => {
     expect(emailIn("sure, it's Lan.Pham@Example.com.")).toBe("lan.pham@example.com");
     expect(emailIn("no email here @ all")).toBeNull();
   });
 
-  it("notices a reply that asks for the visitor's email", () => {
-    expect(replyAsksForEmail("I'll connect you with the team. What's your email?")).toBe(true);
-    expect(replyAsksForEmail("Mình sẽ kết nối bạn với đội ngũ dewee.")).toBe(true);
-    expect(replyAsksForEmail("Self-install is free.")).toBe(false);
+  it("lists every valid address in order", () => {
+    expect(emailsIn("me: a@b.co, or work: Lan@Acme.vn")).toEqual(["a@b.co", "lan@acme.vn"]);
+    expect(emailsIn("ping @here")).toEqual([]);
   });
 });
