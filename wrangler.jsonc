@@ -45,6 +45,7 @@
     { "tag": "v1", "new_sqlite_classes": ["ChatRoom"] },
     { "tag": "v2", "new_sqlite_classes": ["ChatLimiter"] }
   ],
+  // Hourly: changelog sync, plus the daily chat digest once it is due (from 01:00 UTC).
   "triggers": { "crons": ["17 * * * *"] },
   "env": {
     "staging": {
