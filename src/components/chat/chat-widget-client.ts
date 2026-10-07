@@ -7,8 +7,10 @@
  * While the panel is open a dropped socket reconnects with backoff (at once when the browser
  * comes back online); messages typed meanwhile wait in an outbox, and replies sent while the
  * visitor was away arrive with the next "hello". The socket opens with a signed session token
- * (see chat-widget-session), fetched after a Turnstile check when the site requires one.
+ * (see chat-widget-session), fetched after a Turnstile check when the site requires one, and
+ * carries the visit context (page, landing, referrer, UTM; see chat-widget-context).
  */
+import { rememberVisit, visitContextQuery } from "./chat-widget-context";
 import { textWithLinks } from "./chat-widget-links";
 import { appendNodes, renderMarkdown } from "./chat-widget-markdown";
 import { chatSessionToken, forgetChatSession } from "./chat-widget-session";
@@ -35,6 +37,7 @@ export function initChatWidget() {
   const root = document.querySelector<HTMLElement>("[data-chat]");
   if (!root || root.dataset.wired) return;
   root.dataset.wired = "1";
+  rememberVisit();
 
   const strings = JSON.parse(root.dataset.strings || "{}") as Strings;
   const locale = root.dataset.locale || "en";
@@ -142,7 +145,7 @@ export function initChatWidget() {
   const openSocket = (sid: string, token: string) => {
     const proto = location.protocol === "https:" ? "wss" : "ws";
     const auth = token ? `&token=${encodeURIComponent(token)}` : "";
-    const socket = new WebSocket(`${proto}://${location.host}/api/chat/ws?sid=${encodeURIComponent(sid)}&locale=${locale}${auth}`);
+    const socket = new WebSocket(`${proto}://${location.host}/api/chat/ws?sid=${encodeURIComponent(sid)}&locale=${locale}${auth}${visitContextQuery()}`);
     ws = socket;
     let opened = false;
     socket.addEventListener("open", () => {

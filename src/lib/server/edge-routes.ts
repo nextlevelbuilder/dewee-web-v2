@@ -12,6 +12,7 @@
 import { BRAND_REDIRECTS } from "../../content/site";
 import { chatSessionRoute, sameOrigin, SID_RE } from "./chat-session-route";
 import { clientIp, hashIp, verifyChatSession } from "./chat-session-token";
+import { cleanCountry, readChatContext, writeChatContext } from "../chat-session-context";
 import { markdownTwin } from "./markdown-twin";
 import { POSTHOG_PROXY_PREFIX, proxyPosthog } from "./posthog-proxy";
 
@@ -72,7 +73,16 @@ async function chatSocket(request: Request, env: Env, url: URL): Promise<Respons
   forward.searchParams.set("locale", url.searchParams.get("locale") === "vi" ? "vi" : "en");
   forward.searchParams.set("role", "visitor");
   if (ipHash) forward.searchParams.set("ih", ipHash);
+  // Visit context from the widget is untrusted: re-validated here; the country comes from Cloudflare.
+  const country = (request as Request & { cf?: { country?: unknown } }).cf?.country;
+  const context = readChatContext(url.searchParams, siteHost(env));
+  writeChatContext(forward.searchParams, { ...context, country: cleanCountry(typeof country === "string" ? country : null) });
   return stub.fetch(new Request(forward, request));
+}
+
+/** The site's apex host, so same-site referrers are not counted as sources. */
+function siteHost(env: Env): string | undefined {
+  return URL.parse(env.SITE_URL)?.hostname.replace(/^(www|staging)\./, "");
 }
 
 async function serveMedia(request: Request, env: Env, key: string): Promise<Response> {

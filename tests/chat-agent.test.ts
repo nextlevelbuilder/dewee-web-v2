@@ -105,27 +105,50 @@ function memoryLimiter() {
 }
 
 describe("agentReply daily budget", () => {
-  it("falls back (null) once the budget is spent and alerts Discord exactly once", async () => {
+  it("falls back (budget) once the budget is spent and alerts Discord exactly once", async () => {
     const discord = vi.fn(async () => new Response(null, { status: 204 }));
     const runtime = vi.fn(async (_url: string, _init: RequestInit) => new Response(sse(chunk("answer"), "[DONE]"), { headers: { "content-type": "text/event-stream" } }));
     vi.stubGlobal("fetch", vi.fn((url: string, init: RequestInit) => (url.startsWith("https://discord") ? discord() : runtime(url, init))));
     const env = { ...baseEnv, CHAT_AGENT_DAILY_BUDGET: "2", DISCORD_WEBHOOK_URL: "https://discord.example/hook", CHAT_LIMITER: memoryLimiter() } as unknown as Env;
     const history = [{ role: "user" as const, text: "hi" }];
-    expect(await agentReply(env, history, "en", "sid", () => {})).toBe("answer");
-    expect(await agentReply(env, history, "en", "sid", () => {})).toBe("answer");
-    expect(await agentReply(env, history, "en", "sid", () => {})).toBeNull();
-    expect(await agentReply(env, history, "en", "sid", () => {})).toBeNull();
+    const answered = { ok: true, text: "answer", actions: { lead: null, requestEmail: false, handoff: false } };
+    expect(await agentReply(env, history, "en", "sid", () => {})).toEqual(answered);
+    expect(await agentReply(env, history, "en", "sid", () => {})).toEqual(answered);
+    expect(await agentReply(env, history, "en", "sid", () => {})).toEqual({ ok: false, reason: "budget" });
+    expect(await agentReply(env, history, "en", "sid", () => {})).toEqual({ ok: false, reason: "budget" });
     expect(runtime).toHaveBeenCalledTimes(2);
     expect(discord).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
   });
 
-  it("returns null without calling anything when the kill switch is off", async () => {
+  it("reports 'off' without calling anything when the kill switch is off", async () => {
     const f = vi.fn();
     vi.stubGlobal("fetch", f);
     const env = { ...baseEnv, CHAT_AGENT_ENABLED: "false", CHAT_LIMITER: memoryLimiter() } as unknown as Env;
-    expect(await agentReply(env, [{ role: "user", text: "hi" }], "en", "sid", () => {})).toBeNull();
+    expect(await agentReply(env, [{ role: "user", text: "hi" }], "en", "sid", () => {})).toEqual({ ok: false, reason: "off" });
     expect(f).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+});
+
+describe("agentReply actions", () => {
+  const runtimeReply = (...parts: string[]) => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(sse(...parts.map(chunk), "[DONE]"), { headers: { "content-type": "text/event-stream" } })));
+    return { ...baseEnv, CHAT_LIMITER: memoryLimiter() } as unknown as Env;
+  };
+
+  it("streams only the visible text and returns the parsed lead", async () => {
+    const env = runtimeReply("Thanks, Lan! ", "<dewee-act", 'ion>{"action":"capture_lead","email":"Lan@Acme.vn","need":"Zalo bot","sid":"forged"}</dewee-action>');
+    const drafts: string[] = [];
+    const turn = await agentReply(env, [{ role: "user", text: "lan@acme.vn" }], "en", "sid", (t) => drafts.push(t));
+    expect(drafts.every((d) => !d.includes("<dewee") && !d.includes("capture_lead"))).toBe(true);
+    expect(turn).toEqual({ ok: true, text: "Thanks, Lan!", actions: { lead: { email: "lan@acme.vn", need: "Zalo bot" }, requestEmail: false, handoff: false } });
+    vi.unstubAllGlobals();
+  });
+
+  it("treats a reply with nothing to show and no lead as a failure", async () => {
+    const env = runtimeReply('<dewee-action>{"action":"request_email"}</dewee-action>');
+    expect(await agentReply(env, [{ role: "user", text: "hi" }], "en", "sid", () => {})).toEqual({ ok: false, reason: "error" });
     vi.unstubAllGlobals();
   });
 });

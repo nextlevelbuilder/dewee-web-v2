@@ -56,18 +56,23 @@ const HUMAN = /human|person|someone|sales|contact|call|demo|người thật|nhâ
 /**
  * FAQ answer for a visitor message. Without an email on file the answer asks for one (and the
  * widget shows the email form); once the visitor has left it, the answer says the team has it.
+ * `handoff` is true when the visitor asked for a person, so the room pings the team. This keyword
+ * match is only the offline fallback; with the agent on, the agent's handoff action decides.
  */
-export function answerFromFaq(text: string, locale: Locale, hasEmail = false): { text: string; askEmail: boolean } {
+export type FaqAnswer = { text: string; askEmail: boolean; handoff: boolean };
+
+export function answerFromFaq(text: string, locale: Locale, hasEmail = false): FaqAnswer {
   if (SMALL_TALK.test(text)) {
     return {
       text: locale === "vi"
         ? "Chào bạn! Mình là dewee. Bạn muốn tìm hiểu tính năng, bảng giá hay cách triển khai?"
         : "Hi there! I'm dewee. Want to know about features, pricing or how to deploy?",
       askEmail: false,
+      handoff: false,
     };
   }
   const hit = ENTRIES.find((e) => e.match.test(text));
-  if (hit && !HUMAN.test(text)) return { text: hit[locale], askEmail: false };
+  if (hit && !HUMAN.test(text)) return { text: hit[locale], askEmail: false, handoff: false };
   const vi = locale === "vi";
   if (HUMAN.test(text)) {
     return {
@@ -79,6 +84,7 @@ export function answerFromFaq(text: string, locale: Locale, hasEmail = false): {
           ? "Chắc chắn rồi! Để lại email bên dưới, một người trong đội sẽ liên hệ bạn (thường trong vài giờ làm việc). Hoặc viết thẳng tới hi@nextlevelbuilder.io."
           : "Of course! Leave your email below and someone from the team will get back to you, usually within a few working hours. Or write to hi@nextlevelbuilder.io.",
       askEmail: !hasEmail,
+      handoff: true,
     };
   }
   return {
@@ -90,5 +96,6 @@ export function answerFromFaq(text: string, locale: Locale, hasEmail = false): {
         ? "Câu này mình cần hỏi lại đội ngũ. Bạn để lại email nhé, người thật sẽ trả lời bạn sớm."
         : "That one needs a human. Leave your email and a real person will answer you soon.",
     askEmail: !hasEmail,
+    handoff: false,
   };
 }
