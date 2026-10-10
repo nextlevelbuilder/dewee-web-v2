@@ -62,4 +62,13 @@ export const ECOSYSTEM: EcosystemProduct[] = [
     tagline: { en: "Click. Deploy. Done. Platform as a Service.", vi: "Click. Deploy. Xong! Nền tảng PaaS." },
     role: { en: "One-click dedicated runtime for dewee", vi: "Runtime riêng cho dewee chỉ với một cú click" },
   },
+  {
+    // Facts from github.com/nextlevelbuilder/dewee-webchat (MIT); the playground is its home page.
+    id: "dewee-webchat",
+    name: "dewee-webchat",
+    url: "https://webchat.dewee.sh",
+    icon: "/img/ecosystem/dewee-webchat.svg",
+    tagline: { en: "Put your dewee agent on any website. Open source (MIT).", vi: "Đưa agent dewee lên mọi website. Mã nguồn mở (MIT)." },
+    role: { en: "Chat widget: a script tag, or React, Vue and Astro components", vi: "Widget chat: một thẻ script, hoặc component React, Vue, Astro" },
+  },
 ];
