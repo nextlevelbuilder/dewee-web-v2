@@ -3,10 +3,23 @@
  * per-channel details) live in src/content/integrations.ts; this file holds page chrome and the
  * short notes for subscription and local providers. Facts verified against the dewee repo
  * (internal/channels, internal/providers, internal/audio, internal/tools, docs/05) and the
- * v3.28–v3.33 release notes.
+ * v3.28–v3.33 release notes. The website section describes dewee-webchat v0.1.0, checked
+ * against github.com/nextlevelbuilder/dewee-webchat (README and package README).
  */
 import type { Bi } from "~/i18n/config";
 import type { ProviderGroupId } from "~/content/integrations";
+
+/** dewee-webchat links and the embed snippet; the same in both locales. */
+export const WEBCHAT = {
+  repo: "https://github.com/nextlevelbuilder/dewee-webchat",
+  playground: "https://webchat.dewee.sh",
+  docs: "/docs/integrations/website-chat",
+  snippet: `<script
+  src="https://webchat-cdn.dewee.sh/dewee-webchat@0.1.0/dewee-webchat.js"
+  data-endpoint="/api/dewee"
+  defer
+></script>`,
+} as const;
 
 export const INTEGRATIONS_PAGE: Bi<{
   meta: { title: string; description: string; crumb: string };
@@ -22,6 +35,17 @@ export const INTEGRATIONS_PAGE: Bi<{
   models: { eyebrow: string; title: string; lede: string; groups: Record<ProviderGroupId, string>; notes: Record<string, string> };
   voice: { eyebrow: string; title: string; lede: string; points: string[]; tts: string; stt: string };
   mcp: { eyebrow: string; title: string; lede: string; items: { icon: string; title: string; body: string }[] };
+  website: {
+    eyebrow: string;
+    title: string;
+    lede: string;
+    points: string[];
+    codeLabel: string;
+    copy: { copy: string; copied: string; failed: string };
+    docs: string;
+    playground: string;
+    source: string;
+  };
   cta: { title: string; body: string; primary: string; secondary: string; note: string };
 }> = {
   en: {
@@ -98,6 +122,23 @@ export const INTEGRATIONS_PAGE: Bi<{
         { icon: "key-round", title: "Credentialed CLIs", body: "Agents run CLIs like gh with stored credentials, without a shell and without seeing the secret." },
         { icon: "webhook", title: "Hooks on agent events", body: "Webhooks fire on agent events, and the console shows each one's last delivery." },
       ],
+    },
+    website: {
+      eyebrow: "Your website",
+      title: "Put an agent on *your own* site.",
+      lede: "dewee-webchat is our open-source chat widget (MIT). Add one script tag, or a React, Vue or Astro component, and visitors talk to your agent.",
+      points: [
+        "Streams the agent's reasoning, tool calls and Markdown answers. Hide any of them with one option.",
+        "A floating bubble or an inline panel, in light, dark or auto theme, your accent colour, English or Vietnamese.",
+        "A small backend handler keeps the gateway token on your server. The browser only gets a signed visitor token.",
+        "The handler runs on Cloudflare Workers, Next.js, Astro, Bun, Deno and Node, and there is a one-file PHP version.",
+        "Agent and origin allowlists, per-visitor rate limits and optional Cloudflare Turnstile.",
+      ],
+      codeLabel: "Add it to any page",
+      copy: { copy: "Copy", copied: "Copied", failed: "Copy failed" },
+      docs: "Read the setup guide",
+      playground: "Try the playground",
+      source: "Source on GitHub",
     },
     cta: {
       title: "Missing one? *Ask us*.",
@@ -181,6 +222,23 @@ export const INTEGRATIONS_PAGE: Bi<{
         { icon: "key-round", title: "CLI có credential", body: "Agent chạy các CLI như gh bằng credential lưu sẵn, không qua shell và không thấy secret." },
         { icon: "webhook", title: "Hook theo sự kiện agent", body: "Webhook được gọi theo sự kiện của agent, và console hiện trạng thái gửi gần nhất của từng hook." },
       ],
+    },
+    website: {
+      eyebrow: "Website của bạn",
+      title: "Đặt agent lên *chính* website của bạn.",
+      lede: "dewee-webchat là widget chat mã nguồn mở (MIT) của chúng tôi. Thêm một thẻ script, hoặc một component React, Vue, Astro, là khách truy cập trò chuyện được với agent của bạn.",
+      points: [
+        "Stream phần suy luận, các lần gọi tool và câu trả lời Markdown của agent. Muốn ẩn phần nào chỉ cần một tuỳ chọn.",
+        "Bong bóng chat nổi hoặc khung chat gắn trong trang, giao diện sáng, tối hoặc tự động, màu nhấn của bạn, tiếng Anh hoặc tiếng Việt.",
+        "Một backend handler nhỏ giữ gateway token trên server của bạn. Trình duyệt chỉ nhận visitor token đã được ký.",
+        "Handler chạy trên Cloudflare Workers, Next.js, Astro, Bun, Deno và Node, và có cả bản PHP gói trong một file.",
+        "Allowlist cho agent và origin, giới hạn tốc độ cho từng khách, tuỳ chọn thêm Cloudflare Turnstile.",
+      ],
+      codeLabel: "Thêm vào bất kỳ trang nào",
+      copy: { copy: "Sao chép", copied: "Đã chép", failed: "Không chép được" },
+      docs: "Xem hướng dẫn cài đặt",
+      playground: "Thử trên playground",
+      source: "Mã nguồn trên GitHub",
     },
     cta: {
       title: "Còn thiếu? *Hỏi chúng tôi*.",

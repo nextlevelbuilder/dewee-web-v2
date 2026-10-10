@@ -1,13 +1,14 @@
 ---
 /**
  * /integrations: the eleven channels as a report card, the 21 model providers grouped by how you
- * connect them, voice engines, MCP and tools, and a "missing one? ask us" next step.
+ * connect them, voice engines, MCP and tools, the dewee-webchat widget for your own website, and a
+ * "missing one? ask us" next step.
  * Lists live in src/content/integrations.ts; page copy in src/content/pages/integrations.ts.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
 import { SITE } from "~/content/site";
-import { INTEGRATIONS_PAGE } from "~/content/pages/integrations";
+import { INTEGRATIONS_PAGE, WEBCHAT } from "~/content/pages/integrations";
 import { CHANNELS, CHANNEL_DETAILS, PROVIDER_GROUPS, STT, VOICE, providersIn, type Integration } from "~/content/integrations";
 import PageHero from "~/components/blocks/PageHero.astro";
 import SectionHead from "~/components/blocks/SectionHead.astro";
@@ -16,6 +17,8 @@ import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
 import FactSplit from "~/components/blocks/product/FactSplit.astro";
 import ChannelReportCard from "~/components/blocks/product/ChannelReportCard.astro";
+import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
+import Icon from "~/components/ui/Icon.astro";
 
 export const prerender = true;
 export const getStaticPaths = () => langPaths();
@@ -117,6 +120,21 @@ const jsonLd = [
     </div>
   </section>
 
+  <section class="section band" id="website">
+    <div class="container">
+      <FactSplit eyebrow={t.website.eyebrow} title={t.website.title} lede={t.website.lede} points={t.website.points}>
+        <div class="int-web">
+          <CodeSample label={t.website.codeLabel} code={WEBCHAT.snippet} copy={t.website.copy} />
+          <p class="int-web__actions">
+            <a class="btn btn--primary" href={href(WEBCHAT.docs)}><Icon name="book-open" />{t.website.docs}</a>
+            <a class="btn" href={WEBCHAT.playground} target="_blank" rel="noopener">{t.website.playground}<Icon name="arrow-up-right" /></a>
+            <a class="btn btn--ghost" href={WEBCHAT.repo} target="_blank" rel="noopener">{t.website.source}<Icon name="arrow-up-right" /></a>
+          </p>
+        </div>
+      </FactSplit>
+    </div>
+  </section>
+
   <CtaBand
     title={t.cta.title}
     body={t.cta.body}
@@ -129,6 +147,8 @@ const jsonLd = [
 <style>
   .int-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
   .int-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  .int-web { display: grid; gap: var(--space-5); min-inline-size: 0; }
+  .int-web__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
   .int-voice { --cell: 10px; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); transform: rotate(-0.8deg); }
   @media (max-width: 960px) {
     .int-split { grid-template-columns: minmax(0, 1fr); }
