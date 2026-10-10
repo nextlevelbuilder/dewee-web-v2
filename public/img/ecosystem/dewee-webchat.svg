@@ -1,0 +1,14 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- dewee-webchat: a chat bubble in dewee iris (#5446e8, the widget's default accent) with typing dots -->
+  <defs>
+    <linearGradient id="dwcBubble" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9B5DE5"/>
+      <stop offset="0.55" stop-color="#5446E8"/>
+      <stop offset="1" stop-color="#3B7FE0"/>
+    </linearGradient>
+  </defs>
+  <path d="M12 6h24a8 8 0 0 1 8 8v14a8 8 0 0 1-8 8H22l-9 7.5a1.2 1.2 0 0 1-2-0.9V36a7 7 0 0 1-7-7V14a8 8 0 0 1 8-8Z" fill="url(#dwcBubble)"/>
+  <circle cx="16" cy="21" r="3" fill="#FFFFFF"/>
+  <circle cx="24" cy="21" r="3" fill="#FFFFFF" opacity="0.85"/>
+  <circle cx="32" cy="21" r="3" fill="#FFFFFF" opacity="0.7"/>
+</svg>

@@ -39,6 +39,12 @@ const host = (u: string) => new URL(u).host.replace(/^www\./, "");
   .eco__tagline { font-weight: 600; font-size: var(--step--1); color: var(--ink); }
   .eco__role { font-size: var(--step--1); color: var(--ink-2); line-height: 1.55; }
   .eco__host { margin-block-start: var(--space-2); font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--accent-ink); }
-  @media (max-width: 960px) { .eco { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* A card left alone on the last row spans it, so the shelf never ends in empty cells. */
+  .eco > li:last-child:nth-child(3n + 1) { grid-column: 1 / -1; }
+  @media (max-width: 960px) {
+    .eco { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .eco > li:last-child:nth-child(3n + 1) { grid-column: auto; }
+    .eco > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  }
   @media (max-width: 560px) { .eco { grid-template-columns: minmax(0, 1fr); } }
 </style>
