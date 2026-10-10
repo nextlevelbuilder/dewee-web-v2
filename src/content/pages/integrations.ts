@@ -15,7 +15,7 @@ export const WEBCHAT = {
   playground: "https://webchat.dewee.sh",
   docs: "/docs/integrations/website-chat",
   snippet: `<script
-  src="https://webchat-cdn.dewee.sh/dewee-webchat@0.1.0/dewee-webchat.js"
+  src="https://webchat-cdn.dewee.sh/dewee-webchat@0.1.1/dewee-webchat.js"
   data-endpoint="/api/dewee"
   defer
 ></script>`,

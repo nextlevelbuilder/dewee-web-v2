@@ -69,7 +69,7 @@ The quickest way is the script tag from the CDN, with no build step:
 
 ```html
 <script
-  src="https://webchat-cdn.dewee.sh/dewee-webchat@0.1.0/dewee-webchat.js"
+  src="https://webchat-cdn.dewee.sh/dewee-webchat@0.1.1/dewee-webchat.js"
   data-endpoint="/api/dewee"
   data-title="Support"
   defer
