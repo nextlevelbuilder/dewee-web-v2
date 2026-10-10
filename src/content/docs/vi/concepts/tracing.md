@@ -3,7 +3,7 @@ title: Tracing và quan sát hệ thống
 description: Những gì dewee ghi lại cho mỗi lượt chạy agent, trace giữ bao lâu, chi phí và mức sử dụng được tính ra sao, và cách đọc trace qua console, CLI, API hay OTel.
 section: concepts
 order: 10
-updated: 2026-09-25
+updated: 2026-10-10
 ---
 
 Mỗi lượt chạy agent trong dewee đều để lại một trace: bản ghi về yêu cầu agent nhận được, các model và tool nó đã gọi, thời gian của từng bước, chi phí và kết quả cuối cùng. Trace là nơi đầu tiên cần xem khi một câu trả lời sai, chậm hoặc tốn kém. Trace được ghi ở chế độ nền, nên việc ghi lại không làm chậm lượt chạy.
@@ -85,7 +85,7 @@ dewee traces timeline <trace-id>
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
-**Đánh giá ngữ nghĩa** đang ở giai đoạn beta và tắt mặc định. Khi người vận hành bật tính năng này và thêm API key của TypeSafe, các trace đã hoàn tất được gửi tới bộ phân loại bên ngoài đó, sau khi đã che thông tin xác thực và dữ liệu cá nhân, rồi được gắn các tín hiệu như tác vụ có thành công hay không. Các nhãn này trở thành bộ lọc bổ sung của `dewee traces list`, chẳng hạn `--semantic-decision`, và không bao giờ thay đổi cách agent chạy. `dewee traces semantic config get` cho biết tính năng có đang bật hay không và vì sao.
+**Đánh giá ngữ nghĩa** đang ở giai đoạn beta và tắt mặc định. Khi người vận hành bật tính năng này và thêm API key của TypeSafe, các trace đã hoàn tất được gửi tới bộ phân loại bên ngoài đó, sau khi đã che thông tin xác thực và dữ liệu cá nhân, rồi được gắn các tín hiệu như tác vụ có thành công hay không. Các nhãn này trở thành bộ lọc bổ sung của `dewee traces list`, chẳng hạn `--semantic-decision`, và không bao giờ thay đổi cách agent chạy. `dewee traces semantic config get` cho biết tính năng có đang bật hay không và vì sao. Bộ phân loại này là Jev, cùng model mà [lớp quyết định](/docs/concepts/decision-layer) sử dụng.
 
 ## Xuất sang OpenTelemetry
 
@@ -108,4 +108,5 @@ Span được xuất theo lô tối đa 100, mỗi 5 giây. Bộ xuất đã đ�
 - [Vòng lặp agent](/docs/concepts/agent-loop): các bước mà mỗi span ghi lại.
 - [Nhóm agent và giao việc](/docs/concepts/agent-teams): theo dõi một yêu cầu qua nhiều agent.
 - [Workflow](/docs/concepts/workflows): lượt chạy workflow và span của các node.
+- [Lớp quyết định](/docs/concepts/decision-layer): span `reflex.decision`, `intent.decision` và đánh giá ngữ nghĩa.
 - [Tham chiếu CLI](/docs/runtime/cli): toàn bộ lệnh `dewee traces` và `dewee usage`.

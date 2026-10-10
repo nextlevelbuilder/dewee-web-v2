@@ -3,7 +3,7 @@ title: Tracing and observability
 description: What dewee records for every agent run, how long traces are kept, how cost and usage are totalled, and how to read traces from the console, CLI, API or OTel.
 section: concepts
 order: 10
-updated: 2026-09-25
+updated: 2026-10-10
 ---
 
 Every agent run in dewee leaves a trace: a record of what the agent was asked, which models and tools it called, how long each step took, what it cost and how it ended. Traces are the first place to look when an answer is wrong, slow or expensive. They are written in the background, so recording them does not slow a run down.
@@ -85,7 +85,7 @@ dewee traces timeline <trace-id>
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
-**Semantic evaluation** is in beta and off by default. When an operator turns it on and adds a TypeSafe API key, finished traces are sent to that external classifier, with credentials and personal data redacted, and labelled with signals such as whether the task succeeded. The labels become extra `dewee traces list` filters, such as `--semantic-decision`, and never change how an agent runs. `dewee traces semantic config get` shows whether it is on and why.
+**Semantic evaluation** is in beta and off by default. When an operator turns it on and adds a TypeSafe API key, finished traces are sent to that external classifier, with credentials and personal data redacted, and labelled with signals such as whether the task succeeded. The labels become extra `dewee traces list` filters, such as `--semantic-decision`, and never change how an agent runs. `dewee traces semantic config get` shows whether it is on and why. The classifier is Jev, the same model the [decision layer](/docs/concepts/decision-layer) uses.
 
 ## Exporting to OpenTelemetry
 
@@ -108,4 +108,5 @@ Spans are exported in batches of up to 100, every 5 seconds. The exporter is imp
 - [Agent loop](/docs/concepts/agent-loop): the steps each span records.
 - [Agent teams and delegation](/docs/concepts/agent-teams): following a request across agents.
 - [Workflows](/docs/concepts/workflows): workflow runs and their node spans.
+- [Decision layer](/docs/concepts/decision-layer): the `reflex.decision` and `intent.decision` spans, and semantic evaluation.
 - [CLI reference](/docs/runtime/cli): all `dewee traces` and `dewee usage` commands.
