@@ -3,7 +3,7 @@ title: Memory and knowledge vault
 description: How dewee agents remember across sessions, how memory is searched and consolidated, and how the knowledge vault and graph organise what agents know.
 section: concepts
 order: 6
-updated: 2026-09-25
+updated: 2026-10-12
 ---
 
 A dewee agent remembers in layers: the conversation in front of it, summaries of past sessions, and a knowledge graph of the people and things it has learned about. The knowledge vault sits on top, linking documents together and searching every layer at once. All of it is scoped to the tenant and the agent, and usually to the user as well.
@@ -15,6 +15,8 @@ A dewee agent remembers in layers: the conversation in front of it, summaries of
 | Working (L0) | The current session's messages | Until compaction summarises them |
 | Episodic (L1) | A summary of each finished session, with a short abstract and key topics | 90 days by default (`episodic_ttl_days`) |
 | Semantic (L2) | A knowledge graph of entities and the relations between them | Until a fact is superseded |
+
+A session summary stops being recalled the moment it expires, in every search and in automatic recall. A background job deletes expired summaries for every tenant a few minutes after the gateway starts and then every 6 hours.
 
 Each agent also has memory files: `MEMORY.md` and anything under `memory/`. Just before a session's history is compacted, the agent gets one short turn (up to 5 iterations, 90 seconds) to save durable notes to `memory/YYYY-MM-DD.md`.
 
@@ -28,7 +30,7 @@ Memory files are split into chunks of up to 1,000 characters and indexed for ful
 | `memory_get` | Reads only the lines it needs from a memory file |
 | `memory_expand` | Loads the full summary of a past session by ID |
 
-Agents also get relevant memory without asking. Before each turn, dewee checks the user's message against past session summaries and adds up to 5 abstracts that score at least 0.3 to the system prompt, within about 200 tokens. Tune it with `auto_inject_enabled`, `auto_inject_threshold` and `auto_inject_max_tokens`.
+Agents also get relevant memory without asking. Before each turn, dewee checks the user's message against past session summaries and adds up to 5 abstracts that score at least 0.3 to the system prompt, within about 200 tokens. Tune it with `auto_inject_enabled`, `auto_inject_threshold` and `auto_inject_max_tokens`. When retrieval admission is active, knowledge vault documents and graph entities compete for the same slots, even on a turn where no past session matches.
 
 ## Consolidation
 
@@ -37,7 +39,7 @@ When a run completes, background workers turn it into long-term memory. Consolid
 1. **Episodic.** Summarises the session, reusing the compaction summary when there is one, and writes an abstract of about 50 tokens.
 2. **Semantic.** Extracts entities and relations from the summary into the knowledge graph.
 3. **Dedup.** Merges entities that embeddings show to be the same thing.
-4. **Dreaming.** Waits 10 minutes after new summaries arrive, then synthesises a batch of summaries (10 by default) into longer-term knowledge.
+4. **Dreaming.** Waits 10 minutes after new summaries arrive, then synthesises a batch of summaries (10 by default) into longer-term knowledge. Each batch becomes its own memory document under `_system/dreaming/`, which records the exact session summaries it came from, so two batches on the same day never overwrite each other. The summaries are marked as consolidated only after the document is saved and searchable; if either step fails, the batch is retried later.
 
 ## Group chats and passive channel memory
 
@@ -82,7 +84,7 @@ dewee vault link create --from <doc-id> --to <doc-id>
 
 ## The knowledge graph
 
-The graph holds entities such as people, organisations, projects, tasks and locations, and the relations between them. Each fact carries a validity window (`valid_from`, `valid_until`), so an outdated fact is closed instead of deleted. Agents query it with `knowledge_graph_search`, which suits multi-hop questions such as who works on which project.
+The graph holds entities such as people, organisations, projects, tasks and locations, and the relations between them. Each fact carries a validity window (`valid_from`, `valid_until`), so an outdated fact is closed instead of deleted. Each entity has at most one current version: replacing it closes the old version, which stays as history for point-in-time questions. Agents query it with `knowledge_graph_search`, which suits multi-hop questions such as who works on which project.
 
 ```bash
 dewee kg entities --agent <agent-id> --query "Acme"

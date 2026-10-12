@@ -3,7 +3,7 @@ title: Bộ nhớ và kho tri thức
 description: Cách agent trong dewee ghi nhớ qua nhiều session, cách bộ nhớ được tìm kiếm và hợp nhất, và cách kho tri thức cùng knowledge graph sắp xếp những gì agent biết.
 section: concepts
 order: 6
-updated: 2026-09-25
+updated: 2026-10-12
 ---
 
 Agent trong dewee ghi nhớ theo nhiều lớp: cuộc hội thoại đang diễn ra, bản tóm tắt các session trước, và một knowledge graph về những người và sự vật mà agent đã biết. Kho tri thức nằm phía trên, liên kết các tài liệu với nhau và tìm kiếm trên mọi lớp cùng lúc. Tất cả đều gói gọn trong tenant và agent, và thường là theo từng người dùng.
@@ -15,6 +15,8 @@ Agent trong dewee ghi nhớ theo nhiều lớp: cuộc hội thoại đang diễ
 | Làm việc (L0) | Các tin nhắn của session hiện tại | Tới khi bước nén tóm tắt chúng |
 | Sự kiện (L1) | Bản tóm tắt mỗi session đã kết thúc, kèm phần tóm lược ngắn và các chủ đề chính | Mặc định 90 ngày (`episodic_ttl_days`) |
 | Ngữ nghĩa (L2) | Knowledge graph gồm các thực thể và quan hệ giữa chúng | Tới khi một dữ kiện bị thay thế |
+
+Bản tóm tắt session thôi được gợi nhớ ngay khi hết hạn, trong mọi lần tìm kiếm lẫn khi tự động gợi nhớ. Một tác vụ nền xoá các bản tóm tắt đã hết hạn của mọi tenant vài phút sau khi gateway khởi động, rồi cứ 6 giờ một lần.
 
 Mỗi agent còn có các file bộ nhớ: `MEMORY.md` và mọi file trong `memory/`. Ngay trước khi lịch sử session bị nén, agent được một lượt ngắn (tối đa 5 vòng lặp, 90 giây) để lưu các ghi chú lâu dài vào `memory/YYYY-MM-DD.md`.
 
@@ -28,7 +30,7 @@ File bộ nhớ được chia thành các đoạn tối đa 1.000 ký tự và �
 | `memory_get` | Chỉ đọc những dòng cần thiết trong một file bộ nhớ |
 | `memory_expand` | Nạp toàn bộ bản tóm tắt của một session trước theo ID |
 
-Agent cũng nhận được bộ nhớ liên quan mà không cần hỏi. Trước mỗi lượt, dewee đối chiếu tin nhắn của người dùng với bản tóm tắt các session trước, rồi thêm tối đa 5 phần tóm lược có điểm từ 0,3 trở lên vào system prompt, trong giới hạn khoảng 200 token. Bạn điều chỉnh bằng `auto_inject_enabled`, `auto_inject_threshold` và `auto_inject_max_tokens`.
+Agent cũng nhận được bộ nhớ liên quan mà không cần hỏi. Trước mỗi lượt, dewee đối chiếu tin nhắn của người dùng với bản tóm tắt các session trước, rồi thêm tối đa 5 phần tóm lược có điểm từ 0,3 trở lên vào system prompt, trong giới hạn khoảng 200 token. Bạn điều chỉnh bằng `auto_inject_enabled`, `auto_inject_threshold` và `auto_inject_max_tokens`. Khi cơ chế chọn lọc truy hồi (retrieval admission) đang bật, tài liệu trong kho tri thức và thực thể trong graph cũng được cân nhắc cho cùng các vị trí đó, kể cả ở lượt không có session cũ nào khớp.
 
 ## Hợp nhất bộ nhớ
 
@@ -37,7 +39,7 @@ Khi một lượt chạy kết thúc, các worker chạy nền biến nó thành
 1. **Episodic.** Tóm tắt session, dùng lại bản tóm tắt từ bước nén nếu có, và viết phần tóm lược khoảng 50 token.
 2. **Semantic.** Trích xuất thực thể và quan hệ từ bản tóm tắt vào knowledge graph.
 3. **Dedup.** Gộp các thực thể mà embedding cho thấy là cùng một đối tượng.
-4. **Dreaming.** Chờ 10 phút sau khi có bản tóm tắt mới, rồi tổng hợp một lô bản tóm tắt (mặc định 10) thành tri thức dài hạn hơn.
+4. **Dreaming.** Chờ 10 phút sau khi có bản tóm tắt mới, rồi tổng hợp một lô bản tóm tắt (mặc định 10) thành tri thức dài hạn hơn. Mỗi lô trở thành một tài liệu bộ nhớ riêng trong `_system/dreaming/`, ghi lại chính xác những bản tóm tắt tạo nên nó, nên hai lô trong cùng một ngày không ghi đè lên nhau. Các bản tóm tắt chỉ được đánh dấu là đã hợp nhất sau khi tài liệu được lưu và tìm kiếm được; nếu một trong hai bước thất bại, lô đó sẽ được chạy lại sau.
 
 ## Nhóm chat và bộ nhớ kênh thụ động
 
@@ -82,7 +84,7 @@ dewee vault link create --from <doc-id> --to <doc-id>
 
 ## Knowledge graph
 
-Graph chứa các thực thể như người, tổ chức, dự án, công việc và địa điểm, cùng quan hệ giữa chúng. Mỗi dữ kiện có một khoảng hiệu lực (`valid_from`, `valid_until`), nên dữ kiện lỗi thời được đóng lại chứ không bị xoá. Agent truy vấn graph bằng `knowledge_graph_search`, phù hợp với câu hỏi nhiều bước như ai đang làm dự án nào.
+Graph chứa các thực thể như người, tổ chức, dự án, công việc và địa điểm, cùng quan hệ giữa chúng. Mỗi dữ kiện có một khoảng hiệu lực (`valid_from`, `valid_until`), nên dữ kiện lỗi thời được đóng lại chứ không bị xoá. Mỗi thực thể có tối đa một phiên bản hiện hành: khi thay thế, phiên bản cũ được đóng lại và giữ làm lịch sử cho các câu hỏi về một thời điểm trong quá khứ. Agent truy vấn graph bằng `knowledge_graph_search`, phù hợp với câu hỏi nhiều bước như ai đang làm dự án nào.
 
 ```bash
 dewee kg entities --agent <agent-id> --query "Acme"
