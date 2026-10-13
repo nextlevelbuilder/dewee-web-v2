@@ -4,14 +4,14 @@ description: Cho agent chạy theo lịch, xây workflow có phiên bản nối 
 section: console
 order: 8
 screens: [schedules, workflows, workflow-runs]
-updated: 2026-09-25
+updated: 2026-10-13
 ---
 
 Không phải việc nào của agent cũng bắt đầu từ một tin nhắn chat. **Lịch chạy** đánh thức agent vào một thời điểm hoặc theo chu kỳ và giao cho nó một prompt, ví dụ bản tin tổng hợp buổi sáng hay một lần kiểm tra mỗi giờ. **Workflow** đi xa hơn: nối các bước như gọi agent, tra cứu tri thức và gửi tin nhắn thành một chuỗi cố định, có phiên bản, mà bạn chạy thử được trước khi đưa vào sử dụng.
 
 ## Ai được dùng
 
-Cả hai khu vực đều cần khoá quyền `tasks.manage`. Với workflow, các thao tác **Publish**, rollback, **Delete**, **Dry run** và chạy lại một lần chạy còn đòi hỏi bạn là chủ workspace hoặc có vai trò Admin; runtime kiểm tra điều này bên cạnh khoá quyền. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
+Cả hai khu vực đều cần khoá quyền `tasks.manage`. Lịch chạy còn chạy dưới danh nghĩa agent của nó, nên thành viên chỉ tạo, đổi agent, sửa prompt hoặc chạy ngay một lịch trên agent mà họ chat được, chẳng hạn agent của chính họ, agent được chia sẻ cho họ, agent mặc định hoặc Super Agent; với agent khác, runtime từ chối với thông báo "no access to this agent". Chủ workspace và Admin dùng được mọi agent. Lịch không có **Agent ID** chạy bằng agent mặc định. Với workflow, các thao tác **Publish**, rollback, **Delete**, **Dry run** và chạy lại một lần chạy còn đòi hỏi bạn là chủ workspace hoặc có vai trò Admin; runtime kiểm tra điều này bên cạnh khoá quyền. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
 ## Lịch chạy
 
