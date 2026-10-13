@@ -42,7 +42,7 @@ Runtime có bốn vai trò riêng, quyết định bên gọi được dùng nh�
 - **Operator**: quyền đọc và ghi cho công việc hằng ngày, không có thao tác quản trị.
 - **Viewer**: chỉ đọc.
 
-Thành viên của tenant được ánh xạ vào các vai trò này: owner và admin thành admin, operator và member thành operator, viewer giữ nguyên viewer. Quyền truy cập từng agent được kiểm tra riêng: agent phải là agent mặc định, do chính bên gọi sở hữu, hoặc đã được chia sẻ cho họ.
+Thành viên của tenant được ánh xạ vào các vai trò này: owner và admin thành admin, operator và member thành operator, viewer giữ nguyên viewer. Quyền truy cập từng agent được kiểm tra riêng: agent phải là agent mặc định, do chính bên gọi sở hữu, hoặc đã được chia sẻ cho họ. Với agent dựng sẵn (predefined), bên gọi cũng được dùng nếu một kênh đang bật có tên họ trong danh sách người gửi được phép. Việc kiểm tra áp dụng khi chat qua WebSocket hay HTTP chat API, khi đặt lịch chạy agent, và khi xem hoặc sửa agent. Muốn sửa file ngữ cảnh của agent thì phải là chủ sở hữu hoặc được chia sẻ với vai trò admin hay operator, vì quyền chia sẻ user chỉ cho phép chat. Admin của tenant không bị kiểm tra khi chat và khi gọi các method WebSocket của agent, API key không gắn chủ sở hữu cũng vậy, vì key đó đại diện cho cả tenant.
 
 ## API key
 
