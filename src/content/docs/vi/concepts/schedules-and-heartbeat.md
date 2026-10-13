@@ -12,6 +12,8 @@ Agent trong dewee không nhất thiết phải chờ có người nhắn tin. M�
 
 Mỗi cron job thuộc về một agent, gồm một lịch và một payload. Bộ lập lịch kiểm tra job đến hạn mỗi giây.
 
+Bạn chỉ có thể đặt lịch trên agent mà bạn được dùng: agent mặc định, agent do bạn sở hữu và agent được chia sẻ với bạn. Admin và chủ sở hữu gateway có thể đặt lịch trên mọi agent. Chỉ định một agent khác, khi tạo job hoặc khi đổi agent của job, sẽ bị từ chối với lỗi `UNAUTHORIZED` và không có gì được lưu. Bỏ trống agent để job chạy trên agent mặc định.
+
 | Loại | Chạy | Giá trị `--schedule` |
 |---|---|---|
 | `at` | Một lần, tại một thời điểm | `at:2026-10-01T09:00:00+07:00` |
