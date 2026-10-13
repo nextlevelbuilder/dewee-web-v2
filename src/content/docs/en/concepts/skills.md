@@ -66,6 +66,8 @@ Each skill has an access mode, shown in the console as its **Visibility**:
 
 "Public" means the whole tenant, not the internet. On top of that, an agent's skill allow list can narrow what it sees: unset means every accessible skill, an empty list means none. A channel can narrow it further per request, for example per Telegram forum topic.
 
+Grants are enforced while the agent runs, not only in the list it is shown. An agent that may not use a skill cannot activate it, and its file tools, including the ones that write and edit files and file attachments it sends to a chat, and its shell commands are refused when they point into that skill's files, every stored version included, so it can neither read nor change a skill it was not given; directory listings and file searches leave the skill out. Each refusal is recorded in the run's trace, and the activity log notes it (repeats are grouped).
+
 ```bash
 dewee skills access set <skill-id> --mode internal
 dewee skills grant agent <skill-id> <agent-id>
