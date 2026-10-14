@@ -4,7 +4,7 @@ description: Kết nối các LLM provider mà agent sử dụng, kiểm tra cre
 section: console
 order: 5
 screens: [providers]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Provider là dịch vụ LLM mà agent của bạn gọi tới, ví dụ Anthropic, OpenAI, Google Vertex AI hoặc một gateway tương thích OpenAI. Trang **Provider & model** là nơi bạn kết nối provider với workspace, kiểm tra credential và chọn model mặc định cho từng provider. Bạn cần có ít nhất một provider đã kết nối trước khi tạo agent hay bắt đầu chat.
@@ -54,6 +54,8 @@ Chọn **Open** trên một dòng để chỉnh sửa:
 - **Models**: đổi model mặc định.
 
 Mỗi agent tự chọn provider và model khi bạn tạo hoặc sửa agent ở trang [Agent](/docs/console/agents). Dùng **Error traces** trên một dòng để mở **Trace** đã lọc sẵn các lần gọi lỗi của provider đó.
+
+Tab **Access** của provider quyết định agent nào được chạy trên provider đó. Mặc định provider mở cho mọi agent; quản trị viên workspace có thể giới hạn cho các agent được cấp quyền **Use**, sau khi xem trước danh sách agent sẽ mất quyền. Tab **Activity** hiện các thay đổi quyền, lần bị từ chối và lần sử dụng. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
 
 ## Xoá provider
 

@@ -4,7 +4,7 @@ description: Bật hoặc tắt tool tích hợp cho workspace, kết nối MCP 
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Tool là cách agent hành động: tìm kiếm trên web, đọc file, gọi một API. dewee mặc định từ chối mọi thứ, nên agent chỉ dùng được một tool sau khi bạn cho phép. Trang này nói về ba khu vực quyết định agent được gọi những gì và điều gì chạy quanh các lần gọi đó, cùng hai khu vực **Gói runtime** và **Giọng nói**.
@@ -43,7 +43,7 @@ MCP server bổ sung tool từ bên ngoài dewee, như GitHub hay một hệ th�
 2. Chọn transport. **stdio** chạy một lệnh kèm tham số và biến môi trường, trong đó biến bí mật luôn được che. **SSE** và **Streamable HTTP** cần URL, header và API key nếu có.
 3. Lưu server. Với server SSE hoặc Streamable HTTP dùng OAuth, mở tab **OAuth**, giữ chế độ đăng ký **Auto (Recommended)** trừ khi server yêu cầu khác, rồi chọn **Authorize**.
 4. Ở tab **Test**, chọn **Test connection** để kiểm tra server và tìm các tool của nó.
-5. Ở tab **Grants**, chọn một **Agent**, một **Team** (các agent hiện có trong nhóm) hoặc một **User**, chọn các tool được phép hoặc bị cấm, rồi chọn **Save grant**.
+5. Ở tab **Access**, cấp quyền **Use** cho agent, **Use** hoặc **Manage** cho người, hoặc cấp cho một nhóm (các agent hiện có trong nhóm). Mỗi quyền cấp hiện các tool của server mà nó cho phép. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
 
 Bạn thu hồi quyền ngay trong tab đó. Tắt một server sẽ giữ nguyên cấu hình nhưng agent không dùng được nữa.
 
@@ -68,12 +68,14 @@ Hook chạy handler của riêng bạn khi một sự kiện của agent xảy r
 
 Tab **History** hiển thị các lần chạy trước, với những giá trị trông giống secret đã được che. Hook global, hook có sẵn và hook dạng command do người vận hành runtime thiết lập chỉ hiển thị để xem. Xoá một hook sẽ khiến nó không chạy nữa, nhưng lịch sử vẫn được giữ để phục vụ audit.
 
+Với hook chạy cho các agent được chọn, tab **Access** liệt kê các agent mà hook chạy cho (**Runs for**) và những người có quyền **Edit** hoặc **Manage** trên hook. Hook áp dụng cho cả workspace hiện thông báo thay vào đó, vì chỉ quản trị viên workspace mới thay đổi được.
+
 > [!WARNING]
 > Một hook chặn bị lỗi, hoặc hết thời gian chờ khi **On timeout** đặt là **Block**, sẽ dừng thao tác của agent. Hãy chạy thử bằng dry run trước khi bật hook.
 
 ## Gói runtime
 
-**Gói runtime** hiển thị chính sách cài gói theo hình thức triển khai của bạn. Trên AaaS, người vận hành chọn lọc gói chung cho mọi workspace, nên bạn yêu cầu gói mới qua bộ phận hỗ trợ. Trên Dedicated và On-Premises, runtime của bạn tách biệt, nên có thể cài gói trực tiếp khi license còn hiệu lực, hoặc gửi yêu cầu để người vận hành xem xét. Tab **CLI Credentials** ghép cặp terminal của lập trình viên với runtime của workspace; bạn duyệt yêu cầu ghép cặp trong hộp ghép cặp.
+**Gói runtime** hiển thị chính sách cài gói theo hình thức triển khai của bạn. Trên AaaS, người vận hành chọn lọc gói chung cho mọi workspace, nên bạn yêu cầu gói mới qua bộ phận hỗ trợ. Trên Dedicated và On-Premises, runtime của bạn tách biệt, nên có thể cài gói trực tiếp khi license còn hiệu lực, hoặc gửi yêu cầu để người vận hành xem xét. Tab **Access** của một gói đã cài quyết định agent nào được chạy các lệnh của gói: quản trị viên workspace chuyển gói giữa chế độ mở và giới hạn, và cấp quyền **Use** cho agent. Gói phát hành trên GitHub hiện thông báo thay vào đó, vì quyền truy cập của chúng được đặt trong runtime. Tab **CLI Credentials** ghép cặp terminal của lập trình viên với runtime của workspace; bạn duyệt yêu cầu ghép cặp trong hộp ghép cặp.
 
 ## Giọng nói (TTS & STT)
 

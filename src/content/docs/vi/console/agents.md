@@ -4,14 +4,14 @@ description: "Tạo và quản lý các agent trong workspace: model, chỉ dẫ
 section: console
 order: 3
 screens: [agents]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Agent là một trợ lý đã được cấu hình và chạy trên runtime của workspace. Mỗi agent có model riêng, chỉ dẫn và file ngữ cảnh riêng, cùng một bộ skill và tool mà nó được phép dùng. Mọi người làm việc với agent qua Chat, các kênh chat đã kết nối, lịch chạy, workflow hoặc API. Trang **Agent** là nơi bạn tạo agent và giữ cho chúng hoạt động đúng ý.
 
 ## Ai được dùng
 
-Để mở **Agent**, bạn cần khoá quyền `agents.manage`. Việc tạo, sửa, tắt hoặc xoá agent, và thay đổi ai được dùng agent, còn đòi hỏi bạn là chủ workspace hoặc có vai trò Admin. Với những người khác, trang chỉ cho xem. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
+Để mở **Agent**, bạn cần khoá quyền `agents.manage`. Việc tạo, sửa, tắt hoặc xoá agent còn đòi hỏi bạn là chủ workspace hoặc có vai trò Admin. Quản trị viên workspace và người có quyền **Manage** hoặc **Admin** trên một agent được thay đổi ai dùng agent đó; người khác vẫn xem được danh sách quyền, kèm thông báo chỉ được xem. Với những người khác, trang chỉ cho xem. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
 ## Một agent gồm những gì
 
@@ -22,7 +22,7 @@ Agent là một trợ lý đã được cấu hình và chạy trên runtime c�
 | Skill | Các bộ chỉ dẫn dùng lại được mà agent có thể nạp | [Skill](/docs/console/skills) |
 | Tool | Tool tích hợp và tool từ MCP server mà agent được gọi | [Tool tích hợp, MCP server và hook](/docs/console/tools-mcp-and-hooks) |
 | Kênh | Các ứng dụng chat có tin nhắn được chuyển tới agent này | [Kênh](/docs/console/channels-and-contacts) |
-| Quyền truy cập | Thành viên hoặc vai trò được **View**, **Use** hoặc **Manage** agent | Tab **Grants** |
+| Quyền truy cập | Những người được **Use** hoặc **Manage** agent | Tab **Grants**, hoặc **Permissions** trên trang của agent |
 
 Console không bao giờ hiển thị prompt riêng của runtime, đường dẫn file ngữ cảnh hay ID nội bộ.
 
@@ -56,7 +56,7 @@ Danh sách hiển thị từng agent kèm loại, chủ sở hữu, provider, mo
 Chọn **Manage** trên một dòng để mở các tab chi tiết:
 
 - **Profile**, **Status** và **Context**: tên, mô tả, provider, model và các giới hạn.
-- **Grants**: cấp quyền **View**, **Use** hoặc **Manage** cho một thành viên hay một vai trò trong workspace. Mỗi lần cấp hoặc thu hồi quyền đều được ghi vào nhật ký audit.
+- **Grants** (cũng là tab **Permissions** trên trang của agent): những người được chia sẻ agent trong runtime. Quyền cấp mới gồm **Use**, để trò chuyện với agent, và **Manage**, để còn cấp hoặc thu hồi quyền cho người khác đến tối đa cấp của chính mình. Quyền **Edit** hoặc **Admin** đã có vẫn hiện và đổi được, nhưng không được đề xuất khi cấp mới, vì sửa hoặc xoá agent ở đây vẫn cần quản trị viên workspace. Quyền cấp cho vai trò và quyền **View** không còn hiện. Runtime ghi lại mọi thay đổi; xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
 - **Files**: đọc và sửa các file ngữ cảnh trong danh sách cho phép, kèm bản xem trước prompt ở chế độ chỉ đọc.
 - **Heartbeat**: đánh thức agent theo chu kỳ (tối thiểu 300 giây) trong khung giờ hoạt động và múi giờ bạn chọn, và chạy thử.
 - **Evolution**: xem các đề xuất được rút ra từ chính số liệu của agent, rồi chấp nhận, từ chối hoặc hoàn tác.

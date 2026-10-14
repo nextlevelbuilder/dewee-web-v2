@@ -4,14 +4,14 @@ description: "Create and manage the agents in a workspace: their model, instruct
 section: console
 order: 3
 screens: [agents]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 An agent is a configured assistant that runs on the workspace runtime. It has its own model, instructions and context files, and a set of skills and tools it is allowed to use. People reach it through Chat, connected channels, schedules, workflows or the API. The **Agents** page is where you create agents and keep them in shape.
 
 ## Who can use it
 
-Opening **Agents** requires `agents.manage`. Creating, editing, disabling or deleting an agent, and changing who may use it, also requires the workspace owner or Admin role. For anyone else the page is read-only. See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
+Opening **Agents** requires `agents.manage`. Creating, editing, disabling or deleting an agent also requires the workspace owner or Admin role. Changing who may use an agent is open to workspace admins and to people holding **Manage** or **Admin** on it; anyone else sees its grants with a view-only notice. For anyone else the page is read-only. See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
 
 ## What an agent holds
 
@@ -22,7 +22,7 @@ Opening **Agents** requires `agents.manage`. Creating, editing, disabling or del
 | Skills | Reusable instructions the agent can load | [Skills](/docs/console/skills) |
 | Tools | Built-in tools and MCP server tools the agent may call | [Built-in tools, MCP servers and hooks](/docs/console/tools-mcp-and-hooks) |
 | Channels | Chat apps whose messages route to this agent | [Channels](/docs/console/channels-and-contacts) |
-| Access grants | Members or roles allowed to **View**, **Use** or **Manage** the agent | **Grants** tab |
+| Access grants | People allowed to **Use** or **Manage** the agent | **Grants** tab, or **Permissions** on the agent's page |
 
 Private runtime prompts, context file paths and internal IDs are never shown in the console.
 
@@ -56,7 +56,7 @@ The list shows each agent with its type, owner, provider, model, access and stat
 Select **Manage** on a row to open its detail tabs:
 
 - **Profile**, **Status** and **Context**: name, summary, provider, model and limits.
-- **Grants**: give a workspace member or a workspace role **View**, **Use** or **Manage** access. Every grant and revoke is written to the audit log.
+- **Grants** (also the **Permissions** tab on the agent's page): the people who share the agent in the runtime. New grants offer **Use**, to chat with it, and **Manage**, to also give or take away access up to their own level. An existing **Edit** or **Admin** share is shown and can be changed but is not offered, because editing or deleting an agent here still needs a workspace admin. Grants to roles and **View** grants are not shown. The runtime records every change; see [Access grants](/docs/security/access-grants).
 - **Files**: read and edit the allowlisted context files, with a read-only prompt preview.
 - **Heartbeat**: wake the agent on an interval (minimum 300 seconds) within active hours and a time zone, and run a test.
 - **Evolution**: review suggestions derived from the agent's own metrics, then approve, reject or roll back.

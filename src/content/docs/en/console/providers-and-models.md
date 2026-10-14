@@ -4,7 +4,7 @@ description: Connect the LLM providers your agents run on, verify credentials be
 section: console
 order: 5
 screens: [providers]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 A provider is the LLM service your agents call, such as Anthropic, OpenAI, Google Vertex AI or an OpenAI-compatible gateway. The **Providers & models** page is where you connect providers to the workspace, check their credentials and choose which model each one uses by default. You need at least one connected provider before you can create agents or start a chat.
@@ -54,6 +54,8 @@ Select **Open** on a row to edit it:
 - **Models**: change the default model.
 
 Each agent picks its own provider and model when you create or edit it in [Agents](/docs/console/agents). Use **Error traces** on a row to open **Traces** filtered to failed calls for that provider.
+
+The provider's **Access** tab decides which agents may run on it. A provider is open to every agent by default; a workspace admin can restrict it to agents granted **Use**, after a preview of the agents that would lose access. The **Activity** tab shows grant changes, denials and uses. See [Access grants](/docs/security/access-grants).
 
 ## Remove a provider
 

@@ -4,7 +4,7 @@ description: Tải lên skill tuỳ chỉnh dưới dạng file ZIP, kiểm tra 
 section: console
 order: 6
 screens: [skills, skill-templates]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Skill là một bộ chỉ dẫn được đóng gói, đôi khi kèm script, mà agent có thể nạp khi công việc cần tới. Mỗi skill nằm trong một file `SKILL.md` có YAML front matter. Trang **Skill** có hai tab: **Skills**, nơi bạn tải lên và quản lý các skill của workspace, và **Templates**, nơi bạn tạo agent mới từ các skill dựng sẵn.
@@ -35,11 +35,12 @@ Mặc định mỗi file nén tối đa 20 MB. Người vận hành runtime có 
 
 ## Quản lý một skill
 
-Chọn **Open** trên một dòng. Trang chi tiết có bốn tab:
+Chọn **Open** trên một dòng. Trang chi tiết gồm các tab sau:
 
 - **Profile**: sửa tên và mô tả, đặt **Visibility** và đổi trạng thái.
 - **Dependencies**: xem các gói mà skill cần và chọn **Scan dependencies** để kiểm tra gói nào còn thiếu.
-- **Grants**: cấp quyền cho một agent theo tên, có thể ghim vào một phiên bản cụ thể, hoặc cấp quyền cho một thành viên theo email.
+- **Access**: cấp quyền **Use** hoặc **Manage** cho agent hoặc người, đổi mức và thu hồi quyền. Quản trị viên workspace và người có quyền **Manage** trên skill được thay đổi quyền truy cập; người khác thấy thông báo chỉ được xem. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
+- **Activities**: gồm cả hoạt động truy cập của skill: thay đổi quyền, lần bị từ chối và lần sử dụng.
 - **Evolution**: xem skill đã chạy bao nhiêu lần, tỉ lệ thành công và thời gian chạy trung bình.
 
 Dùng **Download** để tải bản sao của một skill tuỳ chỉnh, và **Delete** để xoá nó.

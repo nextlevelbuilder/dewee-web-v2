@@ -4,7 +4,7 @@ description: Turn built-in tools on or off for the workspace, connect MCP server
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Tools are how agents act: search the web, read files, call an API. dewee starts from default-deny, so an agent can only use a tool once you allow it. This page covers the three areas that decide what agents can call and what runs around those calls, plus the **Runtime packages** and **Voice** areas.
@@ -43,7 +43,7 @@ An MCP server adds tools from outside dewee, such as GitHub or a ticketing syste
 2. Pick the transport. **stdio** runs a command with arguments and environment variables, with secret variables kept masked. **SSE** and **Streamable HTTP** take a URL, headers and an optional API key.
 3. Save the server. For SSE and Streamable HTTP servers that use OAuth, open the **OAuth** tab, keep the registration mode on **Auto (Recommended)** unless the server needs otherwise, and select **Authorize**.
 4. On the **Test** tab, select **Test connection** to check the server and discover its tools.
-5. On the **Grants** tab, pick an **Agent**, a **Team** (its current agents) or a **User**, choose allowed or denied tools, and select **Save grant**.
+5. On the **Access** tab, grant agents **Use**, people **Use** or **Manage**, or a team (its current agents). Each grant shows which of the server's tools it allows. See [Access grants](/docs/security/access-grants).
 
 Revoke a grant from the same tab. Turning a server off keeps it configured but unavailable to agents.
 
@@ -68,12 +68,14 @@ To add one:
 
 The **History** tab shows past runs, with secret-looking values redacted. Global, built-in and command hooks set up by the runtime operator appear read-only. Deleting a hook stops it from running, but its history stays for audit.
 
+On a hook that runs for selected agents, the **Access** tab lists the agents it runs for (**Runs for**) and the people holding **Edit** or **Manage** on it. Workspace-wide hooks show a notice instead, because only workspace admins can change them.
+
 > [!WARNING]
 > A blocking hook that fails or times out with **On timeout** set to **Block** stops the agent's operation. Test with a dry run before you enable it.
 
 ## Runtime packages
 
-**Runtime packages** shows the package policy for your deployment mode. On AaaS, packages are curated by the operator for all workspaces, so you request new ones through support. On Dedicated and On-Premises, your runtime is isolated, so packages can be installed into it directly while the licence is active, or requested for the operator to review. The **CLI Credentials** tab pairs a developer terminal with the workspace runtime; you approve the pairing in the pairing inbox.
+**Runtime packages** shows the package policy for your deployment mode. On AaaS, packages are curated by the operator for all workspaces, so you request new ones through support. On Dedicated and On-Premises, your runtime is isolated, so packages can be installed into it directly while the licence is active, or requested for the operator to review. An installed package's **Access** tab decides which agents may run its commands: a workspace admin switches it between open and restricted and grants agents **Use**. GitHub release packages show a notice instead, because their access is set in the runtime. The **CLI Credentials** tab pairs a developer terminal with the workspace runtime; you approve the pairing in the pairing inbox.
 
 ## Voice (TTS & STT)
 

@@ -4,7 +4,7 @@ description: Upload custom skills as ZIP archives, check their dependencies, dec
 section: console
 order: 6
 screens: [skills, skill-templates]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 A skill is a packaged set of instructions, and sometimes scripts, that an agent can load when a task calls for it. Each skill lives in a `SKILL.md` file with YAML front matter. The **Skills** page has two tabs: **Skills**, where you upload and manage the skills in your workspace, and **Templates**, where you start new agents from ready-made skills.
@@ -35,11 +35,12 @@ Archives are limited to 20 MB each by default. Your runtime operator can set the
 
 ## Manage a skill
 
-Select **Open** on a row. The detail has four tabs:
+Select **Open** on a row. The detail includes these tabs:
 
 - **Profile**: edit the name and description, set the **Visibility** and change the status.
 - **Dependencies**: see the packages the skill needs and select **Scan dependencies** to check what is missing.
-- **Grants**: give a named agent access, optionally pinned to one version, or give a member access by email.
+- **Access**: grant agents or people **Use** or **Manage**, and change or revoke grants. Workspace admins and people with **Manage** on the skill can change access; anyone else sees a view-only notice. See [Access grants](/docs/security/access-grants).
+- **Activities**: includes the skill's access activity: grant changes, denials and uses.
 - **Evolution**: see how often the skill ran, its success rate and its average duration.
 
 Use **Download** to get a copy of a custom skill, and **Delete** to remove it.
