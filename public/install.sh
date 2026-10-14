@@ -453,6 +453,9 @@ write_env() {
 
   env_set GOCLAW_HOST 127.0.0.1
   env_set GOCLAW_PORT "$DEWEE_RUNTIME_PORT"
+  # The runtime listens on loopback only; its one client is the local CCP
+  # server, whose /_runtime proxy sets X-Forwarded-* for the real browser.
+  env_set GOCLAW_TRUSTED_PROXIES "127.0.0.1,::1"
   env_set GOCLAW_DATA_DIR "$OPT_HOME/data"
   env_set GOCLAW_WORKSPACE "$OPT_HOME/workspace"
   env_set GOCLAW_CONFIG "$OPT_HOME/config.json"

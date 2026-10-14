@@ -77,6 +77,9 @@ services:
     environment:
       DEWEE_LICENSE_GATE: channels
       DEWEE_RGD_MOUNT: hidden
+      # dewee-app's runtime proxy sets X-Forwarded-For/-Host/-Proto for the
+      # real browser; the runtime believes them only from this peer.
+      GOCLAW_TRUSTED_PROXIES: ${GOCLAW_TRUSTED_PROXIES-dewee-app}
       # `dewee selfhost access-link` and `selfhost status` read /secrets/dewee.env through this.
       DEWEE_HOME: /secrets
       # Where `docker compose exec dewee dewee selfhost status` reaches the control panel.
