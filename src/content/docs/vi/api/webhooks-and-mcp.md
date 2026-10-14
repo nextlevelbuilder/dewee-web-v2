@@ -80,11 +80,11 @@ Client hoạt động như một agent trong tenant của nó, được chọn b
 
 ### Kết nối client trong console
 
-Trong console, mở **API key** rồi chọn tab **Kết nối MCP client**. Tab này dẫn bạn qua năm bước:
+Trong console, mở **API key & tài liệu** rồi chọn tab **Kết nối MCP client**. Tab này dẫn bạn qua năm bước:
 
 1. **Trạng thái endpoint.** Các nhãn trạng thái cho biết runtime đã được liên kết chưa, endpoint có sẵn sàng trên runtime này không, và MCP đã được bật cho workspace chưa. Bên dưới là địa chỉ endpoint chính xác, số tool đọc và tool ghi, cùng các giới hạn. Admin của workspace có thể **Bật MCP** hoặc **Tắt MCP** ngay tại đây, sau một bước xác nhận; các thành viên khác chỉ xem được trạng thái và được hướng dẫn liên hệ admin.
 2. **Chọn agent.** Chọn agent mà client sẽ làm việc cùng, hoặc để trống để dùng agent mặc định của workspace.
-3. **Tạo key.** Key chỉ dùng được cho MCP và mặc định chỉ có quyền đọc. Chỉ đánh dấu **Cho phép thêm công cụ ghi** khi client thật sự cần thay đổi dữ liệu. Key chỉ hiện một lần, nên hãy sao chép ngay.
+3. **Tạo khóa.** Key chỉ dùng được cho MCP và mặc định chỉ có quyền đọc. Chỉ đánh dấu **Cho phép thêm công cụ ghi** khi client thật sự cần thay đổi dữ liệu. Key chỉ hiện một lần, nên hãy sao chép ngay.
 4. **Sao chép cấu hình client.** Chọn Claude Code, Cursor, VS Code hoặc Gemini CLI rồi sao chép cấu hình, trong đó đã có sẵn endpoint và agent bạn chọn. Cấu hình luôn dùng chỗ giữ chỗ `<your-mcp-key>`, không bao giờ chứa key thật; hãy thay chỗ giữ chỗ bằng key của bạn.
 5. **Kiểm tra kết nối.** Dán một key, hoặc dùng key vừa tạo, rồi chọn **Kiểm tra kết nối**. Console chạy đúng bước bắt tay mà client thực hiện và hiển thị kết quả, bước tiếp theo nên làm, số tool tìm thấy và thời gian phản hồi. Tuỳ chọn **Gọi thử một công cụ chỉ đọc** chứng minh rằng tool thật sự chạy được.
 
@@ -92,7 +92,7 @@ Xem tab và chạy kiểm tra cần quyền Giám sát. Bật hoặc tắt MCP, 
 
 ### Kết nối client bằng CLI
 
-1. Tạo key với preset **MCP read** hoặc **MCP read and write** trên trang **API key** của console, hoặc bằng `dewee api-keys create` với `mcp.tools.read` và một owner.
+1. Tạo key với mức **MCP đọc** hoặc **MCP đọc và ghi** trên trang **API key & tài liệu** của console, hoặc bằng `dewee api-keys create` với `mcp.tools.read` và một owner.
 2. Export key thành `DEWEE_MCP_TOKEN` để nó không bao giờ nằm trong file cấu hình.
 3. Sinh cấu hình cho client của bạn rồi gộp vào phần cài đặt của client:
 
@@ -158,4 +158,4 @@ Mỗi credential được gửi 120 request mỗi phút (tối đa 20 request d�
 
 Các giới hạn này tính **theo từng credential, không theo workspace**: workspace có ba key MCP sẽ có gấp ba hạn mức. Một số tool đọc tiêu tốn hạn mức trả phí của chính workspace, ví dụ `web_search` dùng các nhà cung cấp tìm kiếm của workspace, nên hãy coi cả key chỉ đọc cũng có thể tiêu hạn mức đó.
 
-Key đã thu hồi hoặc hết hạn thất bại ngay ở request kế tiếp, không có thời gian chờ cache. Key chỉ có scope MCP không tự quản lý được key, nên muốn thu hồi một key bị lộ cần chủ sở hữu hoặc admin, trên trang **API key** của console hoặc bằng một credential admin. Để ngắt mọi client của workspace cùng lúc mà không thu hồi key, hãy tắt quyền truy cập của workspace.
+Key đã thu hồi hoặc hết hạn thất bại ngay ở request kế tiếp, không có thời gian chờ cache. Key chỉ có scope MCP không tự quản lý được key, nên muốn thu hồi một key bị lộ cần chủ sở hữu hoặc admin, trên trang **API key & tài liệu** của console hoặc bằng một credential admin. Để ngắt mọi client của workspace cùng lúc mà không thu hồi key, hãy tắt quyền truy cập của workspace.

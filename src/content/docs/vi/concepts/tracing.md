@@ -85,7 +85,7 @@ dewee traces timeline <trace-id>
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
-**Đánh giá ngữ nghĩa** đang ở giai đoạn beta và tắt mặc định. Khi người vận hành bật tính năng này và thêm API key của TypeSafe, các trace đã hoàn tất được gửi tới bộ phân loại bên ngoài đó, sau khi đã che thông tin xác thực và dữ liệu cá nhân, rồi được gắn các tín hiệu như tác vụ có thành công hay không. Các nhãn này trở thành bộ lọc bổ sung của `dewee traces list`, chẳng hạn `--semantic-decision`, và không bao giờ thay đổi cách agent chạy. `dewee traces semantic config get` cho biết tính năng có đang bật hay không và vì sao.
+**Đánh giá ngữ nghĩa** tắt mặc định. Khi người vận hành bật tính năng này và thêm API key của TypeSafe, các trace đã hoàn tất được gửi tới bộ phân loại bên ngoài đó, sau khi đã che thông tin xác thực và dữ liệu cá nhân, rồi được gắn các tín hiệu như tác vụ có thành công hay không. Các nhãn này trở thành bộ lọc bổ sung của `dewee traces list`, chẳng hạn `--semantic-decision`, và không bao giờ thay đổi cách agent chạy. `dewee traces semantic config get` cho biết tính năng có đang bật hay không và vì sao.
 
 ## Xuất sang OpenTelemetry
 

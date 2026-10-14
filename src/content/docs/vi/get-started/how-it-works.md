@@ -15,7 +15,7 @@ Mỗi lượt chạy của agent luôn bắt đầu bằng một tin nhắn. Tin
 | Nguồn | Ví dụ |
 |---|---|
 | Một channel chat | Khách hàng nhắn cho bot Telegram hoặc Zalo Official Account của bạn. Xem [Kênh chat](/docs/integrations/channels) |
-| Console | Một đồng nghiệp dùng **Chat** để trò chuyện trực tiếp với agent |
+| Console | Một đồng nghiệp dùng **Trò chuyện** để trò chuyện trực tiếp với agent |
 | API | Phần mềm của bạn gọi `POST /v1/chat/completions` hoặc WebSocket. Xem [Tổng quan API](/docs/api/overview) |
 | Webhook | CRM hay công cụ biểu mẫu gọi `POST /v1/webhooks/llm`. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp) |
 | Lịch của chính agent | Một cron job, một lần heartbeat hoặc một bước trong workflow được kích hoạt |
@@ -49,7 +49,7 @@ Câu trả lời đi ngược qua đúng channel đó, được định dạng c
 
 ## 5. Runtime lưu lại dấu vết
 
-Khi lượt chạy kết thúc, dewee lưu các tin nhắn mới vào session và đóng trace của lượt chạy: mọi lời gọi model và lời gọi tool, kèm số token và chi phí ước tính. Tổng mức sử dụng được cập nhật, và các tiến trình nền biến cuộc trò chuyện thành bộ nhớ dài hạn. Đội của bạn xem kết quả trong console ở **Trace** và **Mức sử dụng**; những thay đổi cấu hình do con người thực hiện nằm ở **Nhật ký hoạt động**. Xem [Bộ nhớ và kho tri thức](/docs/concepts/memory-and-knowledge).
+Khi lượt chạy kết thúc, dewee lưu các tin nhắn mới vào session và đóng trace của lượt chạy: mọi lời gọi model và lời gọi tool, kèm số token và chi phí ước tính. Tổng mức sử dụng được cập nhật, và các tiến trình nền biến cuộc trò chuyện thành bộ nhớ dài hạn. Đội của bạn xem kết quả trong console ở **Trace** và **Mức sử dụng**; những thay đổi cấu hình do con người thực hiện nằm ở **Hoạt động**. Xem [Bộ nhớ và kho tri thức](/docs/concepts/memory-and-knowledge).
 
 ## Mọi thứ nằm ở đâu
 

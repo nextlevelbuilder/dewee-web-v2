@@ -86,7 +86,7 @@ Heartbeat là một lần kiểm tra định kỳ. Mỗi agent có thể có m�
 
 Gateway kiểm tra heartbeat đến hạn mỗi 30 giây. Một lượt bị bỏ qua khi nằm ngoài giờ hoạt động, khi agent đang bận việc khác, hoặc khi `HEARTBEAT.md` trống hay không tồn tại. Agent đang bận sẽ được thử lại ở lần kiểm tra kế tiếp. Khi heartbeat được bật lần đầu, thời điểm bắt đầu được lùi thêm tối đa 10% chu kỳ, để các agent có cùng chu kỳ không chạy đồng loạt.
 
-Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Test** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
+Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Chạy thử** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
 
 ```bash
 dewee heartbeat get <agent-id>

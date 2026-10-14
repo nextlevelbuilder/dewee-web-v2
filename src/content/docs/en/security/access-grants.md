@@ -12,7 +12,7 @@ Nothing changes for a workspace that grants nothing. Providers and packages stay
 
 ## Levels
 
-There are four levels, `use`, `edit`, `manage` and `admin`, and each one includes the levels below it. Not every level exists for every resource:
+There are four levels, `use`, `edit`, `manage` and `admin` (**Use**, **Edit**, **Manage** and **Admin** in the console), and each one includes the levels below it. Not every level exists for every resource:
 
 | Resource | Agents can hold | People can hold |
 |---|---|---|
@@ -29,7 +29,7 @@ What a level unlocks depends on the resource:
 - **MCP servers.** An agent with `use` may call the server's tools; the per-tool allow and deny lists still apply. For people, `use` keeps its existing meaning, the chat users an agent may call the server for. `edit` currently gives the same access as `use`, and `manage` lets them grant, revoke and read activity, as for skills.
 - **Packages and providers.** An agent with `use` may run the package's commands, or run on the provider, after the resource is restricted. While a resource is open, the grant changes nothing.
 - **Hooks.** `edit` lets a person change a hook that runs for specific agents. `manage` also lets them change which agents it runs for, switch it on or off, delete it, and manage its grants. Changing a hook, or which agents it runs for, also needs an `edit` share on each agent involved, because a hook sees all of that agent's events and can block its tool calls. Hooks that run for the whole workspace stay with workspace admins.
-- **Agents.** These grants are the agent shares described in [Secrets, roles and audit](/docs/security/secrets-roles-and-audit#roles-in-the-runtime). `use` allows chat. `edit` lets the holder change the agent's name, description, model and prompt settings, and regenerate it. `manage` adds raising its cost limits and managing its shares. `admin` adds deleting the agent, except the workspace's default agent. The agent's key, status, workspace, sandbox, tool policy and budget stay with workspace admins.
+- **Agents.** These grants are the agent shares described in [Secrets, roles and audit](/docs/security/secrets-roles-and-audit#roles-in-the-runtime). `use` allows chat. `edit` lets the holder change the agent's name, description, model and prompt settings, and regenerate it. `manage` adds raising its cost limits and managing its shares. `admin` adds deleting the agent, except the workspace's default agent. The agent's key, status, workspace, sandbox, tool policy and budget stay with workspace admins. These powers apply through the gateway. In the console, changing or deleting an agent needs a workspace admin whatever the share, so the console does not offer `edit` or `admin` there (see [Where to manage grants](#where-to-manage-grants)).
 
 Workspace owners, admins and agent owners keep exactly the access they had before; grants only add rights for the people who hold them. To use an `edit`, `manage` or `admin` share from a script, a person needs an API key bound to them with write access (operator or above).
 
@@ -41,7 +41,7 @@ Built-in skills, providers shared across the whole instance and global hooks are
 
 ## Open and restricted
 
-Providers and packages have an access mode. **Open**, the default, lets every agent of the workspace use them. **Restricted** limits them to agents holding a `use` grant. Only a workspace admin can change the mode.
+Providers and packages have an access mode, set in the console with the **Restricted access** switch. **Open**, the default, lets every agent of the workspace use them. **Restricted** limits them to agents holding a `use` grant. Only a workspace admin can change the mode.
 
 Restricting a provider can stop agents that run on it, so dewee shows the impact first. It lists the agents that would lose access: those that use the provider as their main provider, as an enabled fallback, or through a ChatGPT OAuth account pool, and have no grant. The dashboard asks for confirmation with that list and then offers to grant all of them `use` in one step. In the CLI, `--dry-run` prints the same list without changing anything. Packages report no affected agents.
 
@@ -74,7 +74,7 @@ Each resource has an activity feed with three kinds of events:
 
 - **Grant changes.** Granting, changing a level, revoking and changing the mode, each with who did it. The record is written together with the change.
 - **Denials.** Each refusal at run time, folded to at most one entry per agent, resource and action per minute. The gateway also logs it as `security.resource_grant_denied`. An MCP tool call refused during a chat is logged by the gateway but does not appear in the feed.
-- **Use.** Skill runs, hook executions and model calls on a provider from the last 7 days. MCP servers, packages and agents have no use events yet.
+- **Uses.** Skill runs, hook executions and model calls on a provider from the last 7 days. MCP servers, packages and agents have no use events yet.
 
 Workspace admins and people with `manage` on the resource can read the feed.
 
@@ -83,7 +83,7 @@ Workspace admins and people with `manage` on the resource can read the feed.
 - **The gateway's built-in dashboard.** An **Access** panel on skills (a tab of the skill dialog), providers (the provider page), packages (an action on each row of the pip, npm, system and GitHub lists), hooks and agents (a tab on their pages). It lists grants, adds agents or people at the levels the resource allows, changes and revokes grants, shows the activity feed, and holds the open/restricted switch for providers and packages.
 - **The CLI.** `dewee skills`, `mcp`, `providers`, `packages`, `agent` and `hooks` each have an `access` group with `list`, `grant`, `set-level`, `revoke` and `activity`; providers and packages add `mode get` and `mode set`. See the [CLI reference](/docs/runtime/cli).
 - **The HTTP API.** `/v1/resource-grants/{type}/{id}`, with the same rules as the dashboard.
-- **The console.** On app.dewee.sh, skills, MCP servers, providers and packages have an **Access** tab and an activity tab, agents have a **Permissions** tab, and hooks that run for selected agents have an **Access** tab. New grants offer only levels the console honours: a person gets **Use** or **Manage** on a skill, MCP server or agent, and **Edit** or **Manage** on a hook, whose agents are listed under **Runs for**. Workspace admins also get the open/restricted switch for providers and packages, with a preview of the agents that would lose access. GitHub release packages and workspace-wide hooks show a notice instead of controls, and members the gateway would refuse see grants without controls. See [Agents](/docs/console/agents), [Skills](/docs/console/skills), [Providers and models](/docs/console/providers-and-models) and [Built-in tools, MCP servers and hooks](/docs/console/tools-mcp-and-hooks).
+- **The console.** On app.dewee.sh, skills, MCP servers, providers and packages have an **Access** tab and an activity tab, agents have a **Permissions** tab, and every hook has an **Access** tab. New grants offer only levels the console honours: a person gets **Use** or **Manage** on a skill, MCP server or agent, and **Edit** or **Manage** on a hook, whose agents are listed under **Runs for**. On an agent, **Edit** works like **Use** and **Admin** like **Manage**, so neither is offered; a grant that already holds one is still shown and can be changed. Workspace admins also get the **Restricted access** switch for providers and packages. Restricting a provider opens a confirmation that first lists the agents that would lose access. After you confirm, it offers **Grant them use** for the agents that lost access. Restricting a package asks for confirmation without a preview. GitHub release packages, workspace-wide hooks and built-in or instance-shared hooks show a notice instead of controls, and members the gateway would refuse see grants without controls. See [Agents](/docs/console/agents), [Skills](/docs/console/skills), [Providers and models](/docs/console/providers-and-models) and [Built-in tools, MCP servers and hooks](/docs/console/tools-mcp-and-hooks).
 
 ```bash
 dewee skills access grant git-helper --agent support-bot --level use

@@ -18,7 +18,7 @@ Every call to the runtime, except the health checks, carries a credential. For s
 
 ## Create an API key
 
-**In the console**, open **API keys**, choose a preset and an expiry, and create the key. The presets are **Read**, **Read and write**, **MCP read** and **MCP read and write**; expiry can be 1 hour, 1 day, 30 days, 90 days or none. The key is shown once, so copy it into your secret manager straight away. Creating or rotating keys is limited to 20 per hour, and revoking to 30 per hour.
+**In the console**, open **API keys & docs**, select **Create key**, choose the **Access** level and an expiry, and create the key. The levels are **Read**, **Read and write**, **MCP read** and **MCP read and write**; expiry can be 1 hour, 1 day, 30 days, 90 days or none. The key is shown once, so copy it into your secret manager straight away. Creating or rotating keys is limited to 20 per hour, and revoking to 30 per hour.
 
 **With the CLI**, an admin can create a key with explicit scopes:
 

@@ -45,7 +45,7 @@ Mỗi channel có một policy cho tin nhắn trực tiếp và một policy cho
 
 Form channel trong console đặt mọi channel ở `pairing`, trừ Zalo Personal bắt đầu với `allowlist`.
 
-Mã ghép cặp có 8 ký tự, hiệu lực 60 phút, và mỗi tài khoản có tối đa ba mã đang chờ. Admin duyệt mã trong **Hộp ghép cặp** hoặc bằng `dewee pairing approve`. Một lần ghép cặp đã duyệt mặc định có hiệu lực 30 ngày; workspace có thể chọn thời hạn khác hoặc không hết hạn, và từng channel có thể đặt riêng.
+Mã ghép cặp có 8 ký tự, hiệu lực 60 phút, và mỗi tài khoản có tối đa ba mã đang chờ. Admin duyệt mã trong **Hộp ghép nối** hoặc bằng `dewee pairing approve`. Một lần ghép cặp đã duyệt mặc định có hiệu lực 30 ngày; workspace có thể chọn thời hạn khác hoặc không hết hạn, và từng channel có thể đặt riêng.
 
 Trong nhóm, agent chỉ trả lời khi được mention, trừ khi bạn tắt chế độ này. Những tin nhắn không mention agent vẫn được giữ làm ngữ cảnh cho lần được mention tiếp theo. Trên Telegram, Feishu và Discord, chỉ các writer được chỉ định mới có thể yêu cầu agent thay đổi file, và trên Telegram chỉ họ mới reset được cuộc trò chuyện.
 
@@ -62,4 +62,4 @@ Trên Telegram, mọi người điều khiển cuộc trò chuyện bằng các 
 
 ## Gửi tin nhắn từ hệ thống khác
 
-Để phần mềm của bạn đăng tin nhắn lên một channel, hãy dùng webhook `message`: nó nhận tên channel, chat ID và nội dung, kèm media tuỳ chọn. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp). Tin nhắn channel đang được đệm và chờ agent xử lý hiện trong **Tin nhắn chờ**.
+Để phần mềm của bạn đăng tin nhắn lên một channel, hãy dùng webhook `message`: nó nhận tên channel, chat ID và nội dung, kèm media tuỳ chọn. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp). Tin nhắn channel đang được đệm và chờ agent xử lý hiện trong **Tin nhắn đang chờ**.

@@ -85,7 +85,7 @@ dewee traces timeline <trace-id>
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
-**Semantic evaluation** is in beta and off by default. When an operator turns it on and adds a TypeSafe API key, finished traces are sent to that external classifier, with credentials and personal data redacted, and labelled with signals such as whether the task succeeded. The labels become extra `dewee traces list` filters, such as `--semantic-decision`, and never change how an agent runs. `dewee traces semantic config get` shows whether it is on and why.
+**Semantic evaluation** is off by default. When an operator turns it on and adds a TypeSafe API key, finished traces are sent to that external classifier, with credentials and personal data redacted, and labelled with signals such as whether the task succeeded. The labels become extra `dewee traces list` filters, such as `--semantic-decision`, and never change how an agent runs. `dewee traces semantic config get` shows whether it is on and why.
 
 ## Exporting to OpenTelemetry
 

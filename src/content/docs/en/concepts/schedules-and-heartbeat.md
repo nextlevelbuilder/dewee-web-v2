@@ -86,7 +86,7 @@ A heartbeat is a periodic check-in. Each agent can have one, driven by a `HEARTB
 
 The gateway checks for due heartbeats every 30 seconds. A run is skipped when it falls outside active hours, when the agent is busy with other work, or when `HEARTBEAT.md` is empty or missing. A busy agent is tried again on the next check. When a heartbeat is first enabled, its start is offset by up to 10% of the interval, so agents with the same interval do not all run together.
 
-If the reply contains `HEARTBEAT_OK`, the run is logged as suppressed and nothing is sent. Otherwise the reply goes to the delivery chat. A heartbeat can also be woken early by **Test** in the console, by the agent calling its `heartbeat` tool with `test`, or by a cron job with `wakeHeartbeat`.
+If the reply contains `HEARTBEAT_OK`, the run is logged as suppressed and nothing is sent. Otherwise the reply goes to the delivery chat. A heartbeat can also be woken early by **Run test** in the console, by the agent calling its `heartbeat` tool with `test`, or by a cron job with `wakeHeartbeat`.
 
 ```bash
 dewee heartbeat get <agent-id>

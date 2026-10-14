@@ -13,45 +13,64 @@ Tool là cách agent hành động: tìm kiếm trên web, đọc file, gọi m�
 
 | Khu vực | Khoá quyền |
 |---|---|
-| Tool tích hợp, Giọng nói (TTS & STT) | `settings.manage` |
-| MCP server, Hook | `integrations.manage` |
+| Công cụ tích hợp | `settings.manage` |
+| Giọng nói (TTS & STT) | `tts.manage` |
+| Máy chủ MCP, Hook | `integrations.manage` |
 | Gói runtime | `packages.install` |
 
-Chủ workspace và vai trò Admin có sẵn giữ tất cả các khoá này. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
+Chủ workspace và vai trò Admin có sẵn giữ tất cả các khoá này. Cài đặt giọng nói thành văn bản chỉ dành cho quản trị viên workspace. Xem [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
 ## Tool tích hợp
 
-**Tool tích hợp** liệt kê các tool đi kèm runtime, được nhóm theo danh mục. Mỗi tool cho biết nó cần gì, đang bật hay tắt, mức rủi ro, và thiết lập hiện tại là **runtime default** hay **tenant override** riêng của workspace.
+Trang **Công cụ tích hợp** (trong menu là **Công cụ có sẵn**) liệt kê các tool đi kèm runtime, nhóm theo danh mục có thể thu gọn. Bạn tìm được theo tên hoặc danh mục. Mỗi dòng cho biết mức rủi ro (**Rủi ro cao**, **Rủi ro trung bình** hoặc **Rủi ro thấp**), thiết lập đang là **Mặc định** hay **Ghi đè** riêng của workspace, và một công tắc để bật tool. Agent chỉ gọi được các tool đang bật ở đây.
 
 ::shot{id="tools"}
 
-Để thay đổi một tool:
+Khi bật một tool có thể sửa tệp, chạy lệnh hoặc dùng secret đã lưu, hộp thoại **Bật {name}?** yêu cầu bạn xác nhận; chọn **Bật công cụ**.
 
-1. Mở danh mục chứa tool và chọn **Configure**, rồi **Load config**.
-2. Bật hoặc tắt **Enabled override**, hoặc chọn **Use runtime default**.
-3. Sửa **Settings JSON** nếu tool có thiết lập riêng.
-4. Với tool có thể sửa file, chạy lệnh hoặc dùng secret đã lưu, hãy đánh dấu vào ô xác nhận.
-5. Chọn **Save**. Sau này, dùng **Revert override** để quay về mặc định của runtime.
+Chọn một tool để mở bảng chi tiết:
+
+- **Quyền truy cập**: công tắc **Đã bật**, và **Đưa về mặc định**, đưa tool về mặc định của runtime và xoá cài đặt của workspace sau khi bạn xác nhận **Hoàn tác ghi đè**.
+- **Chi tiết**: danh mục, mức rủi ro, những gì tool yêu cầu và các bí mật cần có.
+- **Bí mật**: các bí mật đã lưu. Giá trị bí mật không bao giờ hiển thị.
+- **Cấu hình**: cài đặt của tool, nếu có. Một số tool có biểu mẫu riêng, như chuỗi nhà cung cấp của tìm kiếm web hay của tool media; các tool khác có **Nâng cao: sửa dạng JSON** với ô **Cài đặt JSON**. Chọn **Lưu cài đặt** để lưu cho workspace này, hoặc **Xoá cài đặt của workspace** để quay về cài đặt mặc định của runtime mà không đổi trạng thái bật hay tắt của tool.
+- **Chi tiết kỹ thuật**: ID công cụ và trạng thái cấu hình.
 
 ## MCP server
 
-MCP server bổ sung tool từ bên ngoài dewee, như GitHub hay một hệ thống ticket. Server đã kết nối vẫn chưa dùng được cho tới khi bạn cấp quyền cho agent.
+MCP server bổ sung tool từ bên ngoài dewee, như GitHub hay một hệ thống ticket. Trang **Máy chủ MCP** có hai tab: **Đã cài đặt**, gồm các server của workspace, và **Chợ ứng dụng**, hiện chưa kết nối danh mục nào nên gợi ý bạn thêm server tuỳ chỉnh. Server đã kết nối vẫn chưa dùng được cho tới khi bạn cấp quyền cho agent.
 
 ::shot{id="mcp-servers"}
 
-1. Chọn **New server** và điền phần **Profile**: tên (chữ thường, chữ số và dấu gạch ngang), tên hiển thị, tiền tố tool và thời gian chờ.
-2. Chọn transport. **stdio** chạy một lệnh kèm tham số và biến môi trường, trong đó biến bí mật luôn được che. **SSE** và **Streamable HTTP** cần URL, header và API key nếu có.
-3. Lưu server. Với server SSE hoặc Streamable HTTP dùng OAuth, mở tab **OAuth**, giữ chế độ đăng ký **Auto (Recommended)** trừ khi server yêu cầu khác, rồi chọn **Authorize**.
-4. Ở tab **Test**, chọn **Test connection** để kiểm tra server và tìm các tool của nó.
-5. Ở tab **Access**, cấp quyền **Use** cho agent, **Use** hoặc **Manage** cho người, hoặc cấp cho một nhóm (các agent hiện có trong nhóm). Mỗi quyền cấp hiện các tool của server mà nó cho phép. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
+Server gắn nhãn **Tích hợp sẵn** hoặc **Toàn hệ thống** được quản lý bên ngoài workspace: bạn mở và kiểm tra được, nhưng chỉ người vận hành mới thay đổi được.
 
-Bạn thu hồi quyền ngay trong tab đó. Tắt một server sẽ giữ nguyên cấu hình nhưng agent không dùng được nữa.
+### Thêm server
+
+1. Chọn **Thêm máy chủ tùy chỉnh**.
+2. Nhập **Tên** (chữ thường, chữ số và dấu gạch ngang) và, nếu muốn, **Tên hiển thị**.
+3. Chọn **Giao thức**. **stdio** chạy một **Lệnh** kèm **Đối số**, **Biến môi trường** và **Biến môi trường bí mật**. **Streamable HTTP** và **SSE** cần **URL** và **Header**.
+4. Nếu muốn, đặt **Tiền tố công cụ** và **Thời gian chờ (giây)** từ 1 đến 600, và giữ công tắc **Đã bật**.
+5. Với Streamable HTTP và SSE, chọn cách **Xác thực**: **API key và header** gửi một key và header cố định với mọi yêu cầu; **OAuth** đăng nhập qua nhà cung cấp ủy quyền của server. Với OAuth, giữ **Chế độ đăng ký** ở **Tự động (Khuyến nghị)** trừ khi server yêu cầu khác, và thêm **Client ID**, **Client secret** hoặc **Phạm vi yêu cầu** nếu server cần.
+6. Khi hộp thoại có nút **Kiểm tra kết nối**, bạn có thể kiểm tra server trước khi lưu, rồi chọn **Thêm máy chủ**.
+
+Trang của server sẽ mở ra. Nếu server dùng OAuth, trang mở ở tab **Thông tin xác thực**: chọn **Xác thực** và hoàn tất đăng nhập với nhà cung cấp. Giá trị header và biến bí mật được che sau khi lưu.
+
+### Các tab của server
+
+- **Tổng quan**: trạng thái, thông tin kết nối và cách xác thực. Chọn **Kiểm tra kết nối** để kiểm tra cấu hình đã lưu và tìm các tool của server. Một banner báo khi server đang tắt, lần kiểm tra gần nhất thất bại hoặc ủy quyền OAuth đã hết hạn; trường hợp cuối có nút **Uỷ quyền lại**.
+- **Công cụ**: mọi tool tìm thấy và ai được gọi chúng. Khi chưa được cấp quyền, tool ở trạng thái **Bị chặn**. Với mỗi tool, chọn **Cho phép** hoặc **Chặn** cho từng đối tượng được cấp quyền, hoặc **Cho phép agent** để cấp riêng tool đó cho một agent. **Ngữ cảnh an toàn** duyệt một tool chỉ đọc mà agent được chạy trước khi lập kế hoạch công việc, ví dụ để nạp quy tắc hoặc playbook; đổi endpoint, lệnh, biến môi trường hoặc header của server sẽ xoá các phê duyệt này. Nếu chưa có tool nào, hãy chạy kiểm tra kết nối trước.
+- **Quyền truy cập**: cấp **Dùng** cho agent, **Dùng** hoặc **Quản lý** cho người. Mỗi quyền cấp hiện các tool mà nó cho phép. **Cấp quyền cho một nhóm** cấp quyền cho mọi agent hiện có trong nhóm; agent được thêm sau cần được cấp quyền riêng. Quyền cấp theo kênh hoặc nhóm chat ở nơi khác được liệt kê trong **Quyền theo kênh và nhóm chat** để bạn thu hồi. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
+- **Thông tin xác thực**: API key, header và biến môi trường của workspace, hoặc với server OAuth là trạng thái ủy quyền cùng các nút **Xác thực**, **Xác thực lại** và **Ngắt kết nối**. Mọi agent đều dùng thông tin xác thực này của workspace; chưa có thông tin xác thực riêng cho từng agent. Server stdio dùng thông tin xác thực từ biến môi trường, không dùng OAuth.
+- **Cấu hình**: sửa **Hồ sơ** và **Kết nối**, tắt server, hoặc **Xoá máy chủ** trong **Vùng nguy hiểm**. Xoá sẽ gỡ server cùng mọi quyền đã cấp.
+- **Hoạt động**: các thay đổi về cấu hình, quyền truy cập và thông tin xác thực của server.
+
+Bạn thu hồi quyền trong tab **Quyền truy cập**. Tắt một server sẽ giữ nguyên cấu hình nhưng agent không dùng được nữa.
 
 ## Hook
 
-Hook chạy handler của riêng bạn khi một sự kiện của agent xảy ra, để cho phép, chặn hoặc bổ sung ngữ cảnh cho bước tiếp theo. Khu vực hook đang ở giai đoạn beta.
+Hook chạy handler của riêng bạn khi một sự kiện của agent xảy ra, để cho phép, chặn hoặc bổ sung ngữ cảnh cho bước tiếp theo.
 
-Với `integrations.manage`, bạn xem được mọi hook và lịch sử chạy của chúng, và chạy thử (dry run); tab **Hoạt động** còn cần `observability.read`. Chỉ chủ workspace hoặc vai trò Admin mới tạo, sửa, bật, tắt và xoá được hook. [Cấp quyền theo tài nguyên](/docs/security/access-grants) trên một hook quyết định hook chạy cho agent nào và ai được sửa hook hoặc trao quyền tiếp cho người khác bằng API key của chính mình, nhưng không bao giờ cho phép sửa hook từ console.
+Với `integrations.manage`, bạn xem được mọi hook và các lần chạy của chúng, và chạy thử được; tab **Hoạt động** còn cần quyền đọc sự kiện của workspace. Chỉ chủ workspace hoặc vai trò Admin mới tạo, sửa, bật, tắt và xoá được hook. [Cấp quyền theo tài nguyên](/docs/security/access-grants) trên một hook quyết định hook chạy cho agent nào và ai được sửa hook hoặc trao quyền tiếp cho người khác bằng API key của chính mình, nhưng không bao giờ cho phép sửa hook từ console.
 
 ::shot{id="hooks"}
 
@@ -60,28 +79,43 @@ Với `integrations.manage`, bạn xem được mọi hook và lịch sử chạ
 | `user_prompt_submit`, `pre_tool_use`, `subagent_start` | Có: lỗi hoặc quyết định chặn sẽ dừng thao tác |
 | `session_start`, `post_tool_use`, `stop`, `subagent_stop` | Không: hook chạy bất đồng bộ |
 
+Danh sách hiển thị trình xử lý, phạm vi, hook có chặn hay không, thời điểm cập nhật và hook đang bật hay tắt. Bạn lọc được theo **Sự kiện**, **Phạm vi** và **Trạng thái**.
+
 Để thêm hook:
 
-1. Chọn **New hook**, đặt tên và chọn **Event**.
-2. Chọn **Handler**: **Prompt** (một prompt template chạy trên model, cần tool matcher hoặc if expression), **HTTP** (một endpoint http hoặc https kèm header dạng JSON) hoặc **Script** (JavaScript chạy trong sandbox, tối đa 32 KiB).
-3. Đặt **Scope** cho toàn tenant hoặc cho các agent được chọn, và đặt độ ưu tiên.
-4. Đặt **Timeout (ms)** từ 0 đến 10.000, và **On timeout** là **Block** hoặc **Allow**.
-5. Chọn **Create hook**, rồi dùng **Dry run** với một sự kiện mẫu để kiểm tra. Các lần chạy thử không được ghi vào lịch sử.
+1. Chọn **Tạo hook**, đặt tên và chọn **Sự kiện**.
+2. Chọn **Trình xử lý**: **Prompt** (một mẫu prompt chạy trên model, cần **Bộ lọc công cụ** hoặc **Điều kiện**), **HTTP** (một URL endpoint http hoặc https kèm header) hoặc **Script** (JavaScript chạy trong sandbox, tối đa 32 KiB).
+3. Đặt **Phạm vi** là cả workspace hoặc các agent được chọn, và đặt **Độ ưu tiên**; số nhỏ hơn chạy trước.
+4. Đặt **Thời gian chờ** từ 0 đến 10.000 ms, và **Khi quá thời gian** là **Chặn** hoặc **Cho phép**.
+5. Chọn **Tạo hook**.
 
-Tab **History** hiển thị các lần chạy trước, với những giá trị trông giống secret đã được che. Hook global, hook có sẵn và hook dạng command do người vận hành runtime thiết lập chỉ hiển thị để xem. Xoá một hook sẽ khiến nó không chạy nữa, nhưng lịch sử vẫn được giữ để phục vụ audit.
+Chọn một hook để mở bảng chi tiết, gồm các tab sau:
 
-Với hook chạy cho các agent được chọn, tab **Access** liệt kê các agent mà hook chạy cho (**Runs for**) và những người có quyền **Edit** hoặc **Manage** trên hook. Hook áp dụng cho cả workspace hiện thông báo thay vào đó, vì chỉ quản trị viên workspace mới thay đổi được.
+- **Cấu hình**: sự kiện, trình xử lý, phạm vi, bộ lọc, điều kiện, thời gian chờ, lần chạy gần nhất và lỗi gần nhất. Giá trị bí mật được che.
+- **Quyền truy cập**: với hook chạy cho các agent được chọn, tab liệt kê các agent mà hook chạy cho (**Chạy cho**) và những người có quyền **Chỉnh sửa** hoặc **Quản lý** trên hook. Hook áp dụng cho cả workspace hiện thông báo thay vào đó, vì chỉ quản trị viên workspace mới thay đổi được.
+- **Lần chạy**: các lần chạy trước, kèm quyết định và độ trễ.
+- **Chạy thử**: dán một sự kiện mẫu và chọn **Chạy thử** để xem kết quả mà không ảnh hưởng tới agent nào.
+- **Hoạt động**: các thay đổi cấu hình của hook.
+
+Hook tích hợp sẵn, hook toàn hệ thống và hook lệnh do người vận hành runtime thiết lập chỉ xem được và không có tab **Chạy thử**. Xoá một hook sẽ khiến nó ngừng chạy ngay lập tức.
 
 > [!WARNING]
-> Một hook chặn bị lỗi, hoặc hết thời gian chờ khi **On timeout** đặt là **Block**, sẽ dừng thao tác của agent. Hãy chạy thử bằng dry run trước khi bật hook.
+> Một hook chặn bị lỗi, hoặc hết thời gian chờ khi **Khi quá thời gian** đặt là **Chặn**, sẽ dừng thao tác của agent. Hãy chạy thử trước khi bật hook.
 
 ## Gói runtime
 
-**Gói runtime** hiển thị chính sách cài gói theo hình thức triển khai của bạn. Trên AaaS, người vận hành chọn lọc gói chung cho mọi workspace, nên bạn yêu cầu gói mới qua bộ phận hỗ trợ. Trên Dedicated và On-Premises, runtime của bạn tách biệt, nên có thể cài gói trực tiếp khi license còn hiệu lực, hoặc gửi yêu cầu để người vận hành xem xét. Tab **Access** của một gói đã cài quyết định agent nào được chạy các lệnh của gói: quản trị viên workspace chuyển gói giữa chế độ mở và giới hạn, và cấp quyền **Use** cho agent. Gói phát hành trên GitHub hiện thông báo thay vào đó, vì quyền truy cập của chúng được đặt trong runtime. Tab **CLI Credentials** ghép cặp terminal của lập trình viên với runtime của workspace; bạn duyệt yêu cầu ghép cặp trong hộp ghép cặp.
+Trang **Gói runtime** có bốn tab:
+
+- **Đã cài**: các gói trong hồ sơ runtime của workspace, kèm nút **Yêu cầu gói**. Trang hiện thông báo khi runtime đang lệch so với hồ sơ gói.
+- **Kho gói**: workspace chưa có danh mục gói, nên tab này hướng bạn sang yêu cầu một gói theo tên.
+- **Chính sách**: chính sách cài gói theo hình thức triển khai của bạn. Trên SaaS dùng chung, người vận hành chọn lọc gói chung cho mọi workspace. Trên Dành riêng và Tại chỗ, runtime của bạn biệt lập, nên người vận hành có thể cài gói trực tiếp vào đó khi giấy phép còn hiệu lực. Ở mọi chế độ, bạn xin gói mới bằng **Yêu cầu gói**: nhập loại, tên gói, phiên bản nếu cần và lý do, rồi chọn **Yêu cầu cài**. Người vận hành sẽ xem xét, và các yêu cầu của bạn cùng tiến độ duyệt được liệt kê trên trang.
+- **CLI**: **Thông tin xác thực CLI** ghép nối terminal của lập trình viên với runtime của workspace. Chạy lệnh ghép nối hiển thị trên trang, rồi duyệt yêu cầu qua **Mở hộp thư ghép nối**.
+
+Chọn một gói đã cài để mở trang của gói, với các tab **Tổng quan**, **Quyền truy cập**, **Lệnh được phép**, **Thông tin xác thực & biến môi trường**, **Phiên bản** và **Hoạt động**. Ở tab **Quyền truy cập**, quản trị viên workspace dùng công tắc **Giới hạn truy cập** để chuyển gói giữa **Mở**, khi mọi agent đều dùng được, và **Giới hạn**, khi chỉ agent được cấp quyền **Dùng** mới chạy được các lệnh của gói; mã nhập gói như một thư viện thì không bị chặn. Gói phát hành trên GitHub hiện thông báo thay vào đó, vì quyền truy cập của chúng được đặt trong runtime. Tab **Lệnh được phép** và **Thông tin xác thực & biến môi trường** cho biết runtime chưa báo các thông tin này cho ứng dụng.
 
 ## Giọng nói (TTS & STT)
 
-**Giọng nói (TTS & STT)**, ở một số phiên bản menu có tên **Provider TTS**, quyết định cách agent nói và nghe trên các kênh. Với chuyển văn bản thành giọng nói, bạn chọn engine đang dùng (OpenAI, ElevenLabs, Edge, MiniMax hoặc Gemini), khi nào tổng hợp giọng (**Off**, **Inbound voice replies** hoặc **Always synthesize**), giới hạn ký tự và thời gian chờ, rồi kiểm tra kết nối hoặc tạo thử một đoạn âm thanh. Với chuyển giọng nói thành văn bản, bạn đặt provider chính và provider dự phòng. Key của provider chỉ ghi được, không đọc lại được.
+Trang **Giọng nói (TTS & STT)** quyết định cách agent nói và nghe trên các kênh thoại, gồm hai tab. Ở tab **Văn bản thành giọng nói**, bạn chọn nhà cung cấp đang dùng (OpenAI, ElevenLabs, Edge, MiniMax hoặc Gemini), **Tự động đọc** (**Tắt**, **Khi người dùng gửi tin nhắn thoại** hoặc **Luôn luôn**), **Số ký tự tối đa** và **Thời gian chờ**, rồi đặt khoá, giọng và mô hình cho từng nhà cung cấp. Thẻ **Thử giọng** kiểm tra kết nối và tạo bản nghe thử với cài đặt đã lưu. Tab **Giọng nói thành văn bản** chỉ dành cho quản trị viên workspace: chọn nhà cung cấp chính và nhà cung cấp dự phòng (Soniox hoặc ElevenLabs), rồi đặt khoá, mô hình và gợi ý ngôn ngữ cho từng nhà cung cấp. Một thanh **Lưu** lưu thay đổi của cả hai tab. Khoá API được lưu mã hoá, không thể xem lại mà chỉ có thể thay thế.
 
 ## Liên quan
 

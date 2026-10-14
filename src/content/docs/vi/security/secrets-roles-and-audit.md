@@ -27,9 +27,9 @@ Console có ba vai trò dựng sẵn và bao nhiêu vai trò tuỳ chỉnh cũng
 
 | Vai trò | Được làm gì |
 |---|---|
-| Owner | Mọi thứ, kể cả thanh toán, gắn license và thay đổi các owner và admin khác |
-| Admin | Mọi quyền, nhưng không thay đổi được owner hay admin khác |
-| Member | Chỉ những gì vai trò tuỳ chỉnh của họ cho phép |
+| Chủ sở hữu | Mọi thứ, kể cả thanh toán, gắn license và thay đổi các owner và admin khác |
+| Quản trị viên | Mọi quyền, nhưng không thay đổi được owner hay admin khác |
+| Thành viên | Chỉ những gì vai trò tuỳ chỉnh của họ cho phép |
 
 Vai trò tuỳ chỉnh là một tập các khoá quyền, như `provider.manage`, `agents.manage`, `chat.use`, `observability.read`, `api_keys.manage` hay `billing.manage`. Mỗi vai trò cần ít nhất một quyền, và ngoài owner ra, không ai cấp được quyền mà chính họ không có. Lời mời là đường link dùng một lần, hết hạn sau 7 ngày. Cách quản lý thành viên và vai trò từng bước có trong [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
@@ -52,13 +52,13 @@ Key có thể hết hạn hoặc bị thu hồi bất cứ lúc nào. Key đã t
 
 ## Cấp quyền cho người gửi trên ứng dụng chat
 
-Trên ứng dụng chat, tin nhắn riêng mặc định dùng cơ chế ghép cặp. Khi một người mới nhắn cho agent, họ nhận một mã 8 ký tự có hiệu lực 60 phút, và không gì tới được agent cho tới khi admin duyệt mã đó, trong **Hộp ghép cặp** của console hoặc bằng `dewee pairing approve`. Mỗi tài khoản có tối đa ba mã đang chờ. Bạn có thể chuyển channel sang danh sách cho phép, mở hoàn toàn, hoặc tắt tin nhắn riêng, và trong nhóm chỉ những người được chỉ định mới thay đổi được file hay đặt lại cuộc trò chuyện. Xem [Channel, ghép cặp và danh bạ](/docs/console/channels-and-contacts).
+Trên ứng dụng chat, tin nhắn riêng mặc định dùng cơ chế ghép cặp. Khi một người mới nhắn cho agent, họ nhận một mã 8 ký tự có hiệu lực 60 phút, và không gì tới được agent cho tới khi admin duyệt mã đó, trong **Hộp ghép nối** của console hoặc bằng `dewee pairing approve`. Mỗi tài khoản có tối đa ba mã đang chờ. Bạn có thể chuyển channel sang danh sách cho phép, mở hoàn toàn, hoặc tắt tin nhắn riêng, và trong nhóm chỉ những người được chỉ định mới thay đổi được file hay đặt lại cuộc trò chuyện. Xem [Channel, ghép cặp và danh bạ](/docs/console/channels-and-contacts).
 
 ## Nhật ký kiểm toán
 
-- **Nhật ký hoạt động.** Các thay đổi được ghi lại cùng người thực hiện, đối tượng và hành động. Xem trên trang **Nhật ký hoạt động** của console, bằng `dewee activity list`, hoặc qua `GET /v1/activity`.
-- **Hoạt động của tài nguyên.** Mỗi skill, MCP server, package, provider, hook và agent có một luồng ghi lại thay đổi quyền, các lần bị từ chối khi chạy và việc sử dụng. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants#hoạt-động).
-- **Kiểm toán API key.** Trang **API key** của console có phần kiểm toán cho các key của bạn.
+- **Nhật ký hoạt động.** Các thay đổi được ghi lại cùng người thực hiện, đối tượng và hành động. Xem trên trang **Hoạt động** của console, bằng `dewee activity list`, hoặc qua `GET /v1/activity`.
+- **Hoạt động truy cập.** Mỗi skill, MCP server, package, provider, hook và agent có một luồng ghi lại thay đổi quyền, các lần bị từ chối khi chạy và việc sử dụng. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants#hoạt-động).
+- **Nhật ký khóa API.** Trang **API key & tài liệu** của console có tab **Nhật ký** cho các key của bạn.
 - **Sự kiện bảo mật.** Prompt injection bị phát hiện hoặc bị chặn và tin nhắn bị cắt bớt được ghi thành `security.injection_detected`, `security.injection_blocked` và `security.message_truncated`.
 - **Trace.** Mỗi lượt chạy của agent ghi lại các lời gọi model và tool, nên bạn thấy được agent đã làm gì và vì sao. Xem [Tracing](/docs/concepts/tracing).
 
@@ -71,6 +71,6 @@ Trên ứng dụng chat, tin nhắn riêng mặc định dùng cơ chế ghép c
 |---|---|
 | API key | Tạo key mới, chuyển client sang key mới, rồi thu hồi key cũ |
 | Secret của webhook | Xoay vòng rồi cập nhật bên gửi ngay: không có thời gian ân hạn, secret cũ hết hiệu lực lập tức |
-| API key của provider | Cập nhật trong **Providers & models** rồi kiểm tra lại |
+| API key của provider | Cập nhật trong **Nhà cung cấp & mô hình** rồi kiểm tra lại |
 | Gateway token | Đổi `GOCLAW_GATEWAY_TOKEN` và khởi động lại gateway, rồi cập nhật các client đang dùng nó |
 | Khoá mã hoá | Đừng đổi tuỳ tiện: secret đã mã hoá bằng khoá cũ không đọc được bằng khoá mới |

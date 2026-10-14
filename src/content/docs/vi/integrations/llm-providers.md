@@ -29,7 +29,7 @@ Bên dưới, các provider này chạy trên sáu adapter: API gốc của Anth
 | Binary nội bộ | Một CLI cài trên máy chủ chạy runtime | Claude CLI và agent ACP chạy như tiến trình trên máy chủ đó |
 | Server nội bộ | Địa chỉ của model server | Ollama; runtime phải truy cập được tới nó |
 
-Sau khi lưu provider, hãy **verify** để xác nhận credential và model hoạt động. Một lần kiểm tra thành công phản ánh quyền truy cập ở thời điểm đó, không phản ánh thay đổi sau này của tài khoản hay gói dịch vụ.
+Sau khi lưu provider, hãy chọn **Kiểm tra kết nối** để xác nhận credential và model hoạt động. Một lần kiểm tra thành công phản ánh quyền truy cập ở thời điểm đó, không phản ánh thay đổi sau này của tài khoản hay gói dịch vụ.
 
 ## Cách xử lý key
 

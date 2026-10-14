@@ -57,8 +57,8 @@ On chat apps, direct messages default to pairing. When someone new writes to an 
 ## Audit trail
 
 - **Activity log.** Changes are recorded with the actor, the entity and the action. Read them on the console's **Activity** page, with `dewee activity list`, or through `GET /v1/activity`.
-- **Resource activity.** Each skill, MCP server, package, provider, hook and agent has a feed of grant changes, run-time denials and use. See [Access grants](/docs/security/access-grants#activity).
-- **API key audit.** The console's **API keys** page includes an audit view for your keys.
+- **Access activity.** Each skill, MCP server, package, provider, hook and agent has a feed of grant changes, run-time denials and use. See [Access grants](/docs/security/access-grants#activity).
+- **API key audit.** The console's **API keys & docs** page has an **Audit** tab for your keys.
 - **Security events.** Detected or blocked prompt injections and truncated messages are logged as `security.injection_detected`, `security.injection_blocked` and `security.message_truncated`.
 - **Traces.** Every agent run records its model calls and tool calls, so you can see what an agent did and why. See [Tracing](/docs/concepts/tracing).
 

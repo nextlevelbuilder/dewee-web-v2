@@ -56,7 +56,7 @@ Lệnh slash được bật sẵn và có thể tắt theo tenant bằng `skills
 
 ## Quyền truy cập và cấp quyền
 
-Mỗi skill có một chế độ truy cập, hiển thị trong console ở mục **Hiển thị**:
+Mỗi skill có một chế độ truy cập, hiển thị trong console ở mục **Phạm vi hiển thị**:
 
 | Chế độ | Ai được dùng |
 |---|---|

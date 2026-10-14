@@ -44,7 +44,7 @@ CLI xác định từng giá trị theo thứ tự sau:
 > [!NOTE]
 > Để an toàn, CLI không gửi `DEWEE_API_KEY` trong biến môi trường tới một `--server` khác với `DEWEE_SERVER`. Hãy truyền `--token` rõ ràng khi bạn cố ý trỏ tới một gateway khác.
 
-Tạo API key ở trang **API key** trong console, hoặc bằng `dewee api-keys create`. Xem [Xác thực](/docs/api/authentication) để biết về phạm vi quyền.
+Tạo API key ở trang **API key & tài liệu** trong console, hoặc bằng `dewee api-keys create`. Xem [Xác thực](/docs/api/authentication) để biết về phạm vi quyền.
 
 ## Định dạng đầu ra
 
