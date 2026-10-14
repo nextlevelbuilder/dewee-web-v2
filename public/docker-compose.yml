@@ -77,8 +77,10 @@ services:
     environment:
       DEWEE_LICENSE_GATE: channels
       DEWEE_RGD_MOUNT: hidden
-      # `dewee selfhost access-link` reads /secrets/dewee.env through this.
+      # `dewee selfhost access-link` and `selfhost status` read /secrets/dewee.env through this.
       DEWEE_HOME: /secrets
+      # Where `docker compose exec dewee dewee selfhost status` reaches the control panel.
+      DEWEE_SELFHOST_APP_URL: http://dewee-app:4321
     volumes:
       - *secrets-ro
       - dewee-data:/app/data
@@ -87,6 +89,9 @@ services:
       runtime-db:
         condition: service_healthy
     restart: unless-stopped
+    # Longer than the gateway's shutdown grace period (30s default) so SIGTERM cleanup
+    # (trace drain, collector flush) finishes before Docker's SIGKILL.
+    stop_grace_period: 45s
 
   # Control panel, the only published service.
   dewee-app:
