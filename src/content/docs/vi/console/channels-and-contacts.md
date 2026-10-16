@@ -65,6 +65,8 @@ Khi bật ghép nối, một người gửi lạ nhắn trực tiếp cho agent 
 2. Chọn **Phê duyệt** để cho người gửi trò chuyện với agent, hoặc **Từ chối** để từ chối.
 3. Muốn ngắt kết nối một người sau này, tìm họ trong **Người gửi đã kết nối**, chọn **Thu hồi**, rồi **Thu hồi quyền truy cập**. Họ phải yêu cầu ghép nối lại trước khi agent trả lời trực tiếp.
 
+Khi nút **Phê duyệt** bị mờ, hãy rê chuột lên nút để xem lý do. Yêu cầu có thể đến từ một kênh đã bị xoá hoặc đang tắt, một kênh chưa có agent hoạt động, hoặc một kênh nay trả lời bằng agent khác so với lúc gửi mã; khi đó, hãy sửa kênh hoặc đề nghị người gửi yêu cầu mã mới. Ghép nối trình duyệt do người vận hành phê duyệt trong bảng điều khiển gateway, không phải tại đây.
+
 **Chính sách ghép nối** quyết định một lượt phê duyệt mới có hiệu lực bao lâu. Trong **Phạm vi**, chọn **Workspace** cho cả workspace hoặc **Theo kênh** cho một kênh. Thẻ chính sách cho biết chính sách đang áp dụng và nguồn của nó.
 
 - Đặt **Thời hạn** theo số ngày, hoặc bật **Không hết hạn**, rồi chọn **Lưu chính sách**.
