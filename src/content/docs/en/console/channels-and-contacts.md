@@ -65,7 +65,7 @@ With pairing on, an unknown sender who messages the agent directly gets a short 
 2. Select **Approve** to let the sender talk to the agent, or **Deny** to refuse.
 3. To cut off someone later, find them under **Connected senders** and select **Revoke**, then **Revoke access**. They must request pairing again before the agent replies to them directly.
 
-When **Approve** is greyed out, hover it to see why. The request may come from a channel that was removed or turned off, a channel with no working agent, or a channel that now answers with a different agent than when the code was sent; in that case, fix the channel or ask the sender for a new code. Browser pairings are approved by an operator in the gateway dashboard, not here.
+When **Approve** is greyed out, hover it to see why. The request may come from a channel that was removed or turned off, a channel with no working agent, or a channel that now answers with a different agent than when the code was sent; in that case, fix the channel or ask the sender for a new code. Browser pairings are approved or denied by an operator in the gateway dashboard, not here.
 
 The **Pairing policy** sets how long a new approval lasts. Under **Scope**, choose **Workspace** for the whole workspace or **Per channel** for one channel. The card shows the policy in effect and where it comes from.
 
