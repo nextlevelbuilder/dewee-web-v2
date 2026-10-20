@@ -54,6 +54,7 @@ Trong nhóm, agent chỉ trả lời khi được mention, trừ khi bạn tắt
 - **Câu trả lời dài** được chia nhỏ cho vừa từng ứng dụng: 4.096 ký tự trên Telegram, 4.000 trên Slack và Feishu, 2.000 trên Discord và Zalo.
 - **Media**: ảnh và file đi được cả hai chiều trong giới hạn của từng ứng dụng. Telegram gom nhiều ảnh hoặc file thành album tối đa 10 mục.
 - **Tin nhắn thoại** trên Telegram, Discord và Feishu được chuyển thành văn bản trước khi agent đọc, bằng các provider speech-to-text bạn cấu hình. Trên WhatsApp, việc này tắt cho tới khi admin bật lên. Telegram có thể chuyển tin nhắn thoại cho một agent riêng.
+- **Xem trước link**: trên Telegram, tắt mục **Link Preview** của channel để ứng dụng không hiện thẻ xem trước cho các link trong câu trả lời của agent. Tin nhắn chứa link dùng một lần, như link kết nối tài khoản hoặc link nhập thông tin đăng nhập, luôn được gửi với chế độ xem trước tắt trên Telegram, Slack, Discord và Bitrix24, để trình lấy bản xem trước của ứng dụng không mở link trước người nhận.
 - **Trả lời bằng giọng nói**: agent có thể trả lời bằng giọng tổng hợp khi đã cấu hình provider giọng nói. Xem [Provider LLM và giọng nói](/docs/integrations/llm-providers).
 
 ## Lệnh trong chat
