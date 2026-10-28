@@ -3,7 +3,7 @@ title: Tự cài đặt dewee
 description: Cài dewee trên máy của bạn bằng một script, dưới dạng binary độc lập hoặc Docker, rồi thiết lập trong dashboard cục bộ và thêm license để kết nối kênh.
 section: get-started
 order: 4
-updated: 2026-09-25
+updated: 2026-10-28
 ---
 
 Tự cài đặt (Self-install) đưa dewee lên máy tính hoặc máy chủ do bạn quản lý, và bạn tự thiết lập mọi thứ. Việc cài đặt và dùng agent, provider, skill đều miễn phí. Bạn chỉ cần license khi muốn kết nối kênh. [Trang cài đặt](/install) gom đủ các lệnh bên dưới vào một chỗ.
@@ -65,6 +65,12 @@ Agent, provider và skill dùng được mà không cần license. Để kết n
 
 > [!TIP]
 > Early Access: 50 license đầu tiên được giảm 50% năm đầu, còn $250 thay vì $500, đến 23:59 ngày 15/10/2026 (giờ Việt Nam). Xem [bảng giá](/pricing).
+
+## Đặt sau reverse proxy
+
+Nếu bạn đặt dashboard sau một reverse proxy, chẳng hạn nginx trên máy khác, một container proxy, Kubernetes ingress hay load balancer trên cloud, hãy cho dewee biết proxy đó dùng những địa chỉ nào. Đặt `DEWEE_TRUSTED_PROXY_CIDRS` là danh sách địa chỉ IP và dải CIDR cách nhau bằng dấu phẩy, ví dụ `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. Với Docker, đặt biến này trong shell hoặc file `.env` cạnh `docker-compose.yml`. Với binary độc lập, thêm nó vào `dewee.env` trong thư mục cài đặt. Sau đó khởi động lại dewee.
+
+Khi đó dewee lấy địa chỉ của từng người dùng, và việc họ có kết nối qua https hay không, từ các header `X-Forwarded-For` và `X-Forwarded-Proto` mà proxy đó gửi. Với mọi client khác, các header này bị bỏ qua. Proxy chạy cùng máy (`127.0.0.1`) luôn được tin cậy. Nếu không đặt, mọi người dùng sau proxy chung một địa chỉ của proxy, nên một người dùng gửi nhiều request có thể dùng hết giới hạn đăng nhập và chat website của mọi người. Chỉ liệt kê proxy của bạn, càng hẹp càng tốt, không bao giờ liệt kê mạng mà người dùng truy cập từ đó: người dùng nằm trong một dải được liệt kê có thể tự chọn địa chỉ của mình. Một mục không hợp lệ, hoặc một dải bao trùm mọi địa chỉ, sẽ khiến dashboard không khởi động.
 
 ## Cấu hình tối thiểu
 
