@@ -5,8 +5,17 @@
  * brands without a vendored mark render as a monogram.
  */
 import type { Bi } from "~/i18n/config";
+import type { ProviderAuth, ProviderType } from "~/content/provider-types";
 
 export type Integration = { id: string; brand: string; name: string; note?: Bi };
+
+/**
+ * A featured provider: one of the vendors the site names. `providerType` is the runtime
+ * `provider_type` it connects through and `auth` how you sign in to it (the runtime catalogue's
+ * credential mode at v3.42.0). Tests check `providerType` against the runtime list. The runtime
+ * exposes no per-provider edition, so none is recorded.
+ */
+export type Provider = Integration & { providerType: ProviderType; auth: ProviderAuth };
 
 export const CHANNELS: Integration[] = [
   { id: "telegram", brand: "telegram", name: "Telegram", note: { en: "Groups, forum topics, voice notes", vi: "Nhóm, forum topic, tin nhắn thoại" } },
@@ -22,29 +31,30 @@ export const CHANNELS: Integration[] = [
   { id: "bitrix24", brand: "bitrix24", name: "Bitrix24", note: { en: "CRM and team chat", vi: "CRM và chat nội bộ" } },
 ];
 
-export const PROVIDERS: Integration[] = [
-  { id: "anthropic", brand: "anthropic", name: "Anthropic" },
-  { id: "openai", brand: "openai", name: "OpenAI" },
-  { id: "gemini", brand: "gemini", name: "Google Gemini" },
-  { id: "vertex", brand: "vertexai", name: "Vertex AI" },
-  { id: "deepseek", brand: "deepseek", name: "DeepSeek" },
-  { id: "qwen", brand: "qwen", name: "Qwen (DashScope)" },
-  { id: "mistral", brand: "mistral", name: "Mistral" },
-  { id: "xai", brand: "xai", name: "xAI" },
-  { id: "openrouter", brand: "openrouter", name: "OpenRouter" },
-  { id: "atlascloud", brand: "atlascloud", name: "Atlas Cloud" },
-  { id: "groq", brand: "groq", name: "Groq" },
-  { id: "minimax", brand: "minimax", name: "MiniMax" },
-  { id: "cohere", brand: "cohere", name: "Cohere" },
-  { id: "perplexity", brand: "perplexity", name: "Perplexity" },
-  { id: "ollama", brand: "ollama", name: "Ollama" },
-  { id: "byteplus", brand: "doubao", name: "BytePlus ModelArk" },
-  { id: "workersai", brand: "workersai", name: "Workers AI" },
-  { id: "vercel", brand: "vercel", name: "Vercel AI Gateway" },
-  { id: "codex", brand: "codex", name: "ChatGPT (Codex OAuth)" },
-  { id: "claude-cli", brand: "claude", name: "Claude Code CLI" },
-  { id: "cline", brand: "cline", name: "ClinePass" },
-  { id: "opencode", brand: "opencode", name: "OpenCode Go" },
+/** The featured providers shown on the site (FACTS.providers). The runtime accepts more types: see provider-types.ts. */
+export const PROVIDERS: Provider[] = [
+  { id: "anthropic", brand: "anthropic", name: "Anthropic", providerType: "anthropic_native", auth: "api-key" },
+  { id: "openai", brand: "openai", name: "OpenAI", providerType: "openai_compat", auth: "api-key" },
+  { id: "gemini", brand: "gemini", name: "Google Gemini", providerType: "gemini_native", auth: "api-key" },
+  { id: "vertex", brand: "vertexai", name: "Vertex AI", providerType: "vertex", auth: "service-account" },
+  { id: "deepseek", brand: "deepseek", name: "DeepSeek", providerType: "deepseek", auth: "api-key" },
+  { id: "qwen", brand: "qwen", name: "Qwen (DashScope)", providerType: "dashscope", auth: "api-key" },
+  { id: "mistral", brand: "mistral", name: "Mistral", providerType: "mistral", auth: "api-key" },
+  { id: "xai", brand: "xai", name: "xAI", providerType: "xai", auth: "api-key" },
+  { id: "openrouter", brand: "openrouter", name: "OpenRouter", providerType: "openrouter", auth: "api-key" },
+  { id: "atlascloud", brand: "atlascloud", name: "Atlas Cloud", providerType: "atlascloud", auth: "api-key" },
+  { id: "groq", brand: "groq", name: "Groq", providerType: "groq", auth: "api-key" },
+  { id: "minimax", brand: "minimax", name: "MiniMax", providerType: "minimax_native", auth: "api-key" },
+  { id: "cohere", brand: "cohere", name: "Cohere", providerType: "cohere", auth: "api-key" },
+  { id: "perplexity", brand: "perplexity", name: "Perplexity", providerType: "perplexity", auth: "api-key" },
+  { id: "ollama", brand: "ollama", name: "Ollama", providerType: "ollama", auth: "local" },
+  { id: "byteplus", brand: "doubao", name: "BytePlus ModelArk", providerType: "byteplus", auth: "api-key" },
+  { id: "workersai", brand: "workersai", name: "Workers AI", providerType: "cloudflare_workers_ai", auth: "api-key" },
+  { id: "vercel", brand: "vercel", name: "Vercel AI Gateway", providerType: "vercel_ai_gateway", auth: "api-key" },
+  { id: "codex", brand: "codex", name: "ChatGPT (Codex OAuth)", providerType: "chatgpt_oauth", auth: "oauth" },
+  { id: "claude-cli", brand: "claude", name: "Claude Code CLI", providerType: "claude_cli", auth: "cli" },
+  { id: "cline", brand: "cline", name: "ClinePass", providerType: "cline_pass", auth: "api-key" },
+  { id: "opencode", brand: "opencode", name: "OpenCode Go", providerType: "opencode_go", auth: "api-key" },
 ];
 
 /** Model providers grouped by how you connect them. Every PROVIDERS id appears in exactly one group. */
@@ -59,9 +69,9 @@ export const PROVIDER_GROUPS: { id: ProviderGroupId; ids: string[] }[] = [
 ];
 
 /** Resolve a provider group to its entries, in the group's order. */
-export function providersIn(group: ProviderGroupId): Integration[] {
+export function providersIn(group: ProviderGroupId): Provider[] {
   const ids = PROVIDER_GROUPS.find((g) => g.id === group)?.ids ?? [];
-  return ids.map((id) => PROVIDERS.find((p) => p.id === id)).filter((p): p is Integration => p !== undefined);
+  return ids.map((id) => PROVIDERS.find((p) => p.id === id)).filter((p): p is Provider => p !== undefined);
 }
 
 /** Text-to-speech engines (internal/audio). Edge TTS is free and needs no API key. */

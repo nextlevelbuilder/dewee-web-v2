@@ -3,6 +3,7 @@
  * A tool only appears in tools/list when the caller's API key has the scope it needs.
  */
 import { z } from "zod";
+import { POST_WIDGETS_HELP } from "../../blocks/post-widgets/widget-directives";
 import { blockJsonSchema, listBlocks } from "../../blocks/registry";
 import { notFound } from "../api/api-errors";
 import { leadsQuerySchema, listLeads } from "../api/leads-query";
@@ -55,7 +56,7 @@ function contentTools(kind: PageKind): Tool[] {
       description:
         kind === "page"
           ? "Create a custom page (served at /p/<slug>, or /vi/p/<slug>). Compose `blocks` from list_blocks / get_block_schema; the first block may be PageHero. Created as a draft unless status is published."
-          : "Create a blog post (served at /blog/<slug>). Write the article in `body_md` (Markdown); set tags, author (duy, cuong or viet link to a founder), cover and description. Created as a draft unless status is published.",
+          : `Create a blog post (served at /blog/<slug>). Write the article in \`body_md\` (Markdown); set tags, author (duy, cuong or viet link to a founder), cover and description. ${POST_WIDGETS_HELP} Created as a draft unless status is published.`,
       input: createPageInput,
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
       enabled: has(write),
@@ -64,7 +65,7 @@ function contentTools(kind: PageKind): Tool[] {
     {
       name: `update_${kind}`,
       title: `Update a ${kind}`,
-      description: `Partially update a ${kind}: send only the fields to change, plus \`version\` from your last read to avoid overwriting someone else's edit. Every update keeps a revision.`,
+      description: `Partially update a ${kind}: send only the fields to change, plus \`version\` from your last read to avoid overwriting someone else's edit. Every update keeps a revision.${kind === "post" ? " When you add ::widget{id} lines to body_md, send the matching blocks in the same call." : ""}`,
       input: updateInput,
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
       enabled: has(write),
@@ -116,6 +117,7 @@ function contentTools(kind: PageKind): Tool[] {
   return tools;
 }
 
+const listBlocksInput = z.object({ context: z.enum(["page", "post"]).optional().describe("Only blocks usable in a page or in a post.") }).strict();
 const blockTypeInput = z.object({ type: z.string().min(1).max(40).describe("A block type from list_blocks, e.g. FeatureGrid.") }).strict();
 const revisionsInput = z.object({ kind: kindSchema.default("page"), id: idField, lookup_locale: lookupLocale }).strict();
 const restoreInput = revisionsInput.extend({ revision_id: z.number().int().positive(), version: z.number().int().positive().optional() }).strict();
@@ -124,15 +126,16 @@ export const MCP_TOOLS: readonly Tool[] = [
   {
     name: "list_blocks",
     title: "List page-builder blocks",
-    description: "All block types with a description and a valid example. Pages are an ordered array of { type, props, section? }.",
-    input: z.object({}).strict(),
+    description:
+      'Block types with where they can be used (`contexts`), a description and a valid example. Pages are an ordered array of { type, props, section? }; posts take blocks whose contexts include "post" as { id?, type, props }, placed inline with ::widget{id="…"} lines. Pass context to filter.',
+    input: listBlocksInput,
     annotations: { readOnlyHint: true },
-    run: async () => ({ blocks: listBlocks() }),
+    run: async (args) => ({ blocks: listBlocks(listBlocksInput.parse(args).context) }),
   },
   {
     name: "get_block_schema",
     title: "Get a block's JSON Schema",
-    description: "JSON Schema of one block type's props, the shared section options, and an example.",
+    description: "JSON Schema of one block type's props, its contexts and envelope (page section options or post id), and an example.",
     input: blockTypeInput,
     annotations: { readOnlyHint: true },
     run: async (args) => {
@@ -200,7 +203,7 @@ export const MCP_SERVER: McpServer<McpCtx> = {
   version: "1.0.0",
   instructions:
     "Manage dewee.sh custom pages (/p/<slug>) and blog posts (/blog/<slug>) in English (en) and Vietnamese (vi). " +
-    "Before composing a page, call list_blocks and get_block_schema. New content is a draft until published. " +
+    "Before composing a page, call list_blocks and get_block_schema. Posts are Markdown and may place widgets inline: call list_blocks with context post, then put ::widget{id} lines in body_md. New content is a draft until published. " +
     "Pass the `version` you last read when updating to avoid overwriting other edits. Link EN and VI versions with the same translation_key.",
   tools: MCP_TOOLS,
 };

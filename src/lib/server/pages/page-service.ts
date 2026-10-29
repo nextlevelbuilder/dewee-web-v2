@@ -1,8 +1,9 @@
 /**
  * Write side of the page service, shared by the REST API, MCP tools and the admin UI.
- * Every write validates through the block registry and slug rules, checks the optimistic
- * `version`, and commits the row, a revision snapshot and an audit entry in one D1 batch.
+ * Every write validates through the block registry (and, for posts, the widget directives in the
+ * body) and slug rules, checks the optimistic `version`, and commits the row, a revision snapshot and an audit entry in one D1 batch.
  */
+import { validatePostContent } from "../../blocks/post-widgets/post-body";
 import { validateBlocks } from "../../blocks/registry";
 import { ApiError, badRequest, conflict, notFound, validationFailed } from "../api/api-errors";
 import { createPageInput, toRecord, updatePageInput, type PageKind, type PageRecord, type PageRow } from "./page-schema";
@@ -32,8 +33,13 @@ export function checkVersion(kind: PageKind, current: PageRow, expected: number 
 export function prepare(kind: PageKind, state: Omit<Editable, "blocks" | "seo" | "tags"> & { blocks: unknown[]; seo: object; tags: string[] }): Editable {
   const slugProblem = slugError(state.slug, kind);
   if (slugProblem) throw new ApiError(422, "validation_failed", slugProblem, [{ path: "slug", message: slugProblem }]);
-  const blocks = validateBlocks(state.blocks);
+  const blocks = validateBlocks(state.blocks, { context: kind });
   if (!blocks.ok) throw new ApiError(422, "validation_failed", "One or more blocks are invalid.", blocks.issues);
+  if (kind === "post") {
+    // Every ::widget{id} line in the body must name a block of this post, once.
+    const issues = validatePostContent(state.body_md, blocks.blocks);
+    if (issues.length) throw new ApiError(422, "validation_failed", "The body places widgets that do not match the blocks.", issues);
+  }
   const tags = [...new Set(state.tags.map((t) => t.trim()))];
   return { ...state, blocks: JSON.stringify(blocks.blocks), seo: JSON.stringify(state.seo ?? {}), tags: JSON.stringify(tags) };
 }

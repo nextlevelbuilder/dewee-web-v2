@@ -1,7 +1,7 @@
 ---
 /**
- * One blog post, rendered on request from D1. The Markdown body goes through the safe renderer
- * (raw HTML is escaped, links and images are filtered), never straight into the page.
+ * One blog post, rendered on request from D1. The Markdown body and its inline widgets go through
+ * PostBody (safe Markdown, validated blocks), never straight into the page.
  * `author` holds a founder id (duy, cuong, viet) that links to the About page; anything else is
  * shown as plain text, and an empty author is credited to the team.
  */
@@ -16,7 +16,11 @@ import { BLOG } from "~/content/pages/blog";
 import { FOUNDERS } from "~/content/founders";
 import { SITE } from "~/content/site";
 import { articleJsonLd } from "~/lib/json-ld";
-import { readingMinutes, renderMarkdown } from "~/lib/blocks/safe-markdown";
+import PostBody from "~/components/blog/PostBody.astro";
+import { readingMinutes } from "~/lib/blocks/safe-markdown";
+import { postBodyMarkdown } from "~/lib/blocks/post-widgets/post-body";
+import { widgetLabels } from "~/lib/blocks/post-widgets/widget-labels";
+import { POST_PAGE_CSP } from "~/lib/blocks/media-urls";
 import { platformEnv } from "~/lib/server/api/platform-env";
 import { adjacentPosts, getPublished, getPublishedTranslation } from "~/lib/server/pages/page-queries";
 import { slugError } from "~/lib/server/pages/slug-rules";
@@ -43,11 +47,11 @@ try {
 if (!post) return new Response(null, { status: 404 });
 
 Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=300, stale-while-revalidate=86400");
+Astro.response.headers.set("content-security-policy", POST_PAGE_CSP);
 
 const path = `/blog/${post.slug}`;
 const published = post.published_at ?? post.created_at;
-const body = renderMarkdown(post.body_md ?? "");
-const minutes = readingMinutes(post.body_md ?? "");
+const minutes = readingMinutes(postBodyMarkdown(post, widgetLabels(locale)));
 const founder = post.author ? FOUNDERS.find((f) => f.id === post.author) : undefined;
 const author = founder
   ? { name: founder.name, href: `${href("/about")}#founders` }
@@ -115,7 +119,7 @@ const newer = around?.newer ?? null;
           <img src={cover} alt="" loading="eager" decoding="async" />
         </figure>
       )}
-      <article class="prose post__body" set:html={body} />
+      <PostBody class="post__body" post={post} locale={locale} mode="public" />
       {post.tags.length > 0 && (
         <ul class="post__tags" role="list" aria-label={pick(L.tags, locale)}>
           <li aria-hidden="true"><Icon name="tag" size={16} /></li>

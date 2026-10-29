@@ -1,7 +1,7 @@
 ---
 /**
- * Renders a page or post exactly as the public site would (BaseLayout, BlockRenderer, safe
- * Markdown), with a preview banner. Used by /admin/preview/<id> (saved drafts) and the editor's
+ * Renders a page or post exactly as the public site would (BaseLayout, BlockRenderer, PostBody),
+ * with a preview banner. Posts also show notices for widgets the public page would hide. Used by /admin/preview/<id> (saved drafts) and the editor's
  * live preview (unsaved form state). Never indexed, never cached.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
@@ -11,7 +11,10 @@ import Icon from "~/components/ui/Icon.astro";
 import { formatDate } from "~/i18n/config";
 import { t } from "~/i18n/ui";
 import type { StoredBlock } from "~/lib/blocks/registry";
-import { readingMinutes, renderMarkdown } from "~/lib/blocks/safe-markdown";
+import PostBody from "~/components/blog/PostBody.astro";
+import { readingMinutes } from "~/lib/blocks/safe-markdown";
+import { postBodyMarkdown } from "~/lib/blocks/post-widgets/post-body";
+import { widgetLabels } from "~/lib/blocks/post-widgets/widget-labels";
 import { ADMIN } from "./admin-strings";
 
 export type PreviewDoc = {
@@ -29,7 +32,7 @@ export type PreviewDoc = {
 };
 interface Props { doc: PreviewDoc }
 const { doc } = Astro.props;
-const body = doc.kind === "post" ? renderMarkdown(doc.body_md ?? "") : "";
+const minutes = doc.kind === "post" ? readingMinutes(postBodyMarkdown(doc, widgetLabels(doc.locale))) : 0;
 ---
 
 <BaseLayout title={`${ADMIN.preview.banner}: ${doc.title}`} description={doc.description || doc.title} locale={doc.locale} path="/admin/preview" bilingual={false} noindex chat={false}>
@@ -42,10 +45,10 @@ const body = doc.kind === "post" ? renderMarkdown(doc.body_md ?? "") : "";
       <section class="section pv-post">
         <div class="container container--narrow pv-post__wrap">
           <p class="pv-post__meta">
-            {doc.author ?? "dewee"} · {formatDate(doc.updated_at, doc.locale)} · {readingMinutes(doc.body_md ?? "")} {t(doc.locale, "minutesRead")}
+            {doc.author ?? "dewee"} · {formatDate(doc.updated_at, doc.locale)} · {minutes} {t(doc.locale, "minutesRead")}
           </p>
           {doc.cover && <img class="pv-post__cover" src={doc.cover} alt="" />}
-          <article class="prose" set:html={body} />
+          <PostBody post={doc} locale={doc.locale} mode="preview" />
           {doc.tags.length > 0 && <p class="pv-post__tags">{doc.tags.map((tag) => <span class="chip">{tag}</span>)}</p>}
         </div>
       </section>

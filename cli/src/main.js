@@ -21,10 +21,11 @@ Usage: dewee-web <command> [options]
   pages publish|unpublish <id|slug> [--locale vi] [--version n]
 
   posts list|get|publish|unpublish …                  same options as pages
-  posts create <post.md> [--locale vi] [--publish]    Markdown with front matter (title, slug, tags, …)
-  posts update <id|slug> <post.md> [--locale vi] [--version n] [--note …]
+  posts create <post.md> [--locale vi] [--blocks widgets.json] [--publish]
+                                                      Markdown with front matter (title, slug, tags, blocks, …)
+  posts update <id|slug> <post.md> [--locale vi] [--blocks widgets.json] [--version n] [--note …]
 
-  blocks list                                         block types (public, no key needed)
+  blocks list [--context page|post]                   block types (public, no key needed)
   blocks schema <Type>                                JSON Schema of one block's props
   media upload <image> [--filename name]              PNG, JPEG, WebP, GIF or AVIF up to 10 MB
   mcp                                                 stdio MCP server bridged to <site>/mcp

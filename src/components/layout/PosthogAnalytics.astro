@@ -7,10 +7,13 @@
  * Events: pageviews, plan CTAs, hero CTAs (`hero_cta_clicked`, from `data-hero-cta`),
  * app/contact/outbound clicks, theme toggles, chat opens, leads. A hero link to app.dewee.sh
  * sends both `hero_cta_clicked` and `app_cta_clicked`, so the app-entry funnel stays whole.
+ * While the homepage H1 experiment runs (docs/experiments/homepage-h1.md), enrolled visitors
+ * carry `data-h1-variant` on <html> and both hero/app CTA events add it as `h1_variant`.
  * `site` and `locale` ride on every event through `posthog.register`, so no event repeats them.
  */
 import { SITE } from "~/content/site";
 import type { Locale } from "~/i18n/config";
+import { H1_VARIANT_DATASET_KEY } from "~/lib/hero-h1-experiment";
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
@@ -18,6 +21,7 @@ const config = {
   key: "phc_x3SRpJyREJK2UfZhvQGaqAxax94u6Aj7YLnQ3Xo7kp7m",
   props: { site: "dewee-web-v2", locale },
   appHost: new URL(SITE.appUrl).hostname,
+  variantKey: H1_VARIANT_DATASET_KEY,
 };
 ---
 
@@ -53,9 +57,11 @@ const config = {
         location: link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main",
       };
       if (link.dataset.trackPlan) posthog.capture("pricing_plan_cta_clicked", Object.assign({ plan: link.dataset.trackPlan }, props));
+      var h1Variant = document.documentElement.dataset[config.variantKey];
+      var ctaProps = h1Variant ? Object.assign({ h1_variant: h1Variant }, props) : props;
       var heroCta = link.dataset.heroCta;
-      if (heroCta === "primary" || heroCta === "secondary") posthog.capture("hero_cta_clicked", Object.assign({ cta: heroCta }, props));
-      if (url.hostname === config.appHost) posthog.capture("app_cta_clicked", props);
+      if (heroCta === "primary" || heroCta === "secondary") posthog.capture("hero_cta_clicked", Object.assign({ cta: heroCta }, ctaProps));
+      if (url.hostname === config.appHost) posthog.capture("app_cta_clicked", ctaProps);
       else if (url.protocol === "mailto:") posthog.capture("contact_email_clicked", props);
       else if (url.origin !== location.origin && url.protocol.indexOf("http") === 0) posthog.capture("outbound_link_clicked", props);
     }, { capture: true });

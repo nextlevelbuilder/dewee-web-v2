@@ -27,9 +27,11 @@ export async function blocksCommand(config, [action, type], flags) {
     return body;
   };
   if (action === "list") {
-    const body = await get("/blocks");
+    const context = stringFlag(flags, "context");
+    if (context !== undefined && context !== "page" && context !== "post") throw new Error("--context must be page or post.");
+    const body = await get(context ? `/blocks?context=${context}` : "/blocks");
     if (flags.json) return printJson(body);
-    printTable(["type", "category", "description"], body.data.map((/** @type {any} */ b) => [b.type, b.category, b.description]), 90);
+    printTable(["type", "used in", "description"], body.data.map((/** @type {any} */ b) => [b.type, (b.contexts ?? ["page"]).join(", "), b.description]), 90);
     return;
   }
   if (action === "schema") {

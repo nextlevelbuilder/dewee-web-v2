@@ -78,6 +78,28 @@ dewee-web posts publish how-we-test-dewee
 
 Front matter supports plain and quoted strings, numbers, booleans, `[inline, lists]`, `- block` lists and one nested map (`seo:`). Unknown keys are rejected so a typo never disappears silently.
 
+### Widgets in posts
+
+A post can place widgets (gallery, video, YouTube/Vimeo, social card, code, callout, steps, …) between paragraphs. List them with `dewee-web blocks list --context post`, write them to a JSON file with an `id` each, and put a line `::widget{id="…"}` where each one goes:
+
+```markdown
+---
+title: Launch notes
+blocks: ./launch-notes.blocks.json   # relative to this file; or pass --blocks
+---
+Intro paragraph.
+
+::widget{id="demo"}
+
+More text.
+```
+
+```json
+[{ "id": "demo", "type": "VideoEmbed", "props": { "url": "https://www.youtube.com/watch?v=M7lc1UVf-VE", "title": "Demo" } }]
+```
+
+Widgets you do not place show after the body. A directive inside a code block stays code. An unknown id, an id placed twice or invalid props fail with `validation_failed (422)` and the path (`blocks.0.props.url`, or `body_md` with the line). A full sample lives in the site repo at `docs/skills/dewee-web-content/examples/`.
+
 ## Media
 
 ```sh

@@ -60,9 +60,9 @@ describe("release list", () => {
     for (const r of RELEASES) expect(r.version, r.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
-  it("covers every stable release from 3.28 to 3.40 that has notes", () => {
+  it("covers every stable release from 3.28 to 3.43 that has notes", () => {
     const minors = new Set(RELEASES.map((r) => Number(r.version.split(".")[1])));
-    for (let minor = 28; minor <= 40; minor++) expect(minors.has(minor), `3.${minor}`).toBe(true);
+    for (let minor = 28; minor <= 43; minor++) expect(minors.has(minor), `3.${minor}`).toBe(true);
   });
 
   it("has the same number of items in English and Vietnamese", () => {

@@ -10,6 +10,7 @@ import { HOME_VI } from "./home-vi";
 import type { HomeCopy } from "./home-types";
 
 export { HOME_WORKFLOW } from "./home-workflow";
+export { HOME_H1_CATEGORY } from "./home-h1-test";
 export type { HomeCopy, HomeWorkflow, WorkflowStep, WorkflowTone } from "./home-types";
 
 export const HOME: Bi<HomeCopy> = { en: HOME_EN, vi: HOME_VI };

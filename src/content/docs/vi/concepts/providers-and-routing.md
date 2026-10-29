@@ -1,6 +1,6 @@
 ---
 title: Provider, fallback và suy luận
-description: Cách dewee làm việc với 31 loại LLM provider, xử lý khi lệnh gọi model thất bại, giới hạn chi phí, prompt caching và cách đặt mức suy luận cho từng agent.
+description: Cách dewee làm việc với 32 loại LLM provider, xử lý khi lệnh gọi model thất bại, giới hạn chi phí, prompt caching và cách đặt mức suy luận cho từng agent.
 section: concepts
 order: 3
 updated: 2026-09-25
@@ -10,12 +10,12 @@ Vòng lặp agent không bao giờ gọi thẳng tới nhà cung cấp model. N�
 
 ## Loại provider và adapter
 
-Provider là một tài khoản bạn đăng ký trong tenant, gồm tên, `provider_type`, key hoặc thông tin xác thực khác, và base URL khi cần. Có 31 loại provider, được phục vụ bởi sáu nhóm adapter.
+Provider là một tài khoản bạn đăng ký trong tenant, gồm tên, `provider_type`, key hoặc thông tin xác thực khác, và base URL khi cần. Có 32 loại provider, được phục vụ bởi sáu nhóm adapter. Loại provider là một kiểu kết nối mà runtime chấp nhận, không phải một hãng: một hãng có thể cần nhiều hơn một loại (ví dụ Z.ai và gói Coding Plan của họ).
 
 | Nhóm adapter | Loại provider |
 |---|---|
 | Anthropic native (HTTP + SSE) | `anthropic_native` |
-| Tương thích OpenAI | `openai_compat`, `openrouter`, `groq`, `deepseek`, `gemini_native`, `vertex`, `mistral`, `xai`, `minimax_native`, `cohere`, `perplexity`, `bailian`, `alibaba_token_plan`, `yescale`, `zai`, `zai_coding`, `ollama`, `ollama_cloud`, `novita`, `byteplus`, `byteplus_coding`, `kimi_coding`, `cloudflare_workers_ai`, `cline_pass`, `opencode_go`, `vercel_ai_gateway` |
+| Tương thích OpenAI | `openai_compat`, `openrouter`, `groq`, `deepseek`, `gemini_native`, `vertex`, `mistral`, `xai`, `minimax_native`, `cohere`, `perplexity`, `bailian`, `alibaba_token_plan`, `yescale`, `zai`, `zai_coding`, `ollama`, `ollama_cloud`, `novita`, `byteplus`, `byteplus_coding`, `kimi_coding`, `cloudflare_workers_ai`, `cline_pass`, `opencode_go`, `vercel_ai_gateway`, `atlascloud` |
 | DashScope (Qwen) | `dashscope` |
 | Gói ChatGPT (Codex OAuth) | `chatgpt_oauth` |
 | Claude CLI (chương trình chạy trên máy) | `claude_cli` |

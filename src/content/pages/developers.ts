@@ -123,11 +123,19 @@ locale: en
 tags: [release, agents]
 author: duy
 description: What shipped this week, in five minutes.
+blocks: ./launch-week.blocks.json   # widgets, each with an id
 ---
 
 ## What shipped
 
-Markdown body. Raw HTML is shown as text, never rendered.`,
+Markdown body. Raw HTML is shown as text, never rendered.
+
+::widget{id="demo-video"}
+
+A widget line places the block with that id: gallery,
+video, YouTube or Vimeo, social card, code, chart,
+Mermaid diagram, comparison table, before/after,
+poll, quiz, survey, sandboxed demo, callout, steps.`,
   claudeCode: `claude mcp add --transport http dewee-web https://dewee.sh/mcp \\
   --header "Authorization: Bearer ${KEY}"`,
   cursor: `{
@@ -320,7 +328,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         publish_page: "Make a page public",
         unpublish_page: "Move a page back to draft",
         list_posts: "List or search blog posts",
-        create_post: "Write a post in Markdown",
+        create_post: "Write a post in Markdown, with inline widgets",
         update_post: "Change a post, with version checks",
         publish_post: "Make a post public",
         list_blocks: "Every block type with an example",
@@ -519,7 +527,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         publish_page: "Xuất bản trang",
         unpublish_page: "Đưa trang về bản nháp",
         list_posts: "Liệt kê hoặc tìm bài blog",
-        create_post: "Viết bài bằng Markdown",
+        create_post: "Viết bài bằng Markdown, kèm widget giữa bài",
         update_post: "Sửa bài, có kiểm tra version",
         publish_post: "Xuất bản bài viết",
         list_blocks: "Mọi loại block, kèm ví dụ",
