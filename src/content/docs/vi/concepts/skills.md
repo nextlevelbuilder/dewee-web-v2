@@ -66,7 +66,7 @@ Mỗi skill có một chế độ truy cập, hiển thị trong console ở m�
 
 "Public" nghĩa là toàn bộ tenant, không phải công khai trên internet. Ngoài ra, danh sách skill được phép của agent có thể thu hẹp thêm: để trống (không đặt) nghĩa là mọi skill truy cập được, còn danh sách rỗng nghĩa là không có skill nào. Kênh có thể thu hẹp tiếp theo từng request, ví dụ theo từng forum topic trên Telegram.
 
-Quyền được áp dụng ngay khi agent chạy, không chỉ ở danh sách skill agent nhìn thấy. Agent không được dùng một skill thì không kích hoạt được skill đó, và các công cụ đọc file cũng như lệnh shell của agent bị từ chối khi trỏ vào file của skill đó, kể cả các phiên bản đã lưu trước; kết quả liệt kê thư mục và tìm kiếm file sẽ bỏ qua skill này. Mỗi lần từ chối đều được ghi vào trace của lượt chạy, và nhật ký hoạt động cũng ghi nhận (các lần lặp lại được gộp chung).
+Quyền được áp dụng ngay khi agent chạy, không chỉ ở danh sách skill agent nhìn thấy. Agent không được dùng một skill thì không kích hoạt được skill đó, và các công cụ đọc, ghi và sửa file, file đính kèm agent gửi vào cuộc trò chuyện cũng như lệnh shell của agent bị từ chối khi trỏ vào file của skill đó, kể cả các phiên bản đã lưu trước, nên agent không đọc được và cũng không sửa được skill mà nó không được cấp; kết quả liệt kê thư mục và tìm kiếm file sẽ bỏ qua skill này. Mỗi lần từ chối đều được ghi vào trace của lượt chạy, và nhật ký hoạt động cũng ghi nhận (các lần lặp lại được gộp chung).
 
 ```bash
 dewee skills access set <skill-id> --mode internal
