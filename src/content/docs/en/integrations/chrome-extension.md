@@ -3,18 +3,18 @@ title: Chrome extension
 description: "Chat with your dewee agents in Chrome's side panel and answer credential requests without pasting secrets into chat, on Dewee Cloud or a self-hosted gateway."
 section: integrations
 order: 4
-updated: 2026-10-11
+updated: 2026-10-31
 ---
 
 The [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) opens a side panel on the right of Chrome where you chat with your dewee agents. Super Agent is always pinned first. When an agent needs an API key or an OAuth connection, the panel shows a credential card, so you never paste a secret into the chat.
 
-The extension is a thin client. Your dewee server stays in charge of agents, sessions, permissions and the encrypted credential store, and the panel never reads the pages you visit.
+The extension is a thin client. Your dewee server stays in charge of agents, sessions, permissions and the encrypted credential store, and the extension never reads the pages you visit, except text you select and send with **Ask Dewee**, and tabs an agent opened on a site you allowed under **Connected browser**.
 
 ## Install
 
 You need Chrome 116 or newer. The extension is not on the Chrome Web Store yet, so you load it yourself:
 
-1. Get the build. Download the zip attached to a release on the repository's [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) page and unzip it, or build it from source with `pnpm install` and `pnpm build` (the output is `.output/chrome-mv3`).
+1. Get the build. Build it from source with `pnpm install` and `pnpm build` (the output is `.output/chrome-mv3`), or, once releases are published, download the zip attached to a release on the repository's [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) page and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the unzipped folder (or `.output/chrome-mv3`).
 4. Pin the extension, then click its icon or press `Alt+Shift+D` to open the panel.
@@ -61,7 +61,7 @@ The URL must use HTTPS. Plain HTTP works only for `localhost` and `127.0.0.1`, f
 
 - **Pick an agent.** The agent picker in the header has a **Search agents** box. It lists only active agents you are allowed to chat with, with Super Agent first.
 - **Conversations.** Each agent keeps its own conversations. Open **Conversations** to go back to an earlier one, or select **New chat** (`Alt+N`) to start fresh.
-- **While a reply streams** you see the agent's thinking and the tools it runs. Select **Stop**, or press `Esc`, to end the reply.
+- **While a reply streams** you see a short status, such as *Thinking* or the tool the agent is running. Turn on **Show reasoning** or **Show tool call details** in Settings to see the agent's reasoning or each tool's input and output. Select **Stop**, or press `Esc`, to end the reply.
 - **History.** Earlier messages load with **Load earlier messages**.
 - **When a send fails,** select **Send again** on the failed message. The panel never re-sends on its own.
 
@@ -89,7 +89,7 @@ What happens to the secret:
 
 The toolbar icon shows a badge with the number of cards waiting in your selected workspace, so you notice a request even with the panel closed.
 
-Setup agents can raise these cards out of the box. Any other agent can ask for a credential only after a workspace owner or admin grants it the `credential_request` capability, with an allowlist of the targets it may ask for (for example one provider type, for creating or updating). Holding the capability never lets an agent read, approve or submit a credential. This capability requires a gateway version that includes it; the policy is managed through the gateway API.
+Setup agents can raise these cards out of the box. Any other agent can ask for a credential only after a workspace owner or admin grants it the `credential_request` capability, with an allowlist of the targets it may ask for (for example one provider type, for creating or updating). Holding the capability never lets an agent read, approve or submit a credential. This capability requires a gateway version that includes it; the policy is managed through the gateway API, WebSocket or CLI.
 
 ## Where your credentials are kept
 
@@ -112,8 +112,19 @@ Open **Settings** with the gear in the panel header.
 | **Language** | Browser default, English or Tiếng Việt |
 | **Theme** | System, Light or Dark |
 | **Connections** | Add, use, verify, sign out of or remove a connection |
+| **Show reasoning** | Show the agent's reasoning under each reply, collapsed. Off by default |
+| **Show tool call details** | Show each tool's input, output and error. Common key, token and password formats are hidden, but not every secret can be recognised. Off by default |
+| **Ask Dewee about selected text** | Show an **Ask Dewee** button on text you select on a web page. Off by default |
+| **Connected browser** | Let agents you allow use tabs in this browser. Self-hosted gateway only. Off by default |
 
 The `Alt+Shift+D` shortcut that opens the panel can be changed at `chrome://extensions/shortcuts`.
+
+## Ask Dewee and Connected browser
+
+Both features are off until you turn them on, and Chrome asks for website access only at that point.
+
+- **Ask Dewee.** Select text on a web page and select **Ask Dewee**. The side panel opens with the quote, the page title and its address in the message box; nothing is sent until you press Send. It applies to pages opened after you turn it on. Turning it off removes the button; to remove site access too, use Chrome's extension settings.
+- **Connected browser** (self-hosted gateway only, not yet Dewee Cloud). Register this browser, then allow chosen agents on chosen sites for a limited time, even when you ask them from Telegram or another channel. Agents open, read and act only in tabs they open themselves, never in your other tabs. Risky clicks wait for your approval, password and payment fields are never read or typed, and pausing, stopping or revoking access is always one click away. Agent tabs carry an "AI" badge, and using one yourself pauses the agents. A workspace admin must also turn the feature on for the workspace.
 
 ## Troubleshooting
 
@@ -137,7 +148,7 @@ The `Alt+Shift+D` shortcut that opens the panel can be changed at `chrome://exte
 - Secrets go only to the card's respond endpoint, never into chat, URLs, logs or the extension's storage.
 - The gateway master token is never accepted; self-hosted mode uses a personal key scoped to one tenant.
 - Cards come from a fixed list of kinds and are validated before they render. The agent's own text is shown as plain text, and Markdown is sanitized, so an agent cannot draw its own form.
-- No remote code, a strict content security policy, and access to one gateway address at a time instead of every site.
-- The panel never reads the page you are on.
+- No remote code and a strict content security policy. Host access is requested only when you need it: your gateway address, plus websites only if you turn on **Ask Dewee** or allow sites under **Connected browser**.
+- The extension never reads the pages you visit, except text you select and send with **Ask Dewee**, and tabs an agent opened on a site you allowed under **Connected browser**.
 
 The reasoning behind these rules is in the repository's [authentication threat model](https://github.com/nextlevelbuilder/dewee-chrome-ext/blob/main/docs/auth-threat-model.md) and [credential request threat model](https://github.com/nextlevelbuilder/dewee-chrome-ext/blob/main/docs/credential-threat-model.md).

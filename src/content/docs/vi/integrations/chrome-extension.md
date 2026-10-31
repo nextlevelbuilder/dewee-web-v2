@@ -3,18 +3,18 @@ title: Extension cho Chrome
 description: "Trò chuyện với agent dewee trong side panel của Chrome và trả lời yêu cầu credential mà không dán secret vào chat, trên Dewee Cloud hoặc gateway tự host."
 section: integrations
 order: 4
-updated: 2026-10-11
+updated: 2026-10-31
 ---
 
 [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) mở một side panel bên phải Chrome để bạn trò chuyện với các agent dewee. Super Agent luôn được ghim lên đầu. Khi agent cần một API key hay một kết nối OAuth, panel hiện thẻ credential, nên bạn không bao giờ phải dán secret vào chat.
 
-Extension chỉ là một client mỏng. Server dewee của bạn vẫn nắm agent, phiên chat, quyền hạn và kho credential mã hoá, còn panel không bao giờ đọc các trang bạn đang xem.
+Extension chỉ là một client mỏng. Server dewee của bạn vẫn nắm agent, phiên chat, quyền hạn và kho credential mã hoá, còn extension không bao giờ đọc các trang bạn truy cập, trừ đoạn văn bản bạn chọn và gửi bằng **Hỏi Dewee**, và những tab do agent mở trên trang bạn đã cho phép trong **Trình duyệt kết nối**.
 
 ## Cài extension
 
 Bạn cần Chrome 116 trở lên. Extension chưa có trên Chrome Web Store, nên bạn tự nạp vào:
 
-1. Lấy bản build. Tải file zip đính kèm một bản phát hành trên trang [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) của repository rồi giải nén, hoặc tự build từ mã nguồn bằng `pnpm install` và `pnpm build` (kết quả nằm ở `.output/chrome-mv3`).
+1. Lấy bản build. Tự build từ mã nguồn bằng `pnpm install` và `pnpm build` (kết quả nằm ở `.output/chrome-mv3`), hoặc, khi đã có bản phát hành, tải file zip đính kèm trên trang [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) của repository rồi giải nén.
 2. Mở `chrome://extensions` và bật **Developer mode** (Chế độ dành cho nhà phát triển).
 3. Chọn **Load unpacked** (Tải tiện ích đã giải nén) và chọn thư mục vừa giải nén (hoặc `.output/chrome-mv3`).
 4. Ghim extension, rồi bấm vào biểu tượng của nó hoặc nhấn `Alt+Shift+D` để mở panel.
@@ -61,7 +61,7 @@ URL phải dùng HTTPS. HTTP thường chỉ dùng được cho `localhost` và 
 
 - **Chọn agent.** Bộ chọn agent trên đầu panel có ô **Tìm agent**. Danh sách chỉ gồm các agent đang hoạt động mà bạn được phép trò chuyện, với Super Agent đứng đầu.
 - **Cuộc trò chuyện.** Mỗi agent giữ các cuộc trò chuyện riêng. Mở **Cuộc trò chuyện** để quay lại một cuộc cũ, hoặc chọn **Chat mới** (`Alt+N`) để bắt đầu lại.
-- **Trong lúc câu trả lời đang stream,** bạn thấy phần suy nghĩ của agent và các tool nó chạy. Chọn **Dừng**, hoặc nhấn `Esc`, để dừng câu trả lời.
+- **Trong lúc câu trả lời đang stream,** bạn thấy một dòng trạng thái ngắn, như *Đang suy nghĩ* hoặc tool agent đang chạy. Bật **Hiện phần suy luận** hoặc **Hiện chi tiết tool call** trong Cài đặt để xem phần suy luận của agent hoặc đầu vào và kết quả của từng tool. Chọn **Dừng**, hoặc nhấn `Esc`, để dừng câu trả lời.
 - **Lịch sử.** Tin nhắn cũ hơn được tải bằng **Tải tin nhắn cũ hơn**.
 - **Khi gửi thất bại,** chọn **Gửi lại** trên tin nhắn bị lỗi. Panel không bao giờ tự gửi lại.
 
@@ -89,7 +89,7 @@ Secret của bạn đi đâu:
 
 Biểu tượng trên thanh công cụ có badge đếm số thẻ đang chờ trong workspace bạn đang chọn, nên bạn vẫn biết có yêu cầu ngay cả khi panel đang đóng.
 
-Agent setup có thể tạo các thẻ này sẵn. Agent khác chỉ được hỏi credential sau khi owner hoặc admin của workspace cấp cho nó capability `credential_request`, kèm allowlist các đích nó được hỏi (ví dụ một loại provider, để tạo mới hoặc cập nhật). Có capability này không bao giờ cho agent đọc, duyệt hay tự gửi credential. Capability này cần một phiên bản gateway có hỗ trợ nó; policy được quản lý qua gateway API.
+Agent setup có thể tạo các thẻ này sẵn. Agent khác chỉ được hỏi credential sau khi owner hoặc admin của workspace cấp cho nó capability `credential_request`, kèm allowlist các đích nó được hỏi (ví dụ một loại provider, để tạo mới hoặc cập nhật). Có capability này không bao giờ cho agent đọc, duyệt hay tự gửi credential. Capability này cần một phiên bản gateway có hỗ trợ nó; policy được quản lý qua gateway API, WebSocket hoặc CLI.
 
 ## Credential của bạn được giữ ở đâu
 
@@ -112,8 +112,19 @@ Mở **Cài đặt** bằng biểu tượng bánh răng trên đầu panel.
 | **Ngôn ngữ** | Theo trình duyệt, English hoặc Tiếng Việt |
 | **Giao diện** | Theo hệ thống, Sáng hoặc Tối |
 | **Kết nối** | Thêm, dùng, kiểm tra, đăng xuất hoặc xoá một kết nối |
+| **Hiện phần suy luận** | Hiện suy nghĩ của agent bên dưới mỗi câu trả lời, ở dạng thu gọn. Mặc định tắt |
+| **Hiện chi tiết tool call** | Hiện đầu vào, kết quả và lỗi của từng tool. Các dạng key, token và mật khẩu phổ biến được ẩn, nhưng không phải bí mật nào cũng nhận ra được. Mặc định tắt |
+| **Hỏi Dewee về đoạn văn bản đã chọn** | Hiện nút **Hỏi Dewee** khi bạn bôi đen văn bản trên trang web. Mặc định tắt |
+| **Trình duyệt kết nối** | Cho phép các agent bạn chọn dùng tab trong trình duyệt này. Chỉ với gateway tự host. Mặc định tắt |
 
 Phím tắt `Alt+Shift+D` để mở panel có thể đổi tại `chrome://extensions/shortcuts`.
+
+## Hỏi Dewee và Trình duyệt kết nối
+
+Cả hai tính năng đều tắt cho tới khi bạn bật, và chỉ lúc đó Chrome mới hỏi quyền truy cập website.
+
+- **Hỏi Dewee.** Bôi đen văn bản trên trang web rồi chọn **Hỏi Dewee**. Side panel mở ra, đưa trích dẫn, tiêu đề và địa chỉ trang vào ô nhập; không gửi gì cho tới khi bạn bấm Gửi. Tính năng áp dụng cho các trang mở sau khi bật. Tắt sẽ gỡ nút; muốn thu hồi cả quyền truy cập website, dùng phần cài đặt extension của Chrome.
+- **Trình duyệt kết nối** (chỉ với gateway tự host, chưa hỗ trợ Dewee Cloud). Đăng ký trình duyệt này, rồi cho phép các agent bạn chọn trên các trang bạn chọn trong một khoảng thời gian giới hạn, kể cả khi bạn nhờ agent từ Telegram hay kênh khác. Agent chỉ mở, đọc và thao tác trong tab do chính nó mở, không bao giờ trong các tab khác của bạn. Thao tác rủi ro phải chờ bạn duyệt, trường mật khẩu và thanh toán không bao giờ bị đọc hay gõ, và việc tạm dừng, dừng hay thu hồi quyền luôn chỉ cách một cú bấm. Tab của agent có huy hiệu "AI", và khi bạn tự dùng tab đó thì agent tạm dừng. Quản trị viên workspace cũng phải bật tính năng này cho workspace.
 
 ## Xử lý sự cố
 
@@ -137,7 +148,7 @@ Phím tắt `Alt+Shift+D` để mở panel có thể đổi tại `chrome://exte
 - Secret chỉ đi tới respond endpoint của thẻ, không bao giờ vào chat, URL, log hay bộ nhớ của extension.
 - Gateway master token không bao giờ được chấp nhận; chế độ tự host dùng key cá nhân giới hạn trong một tenant.
 - Thẻ thuộc một danh sách loại cố định và được kiểm tra trước khi hiển thị. Chữ do agent viết chỉ hiện dưới dạng văn bản thường, còn Markdown được làm sạch, nên agent không thể tự vẽ form giả.
-- Không có mã tải từ xa, có content security policy chặt, và chỉ truy cập từng địa chỉ gateway một thay vì mọi trang web.
-- Panel không bao giờ đọc trang bạn đang mở.
+- Không có mã tải từ xa và có content security policy chặt. Quyền truy cập host chỉ được xin khi cần: địa chỉ gateway của bạn, và website chỉ khi bạn bật **Hỏi Dewee** hoặc cho phép trang trong **Trình duyệt kết nối**.
+- Extension không bao giờ đọc các trang bạn truy cập, trừ đoạn văn bản bạn chọn và gửi bằng **Hỏi Dewee**, và những tab do agent mở trên trang bạn đã cho phép trong **Trình duyệt kết nối**.
 
 Lý do đằng sau các quy tắc này nằm trong [threat model xác thực](https://github.com/nextlevelbuilder/dewee-chrome-ext/blob/main/docs/auth-threat-model.md) và [threat model yêu cầu credential](https://github.com/nextlevelbuilder/dewee-chrome-ext/blob/main/docs/credential-threat-model.md) của repository.
