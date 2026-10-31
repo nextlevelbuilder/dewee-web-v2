@@ -1,0 +1,168 @@
+---
+/**
+ * One complete piece of work told as a swimlane: people on one side, agents on the other, the
+ * shared task board across both, joined by a spine of numbered handoffs. It is an ordered list,
+ * so it reads in sequence with a screen reader, without JS and with reduced motion; the only
+ * motion is the shared reveal stagger. `label` must say the story is illustrative.
+ * Props are plain, already-localised strings so the page builder can render it from JSON.
+ */
+import SectionHead from "./SectionHead.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+type Tone = "neutral" | "progress" | "review" | "done";
+type Status = { label: string; tone: Tone };
+type Step = {
+  kind: "human" | "agent" | "board";
+  actor: string;
+  role: string;
+  text: string;
+  status?: Status;
+  tasks?: { title: string; owner: string; status: Status }[];
+};
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  label: string;
+  kinds: { human: string; agent: string; board: string };
+  boardLabel: string;
+  steps: Step[];
+  outcome: { title: string; body: string };
+  band?: boolean;
+}
+const { id, eyebrow, title, lede, label, kinds, boardLabel, steps, outcome, band = true } = Astro.props;
+const titleId = id ? `${id}-title` : undefined;
+const TONE_CLASS: Record<Tone, string> = { neutral: "", progress: "chip--accent", review: "chip--warning", done: "chip--success" };
+const ICON = { human: "user", agent: "bot", board: "list-checks" } as const;
+const initial = (name: string) => (name.trim().split(/\s+/).slice(-1)[0] ?? "").slice(0, 1).toUpperCase();
+---
+
+<section class:list={["section mw", { band }]} id={id}>
+  <div class="container mw__stack">
+    <div class="mw__head">
+      <SectionHead eyebrow={eyebrow} title={title} lede={lede} id={titleId} />
+      <p class="chip mw__label" data-reveal><Icon name="info" size={14} />{label}</p>
+    </div>
+
+    <ol class="mw__flow" role="list" aria-labelledby={titleId} data-reveal-group>
+      {steps.map((s, i) => (
+        <li class:list={["mw__step", `mw__step--${s.kind}`]} style={`--row:${i + 1}`} data-reveal>
+          <span class="mw__num" aria-hidden="true">{i + 1}</span>
+          <div class="mw__card">
+            <p class="mw__who">
+              <span class="mw__avatar" aria-hidden="true">{s.kind === "human" ? initial(s.actor) : <Icon name={ICON[s.kind]} size={16} />}</span>
+              <span class="mw__name"><b>{s.actor}</b><span class="mw__role">{s.role}</span></span>
+              <span class="mw__kind">{kinds[s.kind]}</span>
+            </p>
+            <p class="mw__text">{s.text}</p>
+            {s.tasks && s.tasks.length > 0 && (
+              <ul class="mw__tasks" role="list" aria-label={boardLabel}>
+                {s.tasks.map((t) => (
+                  <li class="mw__task">
+                    <span class="mw__task-title">{t.title}{" "}<span class="mw__task-owner">{t.owner}</span></span>
+                    <span class:list={["chip", TONE_CLASS[t.status.tone]]}><span class="dot" aria-hidden="true"></span>{t.status.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {s.status && (
+              <p class="mw__status"><span class:list={["chip", TONE_CLASS[s.status.tone]]}><span class="dot" aria-hidden="true"></span>{s.status.label}</span></p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <p class="mw__outcome" data-reveal>
+      <Icon name="circle-check" size={22} class="mw__outcome-icon" />
+      <span><b>{outcome.title}.</b> {outcome.body}</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Geometry from the space scale: spine 3.5rem, numbered dot 2rem, avatar 2.25rem. */
+  .mw { --spine: calc(var(--space-7) + var(--space-2)); --dot: var(--space-6); --avatar: calc(var(--space-6) + var(--space-1)); }
+  .mw__stack { display: grid; gap: clamp(var(--space-6), var(--space-4) + 3vw, var(--space-7)); }
+  .mw__head { display: grid; gap: var(--space-4); justify-items: start; }
+  .mw__label { white-space: normal; color: var(--ink-2); }
+  .mw__label :global(svg) { flex: none; color: var(--accent-ink); }
+
+  /* Wide: people on the left, agents on the right, the board across both, one row per step. */
+  .mw__flow {
+    position: relative; display: grid; row-gap: var(--space-5);
+    grid-template-columns: minmax(0, 1fr) var(--spine) minmax(0, 1fr);
+  }
+  .mw__flow::before {
+    content: ""; position: absolute; inset-block: var(--space-4); inset-inline-start: 50%; translate: -50% 0;
+    border-inline-start: 2px dashed var(--rule-strong);
+  }
+  .mw__step { position: relative; grid-row: var(--row); }
+  .mw__step--human { grid-column: 1; }
+  .mw__step--agent { grid-column: 3; }
+  .mw__step--board { grid-column: 1 / -1; padding-block-start: calc(var(--dot) * 0.75); }
+
+  .mw__num {
+    position: absolute; z-index: 1; inset-block-start: var(--space-5);
+    display: grid; place-items: center; inline-size: var(--dot); block-size: var(--dot); border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--accent-ink); color: var(--accent-ink);
+    font-family: var(--font-mono-stack); font-size: var(--step--2); font-weight: 600;
+  }
+  .mw__step--human .mw__num { inset-inline-end: calc((var(--spine) + var(--dot)) / -2); }
+  .mw__step--agent .mw__num { inset-inline-start: calc((var(--spine) + var(--dot)) / -2); }
+  .mw__step--board .mw__num { inset-block-start: 0; inset-inline-start: 50%; translate: -50% 0; }
+
+  .mw__card {
+    position: relative; display: grid; gap: var(--space-3); align-content: start; block-size: 100%;
+    padding: var(--space-5); border-radius: var(--radius-3);
+    background: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-1);
+  }
+  .mw__step--agent .mw__card { border-color: color-mix(in oklch, var(--accent) 35%, var(--rule)); }
+  .mw__step--board .mw__card { border: 2px dashed var(--rule-strong); box-shadow: var(--shadow-2); }
+
+  .mw__who { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .mw__avatar {
+    flex: none; display: grid; place-items: center; inline-size: var(--avatar); block-size: var(--avatar); border-radius: 50%;
+    background: var(--paper-3); color: var(--ink-2); font-size: var(--step--1); font-weight: 600;
+  }
+  .mw__step--agent .mw__avatar, .mw__step--board .mw__avatar { background: var(--accent-soft); color: var(--accent-ink); }
+  .mw__name { display: grid; min-inline-size: 0; flex: 1 1 var(--space-10); }
+  .mw__name b { color: var(--ink); font-weight: 600; line-height: var(--leading-snug); }
+  .mw__role { font-size: var(--step--2); color: var(--ink-3); }
+  .mw__kind {
+    font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-3);
+  }
+  .mw__text { color: var(--ink-2); font-size: var(--step--1); line-height: var(--leading-body); }
+  .mw__status { display: flex; }
+
+  .mw__tasks { display: grid; border-block-start: 1px solid var(--rule); }
+  .mw__task {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-3); border-block-end: 1px solid var(--rule);
+  }
+  .mw__task-title { display: grid; color: var(--ink); font-weight: 500; font-size: var(--step--1); }
+  .mw__task-owner { font-family: var(--font-mono-stack); font-size: var(--step--2); color: var(--ink-3); font-weight: 400; }
+
+  .mw__outcome {
+    display: flex; gap: var(--space-3); align-items: start; max-inline-size: var(--measure); justify-self: center;
+    padding: var(--space-4) var(--space-5); border-radius: var(--radius-3);
+    background: var(--success-soft); color: var(--ink); line-height: var(--leading-body);
+  }
+  .mw__outcome :global(.mw__outcome-icon) { flex: none; margin-block-start: var(--space-1); color: color-mix(in oklch, var(--success) 65%, var(--ink)); }
+
+  /* Narrow: one column, the spine runs down the left edge and every step hangs from it. */
+  @media (max-width: 960px) {
+    .mw { --rail: calc(var(--space-7) - var(--space-1)); }
+    .mw__flow { grid-template-columns: minmax(0, 1fr); padding-inline-start: var(--rail); row-gap: var(--space-4); }
+    .mw__flow::before { inset-inline-start: calc(var(--dot) / 2); translate: -50% 0; }
+    .mw__step, .mw__step--human, .mw__step--agent, .mw__step--board { grid-column: 1; grid-row: auto; padding-block-start: 0; }
+    .mw__step .mw__num, .mw__step--board .mw__num {
+      inset-block-start: var(--space-5); inset-inline-start: calc(var(--rail) * -1); inset-inline-end: auto; translate: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .mw__card { padding: var(--space-4); }
+    .mw__outcome { padding: var(--space-4); }
+  }
+</style>

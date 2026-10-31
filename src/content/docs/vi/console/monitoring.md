@@ -1,13 +1,13 @@
 ---
-title: Mức sử dụng, hoạt động, trace và sức khoẻ runtime
-description: Xem agent chạy bao nhiêu và tốn bao nhiêu, ai đã thay đổi điều gì, soi từng lần chạy của agent theo từng span, và kiểm tra runtime của workspace có khoẻ không.
+title: Mức sử dụng, hoạt động, trace và tình trạng runtime
+description: Xem mức sử dụng và chi phí, ai đã thay đổi điều gì, soi từng lần chạy của agent qua trace, và kiểm tra tình trạng runtime của workspace có ổn định không.
 section: console
 order: 11
 screens: [usage, activity, traces, monitoring]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
-Khi agent đã chạy, bốn khu vực cho bạn thấy chúng làm gì. **Mức sử dụng** đếm số request, số token và chi phí ước tính. **Nhật ký hoạt động** là lịch sử các thay đổi trong workspace. **Trace** ghi lại chi tiết mọi lần chạy của agent. **Sức khoẻ runtime** cho biết runtime của bạn có truy cập được và đang hoạt động tốt hay không. Cả bốn khu vực chỉ hiển thị dữ liệu của chính workspace bạn.
+Khi agent đã chạy, bốn khu vực cho bạn thấy chúng làm gì. **Mức sử dụng** đếm số yêu cầu, số token và chi phí ước tính. **Hoạt động** là lịch sử các thay đổi trong workspace. **Trace** ghi lại chi tiết mọi lần chạy của agent. **Tình trạng runtime** cho biết runtime của bạn có kết nối được và đang hoạt động tốt hay không. Cả bốn khu vực chỉ hiển thị dữ liệu của chính workspace bạn.
 
 ## Ai được dùng
 
@@ -15,71 +15,75 @@ Cả bốn khu vực đều cần khoá quyền `observability.read`. Chủ work
 
 ## Mức sử dụng
 
-**Mức sử dụng** mở đầu bằng bốn con số tổng cho khoảng thời gian đã chọn: số request, token đầu vào và đầu ra, chi phí ước tính và tỉ lệ lỗi. Biểu đồ hiển thị số request theo ngày, và bảng bên dưới chia nhỏ các con số tổng.
+**Mức sử dụng** mở đầu bằng các số tổng của khoảng thời gian đã chọn: **Yêu cầu**, **Token**, **Chi phí ước tính** và **Tỷ lệ lỗi**. Tiếp theo là biểu đồ **Yêu cầu theo thời gian** và một bảng chia nhỏ các số tổng.
 
 ::shot{id="usage"}
 
-1. Đặt **From UTC** và **To UTC**. Trang mở sẵn 30 ngày gần nhất, và mỗi truy vấn có thể trải dài tối đa 366 ngày.
-2. Chọn **Breakdown**: theo agent (mặc định), provider, model hoặc kênh.
-3. Nếu muốn, thu hẹp về một agent.
-4. Đọc bảng: số request, lượt gọi LLM, lượt gọi tool, số lỗi, token, cache, thời gian trung bình và **Est. cost** của từng dòng.
-5. Chọn **Export CSV** để tải cùng dữ liệu đó về.
+1. Chọn khoảng ngày. Trang mở với 30 ngày gần nhất, và một khoảng có thể dài tới 366 ngày. Các mốc thời gian tính theo UTC.
+2. Chọn **Nhóm theo**: **Agent**, **Nhà cung cấp**, **Mô hình** hoặc **Kênh**.
+3. Nếu cần, thu hẹp về một agent bằng ô **Tất cả agent**, hoặc mở **Bộ lọc** để khớp chính xác ID agent, provider, model hoặc kênh.
+4. Đọc bảng: **Yêu cầu**, **Lượt gọi LLM**, **Lượt gọi công cụ**, **Lỗi**, **Token**, **Bộ nhớ đệm**, **Thời lượng TB** và **Chi phí ước tính** cho từng dòng.
+5. Chọn **Xuất CSV** để tải xuống cùng dữ liệu đó.
 
-Mức sử dụng được tổng hợp mỗi giờ từ giờ trọn vẹn gần nhất, nên số liệu mới nhất chậm khoảng một đến hai giờ. Trang cho biết dữ liệu đã cập nhật tới giờ nào, và hiện banner **Usage is delayed** khi dữ liệu chậm hơn thế. Mức sử dụng chỉ chứa các con số tổng, không bao giờ chứa prompt, câu trả lời hay secret.
+Mức sử dụng lấy từ dữ liệu tổng hợp theo giờ, nên số liệu mới nhất có thể trễ một đến hai giờ. Trang cho biết dữ liệu được cập nhật lúc nào, và hiện banner **Mức sử dụng bị trễ** khi bản tổng hợp mới nhất chưa về. Mức sử dụng chỉ chứa số liệu tổng hợp, không bao giờ chứa prompt hay phản hồi.
 
 > [!NOTE]
-> **Est. cost** là con số ước tính để bạn lập kế hoạch. Đây không phải hoá đơn; hoá đơn của provider mới là căn cứ cho số tiền bạn thực trả.
+> **Chi phí ước tính** là con số ước tính, không phải hoá đơn. Hoá đơn của chính nhà cung cấp mới là căn cứ cho số tiền bạn phải trả.
 
-## Nhật ký hoạt động
+## Hoạt động
 
-**Nhật ký hoạt động** liệt kê những gì con người và agent đã thay đổi trong workspace, mới nhất ở trên, kèm liên kết tới tài nguyên liên quan. Mỗi mục cho biết thời điểm, người thực hiện, tài nguyên và trạng thái: **Ok**, **Changed**, **Attention** hoặc **Recorded**. Khi một mục đến từ một lần chạy của agent, nó liên kết tới trace, lần chạy hoặc phiên tương ứng.
+**Hoạt động** liệt kê những gì người dùng và agent đã thay đổi trong workspace, mới nhất ở trên cùng. Mỗi mục cho biết thời điểm, tác nhân, tài nguyên và một trạng thái: **Thành công**, **Đã thay đổi**, **Cần chú ý** hoặc **Đã ghi nhận**.
 
 ::shot{id="activity"}
 
-1. Tìm theo hành động, người thực hiện, tài nguyên hoặc trace ID.
-2. Lọc theo người thực hiện, tài nguyên, hành động, trạng thái hoặc mức độ (**Success**, **Info**, **Warning** hoặc **Error**).
-3. Chọn khoảng thời gian: **Today**, **7 days**, **30 days** hoặc **Custom** với ngày tự chọn.
-4. Chọn **Apply filters**.
-5. Chuyển **View** từ **List** sang **Breakdown** để đếm số mục theo từng hành động thay vì liệt kê.
+1. Tìm bằng ô **Tìm hành động, tác nhân, tài nguyên hoặc mã trace…**.
+2. Lọc theo **Thời gian** (**Hôm nay**, **7 ngày qua**, **30 ngày qua** hoặc **Khoảng tuỳ chọn**), **Tác nhân**, **Tài nguyên**, **Hành động**, **Trạng thái** hoặc **Mức độ** (**Thành công**, **Thông tin**, **Cảnh báo** hoặc **Lỗi**).
+3. Đổi **Chế độ xem** từ **Danh sách** sang **Phân tách** để đếm các mục thay vì liệt kê.
+4. Chọn **Xem hoạt động cũ hơn** để tải thêm về trước.
+
+Chọn một mục để mở chi tiết **Sự kiện hoạt động**, gồm **Mã định danh**, **Siêu dữ liệu** và các liên kết **Liên quan** tới trace, lượt chạy hoặc phiên đứng sau nó.
 
 ## Trace
 
-Trace là bản ghi đầy đủ của một lần agent chạy: mọi lượt gọi model, gọi tool, hook và sự kiện, kèm thời gian và token. Trang **Trace** liệt kê các trace, kèm số trace khớp bộ lọc và, cho trang hiện tại, số lỗi, token và chi phí.
+Trace là bản ghi đầy đủ của một lần chạy agent: mọi lần gọi model, gọi tool, hook và sự kiện, kèm thời gian và token. Trang **Trace** liệt kê các trace kèm số trace khớp bộ lọc và, với trang hiện tại, số lỗi, token và chi phí. Các cột gồm **Trace**, **Tên**, **Agent**, **Kênh**, **Bắt đầu**, **Thời lượng**, **Trạng thái**, **Span**, **Token** và **Chi phí**.
 
 ::shot{id="traces"}
 
 Để tìm một lần chạy:
 
-1. Tìm kiếm, hoặc lọc theo trạng thái (**Running**, **Completed**, **Error** hoặc **Cancelled**), agent, phiên, kênh, tool và khoảng thời gian.
-2. Đánh dấu **Errors only** hoặc **Tool calls** để thu hẹp thêm.
-3. Sắp xếp theo thời điểm bắt đầu, thời gian chạy, token hoặc chi phí, và đặt số dòng mỗi trang (mặc định 25).
-4. Bật **Auto refresh** để danh sách luôn mới trong lúc bạn theo dõi.
+1. Tìm theo tên, mã trace hoặc phiên, hoặc lọc theo trạng thái (**Hoàn tất**, **Lỗi**, **Đang chạy** hoặc **Đã huỷ**), **Agent**, **Phiên**, **Kênh**, **Công cụ** và **Khoảng thời gian**.
+2. Dùng **Chỉ lỗi** hoặc **Có gọi công cụ** để thu hẹp thêm.
+3. Sắp xếp theo các cột và đặt **Số dòng mỗi trang** (mặc định 25, tối đa 200).
+4. Bật **Theo dõi trực tiếp** để kiểm tra trace mới mỗi 30 giây.
 
-Chọn một trace để mở chi tiết, hoặc **Open full page** để xem rộng hơn. Phần chi tiết cho biết trạng thái, thời gian chạy, token và chi phí ước tính của lần chạy, kèm liên kết tới lần chạy và phiên. Bên dưới là:
+Trace nền, như việc của bộ nhớ kênh và đồ thị tri thức, mặc định bị ẩn; bật **Hiện trace nền** để xem cả chúng. Dùng **Chế độ xem** để lưu bộ lọc hiện tại trên thiết bị này và dùng lại sau.
 
-- **Span tree** và **Timeline**: từng bước theo thứ tự, phân loại LLM, Tool, Agent, Hook hoặc Event, kèm provider, model, token và finish reason.
-- **Hook executions**: các hook đã chạy trong trace.
-- **Tool summaries**: tóm tắt ngắn của từng lượt gọi tool.
-- **Permitted previews**: bản xem trước ngắn của đầu vào và đầu ra, ở những chỗ được phép.
+Chọn một trace để xem nhanh, hoặc **Mở trang đầy đủ** để xem toàn bộ chi tiết. Phần đầu trang cho biết trạng thái, thời lượng, token và chi phí của lần chạy, cùng **Sao chép mã trace**, **Chia sẻ liên kết**, **Xuất JSON** và **Mở phiên**. Nếu lần chạy thất bại, nguyên nhân gốc được hiển thị trước tiên. Bên dưới là ba tab:
 
-Mọi dữ liệu trong trace đều được che thông tin nhạy cảm trước khi tới trình duyệt của bạn. Khi cần hỗ trợ về một lần chạy, hãy sao chép **Redacted support bundle** và gửi cho bộ phận hỗ trợ: prompt gốc, tham số tool, header và secret đều được loại bỏ.
+- **Tổng quan**: hội thoại, **Dòng thời gian** của các span được phân loại thành LLM, Tool, Agent, Hook hoặc Sự kiện, và **Tóm tắt tool** với số lượt gọi, số lỗi và thời lượng trung bình của từng tool.
+- **Sự kiện và nhật ký**: các sự kiện quyết định và gửi tin, cùng **Lượt thực thi hook**, tức các hook đã chạy trong trace.
+- **JSON thô**: dữ liệu của trace, kèm **Gói hỗ trợ đã ẩn danh**.
 
-## Sức khoẻ runtime
+Các giá trị trong trace có thể được ẩn trước khi tới trình duyệt của bạn; span có giá trị bị ẩn sẽ được đánh dấu. Khi cần hỗ trợ về một lần chạy, hãy sao chép **Gói hỗ trợ đã ẩn danh** và gửi cho bộ phận hỗ trợ: prompt gốc, tham số tool, header và secret đều bị loại bỏ hoặc ẩn đi.
 
-**Sức khoẻ runtime** kiểm tra runtime của workspace mà không để lộ các máy chủ phía sau. Phần tóm tắt cho biết runtime có truy cập được không, tenant binding, tỉ lệ lỗi trace gần đây và heartbeat gần nhất.
+## Tình trạng runtime
+
+**Tình trạng runtime** kiểm tra runtime của workspace mà không để lộ các máy chủ phía sau. Các chỉ số cho biết **Kết nối được runtime**, **Tỷ lệ lỗi gần đây** trên các trace gần nhất và **Tín hiệu gần nhất**, tức trace hoặc hoạt động mới nhất.
 
 ::shot{id="monitoring"}
 
-Trạng thái chung là **Healthy**, **Needs attention** hoặc **Offline**. Trạng thái này được tính từ việc console có kết nối được tới runtime không, workspace đã được nhận (claim) chưa và kết quả của các trace gần đây. Bên dưới là:
+Thẻ **Trạng thái runtime** hiển thị **Tình trạng**, là **Ổn định**, **Cần chú ý** hoặc **Ngoại tuyến**, cùng khu vực, phiên bản, thời gian hoạt động, trạng thái thiết lập và **Mã tham chiếu hỗ trợ**. Tình trạng được tổng hợp từ việc console có kết nối được runtime không, workspace đã được kết nối chưa và kết quả của các trace gần đây. Bên dưới là:
 
-- **Claim / pairing** cho biết workspace đã được nhận chưa, kèm liên kết tới **Pairing Inbox**.
-- **Capacity signal** là thời gian chạy trung bình của các trace gần đây. Đây là con số đại diện cho mức tải, không phải số liệu CPU hay bộ nhớ.
-- **Activity signal** và bản xem trước các hoạt động gần đây.
+- **Kết nối và ghép nối**: **Kết nối workspace**, **Danh tính đã ghép nối** và **Đang chờ ghép nối**, kèm liên kết tới **Hộp thư ghép nối**.
+- **Năng lực xử lý**: thời lượng chạy trung bình trong 24 giờ qua. Dữ liệu tổng hợp theo giờ có thể trễ một đến hai giờ.
+- **Tín hiệu hoạt động**: số yêu cầu mỗi giờ trong 24 giờ qua.
+- **Dữ liệu nào rời khỏi runtime**: những tín hiệu đã được ẩn thông tin, chỉ thuộc workspace, mà trang này sử dụng.
+- **Hoạt động gần đây**, với **Xem tất cả** để mở trang Hoạt động.
 
-Trang này không bao giờ hiển thị hostname, địa chỉ IP hay log thô.
+Banner **Runtime cần chú ý** xuất hiện khi ít nhất 10% trace gần đây bị lỗi, và **Runtime đang ngoại tuyến** khi runtime không phản hồi.
 
 > [!WARNING]
-> Nếu trạng thái là **Awaiting claim**, các trang của runtime chưa hiển thị được dữ liệu trực tiếp. Hãy hoàn tất onboarding, hoặc duyệt yêu cầu ghép cặp đang chờ, trước đã.
+> Nếu workspace chưa được kết nối với runtime, các trang runtime chưa hiển thị được dữ liệu trực tiếp. Hãy hoàn tất thiết lập, hoặc phê duyệt yêu cầu ghép nối đang chờ, trước đã.
 
 ## Liên quan
 

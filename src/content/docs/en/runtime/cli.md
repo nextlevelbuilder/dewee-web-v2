@@ -3,7 +3,7 @@ title: CLI reference
 description: "The dewee command line: global flags, how it finds the gateway and your key, output formats, and every command group for agents, skills, workflows and more."
 section: runtime
 order: 2
-updated: 2026-09-25
+updated: 2026-10-16
 ---
 
 The same `dewee` binary that runs the gateway is also its command-line client. Most commands talk to a running gateway over HTTP or WebSocket, locally or remotely, so an operator can script almost everything the console does. A few maintenance commands work on the database directly and are meant for the host.
@@ -69,7 +69,7 @@ dewee mcp list --json
 
 | Command | Subcommands |
 |---|---|
-| `dewee agent` | `list`, `get`, `status`, `add`, `update`, `delete`, `chat`; `files` to read and set an agent's context files; `evolution` for suggested improvements |
+| `dewee agent` | `list`, `get`, `status`, `add`, `update`, `delete`, `chat`; `files` to read and set an agent's context files; `evolution` for suggested improvements; `access` for the agent's shares |
 | `dewee sessions` | `list`, `get`, `history`, `status`, `send`, `rename`, `reset`, `delete` |
 | `dewee contacts` | `list`, `get`, `merge`, `unmerge` |
 | `dewee pairing` | `list`, `approve`, `revoke` for chat-app senders waiting for access |
@@ -85,12 +85,15 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 
 | Command | Subcommands |
 |---|---|
-| `dewee providers` | `list`, `add`, `update`, `delete`, `verify` |
+| `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` for grants and the open/restricted mode |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; plus `access`, `grant`, `revoke`, `deps`, `evolve` and `suggestions` |
 | `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` for servers that sign in with OAuth |
-| `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` to approve or deny install requests |
+| `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` to approve or deny install requests; `access` for grants and the open/restricted mode |
+| `dewee hooks` | `access` only: which agents a hook runs for and who may change it |
 | `dewee channels` | `list`, `add`, `delete` |
 | `dewee tts`, `dewee stt` | Voice providers and their `config` |
+
+Every `access` group has `list`, `grant`, `set-level`, `revoke` and `activity`, and on providers and packages also `mode get` and `mode set`. Levels, modes and what they enforce are explained in [Access grants](/docs/security/access-grants).
 
 ## Automation
 
@@ -99,7 +102,7 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 | `dewee cron` | `list`, `get`, `create`, `update`, `toggle`, `run`, `runs`, `status`, `delete` |
 | `dewee workflows` | `list`, `show`, `create`, `validate`, `apply`, `export`, `publish`, `rollback`, `enable`, `disable`, `trigger`, `delete`, `node-types`; `runs` to list, show, tail, cancel or retry runs |
 | `dewee heartbeat` | `get`, `set`, `toggle`, `test`, `logs`, `targets` |
-| `dewee reflex` | `status`, `config`, `test`, `eval` |
+| `dewee reflex` | `status`, `config` (`set`, `set-key`, `reset`), `settings`, `overrides` (`set`, `reset`), `decisions`, `test`, `eval`; see [Decision layer](/docs/concepts/decision-layer) |
 
 Workflows can be kept as files and applied from CI:
 

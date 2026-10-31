@@ -28,6 +28,8 @@ Memory files are split into chunks of up to 1,000 characters and indexed for ful
 | `memory_get` | Reads only the lines it needs from a memory file |
 | `memory_expand` | Loads the full summary of a past session by ID |
 
+The system prompt only tells the agent to use the memory tools it can actually call. If a tool profile or deny rule removes `memory_search`, the memory recall instructions are left out, and `memory_get` or `memory_expand` are only mentioned when they are allowed too.
+
 Agents also get relevant memory without asking. Before each turn, dewee checks the user's message against past session summaries and adds up to 5 abstracts that score at least 0.3 to the system prompt, within about 200 tokens. Tune it with `auto_inject_enabled`, `auto_inject_threshold` and `auto_inject_max_tokens`.
 
 ## Consolidation

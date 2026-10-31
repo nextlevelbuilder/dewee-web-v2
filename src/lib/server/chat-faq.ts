@@ -18,8 +18,8 @@ const ENTRIES: Entry[] = [
   },
   {
     match: /on.?prem|own server|mac mini|vps|air.?gap|máy chủ riêng|nội bộ/i,
-    en: "Yes. On-premises runs the dewee runtime on your own VPS or Mac mini, activated by a licence key; your data never leaves your network. We install it, build 5 custom workflows with you and look after it for a year. Prefer to install it yourself? https://dewee.sh/install · https://dewee.sh/pricing#on-premises",
-    vi: "Được ạ. Bản On-Premises chạy runtime dewee ngay trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key, dữ liệu không rời khỏi hạ tầng của bạn. Đội ngũ sẽ cài đặt, dựng cùng bạn 5 quy trình tuỳ chỉnh và chăm sóc trong 1 năm. Muốn tự cài? https://dewee.sh/vi/install · https://dewee.sh/vi/pricing",
+    en: "Yes. On-premises runs the dewee runtime on your own VPS or Mac mini, activated by a licence key, so the runtime and the data it stores sit on your own machines. We install it, build 5 custom workflows with you and look after it for a year. Prefer to install it yourself? https://dewee.sh/install · https://dewee.sh/pricing#on-premises",
+    vi: "Được ạ. Bản On-Premises chạy runtime dewee ngay trên VPS hoặc Mac mini của bạn, kích hoạt bằng license key, nên runtime và dữ liệu dewee lưu đều nằm trên máy của bạn. Đội ngũ sẽ cài đặt, dựng cùng bạn 5 quy trình tuỳ chỉnh và chăm sóc trong 1 năm. Muốn tự cài? https://dewee.sh/vi/install · https://dewee.sh/vi/pricing",
   },
   {
     match: /secur|safe|privacy|data|encrypt|gdpr|bảo mật|an toàn|dữ liệu|mã hoá/i,

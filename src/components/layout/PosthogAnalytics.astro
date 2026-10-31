@@ -4,7 +4,10 @@
  * on production only, like Google Tag Manager, so staging and local traffic stay out of the
  * project. Until the visitor accepts cookies, PostHog keeps its id in memory only (nothing is
  * stored); CookieBadge switches it to persistent storage on "Accept".
- * Events: pageviews, plan CTAs, app/contact/outbound clicks, theme toggles, chat opens, leads.
+ * Events: pageviews, plan CTAs, hero CTAs (`hero_cta_clicked`, from `data-hero-cta`),
+ * app/contact/outbound clicks, theme toggles, chat opens, leads. A hero link to app.dewee.sh
+ * sends both `hero_cta_clicked` and `app_cta_clicked`, so the app-entry funnel stays whole.
+ * `site` and `locale` ride on every event through `posthog.register`, so no event repeats them.
  */
 import { SITE } from "~/content/site";
 import type { Locale } from "~/i18n/config";
@@ -14,6 +17,7 @@ const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
 const config = {
   key: "phc_x3SRpJyREJK2UfZhvQGaqAxax94u6Aj7YLnQ3Xo7kp7m",
   props: { site: "dewee-web-v2", locale },
+  appHost: new URL(SITE.appUrl).hostname,
 };
 ---
 
@@ -49,7 +53,9 @@ const config = {
         location: link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main",
       };
       if (link.dataset.trackPlan) posthog.capture("pricing_plan_cta_clicked", Object.assign({ plan: link.dataset.trackPlan }, props));
-      if (url.hostname === "app.dewee.sh") posthog.capture("app_cta_clicked", props);
+      var heroCta = link.dataset.heroCta;
+      if (heroCta === "primary" || heroCta === "secondary") posthog.capture("hero_cta_clicked", Object.assign({ cta: heroCta }, props));
+      if (url.hostname === config.appHost) posthog.capture("app_cta_clicked", props);
       else if (url.protocol === "mailto:") posthog.capture("contact_email_clicked", props);
       else if (url.origin !== location.origin && url.protocol.indexOf("http") === 0) posthog.capture("outbound_link_clicked", props);
     }, { capture: true });

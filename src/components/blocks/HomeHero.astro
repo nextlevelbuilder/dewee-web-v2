@@ -1,8 +1,10 @@
 ---
 /**
- * Homepage hero: the promise on the left, a group chat on the right where dewee is already
- * at work. The mascot drops in and peeks over the chat card; chat lines arrive one by one
- * (CSS only) and are fully visible without JS or with reduced motion.
+ * Homepage hero: the promise on the left, a group chat on the right where people and agents are
+ * already working together. The mascot drops in and peeks over the chat card; chat lines arrive
+ * one by one (CSS only) and are fully visible without JS or with reduced motion.
+ * Both calls to action carry `data-hero-cta` so the analytics layer can name hero clicks
+ * (see PosthogAnalytics.astro and GoogleTagManager.astro); no tracking code lives here.
  */
 import { escapeHtml, inlineMarkup } from "~/lib/inline-markup";
 import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
@@ -15,10 +17,13 @@ interface Props {
   lede: string;
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
+  /** One short line under the buttons, read by everyone (unlike the handwritten `note`). */
+  microcopy?: string;
   note?: string;
-  chat: { channel: string; label: string; lines: Line[] };
+  /** `label` names the chat for screen readers; `caption` is the visible note that it is simulated. */
+  chat: { channel: string; label: string; caption?: string; lines: Line[] };
 }
-const { eyebrow, title, lede, primary, secondary, note, chat } = Astro.props;
+const { eyebrow, title, lede, primary, secondary, microcopy, note, chat } = Astro.props;
 // Each sentence of the promise gets its own line so the break never lands mid-thought, and
 // its last two words are glued together so no sentence ends on a lonely word ("is / yours.").
 const titleLines = title.split(/(?<=[.!?])\s+/).map((l) => l.replace(/\s+(\S+)$/, "\u00a0$1"));
@@ -39,9 +44,10 @@ const richText = (text: string) =>
       <h1 class="hero__title" data-reveal>{titleLines.map((l) => <span class="hero__line" set:html={inlineMarkup(l)} />)}</h1>
       <p class="lede hero__lede" data-reveal>{lede}</p>
       <div class="hero__actions" data-reveal>
-        <a class="btn btn--primary btn--lg" href={primary.href}>{primary.label}<Icon name="arrow-right" class="arrow" /></a>
-        {secondary && <a class="btn btn--ghost btn--lg" href={secondary.href}>{secondary.label}</a>}
+        <a class="btn btn--primary btn--lg" href={primary.href} data-hero-cta="primary">{primary.label}<Icon name="arrow-right" class="arrow" /></a>
+        {secondary && <a class="btn btn--ghost btn--lg" href={secondary.href} data-hero-cta="secondary">{secondary.label}</a>}
       </div>
+      {microcopy && <p class="hero__micro" data-reveal><Icon name="users" size={16} />{microcopy}</p>}
     </div>
 
     <div class="hero__demo">
@@ -66,6 +72,7 @@ const richText = (text: string) =>
             </li>
           ))}
         </ol>
+        {chat.caption && <p class="chat-card__caption"><Icon name="info" size={14} />{chat.caption}</p>}
       </figure>
       {note && (
         <p class="hero__note" aria-hidden="true">
@@ -82,10 +89,13 @@ const richText = (text: string) =>
   .hero__bg { position: absolute; inset: 0; z-index: -1; --drum-x: 76%; --drum-y: 46%; }
   .hero__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2.5rem, 1rem + 5vw, 6rem); align-items: center; }
   .hero__copy { display: grid; gap: var(--space-5); justify-items: start; }
-  .hero__title { max-inline-size: 13ch; }
-  .hero__line { display: block; text-wrap: pretty; }
+  /* Balanced lines keep a one-sentence promise from stranding a short word ("got") mid-title. */
+  .hero__title { max-inline-size: 18ch; }
+  .hero__line { display: block; text-wrap: balance; }
   .hero__lede { max-inline-size: 36rem; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-2); }
+  .hero__micro { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-3); }
+  .hero__micro :global(svg) { flex: none; color: var(--accent-ink); }
 
   .hero__demo { position: relative; padding-block-start: clamp(3.5rem, 2rem + 4vw, 5.5rem); }
   .hero__mascot { position: absolute; inset-block-start: 0; inset-inline-end: 12%; z-index: 0; }
@@ -126,6 +136,12 @@ const richText = (text: string) =>
   .line__text :global(.mention) { color: var(--accent-ink); font-weight: 600; background: var(--accent-soft); border-radius: 4px; padding-inline: 0.2em; }
   .line--me .line__text :global(.mention) { background: var(--surface); }
   .line__text :global(.tick) { color: var(--success); font-weight: 700; }
+  .chat-card__caption {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding: var(--space-2) var(--space-4); border-block-start: 1px solid var(--rule);
+    background: var(--paper-2); font-size: var(--step--2); color: var(--ink-3);
+  }
+  .chat-card__caption :global(svg) { flex: none; color: var(--accent-ink); }
 
   .hero__note { position: absolute; inset-inline-start: -2.5rem; inset-block-end: -3.25rem; display: flex; align-items: flex-end; gap: var(--space-1); transform: rotate(-4deg); }
   .hero__note .note { font-size: var(--step-0); }
@@ -144,14 +160,14 @@ const richText = (text: string) =>
   @media (max-width: 960px) {
     .hero__grid { grid-template-columns: minmax(0, 1fr); }
     .hero__bg { --drum-x: 50%; --drum-y: 72%; }
-    .hero__title { max-inline-size: 16ch; }
+    .hero__title { max-inline-size: 18ch; }
     .hero__demo { max-inline-size: 34rem; inline-size: 100%; justify-self: center; }
     .hero__note { inset-inline-start: auto; inset-inline-end: 0; inset-block-end: -3rem; }
   }
   @media (max-width: 560px) {
     .hero__actions { inline-size: 100%; }
     .hero__actions .btn { flex: 1 1 100%; }
-    .chat-card__list { padding-inline: var(--space-3); }
+    .chat-card__list, .chat-card__caption { padding-inline: var(--space-3); }
     .hero__note { position: static; justify-content: flex-end; margin-block-start: var(--space-3); }
     .hero__arrow { display: none; }
   }

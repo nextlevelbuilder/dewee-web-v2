@@ -18,7 +18,7 @@ Mọi lời gọi tới runtime, trừ các endpoint kiểm tra sức khoẻ, đ
 
 ## Tạo API key
 
-**Trong console**, mở **API key**, chọn một preset và thời hạn, rồi tạo key. Các preset là **Read**, **Read and write**, **MCP read** và **MCP read and write**; thời hạn có thể là 1 giờ, 1 ngày, 30 ngày, 90 ngày hoặc không hết hạn. Key chỉ hiện một lần, hãy chép ngay vào trình quản lý secret. Việc tạo hoặc xoay vòng key giới hạn 20 lần mỗi giờ, còn thu hồi là 30 lần mỗi giờ.
+**Trong console**, mở **API key & tài liệu**, chọn **Tạo key**, chọn mức **Quyền truy cập** và thời hạn, rồi tạo key. Các mức là **Đọc**, **Đọc và ghi**, **MCP đọc** và **MCP đọc và ghi**; thời hạn có thể là 1 giờ, 1 ngày, 30 ngày, 90 ngày hoặc không hết hạn. Key chỉ hiện một lần, hãy chép ngay vào trình quản lý secret. Việc tạo hoặc xoay vòng key giới hạn 20 lần mỗi giờ, còn thu hồi là 30 lần mỗi giờ.
 
 **Bằng CLI**, admin có thể tạo key với scope cụ thể:
 
@@ -37,11 +37,11 @@ Key có dạng `goclaw_` theo sau là 32 ký tự hexa. Runtime chỉ lưu hash 
 | `operator.read` | Quyền đọc | Viewer |
 | `operator.write` | Đọc và ghi cho công việc hằng ngày | Operator |
 | `operator.approvals` | Phê duyệt các lệnh đang bị giữ | Operator |
-| `operator.pairing` | Quản lý thiết bị trình duyệt đã ghép cặp | Operator |
+| `operator.pairing` | Quản lý thiết bị trình duyệt đã ghép nối | Operator |
 | `operator.admin` | Mọi thứ, kể cả API key và cấu hình hệ thống | Admin |
-| `mcp.tools.read`, `mcp.tools.write` | Chỉ endpoint MCP công khai | Không có vai trò nào ngoài `/mcp` |
+| `mcp.tools.read`, `mcp.tools.write` | Chỉ endpoint MCP công khai | Không có vai trò nào ngoài `/mcp/server` |
 
-Key nhận vai trò cao nhất mà các scope của nó cho phép. Key chỉ có scope MCP bị từ chối ở mọi nơi trừ `POST /mcp`, và phải gắn với một owner, là người có quyền truy cập agent mà key sẽ dùng.
+Key nhận vai trò cao nhất mà các scope của nó cho phép. Key chỉ có scope MCP bị từ chối ở mọi nơi trừ `POST /mcp/server`, và phải gắn với một owner, là người có quyền truy cập agent mà key sẽ dùng.
 
 ## Gửi key
 
@@ -53,7 +53,7 @@ Host: dewee.example.com
 Authorization: Bearer <api-key>
 ```
 
-Trên WebSocket, đặt key vào trường `token` của request `connect` đầu tiên. Đường dẫn tới file và media cũng có thể mang token qua tham số `?token=`, cho những chỗ không đặt được header.
+Trên WebSocket, đặt key vào trường `token` của request `connect` đầu tiên. Nếu gửi `connect` lần nữa trên cùng socket, credential mới thay hẳn credential cũ, và một `connect` thất bại sẽ đưa socket về trạng thái chưa đăng nhập. Đường dẫn tới file và media cũng có thể mang token qua tham số `?token=`, cho những chỗ không đặt được header.
 
 Các header tuỳ chọn giúp request rõ ràng hơn:
 
@@ -64,6 +64,8 @@ Các header tuỳ chọn giúp request rõ ràng hơn:
 | `Accept-Language` | Ngôn ngữ cho thông báo và lỗi |
 
 Chữ `GoClaw` trong tên header là tên gốc của runtime; hãy dùng đúng như trên.
+
+`X-GoClaw-User-Id` chỉ cho biết request làm việc trên dữ liệu của ai. Header này không bao giờ thay đổi việc key được phép làm: với key không gắn owner, ghi tên owner của workspace hay một admin cũng không cho request vai trò của họ. Key giữ vai trò mà các scope của nó cho phép, trong chính tenant của nó. Để thao tác với vai trò của owner hay admin, hãy dùng key gắn với đúng người đó.
 
 ## Kiểm tra key
 

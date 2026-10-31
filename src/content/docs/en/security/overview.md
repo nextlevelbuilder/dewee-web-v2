@@ -3,7 +3,7 @@ title: Security overview
 description: What dewee locks down by default, which agent capabilities stay open until you tighten them, and the five layers of checks between a message and your systems.
 section: security
 order: 1
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 This page is written for the person who has to sign off on dewee: what is protected out of the box, what you are expected to configure, and where each check lives. It describes what the runtime does today, including the defaults that are permissive. The product-level summary is on the [Security](/security) page.
@@ -41,6 +41,7 @@ These defaults favour getting started. Review them before agents handle real dat
 | WebSocket origins (`gateway.allowed_origins`) | Any origin when empty | A list of your origins |
 | Group chats (`group_policy`) | `open` on most channel types | `allowlist` or `disabled` |
 | Webhook IP allowlist | Empty, so any IP | Your senders' addresses |
+| Provider and package access | Open to every agent of the workspace | `restricted`, with a `use` grant for each agent that needs it; see [Access grants](/docs/security/access-grants) |
 
 How tool policy is layered is explained in [Tools and permissions](/docs/concepts/tools-and-permissions).
 

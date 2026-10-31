@@ -1,12 +1,17 @@
 /**
- * /roadmap: Now / Next / Later, checked against the dewee repository on 25 Sep 2026.
- * Sources (read-only, /Volumes/GOON/www/nlb/dewee):
- * - Now: v3.34.0-beta.2 (control plane redesign, beta); plans/260826 docs + API reference epic (in progress).
+ * /roadmap: Now / Next / Later, checked against the dewee repository on 19 Oct 2026.
+ * Sources (read-only, the dewee repo and its GitHub releases):
+ * - Now: decision policies (v3.41.0-beta.1 and beta.2 release notes; the shadow-only evaluator shipped
+ *   in v3.39.0); self-improvement engine (plans/261007-1206, status in-progress, first parts in
+ *   v3.39.0); plans/260826 docs + API reference epic (in progress). The control plane redesign left
+ *   this column when v3.34.0 shipped it as stable.
  * - Next: plans/260819 owner-level control plane (waves shipped in v3.22 and v3.31);
- *   plans/260805 hosted fleet hardening (runtime PostgreSQL on Kubernetes, canary rollout).
+ *   plans/260805 hosted fleet hardening (runtime PostgreSQL on Kubernetes, canary rollout);
+ *   plans/261013-2200-773-public-mcp-oauth (pending).
  * - Later: plans/260917-1815-jev-reflex-memory-gate/stage-2-plus-roadmap.md (deferred register,
  *   explicitly "authorizes nothing").
- * - Shipped: GitHub releases v3.28 to v3.33 (September 2026).
+ * - Shipped: GitHub releases v3.34 to v3.40 (25 Sep to 15 Oct 2026, stable only), eight in all with the
+ *   v3.38.1 patch, whose notes are only a compare link, so its line says no more than "patch".
  * No dates are promised for anything that has not shipped.
  */
 import type { Bi } from "~/i18n/config";
@@ -34,7 +39,7 @@ export const ROADMAP: Bi<RoadmapPage> = {
       eyebrow: "Roadmap",
       title: "What we're *building next*.",
       lede: "Straight from our own notes: what is in progress, what is planned, and the ideas we have written down but parked. Anything that ships lands on the changelog first.",
-      note: "checked 25 Sep 2026",
+      note: "checked 19 Oct 2026",
       primary: "See the changelog",
       secondary: "Suggest something",
     },
@@ -50,9 +55,14 @@ export const ROADMAP: Bi<RoadmapPage> = {
           caption: "In progress or in beta",
           items: [
             {
-              title: "A calmer control plane",
-              body: "A redesign of the control plane from the ground up: new visual tokens, a new shell and components, and every page rebuilt on them.",
-              meta: "Beta since v3.34.0-beta.2",
+              title: "Decision policies you can test first",
+              body: "Write down when an agent should carry on, ask for clarification or stay quiet in a group chat. The policy is measured on labelled messages first and switched on only after it passes.",
+              meta: "In beta, v3.41.0-beta.2",
+            },
+            {
+              title: "Agents that improve from evidence",
+              body: "Changes proposed for an agent or a skill are replayed on saved examples, approved before they go live, tried on live traffic and rolled back if they regress.",
+              meta: "First parts shipped in v3.39",
             },
             {
               title: "Official docs and API reference",
@@ -75,6 +85,11 @@ export const ROADMAP: Bi<RoadmapPage> = {
               title: "Hosted fleet hardening",
               body: "Moving the runtime database of hosted instances onto Kubernetes, and rolling out each update to a canary first, then to the whole fleet.",
               meta: "In progress",
+            },
+            {
+              title: "OAuth sign-in for the public MCP server",
+              body: "Let MCP clients sign in through the control plane instead of sharing one static key. The static key keeps working.",
+              meta: "Planned",
             },
           ],
         },
@@ -110,16 +125,18 @@ export const ROADMAP: Bi<RoadmapPage> = {
     },
     shipped: {
       eyebrow: "Recently shipped",
-      title: "Six stable releases *in September*.",
+      title: "Eight stable releases *in three weeks*.",
       lede: "The roadmap is a promise about direction. The changelog is the record of what actually shipped.",
-      label: "dewee stable releases in September 2026",
+      label: "dewee stable releases from 25 September to 15 October 2026",
       items: [
-        { date: "3 Sep · v3.28", text: "Speech settings from the CLI, and per-agent reasoning controls" },
-        { date: "4 Sep · v3.29", text: "Reasoning delivery visible in traces" },
-        { date: "19 Sep · v3.30", text: "Visual workflows, cron triggers and Reflex memory admission" },
-        { date: "21 Sep · v3.31", text: "GPT-6 Astra, ClinePass, OpenCode Go and Vercel AI Gateway" },
-        { date: "22 Sep · v3.32", text: "A public, tenant-aware MCP HTTP server" },
-        { date: "24 Sep · v3.33", text: "English and Vietnamese control plane, time zones, Gemini TTS" },
+        { date: "15 Oct · v3.40", text: "A connected browser for agents, and a rebuilt admin console" },
+        { date: "14 Oct · v3.39", text: "Access grants for agents and tools, and the first self-improvement loop" },
+        { date: "9 Oct · v3.38.1", text: "A patch release on top of v3.38" },
+        { date: "7 Oct · v3.38", text: "An agent-first CLI, and workspace setup by conversation" },
+        { date: "5 Oct · v3.37", text: "Trusted channel identity and a Discord support inbox" },
+        { date: "1 Oct · v3.36", text: "Scoped model catalogs and GPT-6.1 Sol" },
+        { date: "29 Sep · v3.35", text: "Team tasks, workflow editor and MCP OAuth in the control plane" },
+        { date: "25 Sep · v3.34", text: "A redesigned control plane, and first-run setup for self-install" },
       ],
       cta: "Read the full changelog",
     },
@@ -142,7 +159,7 @@ export const ROADMAP: Bi<RoadmapPage> = {
       eyebrow: "Lộ trình",
       title: "Chúng tôi *đang làm gì tiếp*.",
       lede: "Lấy thẳng từ sổ tay của đội: việc đang làm, việc đã lên kế hoạch, và những ý tưởng đã ghi lại nhưng tạm gác. Thứ gì phát hành sẽ lên changelog trước tiên.",
-      note: "cập nhật 25/9/2026",
+      note: "cập nhật 19/10/2026",
       primary: "Xem changelog",
       secondary: "Góp ý cho chúng tôi",
     },
@@ -158,9 +175,14 @@ export const ROADMAP: Bi<RoadmapPage> = {
           caption: "Đang phát triển hoặc đang beta",
           items: [
             {
-              title: "Control plane gọn gàng hơn",
-              body: "Thiết kế lại control plane từ gốc: bộ token giao diện mới, khung và component mới, và mọi trang được dựng lại trên nền đó.",
-              meta: "Beta từ v3.34.0-beta.2",
+              title: "Chính sách quyết định, đo trước khi bật",
+              body: "Ghi rõ khi nào agent nên làm tiếp, hỏi lại cho rõ hay im lặng trong nhóm chat. Chính sách được đo trên các tin nhắn đã gắn nhãn trước, và chỉ bật sau khi đạt.",
+              meta: "Đang beta, v3.41.0-beta.2",
+            },
+            {
+              title: "Agent cải thiện dựa trên bằng chứng",
+              body: "Thay đổi đề xuất cho agent hay skill được chạy lại trên ví dụ đã lưu, được duyệt trước khi áp dụng, thử trên lưu lượng thật và quay lui nếu kết quả tệ đi.",
+              meta: "Phần đầu đã có trong v3.39",
             },
             {
               title: "Tài liệu chính thức và API reference",
@@ -183,6 +205,11 @@ export const ROADMAP: Bi<RoadmapPage> = {
               title: "Gia cố hạ tầng vận hành",
               body: "Chuyển cơ sở dữ liệu runtime của các instance do đội dewee vận hành sang Kubernetes, và phát hành bản cập nhật cho nhóm canary trước rồi mới đến toàn bộ.",
               meta: "Đang làm",
+            },
+            {
+              title: "Đăng nhập OAuth cho MCP server công khai",
+              body: "Để các MCP client đăng nhập qua control plane thay vì dùng chung một key tĩnh. Key tĩnh vẫn dùng được.",
+              meta: "Đã lên kế hoạch",
             },
           ],
         },
@@ -218,16 +245,18 @@ export const ROADMAP: Bi<RoadmapPage> = {
     },
     shipped: {
       eyebrow: "Vừa phát hành",
-      title: "Sáu bản stable *trong tháng 9*.",
+      title: "Tám bản stable *trong ba tuần*.",
       lede: "Lộ trình là lời hứa về hướng đi. Changelog mới là ghi chép về những gì đã thật sự phát hành.",
-      label: "Các bản stable của dewee trong tháng 9/2026",
+      label: "Các bản stable của dewee từ 25/9 đến 15/10/2026",
       items: [
-        { date: "3/9 · v3.28", text: "Cấu hình giọng nói từ CLI, và tuỳ chỉnh reasoning cho từng agent" },
-        { date: "4/9 · v3.29", text: "Theo dõi quá trình reasoning trong trace" },
-        { date: "19/9 · v3.30", text: "Workflow trực quan, trigger theo lịch cron và Reflex memory admission" },
-        { date: "21/9 · v3.31", text: "GPT-6 Astra, ClinePass, OpenCode Go và Vercel AI Gateway" },
-        { date: "22/9 · v3.32", text: "MCP HTTP server công khai, phân tách theo tenant" },
-        { date: "24/9 · v3.33", text: "Control plane tiếng Anh và tiếng Việt, múi giờ, Gemini TTS" },
+        { date: "15/10 · v3.40", text: "Trình duyệt kết nối cho agent, và admin console được dựng lại" },
+        { date: "14/10 · v3.39", text: "Cấp quyền truy cập cho agent và công cụ, cùng vòng tự cải thiện đầu tiên" },
+        { date: "9/10 · v3.38.1", text: "Bản vá bổ sung cho v3.38" },
+        { date: "7/10 · v3.38", text: "CLI ưu tiên agent, và thiết lập workspace bằng hội thoại" },
+        { date: "5/10 · v3.37", text: "Danh tính kênh đáng tin cậy và hộp thư hỗ trợ trên Discord" },
+        { date: "1/10 · v3.36", text: "Danh mục model theo phạm vi và GPT-6.1 Sol" },
+        { date: "29/9 · v3.35", text: "Task của đội, trình soạn workflow và MCP OAuth trong control plane" },
+        { date: "25/9 · v3.34", text: "Control plane thiết kế lại, và thiết lập lần đầu cho self-install" },
       ],
       cta: "Đọc toàn bộ changelog",
     },

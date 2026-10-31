@@ -6,7 +6,7 @@ const doc = (over: Partial<SearchDoc>): SearchDoc => ({ t: "", s: "", d: "", u: 
 const DOCS = [
   doc({ t: "Chat channels", s: "Integrations", d: "Telegram, Slack and Zalo.", u: "/docs/integrations/channels", h: [["Pairing codes", "pairing-codes"]], x: "Unknown senders wait for approval." }),
   doc({ t: "Licence activation", s: "Runtime & CLI", d: "Activate a runtime with a key.", u: "/docs/runtime/licence", h: [["Grace period", "grace-period"]], x: "Heartbeat every five minutes." }),
-  doc({ t: "Kênh chat", s: "Tích hợp", d: "Kết nối Telegram và Zalo.", u: "/vi/docs/integrations/channels", h: [["Mã ghép cặp", "ma-ghep-cap"]], x: "Người gửi mới chờ duyệt." }),
+  doc({ t: "Kênh chat", s: "Tích hợp", d: "Kết nối Telegram và Zalo.", u: "/vi/docs/integrations/channels", h: [["Mã ghép nối", "ma-ghep-noi"]], x: "Người gửi mới chờ phê duyệt." }),
 ].map(prepare);
 
 describe("fold", () => {
@@ -39,9 +39,9 @@ describe("searchDocs", () => {
   });
 
   it("matches without accents and links to the best heading", () => {
-    const [hit] = searchDocs(DOCS, "ghep cap");
+    const [hit] = searchDocs(DOCS, "ghep noi");
     expect(hit.doc.u).toBe("/vi/docs/integrations/channels");
-    expect(hit.url).toBe("/vi/docs/integrations/channels#ma-ghep-cap");
+    expect(hit.url).toBe("/vi/docs/integrations/channels#ma-ghep-noi");
   });
 
   it("links to the page itself when the title explains the match", () => {

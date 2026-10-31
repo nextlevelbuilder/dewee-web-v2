@@ -13,8 +13,8 @@ export const seoAroundTheClock: UseCase = {
   team: { en: "Growth", vi: "Tăng trưởng" },
   title: { en: "SEO that never clocks out", vi: "Phân tích & cải thiện SEO 24/7" },
   summary: {
-    en: "Audit pages, watch rankings, find content gaps and draft fixes, with a weekly report your team can act on.",
-    vi: "Rà soát trang, theo dõi thứ hạng, tìm khoảng trống nội dung và đề xuất bản sửa, kèm báo cáo tuần dễ hành động.",
+    en: "An audit agent and a content strategist agent find the issues and the gaps, then draft fixes for your team to review and ship, with a weekly report.",
+    vi: "Agent rà soát và agent chiến lược nội dung tìm lỗi và khoảng trống, rồi soạn bản sửa để đội bạn duyệt và đưa lên, kèm báo cáo hằng tuần.",
   },
   channels: ["slack", "lark"],
   detail: {

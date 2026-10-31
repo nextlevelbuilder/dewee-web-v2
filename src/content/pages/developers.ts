@@ -550,7 +550,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         { name: "create_* · update_*", body: "Lưu bản nháp và chỉnh sửa" },
         { name: "set_page_status · set_post_status", body: "Xuất bản, gỡ xuất bản hoặc lưu trữ" },
         { name: "list_blocks · get_block_schema · validate_blocks", body: "Dựng block hợp lệ ngay từ đầu" },
-        { name: "get_editor_draft · fill_editor_draft", body: "Đọc hoặc điền vào trình soạn thảo đang mở, rồi để người duyệt và lưu" },
+        { name: "get_editor_draft · fill_editor_draft", body: "Đọc hoặc điền vào trình soạn thảo đang mở, rồi để người xét duyệt và lưu" },
       ],
     },
     markdown: {

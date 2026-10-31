@@ -3,7 +3,7 @@ title: Skills
 description: How dewee skills are packaged, found and loaded into the prompt, who can use them, how agents publish their own, and how skills improve over time with review.
 section: concepts
 order: 5
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 A skill is a reusable set of instructions, with optional scripts and reference files, that an agent loads when a task calls for it. Skills keep the system prompt short: the agent sees a one-line summary of each skill and reads the full instructions only when it needs them.
@@ -66,6 +66,8 @@ Each skill has an access mode, shown in the console as its **Visibility**:
 
 "Public" means the whole tenant, not the internet. On top of that, an agent's skill allow list can narrow what it sees: unset means every accessible skill, an empty list means none. A channel can narrow it further per request, for example per Telegram forum topic.
 
+Grants are enforced while the agent runs, not only in the list it is shown. An agent that may not use a skill cannot activate it, and its file tools and shell commands are refused when they point into that skill's files, every stored version included; directory listings and file searches leave the skill out. Each refusal is recorded in the run's trace, and the activity log notes it (repeats are grouped).
+
 ```bash
 dewee skills access set <skill-id> --mode internal
 dewee skills grant agent <skill-id> <agent-id>
@@ -74,10 +76,11 @@ dewee skills access effective <skill-id> --agent <agent-id>
 
 ## Adding and publishing skills
 
-- **Upload.** `dewee skills upload <dir-or-zip>` packages a folder or sends an existing ZIP, and the skill appears under custom skills in the console. The size limit is 20 MB by default, configurable from 1 to 500 MB. `dewee skills promote <slug>` uploads a personal skill from `~/.agents`.
+- **Upload.** `dewee skills upload <dir-or-zip>` packages a folder or sends an existing ZIP, and the skill appears under custom skills in the console. The size limit is 20 MB by default, configurable from 1 to 500 MB. `dewee skills promote <slug>` uploads a personal skill from `~/.agents`. `dewee skills update <skill-id>` changes a skill's name, description, tags or visibility, and `dewee skills delete <skill-id> --yes` removes it; a person with an `edit` or `manage` grant on the skill can run them with their own API key (see [Access grants](/docs/security/access-grants)).
 - **Content guard.** Before anything is written, `SKILL.md` is scanned against 25 rules covering destructive commands, code injection, credential access, path traversal, SQL drops and privilege escalation. Any match rejects the skill. `SKILL.md` is limited to 100 KB and each companion text file to 2 MB.
 - **Agent publishing.** An agent can publish a folder from its workspace with `publish_skill`. The new skill is private to the user and granted to that agent, which makes it internal. Publishing the same slug again creates a new version. Built-in slugs are reserved.
-- **Agent editing.** With `skill_manage`, available only when skill learning is on, an agent can create, patch or delete skills it owns. Deleted skills are moved to a trash folder, not erased.
+- **Agent editing.** With `skill_manage`, available only when skill learning is on, an agent can create, patch or delete skills it owns. Deleted skills are moved to a trash folder and erased after 7 days.
+- **Version retention.** Every version is its own folder on disk. The gateway keeps the current version, the 5 versions before it (`skills.versions.retain_previous`, a negative value keeps every version), any version an agent grant pins, and any version replaced in the last 24 hours so running tasks finish. A deleted skill's files are removed 7 days after the delete. Version history stays listed; the files of a removed version are no longer readable. Pinned versions do not use up the 5 slots. If the gateway stops in the middle of an upload, the half-written version moves to the trash folder after 24 hours, so the next upload of that skill is no longer refused as a conflict. A deleted skill cannot be switched back on; upload it again instead. Editing a skill through the API changes only its name, description, tags, visibility and status (active or archived); delete a skill with the delete action.
 
 ## Improving skills over time
 
@@ -100,4 +103,5 @@ dewee skills suggestions apply <skill> <suggestion-id> --approve
 - [Tools and permissions](/docs/concepts/tools-and-permissions): the tools a skill's scripts run through.
 - [The agent loop](/docs/concepts/agent-loop): how the prompt is built each turn.
 - [CLI reference](/docs/runtime/cli): all `dewee skills` commands.
+- [Access grants](/docs/security/access-grants): use, edit and manage grants on a skill, and what is refused at run time.
 - [Security model](/docs/security/overview): other guards on agent-written content.

@@ -48,7 +48,7 @@ Có. Mỗi tenant được tách biệt: agent, session, bộ nhớ, provider v�
 
 ### Runtime mới có được khoá chặt theo mặc định không?
 
-Phần biên thì có: gateway không khởi động trên địa chỉ mạng nếu thiếu gateway token, và người gửi mới trên các channel tạo từ console phải chờ duyệt ghép cặp. Còn những gì agent được làm thì ban đầu cố ý để rộng: tool profile đầy đủ, không cần phê duyệt lệnh và không có sandbox. Hãy siết lại trước khi agent chạm vào dữ liệu thật; [tổng quan bảo mật](/docs/security/overview#trước-khi-chạy-thật) có danh sách kiểm tra.
+Phần biên thì có: gateway không khởi động trên địa chỉ mạng nếu thiếu gateway token, và người gửi mới trên các channel tạo từ console phải chờ phê duyệt ghép nối. Còn những gì agent được làm thì ban đầu cố ý để rộng: tool profile đầy đủ, không cần phê duyệt lệnh và không có sandbox. Hãy siết lại trước khi agent chạm vào dữ liệu thật; [tổng quan bảo mật](/docs/security/overview#trước-khi-chạy-thật) có danh sách kiểm tra.
 
 ### Key của provider và các secret khác được bảo vệ thế nào?
 
