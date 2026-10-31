@@ -4,14 +4,14 @@ description: Run agents on a timetable, build versioned workflows that chain age
 section: console
 order: 8
 screens: [schedules, workflows, workflow-runs]
-updated: 2026-10-14
+updated: 2026-10-31
 ---
 
 Not all agent work starts with a chat message. **Schedules** send a message to an agent at a set time or interval, such as a morning digest or an hourly check. **Workflows** go further: they chain steps like agent calls, knowledge search and message delivery into a versioned sequence you can test before it goes live. Both sit in the **Capabilities** group of the menu.
 
 ## Who can use it
 
-Both areas require `tasks.manage`. For workflows, creating, publishing, rolling back, enabling and deleting also need the workspace owner or an admin; the runtime checks this on top of the permission key. A publish by anyone else becomes an approval request, described under [Workflows](#workflows). See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
+Both areas require `tasks.manage`. A schedule also runs as its agent, so a member can create, edit, enable or run a schedule only on an agent they could chat with, such as an agent they own, one shared with them or the default agent; for any other agent the runtime answers "no access to this agent". Owners and Admins reach every agent. A schedule with no **Agent ID** runs as the default agent. For workflows, creating, publishing, rolling back, enabling and deleting also need the workspace owner or an admin; the runtime checks this on top of the permission key. A publish by anyone else becomes an approval request, described under [Workflows](#workflows). See [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
 
 ## Schedules
 

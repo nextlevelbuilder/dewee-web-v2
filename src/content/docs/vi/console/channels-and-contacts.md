@@ -37,6 +37,8 @@ Các nền tảng được hỗ trợ gồm Telegram, Discord, Slack, WhatsApp, 
 4. Ở tab **Định danh & chính sách**, đặt **Chính sách DM**, **Chính sách nhóm** và **Yêu cầu nhắc tên trong nhóm**. Các tuỳ chọn của nền tảng như mạng, giới hạn và stream nằm ở tab **Nâng cao**.
 5. Chọn **Kết nối kênh**. Với Zalo OA, nút này là **Tạo & tiếp tục thiết lập**: đăng ký Callback URL và Webhook URL được tạo sẵn trong Zalo, dán webhook secret, rồi cấp quyền cho Official Account.
 
+Feishu/Lark ở chế độ webhook nhận sự kiện qua chính địa chỉ của gateway. Chỉ workspace master mới đặt được **Đường dẫn webhook** riêng, **Cổng webhook** riêng hoặc **Tên miền** tùy chỉnh; các workspace khác không đặt được những trường này và dùng `/feishu/events` trên địa chỉ chính với domain Lark hoặc Feishu có sẵn. Mỗi đường dẫn chỉ một kênh nhận được sự kiện, vì vậy trên gateway dùng chung, các kênh Feishu ngoài workspace master nên dùng chế độ WebSocket (mặc định).
+
 **Chính sách DM** có các lựa chọn **Yêu cầu ghép nối**, **Mở**, **Chỉ danh sách cho phép** và **Tắt**. **Chính sách nhóm** có **Cần phê duyệt ghép nối**, **Mở**, **Chỉ danh sách cho phép** và **Tắt**. Ở hầu hết nền tảng, cả hai mặc định là ghép nối; Zalo Personal mặc định là **Chỉ danh sách cho phép**. **Yêu cầu nhắc tên trong nhóm** mặc định được bật. **Cập nhật trạng thái task** quyết định cách tiến độ task được gửi tới kênh: **Kế thừa từ agent hoặc workspace**, **Tắt**, **Tiến độ**, **Hoàn tất** hoặc **Cả hai**.
 
 ### Các tab của kênh
