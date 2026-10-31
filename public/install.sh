@@ -354,7 +354,13 @@ download_bundle() {
 
   url="$(asset_field "$manifest" "$OS-$ARCH" url)"
   expected="$(asset_field "$manifest" "$OS-$ARCH" sha256)"
-  if [ -z "$url" ] || [ -z "$expected" ]; then die 2 "release $version has no bundle for $OS-$ARCH"; fi
+  if [ -z "$url" ] || [ -z "$expected" ]; then
+    # macOS bundles ship with stable releases only; beta publishes Linux bundles.
+    if [ "$OS" = darwin ] && [ "$(json_string "$manifest" channel)" = beta ]; then
+      die 2 "beta releases ship no macOS bundle; install a stable release (no --channel beta, no -beta version)"
+    fi
+    die 2 "release $version has no bundle for $OS-$ARCH"
+  fi
   case "$url" in
     https://*) ;;
     *) die 6 "refusing a non-HTTPS bundle URL" ;;

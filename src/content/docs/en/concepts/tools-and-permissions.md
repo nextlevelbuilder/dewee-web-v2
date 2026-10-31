@@ -65,7 +65,7 @@ A command that matches `package_install` is not rejected outright. It becomes an
 | `tools.execApproval.security` | `deny` (no commands), `allowlist` (only matching commands), `full` (any command that passes the deny groups) | `full` |
 | `tools.execApproval.ask` | `off`, `on-miss` (ask when a command is not on the allowlist), `always` | `off` |
 
-Each approval is a durable, tenant-scoped record that holds a redacted summary and a hash of the command, never the raw command or its output. Once it is approved, the agent retries the same command with a single-use `approval_token`. Approvals are reviewed on the web approvals page or from the CLI; buttons in chat channels cannot approve a command.
+Each approval is a durable, tenant-scoped record that holds a short summary, a hash and the full command with secrets redacted, never the command's output. Reviewers always see the full command, line breaks included, before they approve, so nothing can hide after a harmless-looking start. An approval recorded before full commands were kept can only be denied. A command the gateway cannot show exactly, because it is longer than 64 KiB, contains hidden or direction-changing characters, or would hide shell syntax behind a redacted secret, is refused before any approval is created, and the agent is asked to split it. Only workspace owners, admins and the person who asked see the full command. Once it is approved, the agent retries the same command with a single-use `approval_token`. Approvals are reviewed on the web approvals page or from the CLI; buttons in chat channels cannot approve a command.
 
 ```bash
 dewee packages approvals list --all

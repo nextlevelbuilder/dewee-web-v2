@@ -65,7 +65,7 @@ Lệnh khớp với `package_install` không bị từ chối ngay mà trở th�
 | `tools.execApproval.security` | `deny` (không cho chạy lệnh nào), `allowlist` (chỉ lệnh khớp danh sách), `full` (mọi lệnh vượt qua các nhóm chặn) | `full` |
 | `tools.execApproval.ask` | `off`, `on-miss` (hỏi khi lệnh không có trong allowlist), `always` | `off` |
 
-Mỗi yêu cầu phê duyệt là một bản ghi bền vững, gắn với tenant, chỉ chứa bản tóm tắt đã che thông tin nhạy cảm và mã hash của lệnh, không bao giờ lưu lệnh gốc hay output. Sau khi được phê duyệt, agent chạy lại đúng lệnh đó kèm một `approval_token` chỉ dùng được một lần. Yêu cầu được xem xét trên trang phê duyệt trên web hoặc qua CLI; nút bấm trong kênh chat không thể phê duyệt lệnh.
+Mỗi yêu cầu phê duyệt là một bản ghi bền vững, gắn với tenant, chứa bản tóm tắt ngắn, mã hash và toàn bộ lệnh đã che thông tin nhạy cảm, không bao giờ lưu output của lệnh. Người duyệt luôn thấy toàn bộ lệnh, kể cả các dòng xuống dòng, trước khi phê duyệt, nên không phần nào bị giấu sau một đoạn mở đầu trông vô hại. Yêu cầu được ghi trước khi hệ thống lưu lệnh đầy đủ chỉ có thể bị từ chối. Lệnh mà gateway không thể hiển thị chính xác, vì dài hơn 64 KiB, chứa ký tự ẩn hoặc ký tự đảo chiều văn bản, hoặc giấu cú pháp shell sau một giá trị bí mật đã bị che, sẽ bị từ chối ngay trước khi tạo yêu cầu phê duyệt, và agent được yêu cầu tách lệnh ra. Chỉ chủ sở hữu, quản trị viên workspace và người gửi yêu cầu mới thấy toàn bộ lệnh. Sau khi được phê duyệt, agent chạy lại đúng lệnh đó kèm một `approval_token` chỉ dùng được một lần. Yêu cầu được xem xét trên trang phê duyệt trên web hoặc qua CLI; nút bấm trong kênh chat không thể phê duyệt lệnh.
 
 ```bash
 dewee packages approvals list --all
