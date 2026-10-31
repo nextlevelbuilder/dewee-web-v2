@@ -3,7 +3,7 @@
  * docs/09-security.md, docs/03-tools-system.md (policy engine, shell deny groups, credentialed CLI),
  * internal/crypto/aes.go (AES-256-GCM, "aes-gcm:" + base64(nonce + ciphertext + tag)),
  * docs/23-multi-tenant-architecture.md, docs/05-channels-messaging.md (pairing), the licence
- * runbook (DEWEE_LICENSE_REQUIRED, 5-minute heartbeat) and release notes v3.29 / v3.30 / v3.33.
+ * runbook (DEWEE_LICENSE_REQUIRED, 5-minute heartbeat) and the 3.29, 3.30 and 3.33 release notes.
  * Honest caveats (CORS and injection defaults) are stated on the page, not hidden.
  */
 import type { Bi } from "~/i18n/config";
@@ -47,7 +47,7 @@ export const SECURITY_PAGE: Bi<{
     meta: {
       title: "Security: shut at the door, opened on purpose",
       description:
-        "Five layers of defence in dewee: rate limits, prompt-injection checks, a tool policy engine, secret scrubbing, sandboxing, and AES-256-GCM for stored credentials.",
+        "Five defence layers keep people in control of AI agents: transport, input checks, tool policy, output scrubbing and isolation, plus approvals and AES-256-GCM.",
       crumb: "Security",
     },
     hero: {
@@ -271,13 +271,13 @@ export const SECURITY_PAGE: Bi<{
     meta: {
       title: "Bảo mật: đóng từ cửa, mở có chủ đích",
       description:
-        "Năm lớp phòng thủ của dewee: giới hạn tốc độ, kiểm tra prompt injection, policy engine cho tool, che secret, sandbox, và mã hoá AES-256-GCM cho credential lưu trữ.",
+        "Năm lớp phòng thủ giữ con người làm chủ AI agent: transport, kiểm tra đầu vào, chính sách tool, lọc đầu ra và cô lập, cùng phê duyệt và mã hoá AES-256-GCM.",
       crumb: "Bảo mật",
     },
     hero: {
       eyebrow: "Bảo mật",
       title: "Đóng từ cửa. Mở *có chủ đích*.",
-      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi mới khoá dần. dewee bắt đầu với cửa đóng: không token thì không kết nối, người lạ phải chờ duyệt, mạng nội bộ nằm ngoài tầm với. Sau đó bạn thu hẹp những gì mỗi agent được làm.",
+      lede: "Nhiều nền tảng agent mở toang mọi thứ rồi mới khoá dần. dewee bắt đầu với cửa đóng: không token thì không kết nối, người lạ phải chờ phê duyệt, mạng nội bộ nằm ngoài tầm với. Sau đó bạn thu hẹp những gì mỗi agent được làm.",
       note: "khoá trước, tính năng sau",
       primary: "Xem năm lớp phòng thủ",
       secondary: "Báo lỗ hổng",
@@ -326,7 +326,7 @@ export const SECURITY_PAGE: Bi<{
             { title: "Sáu mẫu injection", body: "Bảo bỏ qua chỉ dẫn, giả vai trò, thẻ system giả, chèn chỉ dẫn, null byte và thoát dấu phân cách." },
             { title: "Bạn chọn cách xử lý", body: "Ghi log, cảnh báo (mặc định), chặn, hoặc tắt hẳn." },
             { title: "Giới hạn độ dài", body: "Tin nhắn mặc định bị cắt ở 32.000 ký tự." },
-            { title: "Ghép cặp với người lạ", body: "Người gửi lạ cần mã ghép cặp được admin duyệt thì agent mới trả lời." },
+            { title: "Ghép nối với người lạ", body: "Người gửi lạ cần mã ghép nối được admin phê duyệt thì agent mới trả lời." },
           ],
         },
         {
@@ -340,8 +340,8 @@ export const SECURITY_PAGE: Bi<{
             { title: "Chặn SSRF", body: "Chặn localhost, hostname nội bộ, dải IP riêng và metadata của cloud, có DNS pinning qua cả redirect." },
             { title: "Chặn đường dẫn", body: "Không cho path traversal, và giấu thư mục của chính runtime khỏi agent." },
             { title: "CLI không qua shell", body: "File chạy có credential được xác minh, tham số kiểm tra theo từng file, môi trường được làm sạch, chuỗi lệnh shell bị từ chối." },
-            { title: "Người duyệt", body: "Lệnh thực thi và thao tác ghi file có thể chờ một người đồng ý." },
-            { title: "Quyền workflow đóng băng", body: "Workflow đã publish chạy theo đúng chính sách tool lúc được duyệt.", since: "3.30" },
+            { title: "Con người phê duyệt", body: "Lệnh thực thi và thao tác ghi file có thể chờ một người đồng ý." },
+            { title: "Quyền workflow đóng băng", body: "Workflow đã publish chạy theo đúng chính sách tool lúc được phê duyệt.", since: "3.30" },
           ],
         },
         {
@@ -390,7 +390,7 @@ export const SECURITY_PAGE: Bi<{
           items: [
             { title: "Trace cho mọi lần chạy", body: "Lời gọi model, tool và giao việc đều là span để bạn mở ra xem." },
             { title: "Sự kiện kiểm toán quản trị", body: "Các thao tác quản trị được ghi lại thành sự kiện kiểm toán." },
-            { title: "Duyệt ghép cặp", body: "Mỗi lần duyệt ghép cặp đều ghi lại ai là người duyệt." },
+            { title: "Phê duyệt ghép nối", body: "Mỗi lần phê duyệt ghép nối đều ghi lại ai là người phê duyệt." },
             { title: "Không âm thầm đổi tenant", body: "Tenant không xác định bị từ chối, thay vì rơi về tenant master.", since: "3.29" },
             { title: "Thao tác fleet có trace", body: "Thao tác quản trị fleet cũng ghi span vào trace.", since: "3.29" },
           ],
@@ -419,13 +419,13 @@ export const SECURITY_PAGE: Bi<{
       },
       topicLabel: "Tình huống",
       rows: [
-        { topic: "Người lạ nhắn cho bot", open: "Ai tìm thấy cũng chat được.", closed: "Họ nhận mã ghép cặp; admin duyệt trước đã." },
+        { topic: "Người lạ nhắn cho bot", open: "Ai tìm thấy cũng chat được.", closed: "Họ nhận mã ghép nối; admin phê duyệt trước đã." },
         { topic: "Máy chủ mới khởi động", open: "Cổng mở ngay từ giây đầu tiên.", closed: "Khi bật licence guard, chưa kích hoạt thì chưa mở cổng công khai nào." },
-        { topic: "Model viết một lệnh shell", open: "Gõ gì chạy nấy.", closed: "Bảy nhóm lệnh rủi ro bị cấm; lệnh thực thi có thể chờ duyệt." },
+        { topic: "Model viết một lệnh shell", open: "Gõ gì chạy nấy.", closed: "Bảy nhóm lệnh rủi ro bị cấm; lệnh thực thi có thể chờ phê duyệt." },
         { topic: "Tool tải một URL", open: "Mạng nội bộ chỉ cách một đường link.", closed: "Dải IP riêng, localhost và metadata của cloud bị chặn." },
         { topic: "Một key lọt vào câu trả lời", open: "Nó đi thẳng vào khung chat.", closed: "Nó bị che trước khi câu trả lời được gửi." },
         { topic: "Tin nhắn thoại WhatsApp tới", open: "Tự động chuyển thành chữ.", closed: "Chưa chuyển thành chữ cho tới khi bạn bật." },
-        { topic: "Agent được cấp thêm quyền", open: "Tự động hoá cũ âm thầm hưởng theo.", closed: "Workflow đã publish giữ nguyên chính sách lúc được duyệt." },
+        { topic: "Agent được cấp thêm quyền", open: "Tự động hoá cũ âm thầm hưởng theo.", closed: "Workflow đã publish giữ nguyên chính sách lúc được phê duyệt." },
       ],
       footnoteTitle: "Chú thích thật lòng",
       footnote:
@@ -463,7 +463,7 @@ export const SECURITY_PAGE: Bi<{
         },
         {
           q: "Điều gì ngăn agent chạy một lệnh nguy hiểm?",
-          a: "Policy engine quyết định mỗi agent được gọi tool nào. Bảy nhóm lệnh shell bị cấm mặc định, lệnh thực thi và thao tác ghi file có thể cần duyệt, và code có thể chạy trong Docker sandbox không có mạng.",
+          a: "Policy engine quyết định mỗi agent được gọi tool nào. Bảy nhóm lệnh shell bị cấm mặc định, lệnh thực thi và thao tác ghi file có thể cần phê duyệt, và code có thể chạy trong Docker sandbox không có mạng.",
         },
         {
           q: "dewee xử lý prompt injection thế nào?",

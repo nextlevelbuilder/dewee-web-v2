@@ -13,8 +13,8 @@ export const adsPerformanceWatch: UseCase = {
   team: { en: "Performance marketing", vi: "Quảng cáo" },
   title: { en: "Watch Google & Facebook ads like a hawk", vi: "Theo dõi & tối ưu quảng cáo Google, Facebook" },
   summary: {
-    en: "Monitor spend, CPA and ROAS, catch anomalies within the hour and suggest budget or creative changes for approval.",
-    vi: "Theo dõi chi tiêu, CPA, ROAS; bắt bất thường trong vòng một giờ và đề xuất điều chỉnh ngân sách hay creative để duyệt.",
+    en: "A monitor agent watches spend, CPA and ROAS, and an analyst agent suggests a cause and a fix. A person decides what to change.",
+    vi: "Agent giám sát theo dõi chi tiêu, CPA, ROAS, còn agent phân tích đề xuất nguyên nhân và cách xử lý. Người thật quyết định thay đổi gì.",
   },
   channels: ["telegram", "slack", "zalo"],
   detail: {

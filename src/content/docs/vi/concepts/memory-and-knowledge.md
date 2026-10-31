@@ -3,7 +3,7 @@ title: Bộ nhớ và kho tri thức
 description: Cách agent trong dewee ghi nhớ qua nhiều session, cách bộ nhớ được tìm kiếm và hợp nhất, và cách kho tri thức cùng knowledge graph sắp xếp những gì agent biết.
 section: concepts
 order: 6
-updated: 2026-10-12
+updated: 2026-10-31
 ---
 
 Agent trong dewee ghi nhớ theo nhiều lớp: cuộc hội thoại đang diễn ra, bản tóm tắt các session trước, và một knowledge graph về những người và sự vật mà agent đã biết. Kho tri thức nằm phía trên, liên kết các tài liệu với nhau và tìm kiếm trên mọi lớp cùng lúc. Tất cả đều gói gọn trong tenant và agent, và thường là theo từng người dùng.
@@ -29,6 +29,8 @@ File bộ nhớ được chia thành các đoạn tối đa 1.000 ký tự và �
 | `memory_search` | Tìm trong file bộ nhớ và bản tóm tắt các session trước, trả về đoạn trích kèm đường dẫn và số dòng |
 | `memory_get` | Chỉ đọc những dòng cần thiết trong một file bộ nhớ |
 | `memory_expand` | Nạp toàn bộ bản tóm tắt của một session trước theo ID |
+
+System prompt chỉ hướng dẫn agent dùng những tool bộ nhớ mà nó thực sự gọi được. Nếu một tool profile hoặc quy tắc deny loại bỏ `memory_search`, phần hướng dẫn gợi nhớ bộ nhớ sẽ bị bỏ qua, còn `memory_get` hoặc `memory_expand` chỉ được nhắc tới khi chúng cũng được cho phép.
 
 Agent cũng nhận được bộ nhớ liên quan mà không cần hỏi. Trước mỗi lượt, dewee đối chiếu tin nhắn của người dùng với bản tóm tắt các session trước, rồi thêm tối đa 5 phần tóm lược có điểm từ 0,3 trở lên vào system prompt, trong giới hạn khoảng 200 token. Bạn điều chỉnh bằng `auto_inject_enabled`, `auto_inject_threshold` và `auto_inject_max_tokens`. Khi cơ chế chọn lọc truy hồi (retrieval admission) đang bật, tài liệu trong kho tri thức và thực thể trong graph cũng được cân nhắc cho cùng các vị trí đó, kể cả ở lượt không có session cũ nào khớp.
 
@@ -56,7 +58,7 @@ Bộ nhớ kênh thụ động cho phép agent học từ những cuộc trò ch
 | `allowed_types` | people, projects, decisions, todos, preferences, events |
 | Phạm vi | Chỉ nhóm chat |
 
-Tin nhắn được che thông tin nhạy cảm trước khi trích xuất: secret, token, chuỗi kết nối, số giống số thẻ thanh toán, địa chỉ email, số điện thoại, cùng những người dùng hoặc mẫu mà bạn loại trừ. Các mục được duyệt trở thành bản tóm tắt session và đi vào knowledge graph giống như bộ nhớ từ session.
+Tin nhắn được che thông tin nhạy cảm trước khi trích xuất: secret, token, chuỗi kết nối, số giống số thẻ thanh toán, địa chỉ email, số điện thoại, cùng những người dùng hoặc mẫu mà bạn loại trừ. Các mục được phê duyệt trở thành bản tóm tắt session và đi vào knowledge graph giống như bộ nhớ từ session.
 
 ## Kho tri thức
 
@@ -84,7 +86,7 @@ dewee vault link create --from <doc-id> --to <doc-id>
 
 ## Knowledge graph
 
-Graph chứa các thực thể như người, tổ chức, dự án, công việc và địa điểm, cùng quan hệ giữa chúng. Mỗi dữ kiện có một khoảng hiệu lực (`valid_from`, `valid_until`), nên dữ kiện lỗi thời được đóng lại chứ không bị xoá. Mỗi thực thể có tối đa một phiên bản hiện hành: khi thay thế, phiên bản cũ được đóng lại và giữ làm lịch sử cho các câu hỏi về một thời điểm trong quá khứ. Agent truy vấn graph bằng `knowledge_graph_search`, phù hợp với câu hỏi nhiều bước như ai đang làm dự án nào.
+Graph chứa các thực thể như người, tổ chức, dự án, công việc và địa điểm, cùng quan hệ giữa chúng. Mỗi dữ kiện có một khoảng hiệu lực (`valid_from`, `valid_until`), nên dữ kiện lỗi thời được đóng lại chứ không bị xoá. Mỗi thực thể có tối đa một phiên bản hiện hành; khi cập nhật, phiên bản đó được sửa trực tiếp. Agent truy vấn graph bằng `knowledge_graph_search`, phù hợp với câu hỏi nhiều bước như ai đang làm dự án nào.
 
 ```bash
 dewee kg entities --agent <agent-id> --query "Acme"

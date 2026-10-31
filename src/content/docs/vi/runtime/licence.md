@@ -16,7 +16,7 @@ Việc kiểm tra license trên runtime là tuỳ chọn và mặc định tắt
 ## Các bước tóm tắt
 
 1. **Bạn nhận key.** Sau khi đơn hàng On-Premises được thanh toán, chúng tôi cấp license hằng năm và gửi key cho bạn. Key chỉ hiện một lần, hãy cất nó trong trình quản lý secret của bạn.
-2. **Chủ workspace gắn key vào workspace.** Trong console, mở **Billing**, rồi **License binding**, và nhập key. Việc gắn chỉ ghép đơn hàng với workspace; nó không dùng tới một lượt kích hoạt.
+2. **Chủ workspace gắn key vào workspace.** Trong console, mở **Thanh toán**, rồi **Gắn giấy phép**, và nhập key. Việc gắn chỉ ghép đơn hàng với workspace; nó không dùng tới một lượt kích hoạt.
 3. **Runtime kích hoạt.** Runtime gửi key một lần tới dịch vụ license tại `app.dewee.sh`, cùng với workspace và ID instance của nó. Từ đó trở đi, runtime dùng một credential riêng và không bao giờ gửi lại key gốc.
 4. **Runtime báo danh định kỳ.** Cứ năm phút runtime gửi một heartbeat. Runtime chỉ nhận việc khi license còn hiệu lực.
 
@@ -46,7 +46,7 @@ Khi license là bắt buộc và chưa có kích hoạt nào, runtime mở một
 docker compose -f docker-compose.yml -f docker-compose.selfhosted.yml -f docker-compose.licensed.yml up -d
 ```
 
-Mở `http://127.0.0.1:18791` rồi nhập license key và workspace ID; trang **License binding** trong console hiển thị ID này. Khi dịch vụ license xác nhận kích hoạt, trang sẽ đóng, `/readyz` chuyển sang sẵn sàng và runtime khởi động các worker.
+Mở `http://127.0.0.1:18791` rồi nhập license key và workspace ID; trang **Gắn giấy phép** trong console hiển thị ID này. Khi dịch vụ license xác nhận kích hoạt, trang sẽ đóng, `/readyz` chuyển sang sẵn sàng và runtime khởi động các worker.
 
 ## Kích hoạt tự động
 
@@ -70,4 +70,4 @@ Runtime báo danh mỗi năm phút bằng ID kích hoạt và credential của n
 
 ## License hiển thị ở đâu trong console
 
-**License binding**, nằm dưới **Billing**, cho biết workspace đã gắn license hay chưa, trạng thái onboarding và runtime tenant đã kết nối chưa. Kết nối và công suất của runtime hiện ở [Sức khoẻ runtime](/docs/console/monitoring). Để gia hạn, thêm runtime hoặc đổi ID instance, hãy dùng [Hỗ trợ và thanh toán](/docs/console/support-and-billing) hoặc [liên hệ chúng tôi](/contact).
+**Gắn giấy phép**, nằm dưới **Thanh toán**, cho biết workspace đã gắn license hay chưa, trạng thái onboarding và runtime tenant đã kết nối chưa. Kết nối và công suất của runtime hiện ở [Tình trạng runtime](/docs/console/monitoring). Để gia hạn, thêm runtime hoặc đổi ID instance, hãy dùng [Hỗ trợ và thanh toán](/docs/console/support-and-billing) hoặc [liên hệ chúng tôi](/contact).

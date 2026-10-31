@@ -3,7 +3,7 @@ title: Memory and knowledge vault
 description: How dewee agents remember across sessions, how memory is searched and consolidated, and how the knowledge vault and graph organise what agents know.
 section: concepts
 order: 6
-updated: 2026-10-12
+updated: 2026-10-31
 ---
 
 A dewee agent remembers in layers: the conversation in front of it, summaries of past sessions, and a knowledge graph of the people and things it has learned about. The knowledge vault sits on top, linking documents together and searching every layer at once. All of it is scoped to the tenant and the agent, and usually to the user as well.
@@ -29,6 +29,8 @@ Memory files are split into chunks of up to 1,000 characters and indexed for ful
 | `memory_search` | Searches memory files and past session summaries, returning snippets with their path and lines |
 | `memory_get` | Reads only the lines it needs from a memory file |
 | `memory_expand` | Loads the full summary of a past session by ID |
+
+The system prompt only tells the agent to use the memory tools it can actually call. If a tool profile or deny rule removes `memory_search`, the memory recall instructions are left out, and `memory_get` or `memory_expand` are only mentioned when they are allowed too.
 
 Agents also get relevant memory without asking. Before each turn, dewee checks the user's message against past session summaries and adds up to 5 abstracts that score at least 0.3 to the system prompt, within about 200 tokens. Tune it with `auto_inject_enabled`, `auto_inject_threshold` and `auto_inject_max_tokens`. When retrieval admission is active, knowledge vault documents and graph entities compete for the same slots, even on a turn where no past session matches.
 
@@ -84,7 +86,7 @@ dewee vault link create --from <doc-id> --to <doc-id>
 
 ## The knowledge graph
 
-The graph holds entities such as people, organisations, projects, tasks and locations, and the relations between them. Each fact carries a validity window (`valid_from`, `valid_until`), so an outdated fact is closed instead of deleted. Each entity has at most one current version: replacing it closes the old version, which stays as history for point-in-time questions. Agents query it with `knowledge_graph_search`, which suits multi-hop questions such as who works on which project.
+The graph holds entities such as people, organisations, projects, tasks and locations, and the relations between them. Each fact carries a validity window (`valid_from`, `valid_until`), so an outdated fact is closed instead of deleted. Each entity has at most one current version; an update changes that version in place. Agents query it with `knowledge_graph_search`, which suits multi-hop questions such as who works on which project.
 
 ```bash
 dewee kg entities --agent <agent-id> --query "Acme"

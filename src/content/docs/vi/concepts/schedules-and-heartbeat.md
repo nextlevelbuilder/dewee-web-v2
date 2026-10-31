@@ -12,6 +12,10 @@ Agent trong dewee không nhất thiết phải chờ có người nhắn tin. M�
 
 Mỗi cron job thuộc về một agent, gồm một lịch và một payload. Bộ lập lịch kiểm tra job đến hạn mỗi giây.
 
+Bạn chỉ có thể đặt lịch trên agent mà bạn được dùng: agent mặc định, agent do bạn sở hữu và agent được chia sẻ với bạn. Admin và chủ sở hữu gateway có thể đặt lịch trên mọi agent. Chỉ định một agent khác sẽ bị từ chối với lỗi `UNAUTHORIZED` và không có gì được lưu. Kiểm tra này cũng áp dụng khi bạn sửa, chạy hoặc bật lại job, nên một job nằm trên agent bạn không còn quyền dùng chỉ có thể bị tắt, xoá hoặc chuyển sang agent bạn được dùng. Bỏ trống agent để job chạy trên agent mặc định.
+
+Chỉ chủ sở hữu job (thành viên đã tạo job) hoặc owner/admin của workspace mới có thể sửa, chạy, tạm dừng, tiếp tục hoặc xoá job. Người khác sẽ nhận lỗi `403` và job giữ nguyên; trang Schedules ẩn các thao tác này trên những job bạn không được thay đổi. Mọi thành viên vẫn xem được danh sách job và lịch sử chạy. Job tạo từ chat hoặc dashboard được lưu dưới một user id khác, nên trên workspace console chỉ owner hoặc admin mới thay đổi được.
+
 | Loại | Chạy | Giá trị `--schedule` |
 |---|---|---|
 | `at` | Một lần, tại một thời điểm | `at:2026-10-01T09:00:00+07:00` |
@@ -86,7 +90,7 @@ Heartbeat là một lần kiểm tra định kỳ. Mỗi agent có thể có m�
 
 Gateway kiểm tra heartbeat đến hạn mỗi 30 giây. Một lượt bị bỏ qua khi nằm ngoài giờ hoạt động, khi agent đang bận việc khác, hoặc khi `HEARTBEAT.md` trống hay không tồn tại. Agent đang bận sẽ được thử lại ở lần kiểm tra kế tiếp. Khi heartbeat được bật lần đầu, thời điểm bắt đầu được lùi thêm tối đa 10% chu kỳ, để các agent có cùng chu kỳ không chạy đồng loạt.
 
-Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Test** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
+Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Chạy thử** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
 
 ```bash
 dewee heartbeat get <agent-id>
@@ -101,7 +105,7 @@ dewee heartbeat toggle <agent-id> --enabled=false
 
 | | Heartbeat | Cron job |
 |---|---|---|
-| Phù hợp cho | Kiểm tra định kỳ mà phần lớn thời gian không có gì để báo | Mọi tác vụ hay workflow chạy theo lịch |
+| Phù hợp cho | Kiểm tra định kỳ mà phần lớn thời gian không có gì để báo | Mọi task hay workflow chạy theo lịch |
 | Mỗi agent | Một | Nhiều |
 | Lịch | Chu kỳ cố định, tối thiểu 5 phút | `at`, `every` hoặc biểu thức cron |
 | Hướng dẫn | `HEARTBEAT.md` | Tin nhắn lưu trong job |

@@ -10,7 +10,7 @@ The runtime's API covers what agents do and how they are configured: agents, ses
 
 ## Base URL and reference
 
-On a runtime you operate, the base URL is the address of your gateway, for example `https://dewee.example.com`. For a workspace in the console, the **API keys** page shows the base URL together with ready-to-copy examples in cURL, JavaScript, Python and WebSocket.
+On a runtime you operate, the base URL is the address of your gateway, for example `https://dewee.example.com`. For a workspace in the console, the **Docs** tab of the **API keys & docs** page shows the base URL together with ready-to-copy examples in cURL, JavaScript, Python and WebSocket.
 
 Every gateway also publishes its own reference:
 
@@ -27,7 +27,7 @@ The reference on your gateway always matches the version you run, so prefer it o
 | WebSocket RPC | `/ws` | Live chat with streaming, agent and team events, approvals |
 | Chat completions | `POST /v1/chat/completions` | Talking to an agent from any OpenAI-compatible client |
 | Responses | `POST /v1/responses` | The same, for clients that use the OpenAI Responses format |
-| Public MCP server | `POST /mcp` | Letting Claude Code, Cursor, VS Code or Gemini CLI use a workspace's knowledge and workflows |
+| Public MCP server | `POST /mcp/server` | Letting Claude Code, Cursor, VS Code or Gemini CLI use a workspace's knowledge and workflows |
 | Webhooks | `POST /v1/webhooks/llm`, `POST /v1/webhooks/message` | Letting another system trigger an agent or send a message on a channel |
 | Health | `/health`, `/livez`, `/readyz` | Load balancer and orchestrator checks; no authentication |
 
@@ -56,7 +56,7 @@ The WebSocket at `/ws` is what the console uses for live chat. The first frame m
 {"type": "req", "id": "1", "method": "connect", "params": {"token": "<api-key>", "locale": "en"}}
 ```
 
-The reply tells you your role and tenant. After that, each request is a `req` frame with a `method` and `params`, answered by a `res` frame with the same `id`. The server pushes `event` frames for streamed replies, tool calls, team tasks, approvals and trace updates. The protocol version is 3; `/health` reports it too.
+The reply tells you your role and tenant. Sending `connect` again on the same socket replaces the earlier login entirely, and a rejected `connect` logs the socket out. After that, each request is a `req` frame with a `method` and `params`, answered by a `res` frame with the same `id`. The server pushes `event` frames for streamed replies, tool calls, team tasks, approvals and trace updates. The protocol version is 3; `/health` reports it too.
 
 ## Errors and limits
 

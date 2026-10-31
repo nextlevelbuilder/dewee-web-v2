@@ -32,6 +32,7 @@ export const PROVIDERS: Integration[] = [
   { id: "mistral", brand: "mistral", name: "Mistral" },
   { id: "xai", brand: "xai", name: "xAI" },
   { id: "openrouter", brand: "openrouter", name: "OpenRouter" },
+  { id: "atlascloud", brand: "atlascloud", name: "Atlas Cloud" },
   { id: "groq", brand: "groq", name: "Groq" },
   { id: "minimax", brand: "minimax", name: "MiniMax" },
   { id: "cohere", brand: "cohere", name: "Cohere" },
@@ -51,7 +52,7 @@ export type ProviderGroupId = "api" | "subscription" | "local";
 export const PROVIDER_GROUPS: { id: ProviderGroupId; ids: string[] }[] = [
   {
     id: "api",
-    ids: ["anthropic", "openai", "gemini", "vertex", "deepseek", "qwen", "mistral", "xai", "openrouter", "groq", "minimax", "cohere", "perplexity", "byteplus", "workersai", "vercel"],
+    ids: ["anthropic", "openai", "gemini", "vertex", "deepseek", "qwen", "mistral", "xai", "openrouter", "atlascloud", "groq", "minimax", "cohere", "perplexity", "byteplus", "workersai", "vercel"],
   },
   { id: "subscription", ids: ["codex", "claude-cli", "opencode", "cline"] },
   { id: "local", ids: ["ollama"] },
@@ -107,7 +108,7 @@ export const CHANNEL_DETAILS: Record<string, ChannelDetail> = {
     streaming: false,
     voice: false,
     media: true,
-    note: { en: "Pairing is on by default. 2,000 characters a message, images up to 5 MB.", vi: "Mặc định bật ghép cặp. 2.000 ký tự mỗi tin, ảnh tối đa 5 MB." },
+    note: { en: "Pairing is on by default. 2,000 characters a message, images up to 5 MB.", vi: "Mặc định bật ghép nối. 2.000 ký tự mỗi tin, ảnh tối đa 5 MB." },
   },
   "zalo-personal": {
     connect: { en: "QR scan, unofficial protocol", vi: "Quét QR, giao thức không chính thức" },
@@ -145,7 +146,7 @@ export const CHANNEL_DETAILS: Record<string, ChannelDetail> = {
     note: { en: "Mentioned in a thread, it reads the last 25 messages first.", vi: "Được nhắc trong thread, agent đọc 25 tin gần nhất trước." },
   },
   whatsapp: {
-    connect: { en: "QR pairing, direct connection", vi: "Ghép cặp bằng QR, kết nối trực tiếp" },
+    connect: { en: "QR pairing, direct connection", vi: "Ghép nối bằng QR, kết nối trực tiếp" },
     chats: { en: "DMs and groups", vi: "Tin riêng và nhóm" },
     streaming: false,
     voice: "opt-in",

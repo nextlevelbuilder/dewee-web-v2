@@ -10,7 +10,7 @@ API của runtime bao quát những gì agent làm và cách cấu hình chúng:
 
 ## Base URL và tài liệu tham chiếu
 
-Với runtime On-Premises mà bạn vận hành, base URL là địa chỉ gateway của bạn, ví dụ `https://dewee.example.com`. Trong console, trang **API key** hiển thị base URL cùng các ví dụ sẵn để sao chép bằng cURL, JavaScript, Python và WebSocket.
+Với runtime On-Premises mà bạn vận hành, base URL là địa chỉ gateway của bạn, ví dụ `https://dewee.example.com`. Trong console, tab **Tài liệu** của trang **API key & tài liệu** hiển thị base URL cùng các ví dụ sẵn để sao chép bằng cURL, JavaScript, Python và WebSocket.
 
 Mỗi gateway cũng tự xuất bản tài liệu tham chiếu của mình:
 
@@ -27,7 +27,7 @@ Tài liệu trên gateway luôn khớp đúng phiên bản bạn đang chạy, n
 | WebSocket RPC | `/ws` | Chat trực tiếp có streaming, sự kiện của agent và nhóm agent, phê duyệt |
 | Chat completions | `POST /v1/chat/completions` | Trò chuyện với agent từ bất kỳ client nào tương thích OpenAI |
 | Responses | `POST /v1/responses` | Tương tự, cho client dùng định dạng OpenAI Responses |
-| MCP server công khai | `POST /mcp` | Cho Claude Code, Cursor, VS Code hoặc Gemini CLI dùng tri thức và workflow của workspace |
+| MCP server công khai | `POST /mcp/server` | Cho Claude Code, Cursor, VS Code hoặc Gemini CLI dùng tri thức và workflow của workspace |
 | Webhook | `POST /v1/webhooks/llm`, `POST /v1/webhooks/message` | Cho hệ thống khác kích hoạt agent hoặc gửi tin nhắn qua một channel |
 | Kiểm tra sức khoẻ | `/health`, `/livez`, `/readyz` | Cho load balancer và orchestrator; không cần xác thực |
 
@@ -56,7 +56,7 @@ WebSocket tại `/ws` là thứ console dùng cho chat trực tiếp. Frame đ�
 {"type": "req", "id": "1", "method": "connect", "params": {"token": "<api-key>", "locale": "vi"}}
 ```
 
-Phản hồi cho biết vai trò và tenant của bạn. Sau đó, mỗi request là một frame `req` có `method` và `params`, được trả lời bằng frame `res` có cùng `id`. Máy chủ đẩy các frame `event` cho câu trả lời dạng stream, lời gọi tool, task của nhóm agent, yêu cầu phê duyệt và cập nhật trace. Phiên bản protocol là 3; `/health` cũng báo con số này.
+Phản hồi cho biết vai trò và tenant của bạn. Gửi `connect` lần nữa trên cùng socket sẽ thay hoàn toàn phiên đăng nhập trước, còn một `connect` bị từ chối sẽ đăng xuất socket. Sau đó, mỗi request là một frame `req` có `method` và `params`, được trả lời bằng frame `res` có cùng `id`. Máy chủ đẩy các frame `event` cho câu trả lời dạng stream, lời gọi tool, task của nhóm agent, yêu cầu phê duyệt và cập nhật trace. Phiên bản protocol là 3; `/health` cũng báo con số này.
 
 ## Lỗi và giới hạn
 

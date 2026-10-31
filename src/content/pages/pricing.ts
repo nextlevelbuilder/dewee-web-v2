@@ -42,7 +42,7 @@ export const PRICING: Bi<PricingPage> = {
     hero: {
       eyebrow: "Pricing & deployment",
       title: "Pick where dewee *lives*.",
-      lede: "Your own machine, our shared cloud, your own runtime on TOSE.sh, or your hardware set up by us. Same product, same care. Every price is on this page, in US dollars.",
+      lede: "Your own machine, our shared cloud, your own runtime on TOSE.sh, or your hardware set up by us. Same multiplayer agent platform, same care. Every price is on this page, in US dollars.",
       note: "prices in ink, not pencil",
       primary: "Compare side by side",
       secondary: "Talk to us",
@@ -136,7 +136,7 @@ export const PRICING: Bi<PricingPage> = {
     hero: {
       eyebrow: "Bảng giá & triển khai",
       title: "Dữ liệu ở lại *công ty bạn*.",
-      lede: "Tại Việt Nam, dewee luôn chạy trên máy của chính bạn: tự cài đặt miễn phí, hoặc để chúng tôi triển khai On-Premises trên VPS hay Mac mini của công ty. Dữ liệu không rời khỏi công ty.",
+      lede: "Tại Việt Nam, dewee luôn chạy trên máy của chính bạn: tự cài đặt miễn phí, hoặc để chúng tôi triển khai On-Premises trên VPS hay Mac mini của công ty. Dữ liệu dewee lưu nằm ngay trên hạ tầng của công ty.",
       note: "giá viết bằng mực, không phải bút chì",
       primary: "So sánh hai cách",
       secondary: "Nhận báo giá On-Premises",
@@ -205,7 +205,7 @@ export const PRICING: Bi<PricingPage> = {
         { q: "Tại Việt Nam có những cách triển khai nào?", a: "Hai cách: Tự cài đặt và On-Premises. Cả hai đều giữ dữ liệu của doanh nghiệp trên máy của bạn, nên hợp đồng, tin nhắn khách hàng hay tài liệu nội bộ không phải đi đâu cả. Bạn tự cài dewee miễn phí, hoặc để chúng tôi triển khai trên VPS hay Mac mini của công ty." },
         { q: "Giá On-Premises gồm những gì?", a: "Cài đặt dewee trên VPS hoặc Mac mini của bạn, 5 quy trình tuỳ chỉnh dựng cùng đội ngũ bạn, license $500 cho năm đầu và một năm bảo trì, cập nhật. Giá từ $5K; báo giá cụ thể tuỳ khối lượng công việc." },
         { q: "Cần chuẩn bị máy móc gì?", a: "Với Tự cài đặt: một máy 64-bit chạy macOS 13 trở lên hoặc Linux (glibc), tối thiểu 2 GB RAM. Với On-Premises: một VPS hoặc một Mac mini do công ty bạn quản lý, cấu hình cụ thể được thống nhất cùng bạn khi báo giá." },
-        { q: "Giá đã gồm chi phí mô hình AI chưa?", a: "Chưa. Bạn dùng khoá API của chính mình với Anthropic, OpenAI, Gemini hay bất kỳ nhà cung cấp nào trong hơn 20 nhà cung cấp được hỗ trợ, và thanh toán trực tiếp cho họ, không qua trung gian." },
+        { q: "Giá đã gồm chi phí mô hình AI chưa?", a: "Chưa. Bạn dùng API key của chính mình với Anthropic, OpenAI, Gemini hay bất kỳ nhà cung cấp nào trong hơn 20 nhà cung cấp được hỗ trợ, và thanh toán trực tiếp cho họ, không qua trung gian." },
         { q: "Có cần license key không?", a: "Với On-Premises thì có: license key kích hoạt runtime trên máy của bạn, sau đó cứ 5 phút runtime báo về máy chủ license của chúng tôi bằng mã kích hoạt và runtime token, không gửi license key gốc và không gửi dữ liệu của bạn. Với Tự cài đặt, bạn chỉ cần license khi muốn kết nối kênh chat, và dán key vào bảng điều khiển." },
         { q: "Sau năm đầu thì sao?", a: "License được gia hạn hằng năm với giá $500 mỗi năm. Với On-Premises, việc bảo trì từ năm thứ hai được thoả thuận trong hợp đồng." },
         { q: "Thanh toán và hoàn tiền thế nào?", a: "Với On-Premises, lịch thanh toán và điều kiện hoàn tiền được ghi rõ trong báo giá và hợp đồng, trước khi bắt đầu triển khai." },
