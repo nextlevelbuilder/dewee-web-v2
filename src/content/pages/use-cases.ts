@@ -88,9 +88,9 @@ export const USE_CASES_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: "Ứng dụng AI agent cho doanh nghiệp",
+      title: "Ứng dụng AI agent theo từng đội ngũ",
       description:
-        "Mười bốn cách doanh nghiệp giao việc cho AI agent dewee: chăm sóc khách hàng, bán hàng, marketing, nhân sự, nghiên cứu và kỹ thuật, kèm quy trình và bước duyệt.",
+        "Mười bốn cách doanh nghiệp giao việc cho AI agent dewee: chăm sóc khách hàng, bán hàng, marketing, nhân sự, nghiên cứu và kỹ thuật, kèm quy trình và phê duyệt.",
     },
     hero: {
       eyebrow: "Ứng dụng",
@@ -106,7 +106,7 @@ export const USE_CASES_PAGE: Bi<{
       status: "Đang hiện {shown} trên {total} ứng dụng",
       invite: {
         title: "Mục thứ mười lăm dành cho bạn",
-        body: "Đội nào cũng có một việc rất riêng. Kể chúng tôi nghe việc của bạn, chúng tôi cùng bạn phác ra agent, công cụ và bước duyệt.",
+        body: "Đội nào cũng có một việc rất riêng. Kể chúng tôi nghe việc của bạn, chúng tôi cùng bạn phác ra agent, công cụ và bước phê duyệt.",
         label: "Kể về việc của bạn",
       },
     },
@@ -241,7 +241,7 @@ export const USE_CASE_DETAIL_UI: Bi<{
     related: { eyebrow: "Đọc tiếp", title: "Tiết *tiếp theo*." },
     cta: {
       title: "Muốn việc này có trong *thời khoá biểu* của đội bạn?",
-      body: "Kể chúng tôi nghe đội bạn đang làm việc thế nào. Chúng tôi sẽ thiết kế agent, công cụ và bước duyệt theo đúng cách đó, rồi cùng bạn triển khai.",
+      body: "Kể chúng tôi nghe đội bạn đang làm việc thế nào. Chúng tôi sẽ thiết kế agent, công cụ và bước phê duyệt theo đúng cách đó, rồi cùng bạn triển khai.",
       primary: "Dựng việc này cùng chúng tôi",
       secondary: "Hỏi dewee ngay",
       note: "gói On-Premises đã gồm năm quy trình tuỳ chỉnh",

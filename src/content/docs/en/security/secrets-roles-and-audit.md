@@ -3,7 +3,7 @@ title: Secrets, roles and audit
 description: How dewee stores credentials, who can do what in the console and the runtime, how API keys and chat senders get access, and where to find the audit trail.
 section: security
 order: 2
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 The [Security overview](/docs/security/overview) covers the checks around agents. This page covers the people and the credentials: what is stored and how, which roles exist, and what leaves a record you can review later.
@@ -42,7 +42,7 @@ The runtime has its own four roles, which decide which API and WebSocket methods
 - **Operator**: read and write access for day-to-day work, without admin operations.
 - **Viewer**: read-only access.
 
-Tenant members are mapped onto these roles: owners and admins become admin, operators and members become operator, and viewers stay viewer. Access to an individual agent is checked separately: the agent must be the default agent, owned by the caller, or shared with them. A predefined agent also counts when an enabled channel lists the caller in its allowed senders. The check covers chatting over the WebSocket and the HTTP chat API, scheduling the agent, and reading or editing it. Editing an agent's context files needs ownership or an admin or operator share, because a user share only allows chat. Tenant admins skip the check when chatting and on the agent's WebSocket methods, and so does an API key with no owner, which acts for the whole tenant. Chat in the app follows the same rule, with one exception: every workspace member can chat with the workspace's Super Agent, because it is where a chat starts when no agent is picked.
+Tenant members are mapped onto these roles: owners and admins become admin, operators and members become operator, and viewers stay viewer. Access to an individual agent is checked separately: the agent must be the default agent, owned by the caller, or shared with them. A predefined agent also counts when an enabled channel lists the caller in its allowed senders. The check covers chatting over the WebSocket and the HTTP chat API, scheduling the agent, and reading or editing it. Shares come in four levels: use, edit, manage and admin. Editing an agent's context files needs ownership or an edit, manage or admin share, because a use share only allows chat. Scheduled jobs are not re-checked when they fire, so disable a job when you revoke the share it relied on. Tenant admins skip the check when chatting and on the agent's WebSocket methods, and so does an API key with no owner, which acts for the whole tenant. Chat in the app follows the same rule, with one exception: every workspace member can chat with the workspace's Super Agent, because it is where a chat starts when no agent is picked. What each share level unlocks, and the matching grants on skills, MCP servers, packages, providers and hooks, is covered in [Access grants](/docs/security/access-grants).
 
 ## API keys
 
@@ -52,12 +52,13 @@ Keys can expire or be revoked at any time. A revoked key is refused from the nex
 
 ## Admitting chat-app senders
 
-On chat apps, direct messages default to pairing. When someone new writes to an agent, they get an 8-character code that is valid for 60 minutes, and nothing reaches the agent until an admin approves the code, in the console's **Pairing inbox** or with `dewee pairing approve`. Each account can have at most three codes waiting. You can switch a channel to an allowlist, open it, or disable direct messages, and in groups only designated writers can change files or reset the conversation. See [Channels, pairing and contacts](/docs/console/channels-and-contacts).
+On chat apps, direct messages default to pairing. When someone new writes to an agent, they get an 8-character code that is valid for 60 minutes, and nothing reaches the agent until an admin approves the code, in the console's **Pairing inbox** or with `dewee pairing approve`. A workspace admin can only approve or deny codes from their own workspace; the gateway owner can decide codes from any workspace. Each account can have at most three codes waiting. You can switch a channel to an allowlist, open it, or disable direct messages, and in groups only designated writers can change files or reset the conversation. See [Channels, pairing and contacts](/docs/console/channels-and-contacts).
 
 ## Audit trail
 
 - **Activity log.** Changes are recorded with the actor, the entity and the action. Read them on the console's **Activity** page, with `dewee activity list`, or through `GET /v1/activity`.
-- **API key audit.** The console's **API keys** page includes an audit view for your keys.
+- **Access activity.** Each skill, MCP server, package, provider, hook and agent has a feed of grant changes, run-time denials and use. See [Access grants](/docs/security/access-grants#activity).
+- **API key audit.** The console's **API keys & docs** page has an **Audit** tab for your keys.
 - **Security events.** Detected or blocked prompt injections and truncated messages are logged as `security.injection_detected`, `security.injection_blocked` and `security.message_truncated`.
 - **Traces.** Every agent run records its model calls and tool calls, so you can see what an agent did and why. See [Tracing](/docs/concepts/tracing).
 

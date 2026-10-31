@@ -12,8 +12,8 @@ export const retailPodDesign: UseCase = {
   team: { en: "Retail & e-commerce", vi: "Bán lẻ & TMĐT" },
   title: { en: "Research, design and ship print-on-demand", vi: "Nghiên cứu, thiết kế & sản xuất POD" },
   summary: {
-    en: "Find trending niches, generate on-brand designs, prepare mockups and listings, and hand them to production.",
-    vi: "Tìm ngách đang lên, tạo thiết kế đúng thương hiệu, dựng mockup và mô tả sản phẩm, rồi chuyển cho sản xuất.",
+    en: "A trend agent, a design agent and a listing agent hand work along from niche to mockup. A person approves every idea and listing before it goes live.",
+    vi: "Agent xu hướng, agent thiết kế và agent mô tả sản phẩm chuyền tay nhau từ ngách đến mockup. Người thật duyệt từng ý tưởng và từng sản phẩm trước khi lên kệ.",
   },
   channels: ["slack", "telegram"],
   detail: {

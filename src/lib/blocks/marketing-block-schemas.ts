@@ -188,7 +188,7 @@ export const MARKETING_BLOCKS: BlockDef[] = [
     render: "section",
     description: "A ruler timeline (horizontal on wide screens); the last entry pulses as 'now'.",
     schema: timeline,
-    example: { items: [{ date: "Feb 2026", text: "GoClaw's first commit" }, { date: "Sep 2026", text: "dewee v3.33" }], label: "Milestones" },
+    example: { items: [{ date: "Feb 2026", text: "GoClaw's first commit" }, { date: "Oct 2026", text: "dewee v3.40" }], label: "Milestones" },
   },
   {
     type: "ProofStrip",
@@ -196,7 +196,8 @@ export const MARKETING_BLOCKS: BlockDef[] = [
     render: "section",
     description: "A ruler of verified numbers. Never estimate: every value needs a source.",
     schema: proofStrip,
-    example: { items: [{ value: "637,225", label: "lines of Go" }, { value: "8,900+", label: "automated tests" }], label: "dewee in numbers" },
+    // Example values only; the site itself reads its numbers from src/content/facts.ts.
+    example: { items: [{ value: "900,000+", label: "lines of Go" }, { value: "13,000+", label: "Go tests" }], label: "dewee in numbers" },
   },
   {
     type: "TocIndex",

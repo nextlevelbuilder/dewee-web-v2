@@ -12,9 +12,9 @@ export const FEATURES_PAGE: Bi<{
     eyebrow: string;
     title: string;
     lede: string;
-    monthLabel: string;
     weekdays: string[];
-    calendarLabel: string;
+    /** Accessible name of the calendar; `month` is the newest release's month, already formatted. */
+    calendarLabel: (month: string) => string;
     releasedOn: string;
     changelog: string;
     note: string;
@@ -26,26 +26,25 @@ export const FEATURES_PAGE: Bi<{
 }> = {
   en: {
     meta: {
-      title: "Features: everything dewee can do, newest first",
+      title: "Features: how people and agents work as one team",
       description:
-        "Six stable releases in September 2026, then the full catalogue: channels, agent teams, memory, MCP, workflows, traces, security, tenancy, voice and deployment.",
+        "Agents that work in your chats, hand work to each other, connect your tools and wait for a person where it matters. Then the full catalogue and releases.",
       crumb: "Features",
     },
     hero: {
       eyebrow: "Features",
-      title: "Everything dewee can do, *newest* first.",
-      lede: "Six stable releases shipped in September alone. Start with what is new this month, then browse the whole catalogue, one area at a time.",
-      note: "six releases in one month. we were busy.",
-      primary: "What's new this month",
+      title: "People and agents, *working as one team*.",
+      lede: "Agents join the chats your team already uses, hand work to each other, plug into your tools and stop for a person's approval when it matters. Start with what is new, then browse the whole catalogue.",
+      note: "benefits first, the full list after",
+      primary: "What's new",
       secondary: "Browse the catalogue",
     },
     releases: {
-      eyebrow: "New this month",
-      title: "September: *six* stable releases.",
+      eyebrow: "Recently shipped",
+      title: "Recent releases, *stable* only.",
       lede: "Every one of them stable, none of them beta. The days circled in red are the days we shipped.",
-      monthLabel: "September 2026",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      calendarLabel: "September 2026 calendar with the six release days circled",
+      calendarLabel: (month) => `${month} calendar with the release days circled`,
       releasedOn: "Released",
       changelog: "Read the full changelog",
       note: "beta features wait until they earn a place here",
@@ -53,7 +52,7 @@ export const FEATURES_PAGE: Bi<{
     catalogue: {
       eyebrow: "The catalogue",
       title: "Everything, *area* by area.",
-      lede: "What dewee does today, grouped the way you would evaluate it. A version tag marks what arrived this month.",
+      lede: "What dewee does today, area by area: where people and agents meet, how agents coordinate, which tools connect and how you stay in control. A version tag shows the release an item arrived in.",
       indexLabel: "Jump to an area",
       since: "since",
       count: (n) => `${n} items`,
@@ -61,7 +60,7 @@ export const FEATURES_PAGE: Bi<{
     console: {
       eyebrow: "In the console",
       title: "See it on *screen*.",
-      lede: "Real screens from the dewee control plane, running the demo workspace. Agents on the left, the traces they leave on the right.",
+      lede: "Real screens from the dewee control plane, running the demo workspace. Agents on the left, and on the right the traces that show a person what they did.",
     },
     more: {
       eyebrow: "Keep reading",
@@ -69,12 +68,12 @@ export const FEATURES_PAGE: Bi<{
       items: [
         { title: "Changelog", meta: "Every release, every fix", path: "/changelog", icon: "history" },
         { title: "Documentation", meta: "Set-up, configuration and API", path: "/docs", icon: "book-open" },
-        { title: "Use cases", meta: "How teams put agents to work", path: "/use-cases", icon: "briefcase" },
+        { title: "Use cases", meta: "How people and agents split the work", path: "/use-cases", icon: "briefcase" },
       ],
     },
     cta: {
       title: "Which of these would your team use *first*?",
-      body: "Tell us what your team does all day. We will show you which features earn their keep in the first week.",
+      body: "Tell us what your people do all day and where an agent could take part. We will show you which features earn their keep in the first week.",
       primary: "Talk to us",
       secondary: "Ask dewee",
       note: "bring your hardest workflow",
@@ -82,26 +81,25 @@ export const FEATURES_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: "Tính năng: mọi thứ dewee làm được, mới nhất trước",
+      title: "Tính năng: con người và agent làm việc như một đội",
       description:
-        "Sáu bản phát hành ổn định trong tháng 9/2026, rồi cả danh mục: kênh chat, đội agent, bộ nhớ, MCP, workflow, trace, bảo mật, đa tenant, giọng nói, triển khai.",
+        "Agent làm việc ngay trong các cuộc chat, giao việc cho nhau, kết nối công cụ của bạn và chờ người duyệt khi cần. Rồi đến danh mục và các bản phát hành.",
       crumb: "Tính năng",
     },
     hero: {
       eyebrow: "Tính năng",
-      title: "Mọi thứ dewee làm được, *mới nhất* trước.",
-      lede: "Riêng tháng 9 đã có sáu bản phát hành ổn định. Hãy xem những gì mới trong tháng, rồi lật qua cả danh mục, từng mảng một.",
-      note: "một tháng, sáu bản. chúng tôi bận lắm.",
-      primary: "Có gì mới tháng này",
+      title: "Con người và agent, *làm việc như một đội*.",
+      lede: "Agent vào ngay các cuộc chat đội bạn đang dùng, giao việc cho nhau, kết nối công cụ của bạn và dừng lại chờ người duyệt khi việc quan trọng. Xem điều mới trước, rồi lật qua cả danh mục.",
+      note: "lợi ích trước, danh sách đầy đủ sau",
+      primary: "Có gì mới",
       secondary: "Xem danh mục",
     },
     releases: {
-      eyebrow: "Mới trong tháng",
-      title: "Tháng 9: *sáu* bản ổn định.",
+      eyebrow: "Vừa phát hành",
+      title: "Các bản *ổn định* gần đây.",
       lede: "Bản nào cũng ổn định, không bản nào là beta. Những ngày khoanh bút đỏ là ngày chúng tôi phát hành.",
-      monthLabel: "Tháng 9 năm 2026",
       weekdays: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
-      calendarLabel: "Lịch tháng 9 năm 2026, khoanh tròn sáu ngày phát hành",
+      calendarLabel: (month) => `Lịch ${month}, khoanh tròn các ngày phát hành`,
       releasedOn: "Phát hành",
       changelog: "Xem toàn bộ changelog",
       note: "tính năng beta phải đợi tới lượt",
@@ -109,7 +107,7 @@ export const FEATURES_PAGE: Bi<{
     catalogue: {
       eyebrow: "Danh mục",
       title: "Tất cả, theo *từng* mảng.",
-      lede: "Những gì dewee làm được hôm nay, xếp theo cách bạn sẽ đánh giá nó. Nhãn phiên bản đánh dấu những gì vừa có trong tháng.",
+      lede: "Những gì dewee làm được hôm nay, theo từng mảng: nơi con người và agent gặp nhau, cách các agent phối hợp, công cụ nào kết nối được và bạn giữ quyền kiểm soát ra sao. Nhãn phiên bản cho biết mục đó có từ bản nào.",
       indexLabel: "Đi tới mảng",
       since: "từ",
       count: (n) => `${n} mục`,
@@ -117,7 +115,7 @@ export const FEATURES_PAGE: Bi<{
     console: {
       eyebrow: "Trong console",
       title: "Xem tận *mắt*.",
-      lede: "Màn hình thật từ control plane của dewee, chạy trên workspace demo. Bên trái là các agent, bên phải là trace mà chúng để lại.",
+      lede: "Màn hình thật từ control plane của dewee, chạy trên workspace demo. Bên trái là các agent, bên phải là trace cho người xem agent đã làm gì.",
     },
     more: {
       eyebrow: "Đọc tiếp",
@@ -125,12 +123,12 @@ export const FEATURES_PAGE: Bi<{
       items: [
         { title: "Changelog", meta: "Mọi bản phát hành, mọi bản sửa", path: "/changelog", icon: "history" },
         { title: "Tài liệu", meta: "Cài đặt, cấu hình và API", path: "/docs", icon: "book-open" },
-        { title: "Tình huống sử dụng", meta: "Cách các đội đưa agent vào việc", path: "/use-cases", icon: "briefcase" },
+        { title: "Tình huống sử dụng", meta: "Con người và agent chia việc ra sao", path: "/use-cases", icon: "briefcase" },
       ],
     },
     cta: {
       title: "Đội của bạn sẽ dùng tính năng nào *trước*?",
-      body: "Kể cho chúng tôi nghe đội bạn làm gì mỗi ngày. Chúng tôi sẽ chỉ ra tính năng nào đáng tiền ngay trong tuần đầu.",
+      body: "Kể cho chúng tôi nghe mọi người trong đội làm gì mỗi ngày và chỗ nào agent có thể tham gia. Chúng tôi sẽ chỉ ra tính năng nào đáng tiền ngay trong tuần đầu.",
       primary: "Trò chuyện với chúng tôi",
       secondary: "Hỏi dewee",
       note: "mang bài khó nhất tới đây",

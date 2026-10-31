@@ -13,8 +13,8 @@ export const stockMarketSentiment: UseCase = {
   team: { en: "Investment research", vi: "Phân tích đầu tư" },
   title: { en: "Measure market sentiment, not just price", vi: "Đo lường sentiment thị trường chứng khoán" },
   summary: {
-    en: "Track news, forums and filings for the tickers you follow, score the mood and alert the desk on sharp shifts.",
-    vi: "Theo dõi tin tức, diễn đàn và báo cáo của mã bạn quan tâm, chấm điểm tâm lý thị trường và cảnh báo khi đổi chiều.",
+    en: "A sentiment agent tracks news, forums and filings for your tickers, scores the mood and alerts the desk on sharp shifts. Analysts make the call.",
+    vi: "Agent phân tích tâm lý theo dõi tin tức, diễn đàn và báo cáo của các mã bạn quan tâm, chấm điểm và cảnh báo khi đổi chiều. Quyết định thuộc về chuyên viên phân tích.",
   },
   channels: ["telegram", "discord"],
   detail: {

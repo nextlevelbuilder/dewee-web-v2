@@ -12,8 +12,8 @@ export const softwareDelivery: UseCase = {
   team: { en: "Engineering", vi: "Kỹ thuật" },
   title: { en: "Ship software while the team sleeps", vi: "Tự động hoá quy trình phát triển phần mềm" },
   summary: {
-    en: "Agents triage issues, write and review code, run tests and open pull requests, then report in the team chat.",
-    vi: "Agent phân loại issue, viết và review code, chạy test, mở pull request rồi báo cáo ngay trong nhóm chat.",
+    en: "A triage agent, a developer agent and a reviewer agent pass each issue along and open the pull request. Your engineers decide what merges.",
+    vi: "Agent phân loại, agent lập trình và agent review chuyển tiếp từng issue cho nhau rồi mở pull request. Kỹ sư của bạn quyết định cái nào được merge.",
   },
   channels: ["slack", "discord", "telegram"],
   detail: {

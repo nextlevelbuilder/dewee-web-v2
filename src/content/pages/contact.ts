@@ -158,7 +158,7 @@ export const CONTACT: Bi<ContactPage> = {
       crumb: "Liên hệ",
       title: "Liên hệ dewee: nói chuyện với người thật",
       description:
-        "Trao đổi với đội ngũ dewee về AI agent cho doanh nghiệp: báo giá, tích hợp, bài toán cụ thể, hợp tác hay báo chí. Gửi lời nhắn, hoặc chat ngay với dewee.",
+        "Trao đổi với dewee về việc đưa AI agent vào làm việc cùng đội ngũ của bạn: báo giá, tích hợp, bài toán cụ thể, hợp tác hay báo chí. Gửi lời nhắn hoặc chat ngay.",
     },
     hero: {
       eyebrow: "Liên hệ",

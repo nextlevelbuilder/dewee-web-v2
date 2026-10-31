@@ -3,11 +3,14 @@
  * per-channel details) live in src/content/integrations.ts; this file holds page chrome and the
  * short notes for subscription and local providers. Facts verified against the dewee repo
  * (internal/channels, internal/providers, internal/audio, internal/tools, docs/05) and the
- * v3.28–v3.33 release notes. The website section describes dewee-webchat v0.1.0, checked
+ * v3.28–v3.40 release notes. Channel and provider counts come from FACTS (src/content/facts.ts). The website section describes dewee-webchat v0.1.0, checked
  * against github.com/nextlevelbuilder/dewee-webchat (README and package README).
  */
 import type { Bi } from "~/i18n/config";
 import type { ProviderGroupId } from "~/content/integrations";
+import { FACTS } from "~/content/facts";
+
+const { channels: CH, providers: PR } = FACTS;
 
 /** dewee-webchat links and the embed snippet; the same in both locales. */
 export const WEBCHAT = {
@@ -50,22 +53,22 @@ export const INTEGRATIONS_PAGE: Bi<{
 }> = {
   en: {
     meta: {
-      title: "Integrations: 11 channels, 21 model providers",
+      title: `Integrations: ${CH} channels, ${PR} model providers`,
       description:
-        "Connect dewee to 11 chat channels (Telegram, Zalo, Slack, Lark, WhatsApp and more), 21 model providers, five voice engines and any MCP server. Missing one? Ask us.",
+        `Put your agents where your team already works: ${CH} chat channels (Telegram, Zalo, Slack, Lark, WhatsApp and more), ${PR} model providers and any MCP server.`,
       crumb: "Integrations",
     },
     hero: {
       eyebrow: "Integrations",
       title: "Works where your team *already* talks.",
-      lede: "Eleven chat channels, 21 model providers, five voice engines and any MCP server. Switching models is one setting, and a fallback steps in when a provider fails.",
+      lede: `${CH} chat channels, ${PR} model providers, five voice engines and any MCP server. Your people and your agents meet in the tools they already use. Switching models is one setting, and a fallback steps in when a provider fails.`,
       note: "no new app to roll out",
       primary: "See every channel",
       secondary: "Missing one? Ask us",
     },
     channels: {
       eyebrow: "Channels",
-      title: "Eleven channels, *graded* honestly.",
+      title: `${CH} channels, *graded* honestly.`,
       lede: "What each channel does today, from how it connects to whether replies stream. On every one of them, a stranger can be asked for a pairing code before the agent answers.",
       label: "What each chat channel supports: connection, conversations, streaming, voice notes, files and notes",
       columns: {
@@ -81,7 +84,7 @@ export const INTEGRATIONS_PAGE: Bi<{
     },
     models: {
       eyebrow: "Models",
-      title: "21 providers, *one* setting to switch.",
+      title: `${PR} providers, *one* setting to switch.`,
       lede: "Bring API keys, use the AI subscriptions your team already pays for, or keep prompts on your own hardware. If a provider rate-limits, times out or goes down, the agent moves to the next model on its list.",
       groups: { api: "API providers", subscription: "Subscriptions, via OAuth or CLI", local: "Local" },
       notes: {
@@ -115,7 +118,7 @@ export const INTEGRATIONS_PAGE: Bi<{
         {
           icon: "server",
           title: "dewee as an MCP server",
-          body: "A tenant-aware endpoint at /v1/mcp for Claude Code, Cursor, VS Code/Copilot, Gemini CLI and OpenAI remote MCP. Off until you turn it on.",
+          body: "A tenant-aware endpoint at /mcp/server for Claude Code, Cursor, VS Code/Copilot, Gemini CLI and OpenAI remote MCP. Off until you turn it on.",
         },
         { icon: "wrench", title: "30+ built-in tools", body: "Files, web, browser, memory, messaging and media tools, ready on day one." },
         { icon: "square-terminal", title: "Custom tools, no redeploy", body: "Define a command-line tool over the API, with encrypted env vars and a timeout." },
@@ -150,23 +153,23 @@ export const INTEGRATIONS_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: "Tích hợp: 11 kênh chat, 21 nhà cung cấp model",
+      title: `Tích hợp: ${CH} kênh chat, ${PR} nhà cung cấp model`,
       description:
-        "Kết nối dewee với 11 kênh chat (Telegram, Zalo, Slack, Lark, WhatsApp và nhiều hơn), 21 nhà cung cấp model, năm engine giọng nói, mọi MCP server. Còn thiếu? Hỏi chúng tôi.",
+        `Đưa agent vào nơi đội bạn đang làm việc: ${CH} kênh chat (Telegram, Zalo, Slack, Lark, WhatsApp và nhiều hơn), ${PR} nhà cung cấp model và mọi MCP server.`,
       crumb: "Tích hợp",
     },
     hero: {
       eyebrow: "Tích hợp",
       title: "Làm việc ngay nơi đội ngũ *đang* trò chuyện.",
-      lede: "Mười một kênh chat, 21 nhà cung cấp model, năm engine giọng nói và mọi MCP server. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.",
+      lede: `${CH} kênh chat, ${PR} nhà cung cấp model, năm engine giọng nói và mọi MCP server. Con người và agent gặp nhau ngay trên những công cụ họ vốn dùng. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.`,
       note: "không cần cài thêm app mới",
       primary: "Xem mọi kênh",
       secondary: "Còn thiếu? Hỏi chúng tôi",
     },
     channels: {
       eyebrow: "Kênh chat",
-      title: "Mười một kênh, *chấm điểm* thật lòng.",
-      lede: "Mỗi kênh làm được gì hôm nay, từ cách kết nối tới việc câu trả lời có stream hay không. Ở kênh nào, người lạ cũng có thể bị hỏi mã ghép cặp trước khi agent trả lời.",
+      title: `${CH} kênh, *chấm điểm* thật lòng.`,
+      lede: "Mỗi kênh làm được gì hôm nay, từ cách kết nối tới việc câu trả lời có stream hay không. Ở kênh nào, người lạ cũng có thể bị hỏi mã ghép nối trước khi agent trả lời.",
       label: "Khả năng của từng kênh chat: kết nối, hội thoại, stream, tin thoại, gửi file và ghi chú",
       columns: {
         channel: "Kênh",
@@ -181,7 +184,7 @@ export const INTEGRATIONS_PAGE: Bi<{
     },
     models: {
       eyebrow: "Model",
-      title: "21 nhà cung cấp, đổi chỉ bằng *một* cài đặt.",
+      title: `${PR} nhà cung cấp, đổi chỉ bằng *một* cài đặt.`,
       lede: "Dùng API key, dùng luôn gói AI mà đội bạn đang trả tiền, hoặc giữ prompt trên phần cứng của riêng bạn. Nếu một nhà cung cấp bị giới hạn tốc độ, quá thời gian hoặc ngừng hoạt động, agent chuyển sang model kế tiếp trong danh sách.",
       groups: { api: "Nhà cung cấp qua API", subscription: "Gói thuê bao, qua OAuth hoặc CLI", local: "Chạy local" },
       notes: {
@@ -215,7 +218,7 @@ export const INTEGRATIONS_PAGE: Bi<{
         {
           icon: "server",
           title: "dewee làm MCP server",
-          body: "Endpoint /v1/mcp phân tách theo tenant cho Claude Code, Cursor, VS Code/Copilot, Gemini CLI và OpenAI remote MCP. Tắt cho tới khi bạn bật.",
+          body: "Endpoint /mcp/server phân tách theo tenant cho Claude Code, Cursor, VS Code/Copilot, Gemini CLI và OpenAI remote MCP. Tắt cho tới khi bạn bật.",
         },
         { icon: "wrench", title: "Hơn 30 tool có sẵn", body: "Tool cho file, web, trình duyệt, bộ nhớ, nhắn tin và media, dùng được ngay từ ngày đầu." },
         { icon: "square-terminal", title: "Tool tuỳ chỉnh, không cần deploy lại", body: "Tạo tool chạy lệnh qua API, có biến môi trường mã hoá và giới hạn thời gian." },

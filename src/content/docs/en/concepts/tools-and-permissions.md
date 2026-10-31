@@ -3,7 +3,7 @@ title: Tools and permissions
 description: How dewee decides which tools an agent can call, how shell commands are filtered and approved, and which permissive defaults to tighten before production use.
 section: concepts
 order: 4
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Tools are how an agent acts. Before every model call, dewee filters the tool list through a policy pipeline, and each shell command passes further checks when it runs. The defaults are permissive; the last section lists what to tighten.
@@ -65,7 +65,7 @@ A command that matches `package_install` is not rejected outright. It becomes an
 | `tools.execApproval.security` | `deny` (no commands), `allowlist` (only matching commands), `full` (any command that passes the deny groups) | `full` |
 | `tools.execApproval.ask` | `off`, `on-miss` (ask when a command is not on the allowlist), `always` | `off` |
 
-Each approval is a durable, tenant-scoped record that holds a redacted summary and a hash of the command, never the raw command or its output. Once it is approved, the agent retries the same command with a single-use `approval_token`. Approvals are reviewed on the web approvals page or from the CLI; buttons in chat channels cannot approve a command.
+Each approval is a durable, tenant-scoped record that holds a short summary, a hash and the full command with secrets redacted, never the command's output. Reviewers always see the full command, line breaks included, before they approve, so nothing can hide after a harmless-looking start. An approval recorded before full commands were kept can only be denied. A command the gateway cannot show exactly, because it is longer than 64 KiB, contains hidden or direction-changing characters, or would hide shell syntax behind a redacted secret, is refused before any approval is created, and the agent is asked to split it. Only workspace owners, admins and the person who asked see the full command. Once it is approved, the agent retries the same command with a single-use `approval_token`. Approvals are reviewed on the web approvals page or from the CLI; buttons in chat channels cannot approve a command.
 
 ```bash
 dewee packages approvals list --all
@@ -123,4 +123,5 @@ dewee is closed by default at the edge, but agent capabilities start open:
 - [Security model](/docs/security/overview): edge controls and defence layers.
 - [Secrets, roles and audit](/docs/security/secrets-roles-and-audit): how secrets are stored and who can change policy.
 - [Hooks](/docs/concepts/hooks): blocking or rewriting a tool call before it runs.
+- [Access grants](/docs/security/access-grants): which agents may use a skill, MCP server, package or provider.
 - [Webhooks and MCP](/docs/api/webhooks-and-mcp): exposing dewee itself as an MCP server.

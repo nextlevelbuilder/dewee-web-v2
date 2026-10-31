@@ -12,8 +12,8 @@ export const meetingNotesAndDecisions: UseCase = {
   team: { en: "Leadership", vi: "Ban điều hành" },
   title: { en: "Meetings that end with decisions", vi: "Tóm tắt cuộc họp & đề xuất quyết định" },
   summary: {
-    en: "Summarise the meeting, pull out decisions and owners, and propose next steps for each team to confirm.",
-    vi: "Tóm tắt cuộc họp, rút ra quyết định và người phụ trách, đề xuất bước tiếp theo cho từng phòng ban xác nhận.",
+    en: "A minutes agent summarises the meeting and sends each decision to its owner to confirm. A follow-up agent then checks on the tasks.",
+    vi: "Agent biên bản tóm tắt cuộc họp và gửi từng quyết định cho người phụ trách xác nhận. Sau đó, agent theo dõi kiểm tra các đầu việc.",
   },
   channels: ["lark", "slack", "telegram"],
   detail: {

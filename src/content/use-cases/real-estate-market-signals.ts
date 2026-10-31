@@ -12,8 +12,8 @@ export const realEstateMarketSignals: UseCase = {
   team: { en: "Real estate", vi: "Bất động sản" },
   title: { en: "Read the real-estate market every morning", vi: "Thu thập tín hiệu thị trường bất động sản" },
   summary: {
-    en: "Scan listings, news and zoning updates, spot price moves by district and deliver a morning brief to the sales floor.",
-    vi: "Quét tin rao, tin tức, quy hoạch; phát hiện biến động giá theo khu vực và gửi bản tin sáng cho đội kinh doanh.",
+    en: "A research agent reads listings, news and zoning updates before sunrise and posts a sourced brief to the sales group, where people take it from there.",
+    vi: "Agent nghiên cứu đọc tin đăng, tin tức và quy hoạch từ trước bình minh, rồi gửi bản tin có nguồn vào nhóm sales để mọi người tiếp tục từ đó.",
   },
   channels: ["zalo", "telegram"],
   detail: {

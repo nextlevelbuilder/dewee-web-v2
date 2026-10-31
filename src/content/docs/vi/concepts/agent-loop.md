@@ -76,7 +76,7 @@ Hãy dùng agent predefined cho bàn hỗ trợ khách hàng và trợ lý dùng
 
 ## Dừng và theo dõi lượt chạy
 
-- **Dừng.** Trong một kênh chat, `/stop` huỷ tác vụ đang chạy lâu nhất trong session, còn `/stopall` huỷ tất cả và xoá hàng đợi. Trace vẫn được lưu lại.
+- **Dừng.** Trong một kênh chat, `/stop` huỷ task đang chạy lâu nhất trong session, còn `/stopall` huỷ tất cả và xoá hàng đợi. Trace vẫn được lưu lại.
 - **Sự kiện stream.** Client dùng WebSocket API nhận `run.started`, `activity`, `tool.call`, `tool.result`, `block.reply`, `run.retrying`, sau đó là `run.completed`, `run.failed` hoặc `run.cancelled`; nội dung trả lời tới dưới dạng các sự kiện chat `chunk` và `thinking`.
 - **Input guard.** Mỗi tin nhắn đến được đối chiếu với sáu mẫu prompt injection. Hành động được đặt bằng `gateway.injection_action`: `off`, `log`, `warn` (mặc định) hoặc `block`. Chỉ `block` mới chặn tin nhắn trước khi nó tới model.
 

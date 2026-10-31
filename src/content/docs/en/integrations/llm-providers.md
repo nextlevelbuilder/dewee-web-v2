@@ -29,7 +29,7 @@ Under the hood these run on six adapters: Anthropic's native API, an OpenAI-comp
 | Local binary | A CLI installed on the runtime's host | Claude CLI and ACP agents run as processes on the host, so they need a runtime you operate |
 | Local server | The address of the model server | Ollama; the runtime must be able to reach it |
 
-After you save a provider, **verify** it to confirm that the credential and model work. A successful check reflects access at that moment, not later changes to your account or plan.
+After you save a provider, select **Verify connection** to confirm that the credential and model work. A successful check reflects access at that moment, not later changes to your account or plan.
 
 ## How keys are handled
 

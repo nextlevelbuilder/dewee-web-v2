@@ -12,8 +12,8 @@ export const creativeAdProduction: UseCase = {
   team: { en: "Creative", vi: "Sáng tạo" },
   title: { en: "From brief to storyboard to ad cut", vi: "Thiết kế & dựng phim quảng cáo" },
   summary: {
-    en: "Turn a brief into concepts, scripts, storyboards, images and draft videos, with review rounds right in the chat.",
-    vi: "Biến brief thành ý tưởng, kịch bản, storyboard, hình ảnh và video nháp, duyệt vòng góp ý ngay trong nhóm chat.",
+    en: "A strategist, a copywriter and a storyboard agent work from one brief in the team chat, and the creative director decides what moves forward.",
+    vi: "Agent chiến lược, agent copywriter và agent storyboard cùng làm từ một brief trong nhóm chat, còn giám đốc sáng tạo quyết định hướng đi.",
   },
   channels: ["slack", "discord", "telegram"],
   detail: {

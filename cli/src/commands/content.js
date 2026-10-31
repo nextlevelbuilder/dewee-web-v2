@@ -126,7 +126,7 @@ export async function contentCommand(kind, config, [action, ...args], flags) {
     case "publish":
     case "unpublish": {
       const ref = need(args[0], "an id or slug");
-      const res = await apiRequest(config, "POST", `/${plural}/${itemPath(ref, locale)}/${action}`, { json: version !== undefined ? { version } : {} });
+      const res = await apiRequest(config, "POST", `/${plural}/${itemPath(ref, locale, action)}`, { json: version !== undefined ? { version } : {} });
       return show(res, action === "publish" ? "Published" : "Unpublished");
     }
     default:
