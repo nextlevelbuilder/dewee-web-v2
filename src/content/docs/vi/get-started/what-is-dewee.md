@@ -26,13 +26,13 @@ Tại Việt Nam, dewee được cung cấp theo hai hình thức Tự cài đ�
 - **Dùng tool**: đọc và ghi file trong workspace riêng, chạy lệnh shell sau danh sách chặn và quy tắc phê duyệt, tìm kiếm và tải trang web, điều khiển trình duyệt, gọi MCP server hoặc tool tuỳ chỉnh do bạn định nghĩa. Xem [Tool và quyền hạn](/docs/concepts/tools-and-permissions).
 - **Làm theo skill**: các gói hướng dẫn (`SKILL.md`) mà agent nạp vào khi công việc cần đến. Xem [Skill](/docs/concepts/skills).
 - **Ghi nhớ**: cuộc hội thoại hiện tại, bản tóm tắt các phiên trước, một knowledge graph về con người và sự vật, cùng kho tri thức gồm tài liệu mà agent có thể tìm kiếm. Xem [Bộ nhớ và tri thức](/docs/concepts/memory-and-knowledge).
-- **Phối hợp với agent khác**: giao việc cho một agent chuyên trách, hoặc tham gia một nhóm dùng chung bảng công việc. Xem [Nhóm agent](/docs/concepts/agent-teams).
+- **Phối hợp với agent khác**: giao việc cho một agent chuyên trách, hoặc tham gia một nhóm dùng chung bảng task. Xem [Nhóm agent](/docs/concepts/agent-teams).
 - **Tự hành động theo lịch**: cron job, heartbeat định kỳ, và workflow có phiên bản kèm bước phê duyệt của con người. Xem [Lịch chạy và heartbeat](/docs/concepts/schedules-and-heartbeat) và [Workflow](/docs/concepts/workflows).
 
 ## Đội ngũ của bạn nhận được gì
 
 - **Tách biệt dữ liệu.** Agent, session, bộ nhớ, provider, skill và MCP server đều thuộc về một tenant, và mọi truy vấn đều giới hạn trong tenant đó. Xem [Multi-tenancy](/docs/concepts/multi-tenancy).
-- **Kiểm soát.** Vai trò và phân quyền cho con người, API key theo phạm vi cho chương trình, duyệt ghép cặp trước khi agent trả lời người gửi mới, và phê duyệt các lệnh shell rủi ro. Xem [Mô hình bảo mật](/docs/security/overview).
+- **Kiểm soát.** Vai trò và phân quyền cho con người, API key theo phạm vi cho chương trình, phê duyệt ghép nối trước khi agent trả lời người gửi mới, và phê duyệt các lệnh shell rủi ro. Xem [Mô hình bảo mật](/docs/security/overview).
 - **Minh bạch.** Mỗi lượt chạy của agent để lại một trace gồm các lần gọi model, gọi tool, số token và chi phí ước tính; nhật ký hoạt động ghi lại ai đã thay đổi gì. Xem [Tracing](/docs/concepts/tracing).
 - **Tự chọn model.** 31 loại provider, từ Anthropic, OpenAI, Gemini đến OpenRouter, Ollama chạy nội bộ và mọi endpoint tương thích OpenAI, có cơ chế fallback khi một provider gặp lỗi. Xem [LLM provider](/docs/integrations/llm-providers).
 
@@ -40,7 +40,7 @@ Tại Việt Nam, dewee được cung cấp theo hai hình thức Tự cài đ�
 
 - **Không phải nhà cung cấp model.** dewee không huấn luyện hay host model. Bạn kết nối tài khoản của các provider, và dewee thay bạn gọi tới chúng.
 - **Không thay thế ứng dụng chat của bạn.** Agent trả lời ngay trong những ứng dụng mọi người đang dùng; console dành cho đội ngũ vận hành agent.
-- **Không phải sân chơi không luật lệ.** Agent chỉ chạm tới được những gì tool, chính sách và quyền được cấp cho phép, và theo mặc định người gửi mới trên một kênh phải chờ được duyệt.
+- **Không phải sân chơi không luật lệ.** Agent chỉ chạm tới được những gì tool, chính sách và quyền được cấp cho phép, và theo mặc định người gửi mới trên một kênh phải chờ được phê duyệt.
 
 ## Đọc tiếp
 

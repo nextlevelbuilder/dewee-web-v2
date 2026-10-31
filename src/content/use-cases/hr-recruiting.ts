@@ -13,8 +13,8 @@ export const hrRecruiting: UseCase = {
   team: { en: "People & HR", vi: "Nhân sự" },
   title: { en: "Screen candidates without the backlog", vi: "Hỗ trợ tuyển dụng & review hồ sơ" },
   summary: {
-    en: "Read CVs against the job brief, shortlist with reasons, schedule interviews and keep candidates in the loop.",
-    vi: "Đọc CV theo mô tả công việc, lọc danh sách kèm lý do, xếp lịch phỏng vấn và cập nhật cho ứng viên.",
+    en: "A screening agent proposes a shortlist with reasons and a scheduling agent finds interview slots. Recruiters make every yes and every no.",
+    vi: "Agent sàng lọc đề xuất danh sách rút gọn kèm lý do, agent xếp lịch tìm khung phỏng vấn. Mọi quyết định đạt hay không đều do nhà tuyển dụng.",
   },
   channels: ["lark", "slack", "zalo"],
   detail: {

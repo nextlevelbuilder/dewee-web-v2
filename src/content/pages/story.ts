@@ -2,7 +2,7 @@
  * /story: "From GoClaw to dewee: why we closed the source".
  * Sources: plans/reports/scout-260924-2346-ecosystem-story.md (§A slides 3–15, §A.4 GoClaw
  * milestones from git tags and `gh api` on 2026-09-24), the dewee repo (created 2026-06-14) and its
- * GitHub releases (six stable releases v3.28–v3.33 in September 2026), src/content/plans.ts.
+ * GitHub releases (eight stable releases v3.28–v3.35 in September 2026), src/content/plans.ts.
  */
 import type { Bi } from "~/i18n/config";
 
@@ -118,7 +118,7 @@ export const STORY: Bi<StoryPage> = {
         rows: [
           { label: "Name", strike: "OpenClaw, ported to Go", draft: "inspired by it, built from scratch", fair: "dewee: a name of its own" },
           { label: "Source", draft: "Open to everyone, CC BY-NC 4.0", fair: "Closed source, under licence" },
-          { label: "Patches", strike: "same day, every time", draft: "as fast as a small team can", fair: "Stable and beta channels: six stable releases in September 2026" },
+          { label: "Patches", strike: "same day, every time", draft: "as fast as a small team can", fair: "Stable and beta channels: eight stable releases in September 2026" },
           { label: "Built for", draft: "Builders and self-hosters", fair: "Companies: multi-tenant, roles, audit trails" },
           { label: "Price", draft: "Free, non-commercial", fair: "Licensed: AaaS, Dedicated or On-Premises" },
           { label: "Support", draft: "The community, when it can", fair: "A team that supports you, and custom workflows built with you" },
@@ -250,7 +250,7 @@ export const STORY: Bi<StoryPage> = {
         rows: [
           { label: "Tên gọi", strike: "OpenClaw bản Go", draft: "lấy cảm hứng, viết lại từ đầu", fair: "dewee: một cái tên của riêng mình" },
           { label: "Mã nguồn", draft: "Mở cho tất cả, CC BY-NC 4.0", fair: "Mã nguồn đóng, dùng theo license" },
-          { label: "Bản vá", strike: "trong ngày, lần nào cũng vậy", draft: "nhanh nhất một đội nhỏ có thể", fair: "Kênh stable và beta: riêng tháng 9/2026 có sáu bản stable" },
+          { label: "Bản vá", strike: "trong ngày, lần nào cũng vậy", draft: "nhanh nhất một đội nhỏ có thể", fair: "Kênh stable và beta: riêng tháng 9/2026 có tám bản stable" },
           { label: "Dành cho", draft: "Builder và người tự host", fair: "Doanh nghiệp: multi-tenant, phân vai trò, nhật ký kiểm toán" },
           { label: "Chi phí", draft: "Miễn phí, phi thương mại", fair: "License On-Premises, cài trên máy chủ của bạn" },
           { label: "Hỗ trợ", draft: "Cộng đồng giúp khi có thể", fair: "Đội ngũ đồng hành, cùng bạn xây workflow riêng" },
@@ -263,7 +263,7 @@ export const STORY: Bi<StoryPage> = {
       title: "Những gì *chúng tôi giữ lại*.",
       body: ["Triết lý thì mang theo nguyên vẹn. Sáu nguyên tắc, từ những buổi chia sẻ đầu tiên về GoClaw."],
       items: [
-        { icon: "lock", title: "Đóng từ cửa", body: "Không token thì không kết nối. Chưa duyệt thì không chat. Doanh nghiệp mở đúng những gì cần." },
+        { icon: "lock", title: "Đóng từ cửa", body: "Không token thì không kết nối. Chưa phê duyệt thì không chat. Doanh nghiệp mở đúng những gì cần." },
         { icon: "route", title: "Sửa kiến trúc, không đổ lỗi", body: "Khi agent làm sai, chúng tôi sửa hệ thống quanh mô hình thay vì đổ lỗi cho AI." },
         { icon: "layers", title: "Phòng thủ nhiều lớp", body: "Năm lớp độc lập. Vượt qua một lớp, vẫn còn bốn lớp chặn lại." },
         { icon: "building-2", title: "Làm cho tổ chức", body: "Multi-tenant, cô lập từng người dùng, phân vai trò, nhật ký kiểm toán và mã hoá thông tin đăng nhập." },

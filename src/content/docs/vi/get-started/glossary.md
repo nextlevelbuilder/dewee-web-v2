@@ -1,6 +1,6 @@
 ---
 title: Thuật ngữ
-description: Định nghĩa ngắn các thuật ngữ dùng trong tài liệu và console của dewee, từ agent, tenant tới ghép cặp, skill, trace và edition, kèm liên kết tới trang chi tiết.
+description: Định nghĩa ngắn các thuật ngữ dùng trong tài liệu và console của dewee, từ agent, tenant tới ghép nối, skill, trace và edition, kèm liên kết tới trang chi tiết.
 section: get-started
 order: 6
 updated: 2026-09-25
@@ -60,9 +60,9 @@ Các thuật ngữ dưới đây xuất hiện khắp console và tài liệu n�
 |---|---|
 | Channel | Kết nối giữa một agent và một ứng dụng chat như Telegram hay Zalo. Xem [Kênh chat](/docs/integrations/channels) |
 | DM policy, group policy | Ai được trò chuyện với agent trong tin nhắn trực tiếp và trong nhóm: pairing, allowlist, open hoặc disabled |
-| Ghép cặp (pairing) | Duyệt một người gửi mới bằng mã ngắn trước khi agent trả lời họ |
+| Ghép nối (pairing) | Phê duyệt một người gửi mới bằng mã ngắn trước khi agent trả lời họ |
 | Mention gating | Trong nhóm, agent chỉ trả lời khi được mention |
-| Danh bạ | Những người agent đã trò chuyện, trên mọi channel. Xem [Kênh, ghép cặp và danh bạ](/docs/console/channels-and-contacts) |
+| Danh bạ | Những người agent đã trò chuyện, trên mọi channel. Xem [Kênh, ghép nối và danh bạ](/docs/console/channels-and-contacts) |
 
 ## Tự động hoá và giám sát
 

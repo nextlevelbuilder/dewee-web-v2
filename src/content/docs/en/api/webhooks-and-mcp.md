@@ -80,7 +80,7 @@ The client acts as one agent in its tenant, chosen with the `X-Dewee-Agent` head
 
 ### Connect a client in the console
 
-In the console, open **API keys** and the **Connect an MCP client** tab. It walks through five steps:
+In the console, open **API keys & docs** and the **Connect an MCP client** tab. It walks through five steps:
 
 1. **Endpoint status.** Chips show whether the runtime is linked, whether the endpoint is available on this runtime, and whether MCP is enabled for the workspace. Below them are the exact endpoint address, the number of read and write tools, and the limits. A workspace admin can **Enable MCP** or **Turn off MCP** here, after a confirmation; other members see the state and are asked to contact an admin.
 2. **Choose an agent.** Pick the agent the client talks to, or leave it empty to use the workspace's default agent.
@@ -92,7 +92,7 @@ Viewing the tab and running a test need the Monitor permission. Turning MCP on o
 
 ### Connect a client from the CLI
 
-1. Create a key with the **MCP read** or **MCP read and write** preset on the console's **API keys** page, or with `dewee api-keys create` with `mcp.tools.read` and an owner.
+1. Create a key with the **MCP read** or **MCP read and write** access level on the console's **API keys & docs** page, or with `dewee api-keys create` with `mcp.tools.read` and an owner.
 2. Export the key as `DEWEE_MCP_TOKEN` so it never lands in a config file.
 3. Generate the configuration for your client and merge it into the client's settings:
 
@@ -158,4 +158,6 @@ Each credential may send 120 requests per minute (bursts of 20) and run 4 tool c
 
 These budgets are **per credential, not per workspace**: a workspace with three MCP keys gets three times the budget. Some read tools spend the workspace's own paid quota, for example `web_search` uses the workspace's search providers, so treat even a read key as able to consume that quota.
 
-A revoked or expired key fails on its very next request; there is no cache window. An MCP-only key cannot manage keys itself, so revoking a leaked key needs an owner or admin, on the console's **API keys** page or with an admin credential. To cut off every client of a workspace at once without revoking keys, turn workspace access off.
+A revoked or expired key fails on its very next request; there is no cache window. An MCP-only key cannot manage keys itself, so revoking a leaked key needs an owner or admin, on the console's **API keys & docs** page or with an admin credential. To cut off every client of a workspace at once without revoking keys, turn workspace access off.
+
+If someone keeps using a key after you revoked it, or after it expired, each attempt still gets a plain `401` (the caller cannot tell it from a key that never existed), but the attempt is recorded in your workspace's **Traces** on channel `mcp_public`, with the reason `credential_revoked` or `credential_expired` and the key's ID and prefix, never the key itself. Find them in the console's Traces page or with `dewee traces list --channel mcp_public`.

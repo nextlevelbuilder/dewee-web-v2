@@ -1,11 +1,12 @@
 /**
  * /about: NextLevelBuilder.io, the founders, how we work, the ecosystem.
  * Sources: plans/reports/scout-260924-2346-ecosystem-story.md §B (mission and values from
- * nlb-web, founder facts), §A.4 and §C (GitHub counts read 2026-09-24), src/content/pages/home.ts
- * proof (8,900+ automated tests), src/content/plans.ts (On-Premises includes one year of
- * maintenance), dewee GitHub releases (six stable releases in September 2026).
+ * nlb-web, founder facts), §A.4 and §C (GitHub counts read 2026-09-24), src/content/facts.ts (test
+ * count and latest stable release, verified 2026-10-19), src/content/plans.ts (On-Premises includes
+ * one year of maintenance), dewee GitHub releases (stable v3.28 to v3.40 since early September 2026).
  */
 import type { Bi } from "~/i18n/config";
+import { FACTS } from "~/content/facts";
 
 type ReportRow = { subject: string; evidence: string; grade: string; remark: string };
 
@@ -45,7 +46,7 @@ export const ABOUT: Bi<AboutPage> = {
     hero: {
       eyebrow: "About us",
       title: "Builders who *do the homework*.",
-      lede: "dewee is made by NextLevelBuilder.io, a team of builders from Vietnam. We make AI products for companies that want the results without the risk, and we stay with you after the sale.",
+      lede: "dewee is made by NextLevelBuilder.io, a team of builders from Vietnam. dewee is our multiplayer agent platform, where humans and AI agents work as one team. We make AI products for companies that want results and keep control, and we stay with you after the sale.",
     },
     proofLabel: "NextLevelBuilder in numbers",
     proof: [
@@ -80,10 +81,10 @@ export const ABOUT: Bi<AboutPage> = {
         ],
         columns: { subject: "Subject", evidence: "Evidence", grade: "Grade", remark: "Teacher's remark" },
         rows: [
-          { subject: "Homework ethic", evidence: "We test before we ship: 8,900+ automated tests guard the dewee codebase.", grade: "10", remark: "Always hands in complete homework." },
+          { subject: "Homework ethic", evidence: `We test before we ship: the full suite of ${FACTS.goTests.rounded} Go tests runs on one preflighted commit before every release.`, grade: "10", remark: "Always hands in complete homework." },
           { subject: "Shut at the door", evidence: "Tokens, pairing codes and network blocks guard the way in, behind five independent layers of defence.", grade: "10", remark: "Careful and thorough." },
           { subject: "Standing by your success", evidence: "Custom workflows built with you, and a year of maintenance with every On-Premises licence.", grade: "10", remark: "Always helps classmates." },
-          { subject: "Building in public", evidence: "Six stable dewee releases in September 2026, each one on the public changelog.", grade: "10", remark: "Speaks up in class." },
+          { subject: "Building in public", evidence: `Stable dewee releases since v3.28 in early September 2026, the latest v${FACTS.stableRelease.version}, each one on the public changelog.`, grade: "10", remark: "Speaks up in class." },
         ],
         conduct: { label: "Conduct", value: "Good" },
         sign: "Self-assessed. You be the judge.",
@@ -112,7 +113,7 @@ export const ABOUT: Bi<AboutPage> = {
     hero: {
       eyebrow: "Về chúng tôi",
       title: "Những người *làm bài tập đầy đủ*.",
-      lede: "dewee do NextLevelBuilder.io làm ra, một đội ngũ builder đến từ Việt Nam. Chúng tôi làm sản phẩm AI cho doanh nghiệp muốn có kết quả mà không phải gánh rủi ro, và vẫn ở bên bạn sau khi bán.",
+      lede: "dewee do NextLevelBuilder.io làm ra, một đội ngũ builder đến từ Việt Nam. dewee là nền tảng cộng tác giữa con người và AI agent của chúng tôi, nơi hai bên làm việc như một đội. Chúng tôi làm sản phẩm AI cho doanh nghiệp muốn có kết quả mà vẫn giữ quyền kiểm soát, và vẫn ở bên bạn sau khi bán.",
     },
     proofLabel: "NextLevelBuilder qua những con số",
     proof: [
@@ -147,10 +148,10 @@ export const ABOUT: Bi<AboutPage> = {
         ],
         columns: { subject: "Môn", evidence: "Minh chứng", grade: "Điểm", remark: "Lời phê" },
         rows: [
-          { subject: "Làm bài tập về nhà", evidence: "Kiểm thử trước khi phát hành: hơn 8.900 bài test tự động canh giữ mã nguồn dewee.", grade: "10", remark: "Làm bài đầy đủ." },
-          { subject: "Đóng từ cửa", evidence: "Token, mã ghép cặp và chặn mạng nội bộ canh lối vào, sau năm lớp phòng thủ độc lập.", grade: "10", remark: "Cẩn thận, chu đáo." },
+          { subject: "Làm bài tập về nhà", evidence: `Kiểm thử trước khi phát hành: trọn bộ ${FACTS.goTests.roundedVi} test Go được chạy trên một commit đã preflight trước mỗi bản phát hành.`, grade: "10", remark: "Làm bài đầy đủ." },
+          { subject: "Đóng từ cửa", evidence: "Token, mã ghép nối và chặn mạng nội bộ canh lối vào, sau năm lớp phòng thủ độc lập.", grade: "10", remark: "Cẩn thận, chu đáo." },
           { subject: "Đồng hành đến khi bạn thành công", evidence: "Cùng bạn xây workflow riêng, kèm một năm bảo trì cho mỗi license On-Premises.", grade: "10", remark: "Hay giúp đỡ bạn bè." },
-          { subject: "Làm việc công khai", evidence: "Sáu bản stable của dewee trong tháng 9/2026, bản nào cũng lên changelog công khai.", grade: "10", remark: "Hăng hái phát biểu xây dựng bài." },
+          { subject: "Làm việc công khai", evidence: `Các bản stable của dewee từ v3.28 hồi đầu tháng 9/2026, mới nhất là v${FACTS.stableRelease.version}, bản nào cũng lên changelog công khai.`, grade: "10", remark: "Hăng hái phát biểu xây dựng bài." },
         ],
         conduct: { label: "Hạnh kiểm", value: "Tốt" },
         sign: "Tự chấm thôi, bạn chấm lại giúp nhé.",

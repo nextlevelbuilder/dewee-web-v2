@@ -13,8 +13,8 @@ export const taskChasing: UseCase = {
   team: { en: "Operations", vi: "Vận hành" },
   title: { en: "The polite colleague who chases every task", vi: "Quản lý & nhắc việc nội bộ mỗi ngày" },
   summary: {
-    en: "Collect daily updates, nudge owners before deadlines, spot blockers early and give managers a clean status board.",
-    vi: "Thu thập cập nhật mỗi ngày, nhắc người phụ trách trước hạn, phát hiện điểm nghẽn sớm và gửi quản lý bảng tiến độ gọn gàng.",
+    en: "A coordinator agent collects daily updates in the chats people already use, nudges owners before deadlines and tells the manager the day a blocker appears.",
+    vi: "Agent điều phối thu thập cập nhật mỗi ngày trong các nhóm chat quen thuộc, nhắc người phụ trách trước hạn và báo quản lý ngay khi có điểm nghẽn.",
   },
   channels: ["lark", "zalo", "telegram", "bitrix24"],
   detail: {

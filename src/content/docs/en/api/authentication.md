@@ -18,7 +18,7 @@ Every call to the runtime, except the health checks, carries a credential. For s
 
 ## Create an API key
 
-**In the console**, open **API keys**, choose a preset and an expiry, and create the key. The presets are **Read**, **Read and write**, **MCP read** and **MCP read and write**; expiry can be 1 hour, 1 day, 30 days, 90 days or none. The key is shown once, so copy it into your secret manager straight away. Creating or rotating keys is limited to 20 per hour, and revoking to 30 per hour.
+**In the console**, open **API keys & docs**, select **Create key**, choose the **Access** level and an expiry, and create the key. The levels are **Read**, **Read and write**, **MCP read** and **MCP read and write**; expiry can be 1 hour, 1 day, 30 days, 90 days or none. The key is shown once, so copy it into your secret manager straight away. Creating or rotating keys is limited to 20 per hour, and revoking to 30 per hour.
 
 **With the CLI**, an admin can create a key with explicit scopes:
 
@@ -64,6 +64,8 @@ Optional headers refine a request:
 | `Accept-Language` | The language for messages and errors |
 
 The `GoClaw` in these header names is the runtime's original name; use them exactly as shown.
+
+`X-GoClaw-User-Id` only says whose data the request works on. It never changes what the key may do: on a key without an owner, naming the workspace owner or an admin does not give the request their role. The key keeps the role its scopes allow, inside its own tenant. To act with an owner's or admin's role, use a key tied to that person.
 
 ## Check a key
 

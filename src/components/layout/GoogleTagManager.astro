@@ -6,16 +6,20 @@
  * staging traffic never reaches the container.
  *   part="head": consent defaults + the GTM loader, as high in <head> as possible
  *   part="body": the <noscript> fallback, right after <body>
+ * Named clicks reach the container as dataLayer events, so GTM tags (still bound by Consent Mode)
+ * can use them: `hero_cta_clicked` {cta, locale} from `data-hero-cta`, and `app_cta_clicked`
+ * {location, locale} for any link into app.dewee.sh.
  */
 import { SITE } from "~/content/site";
 interface Props { part: "head" | "body" }
 const { part } = Astro.props;
 const id = SITE.gtmId;
+const appHost = new URL(SITE.appUrl).hostname;
 const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
 ---
 
 {enabled && part === "head" && (
-  <script is:inline define:vars={{ id }}>
+  <script is:inline define:vars={{ id, appHost }}>
     window.dataLayer = window.dataLayer || [];
     // Global so the cookie notice can send the consent update later.
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
@@ -28,6 +32,21 @@ const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer',id);
+
+    document.addEventListener("click", function (event) {
+      var target = event.target instanceof Element ? event.target : null;
+      var link = target && target.closest("a[href]");
+      if (!link) return;
+      var locale = document.documentElement.lang || "en";
+      var heroCta = link.getAttribute("data-hero-cta");
+      if (heroCta === "primary" || heroCta === "secondary") window.dataLayer.push({ event: "hero_cta_clicked", cta: heroCta, locale: locale });
+      var url;
+      try { url = new URL(link.href, location.href); } catch (e) { return; }
+      if (url.hostname === appHost) {
+        var where = link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main";
+        window.dataLayer.push({ event: "app_cta_clicked", location: where, locale: locale });
+      }
+    }, { capture: true });
   </script>
 )}
 {enabled && part === "body" && (

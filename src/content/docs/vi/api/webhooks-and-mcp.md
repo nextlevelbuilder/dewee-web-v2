@@ -80,7 +80,7 @@ Client hoạt động như một agent trong tenant của nó, được chọn b
 
 ### Kết nối client trong console
 
-Trong console, mở **API key** rồi chọn tab **Kết nối MCP client**. Tab này dẫn bạn qua năm bước:
+Trong console, mở **API key & tài liệu** rồi chọn tab **Kết nối MCP client**. Tab này dẫn bạn qua năm bước:
 
 1. **Trạng thái endpoint.** Các nhãn trạng thái cho biết runtime đã được liên kết chưa, endpoint có sẵn sàng trên runtime này không, và MCP đã được bật cho workspace chưa. Bên dưới là địa chỉ endpoint chính xác, số tool đọc và tool ghi, cùng các giới hạn. Admin của workspace có thể **Bật MCP** hoặc **Tắt MCP** ngay tại đây, sau một bước xác nhận; các thành viên khác chỉ xem được trạng thái và được hướng dẫn liên hệ admin.
 2. **Chọn agent.** Chọn agent mà client sẽ làm việc cùng, hoặc để trống để dùng agent mặc định của workspace.
@@ -92,7 +92,7 @@ Xem tab và chạy kiểm tra cần quyền Giám sát. Bật hoặc tắt MCP, 
 
 ### Kết nối client bằng CLI
 
-1. Tạo key với preset **MCP read** hoặc **MCP read and write** trên trang **API key** của console, hoặc bằng `dewee api-keys create` với `mcp.tools.read` và một owner.
+1. Tạo key với mức **MCP đọc** hoặc **MCP đọc và ghi** trên trang **API key & tài liệu** của console, hoặc bằng `dewee api-keys create` với `mcp.tools.read` và một owner.
 2. Export key thành `DEWEE_MCP_TOKEN` để nó không bao giờ nằm trong file cấu hình.
 3. Sinh cấu hình cho client của bạn rồi gộp vào phần cài đặt của client:
 
@@ -158,4 +158,6 @@ Mỗi credential được gửi 120 request mỗi phút (tối đa 20 request d�
 
 Các giới hạn này tính **theo từng credential, không theo workspace**: workspace có ba key MCP sẽ có gấp ba hạn mức. Một số tool đọc tiêu tốn hạn mức trả phí của chính workspace, ví dụ `web_search` dùng các nhà cung cấp tìm kiếm của workspace, nên hãy coi cả key chỉ đọc cũng có thể tiêu hạn mức đó.
 
-Key đã thu hồi hoặc hết hạn thất bại ngay ở request kế tiếp, không có thời gian chờ cache. Key chỉ có scope MCP không tự quản lý được key, nên muốn thu hồi một key bị lộ cần chủ sở hữu hoặc admin, trên trang **API key** của console hoặc bằng một credential admin. Để ngắt mọi client của workspace cùng lúc mà không thu hồi key, hãy tắt quyền truy cập của workspace.
+Key đã thu hồi hoặc hết hạn thất bại ngay ở request kế tiếp, không có thời gian chờ cache. Key chỉ có scope MCP không tự quản lý được key, nên muốn thu hồi một key bị lộ cần chủ sở hữu hoặc admin, trên trang **API key & tài liệu** của console hoặc bằng một credential admin. Để ngắt mọi client của workspace cùng lúc mà không thu hồi key, hãy tắt quyền truy cập của workspace.
+
+Nếu ai đó vẫn dùng một key sau khi bạn đã thu hồi, hoặc sau khi key hết hạn, mỗi lần thử vẫn chỉ nhận `401` bình thường (bên gọi không phân biệt được với một key chưa từng tồn tại), nhưng lần thử đó được ghi vào **Traces** của workspace trên kênh `mcp_public`, kèm lý do `credential_revoked` hoặc `credential_expired` cùng ID và prefix của key, không bao giờ ghi chính key. Xem trên trang Traces của console hoặc bằng `dewee traces list --channel mcp_public`.

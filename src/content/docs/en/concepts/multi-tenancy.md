@@ -3,7 +3,7 @@ title: Multi-tenant isolation
 description: How dewee keeps each tenant's agents, sessions, memory and credentials apart, how a request finds its tenant, and how tenant data is backed up or moved.
 section: concepts
 order: 2
-updated: 2026-09-25
+updated: 2026-10-13
 ---
 
 A tenant is the isolation boundary in dewee. Agents, conversations, memory, providers and tools all belong to exactly one tenant, and the runtime refuses to answer a query that does not name one. In the console the same boundary is called a workspace: each workspace is bound to one tenant on its runtime.
@@ -93,7 +93,7 @@ Restore has three modes: `upsert` (the default, adds missing rows and changes no
 
 ### Transfer between tenants
 
-Newer runtimes can copy or move selected resources between two tenants on the same runtime: agents, teams, MCP servers, custom skills, hooks, channels, cron jobs, providers, tasks and tenant storage. A copy gets new identities; a move keeps them. Agent memories and knowledge are included only when you ask. The caller must be an administrator of both tenants, every transfer starts from a saved preview, and it is available on PostgreSQL only. Use `dewee tenant-transfer` or the `/v1/tenant/resource-transfers` endpoints.
+Newer runtimes can copy or move selected resources between two tenants on the same runtime: agents, teams, MCP servers, custom skills, hooks, channels, cron jobs, providers, tasks and tenant storage. A copy gets new identities; a move keeps them. Agent memories and knowledge are included only when you ask. The caller must be an administrator of both tenants, every transfer starts from a saved preview, and it is available on PostgreSQL only. Use `dewee tenant-transfer` or the `/v1/tenant/resource-transfers` endpoints. A transferred custom skill takes every version of its files into the destination tenant. If the destination already has one of those versions on disk, the transfer stops before anything is copied.
 
 ## Related
 

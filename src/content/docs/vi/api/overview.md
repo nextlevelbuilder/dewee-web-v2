@@ -10,7 +10,7 @@ API của runtime bao quát những gì agent làm và cách cấu hình chúng:
 
 ## Base URL và tài liệu tham chiếu
 
-Với runtime On-Premises mà bạn vận hành, base URL là địa chỉ gateway của bạn, ví dụ `https://dewee.example.com`. Trong console, trang **API key** hiển thị base URL cùng các ví dụ sẵn để sao chép bằng cURL, JavaScript, Python và WebSocket.
+Với runtime On-Premises mà bạn vận hành, base URL là địa chỉ gateway của bạn, ví dụ `https://dewee.example.com`. Trong console, tab **Tài liệu** của trang **API key & tài liệu** hiển thị base URL cùng các ví dụ sẵn để sao chép bằng cURL, JavaScript, Python và WebSocket.
 
 Mỗi gateway cũng tự xuất bản tài liệu tham chiếu của mình:
 
