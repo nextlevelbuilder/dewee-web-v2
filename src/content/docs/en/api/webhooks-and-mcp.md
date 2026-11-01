@@ -62,6 +62,8 @@ The gateway can act as an MCP server at `POST /mcp/server`, so an MCP client suc
 
 `/mcp/server` is the address every generated configuration uses. The older `/mcp` path still answers MCP clients, with a `Deprecation` header and a `Link` header that points to `/mcp/server`, and will be removed in a later release, so move existing clients to `/mcp/server`.
 
+To let a client manage a workspace as a signed-in user instead of acting as an agent, see [Workspace MCP](/docs/api/workspace-mcp).
+
 Two switches decide whether a client can connect:
 
 - **The runtime.** On a self-hosted gateway the endpoint is **off by default**. An operator turns it on with `GOCLAW_MCP_PUBLIC_ENABLED=1` or `tools.mcp.public.enabled` in the config.
