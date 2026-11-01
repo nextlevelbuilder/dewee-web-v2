@@ -43,6 +43,7 @@ blocks. Everything else is code. `/developers` is the public guide.
 | Post widgets | `src/lib/blocks/post-widgets/` | blocks with `contexts` incl. `post`, placed in `body_md` by `::widget{id="…"}`; one renderer for page, preview, RSS and `.md` (how to add one: `post-widget-registry.ts`) |
 | Widget answers | `src/lib/server/post-widget-votes/` | Poll/Quiz/Survey forms post to `/api/post-widgets/vote`; `/api/post-widgets/results` gives aggregates; D1 `widget_responses` keeps a salted hash per voter, never the cookie or IP; survey results only in `/admin/widgets` |
 | Page service | `src/lib/server/pages/` | validation, slugs, versions (stale writes get 409), revisions |
+| Docs proposals | `src/lib/server/docs/` | `/docs` Markdown stays in Git: reads come from `DOCS_GITHUB_BASE` (default `dev`) and writes open a branch plus a pull request, never a direct push; checks shared with the build (`src/lib/docs-schema.ts`); stale `expected_sha` gets 409 |
 | REST | `/api/v1/*`, spec at `/api/v1/openapi.json` | one route table drives both dispatch and the spec (`src/lib/server/api/`) |
 | MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key only; `tools/list` shows only what the key's scopes allow |
 | CLI | `cli/` (`dewee-web`) | REST client plus an MCP stdio bridge (`dewee-web mcp`) |
@@ -50,9 +51,13 @@ blocks. Everything else is code. `/developers` is the public guide.
 | Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, pages, posts, leads, widget answers, audit log |
 
 - **Scopes:** `pages:read`, `pages:write`, `posts:read`, `posts:write`, `media:write`,
-  `leads:read`. Keys are shown once, stored hashed, and only super-admins can create them.
+  `leads:read`, `docs:read`, `docs:write`. Keys are shown once, stored hashed, and only super-admins can create them.
 - **Writes are idempotent** with an `Idempotency-Key` header. Admin browser calls send the session
   plus `X-CSRF-Token`; API keys never reach the browser.
+- **Docs GitHub access** comes only from worker secrets: a GitHub App (`DOCS_GITHUB_APP_ID`,
+  `DOCS_GITHUB_APP_INSTALLATION_ID`, `DOCS_GITHUB_APP_PRIVATE_KEY`; Contents and Pull requests
+  read/write on this repo only) or a fine-grained `DOCS_GITHUB_TOKEN`. Without them the docs
+  tools answer 503. `DOCS_GITHUB_REPO` / `DOCS_GITHUB_BASE` are plain vars in `wrangler.jsonc`.
 - To operate content (not code) with an AI agent, use `docs/skills/dewee-web-content/SKILL.md`.
 - Local run: `pnpm build && pnpm exec wrangler d1 migrations apply DB --local && pnpm exec wrangler dev --port 4389 --var ENVIRONMENT:development`.
   Outside production the sign-in code is logged to the console when `RESEND_API_KEY` is unset.

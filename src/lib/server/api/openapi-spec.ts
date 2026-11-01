@@ -69,6 +69,20 @@ const COMPONENT_SCHEMAS: Json = {
   },
   PageSummary: { type: "object", properties: PAGE_FIELDS },
   Page: { type: "object", properties: { ...PAGE_FIELDS, blocks: { type: "array", items: ref("Block") }, body_md: { type: ["string", "null"] } } },
+  DocFile: {
+    type: ["object", "null"],
+    properties: { path: { type: "string" }, sha: { type: "string", description: "Git blob SHA; send it back as expected_sha." }, url: { type: "string" }, source_url: { type: "string" }, content: { type: "string" }, front_matter: { type: "object" }, body: { type: "string" } },
+  },
+  DocValidation: {
+    type: "object",
+    properties: {
+      status: { const: "validated" },
+      valid: { type: "boolean" },
+      errors: { type: "array", items: { type: "object", properties: { path: { type: "string" }, message: { type: "string" } } } },
+      warnings: { type: "array", items: { type: "object", properties: { path: { type: "string" }, message: { type: "string" } } } },
+      changes: { type: "array", items: { type: "object", properties: { locale: { type: "string" }, path: { type: "string" }, base_sha: { type: ["string", "null"] }, added: { type: "integer" }, removed: { type: "integer" }, diff: { type: "string" } } } },
+    },
+  },
   RevisionSummary: {
     type: "object",
     properties: { id: { type: "integer" }, version: { type: "integer" }, actor: { type: "string" }, note: { type: ["string", "null"] }, created_at: { type: "string", format: "date-time" } },
@@ -102,6 +116,42 @@ const RESPONSES: Record<ResponseShape, Json> = {
   BlockValidation: dataOf({ type: "object", properties: { valid: { type: "boolean" }, issues: { type: "array", items: { type: "object", properties: { path: { type: "string" }, message: { type: "string" } } } } } }),
   Media: dataOf({ type: "object", properties: { key: { type: "string" }, url: { type: "string", format: "uri" }, fallback_url: { type: "string" }, content_type: { type: "string" }, size: { type: "integer" } } }),
   LeadList: listOf({ type: "object", properties: { id: { type: "integer" }, kind: { type: "string" }, email: { type: ["string", "null"] }, name: { type: ["string", "null"] }, company: { type: ["string", "null"] }, locale: { type: ["string", "null"] }, source: { type: ["string", "null"] }, payload: { type: "object" }, created_at: { type: "string" } } }),
+  DocList: dataOf({
+    type: "object",
+    properties: {
+      source: { const: "git" },
+      repository: { type: "string" },
+      ref: { type: "string" },
+      commit_sha: { type: "string" },
+      total: { type: "integer" },
+      docs: { type: "array", items: { type: "object", properties: { id: { type: "string" }, locale: { enum: ["en", "vi"] }, section: { type: "string" }, slug: { type: "string" }, title: { type: ["string", "null"] }, description: { type: ["string", "null"] }, order: { type: ["integer", "null"] }, path: { type: "string" }, sha: { type: "string" }, url: { type: "string" } } } },
+    },
+  }),
+  Doc: dataOf({
+    type: "object",
+    properties: {
+      id: { type: "string" },
+      ref: { type: "string" },
+      commit_sha: { type: "string" },
+      en: ref("DocFile"),
+      vi: ref("DocFile"),
+    },
+  }),
+  DocValidation: dataOf(ref("DocValidation")),
+  DocProposal: dataOf({
+    type: "object",
+    properties: {
+      status: { enum: ["pr_opened", "pr_merged", "pr_closed"] },
+      replayed: { type: "boolean" },
+      id: { type: "string" },
+      pull_request: { type: "object", properties: { number: { type: "integer" }, url: { type: "string", format: "uri" } } },
+      branch: { type: "string" },
+      base: { type: "object", properties: { ref: { type: "string" }, sha: { type: "string" } } },
+      head_sha: { type: "string" },
+      changed_paths: { type: "array", items: { type: "string" } },
+      validation: { type: ["object", "null"] },
+    },
+  }),
 };
 
 const errorResponse = (description: string) => ({ description, content: { "application/json": { schema: ref("Error") } } });
@@ -165,12 +215,12 @@ export function openApiDocument(origin: string): Json {
       title: "dewee.sh content API",
       version: "1.0.0",
       description:
-        "Pages, posts, blocks, media and leads for dewee.sh. Authenticate with `Authorization: Bearer dwk_…` (keys are created by super admins in /admin/keys). " +
+        "Pages, posts, blocks, media, leads and docs change proposals for dewee.sh. Authenticate with `Authorization: Bearer dwk_…` (keys are created by super admins in /admin/keys). " +
         "Send `Content-Type: application/json` on every write, including bodiless ones. Errors are `{ error: { code, message, details? } }`.",
     },
     servers: [{ url: `${origin}/api/v1` }],
     security: [{ apiKey: [] }],
-    tags: ["Account", "Blocks", "Pages", "Posts", "Revisions", "Media", "Leads"].map((name) => ({ name })),
+    tags: ["Account", "Blocks", "Pages", "Posts", "Revisions", "Media", "Leads", "Docs"].map((name) => ({ name })),
     paths,
     components: {
       securitySchemes: { apiKey: { type: "http", scheme: "bearer", bearerFormat: "dwk_<prefix>_<secret>", description: `Scopes: ${API_SCOPES.join(", ")}.` } },

@@ -3,11 +3,12 @@ import { parseArgs } from "./args.js";
 import { authCommand } from "./commands/auth.js";
 import { blocksCommand, mediaCommand } from "./commands/blocks-media.js";
 import { contentCommand } from "./commands/content.js";
+import { docsCommand } from "./commands/docs.js";
 import { mcpProxy } from "./commands/mcp-proxy.js";
 import { loadConfig } from "./config.js";
 import { ApiError, formatApiError } from "./http.js";
 
-const HELP = `dewee-web: manage dewee.sh pages, blog posts and media from the terminal.
+const HELP = `dewee-web: manage dewee.sh pages, blog posts, media and docs from the terminal.
 
 Usage: dewee-web <command> [options]
 
@@ -28,6 +29,13 @@ Usage: dewee-web <command> [options]
   blocks list [--context page|post]                   block types (public, no key needed)
   blocks schema <Type>                                JSON Schema of one block's props
   media upload <image> [--filename name]              PNG, JPEG, WebP, GIF or AVIF up to 10 MB
+  docs list [--locale en|vi] [--section s] [--q text]  docs files in Git with their blob SHAs
+  docs get <section/slug> [--locale en|vi [--out file.md]]
+  docs validate <section/slug> [--create] --en f.md [--en-sha sha] [--vi f.md [--vi-sha sha]]
+                                                      checks and diff, writes nothing
+  docs create <section/slug> --en f.md --vi f.md [--note …]
+  docs update <section/slug> --en f.md --en-sha sha [--vi f.md --vi-sha sha] [--note …]
+                                                      open a pull request; nothing publishes until merged
   mcp                                                 stdio MCP server bridged to <site>/mcp
 
 Options: --json prints raw API responses. -h, --help shows this help.
@@ -65,6 +73,8 @@ export async function main(argv) {
       case "media":
         await mediaCommand(config, rest, flags);
         return 0;
+      case "docs":
+        return (await docsCommand(config, rest, flags)) ?? 0;
       case "mcp":
         return await mcpProxy(config);
       default:

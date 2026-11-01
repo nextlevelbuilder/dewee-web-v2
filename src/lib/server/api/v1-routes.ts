@@ -1,5 +1,5 @@
 /**
- * The REST v1 route table: account, blocks, pages, posts, revisions, media and leads.
+ * The REST v1 route table: account, blocks, pages, posts, revisions, media, leads and docs proposals.
  * Paths are relative to /api/v1 and use OpenAPI `{param}` templates.
  */
 import { z } from "zod";
@@ -9,6 +9,7 @@ import { decodeBase64Image, mediaJsonBody, uploadMedia } from "../media/media-up
 import { badRequest, json, notFound, validationFailed } from "./api-errors";
 import { leadsQuerySchema, listLeads } from "./leads-query";
 import { contentRoutes } from "./v1-content-routes";
+import { DOCS_ROUTES } from "./v1-docs-routes";
 import { route, type RouteDef } from "./v1-route-types";
 
 const blockContext = z.enum(["page", "post"]);
@@ -133,4 +134,5 @@ export const V1_ROUTES: readonly RouteDef[] = [
     response: "LeadList",
     handle: async ({ env, query }) => json(await listLeads(env.DB, query)),
   }),
+  ...DOCS_ROUTES,
 ];
