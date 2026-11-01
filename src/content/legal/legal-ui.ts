@@ -7,7 +7,7 @@ import type { Bi } from "~/i18n/config";
 import type { LegalSlug } from "./types";
 
 /** ISO date of the current revision of all five documents */
-export const LEGAL_UPDATED = "2026-09-25";
+export const LEGAL_UPDATED = "2026-11-01";
 export const LEGAL_EMAIL = "hi@nextlevelbuilder.io";
 export const LEGAL_ORDER: LegalSlug[] = ["terms", "policy", "privacy", "cookies", "gdpr"];
 
@@ -23,8 +23,8 @@ export type LegalUi = {
 
 export const LEGAL_UI: Bi<LegalUi> = {
   en: {
-    updatedDate: "25 September 2026",
-    notebookDate: "Friday, 25 September 2026",
+    updatedDate: "1 November 2026",
+    notebookDate: "Sunday, 1 November 2026",
     shortLabel: "The short version",
     next: {
       eyebrow: "Next step",
@@ -42,8 +42,8 @@ export const LEGAL_UI: Bi<LegalUi> = {
     },
   },
   vi: {
-    updatedDate: "25 tháng 9 năm 2026",
-    notebookDate: "Thứ Sáu, ngày 25 tháng 9 năm 2026",
+    updatedDate: "1 tháng 11 năm 2026",
+    notebookDate: "Chủ Nhật, ngày 1 tháng 11 năm 2026",
     shortLabel: "Nói ngắn gọn",
     next: {
       eyebrow: "Bước tiếp theo",
