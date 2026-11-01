@@ -6,7 +6,7 @@
 import { validatePostContent } from "../../blocks/post-widgets/post-body";
 import { validateBlocks } from "../../blocks/registry";
 import { ApiError, badRequest, conflict, notFound, validationFailed } from "../api/api-errors";
-import { createPageInput, toRecord, updatePageInput, type PageKind, type PageRecord, type PageRow } from "./page-schema";
+import { createPageInput, toRecord, updatePageInput, type CreatePageInput, type PageKind, type PageRecord, type PageRow, type UpdatePageInput } from "./page-schema";
 import { findRow } from "./page-queries";
 import { slugError, slugify } from "./slug-rules";
 
@@ -58,14 +58,12 @@ function rethrowUnique(err: unknown, kind: PageKind): never {
   throw err;
 }
 
-export async function createPage(db: D1Database, kind: PageKind, raw: unknown, ctx: WriteContext): Promise<PageRecord> {
-  const parsed = createPageInput.safeParse(raw);
-  if (!parsed.success) throw validationFailed(parsed.error);
-  const input = parsed.data;
+/** The validated state a create would write; shared by createPage and the dry-run validator. */
+export function createState(kind: PageKind, input: CreatePageInput): Editable {
   const slug = input.slug || slugify(input.title);
-  if (!slug) throw badRequest("Could not derive a slug from the title; pass `slug`.");
+  if (!slug) throw badRequest("Could not derive a slug from the title; pass `slug`.", [{ path: "slug", message: "Could not derive a slug from the title; pass `slug`." }]);
   const status = input.status ?? "draft";
-  const state = prepare(kind, {
+  return prepare(kind, {
     locale: input.locale,
     slug,
     title: input.title,
@@ -81,6 +79,13 @@ export async function createPage(db: D1Database, kind: PageKind, raw: unknown, c
     translation_key: input.translation_key ?? null,
     published_at: status === "published" ? now() : null,
   });
+}
+
+export async function createPage(db: D1Database, kind: PageKind, raw: unknown, ctx: WriteContext): Promise<PageRecord> {
+  const parsed = createPageInput.safeParse(raw);
+  if (!parsed.success) throw validationFailed(parsed.error);
+  const state = createState(kind, parsed.data);
+  const { slug, status } = state;
   const id = crypto.randomUUID();
   await assertTranslationSlotFree(db, kind, state, id);
   const at = now();
@@ -128,20 +133,25 @@ export function editableOf(row: PageRow): Editable {
   return rest;
 }
 
-export async function updatePage(db: D1Database, kind: PageKind, ref: string, raw: unknown, ctx: WriteContext): Promise<PageRecord> {
-  const parsed = updatePageInput.safeParse(raw);
-  if (!parsed.success) throw validationFailed(parsed.error);
-  const { version, note, ...patch } = parsed.data;
-  const current = await requireRow(db, kind, ref);
-  checkVersion(kind, current, version ?? ctx.ifMatch);
+/** The validated state an update would write over `current`; shared by updatePage and the dry-run validator. */
+export function patchState(kind: PageKind, current: PageRow, patch: Omit<UpdatePageInput, "version" | "note">): Editable {
   const base = toRecord(current);
-  const next = prepare(kind, {
+  return prepare(kind, {
     ...editableOf(current),
     ...patch,
     blocks: patch.blocks ?? base.blocks,
     seo: patch.seo ?? base.seo,
     tags: patch.tags ?? base.tags,
   });
+}
+
+export async function updatePage(db: D1Database, kind: PageKind, ref: string, raw: unknown, ctx: WriteContext): Promise<PageRecord> {
+  const parsed = updatePageInput.safeParse(raw);
+  if (!parsed.success) throw validationFailed(parsed.error);
+  const { version, note, ...patch } = parsed.data;
+  const current = await requireRow(db, kind, ref);
+  checkVersion(kind, current, version ?? ctx.ifMatch);
+  const next = patchState(kind, current, patch);
   await assertTranslationSlotFree(db, kind, next, current.id);
   return commitVersion(db, current, next, { ...ctx, note: note ?? ctx.note }, "update", { fields: Object.keys(patch) });
 }

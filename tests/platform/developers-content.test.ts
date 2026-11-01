@@ -18,7 +18,7 @@ describe("/developers content", () => {
     for (const locale of LOCALES) {
       expect(DEVELOPERS[locale].mcp.tools.map((t) => t.name)).toEqual(served);
     }
-    expect(served).toHaveLength(16);
+    expect(served).toHaveLength(24);
   });
 
   it("documents exactly the API key scopes", () => {
