@@ -8,7 +8,7 @@ import { ApiError } from "../api/api-errors";
 import type { PlatformEnv } from "../api/platform-env";
 import type { ApiScope } from "../auth/api-key-format";
 import type { ToolDef } from "../mcp/json-rpc";
-import type { McpCtx } from "../mcp/mcp-tools";
+import type { McpCtx } from "../mcp/mcp-tool-kit";
 import { docLocaleSchema, docSectionSchema, docSlugSchema } from "./doc-paths";
 import { planProposal, planReport, proposalInput, proposalShape } from "./docs-proposals";
 import { proposeDocChange } from "./docs-pull-requests";

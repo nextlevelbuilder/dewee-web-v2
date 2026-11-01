@@ -6,34 +6,40 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+/** Runs one content command against a stubbed fetch and returns the requests it sent. */
+async function requestsFor(kind: "page" | "post", args: string[], flags: Record<string, string | true>) {
+  vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+  const requests: Array<{ url: string; method: string | undefined }> = [];
+  vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+    requests.push({ url: String(input), method: init?.method });
+    return Response.json({ data: { id: "item-id", version: 1, status: "draft", url: "/blog/item-slug" } });
+  });
+  await contentCommand(kind, { url: "https://dewee.sh", apiKey: "dwk_test" }, args, { json: true, ...flags });
+  return requests;
+}
+
 describe("CLI content command paths", () => {
   it.each(["publish", "unpublish"] as const)("places the locale query after the %s action", async (action) => {
-    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-    const requests: Array<{ url: string; method: string | undefined }> = [];
-    vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
-      requests.push({ url: String(input), method: init?.method });
-      return Response.json({
-        data: {
-          id: "post-id",
-          version: 1,
-          status: action === "publish" ? "published" : "draft",
-          url: "/blog/post-slug",
-        },
-      });
-    });
+    expect(await requestsFor("post", [action, "post-slug"], { locale: "en" })).toEqual([
+      { url: `https://dewee.sh/api/v1/posts/post-slug/${action}?locale=en`, method: "POST" },
+    ]);
+  });
 
-    await contentCommand(
-      "post",
-      { url: "https://dewee.sh", apiKey: "dwk_test" },
-      [action, "post-slug"],
-      { locale: "en", json: true },
-    );
+  it.each(["publish", "unpublish"] as const)("does the same for a nested page slug on %s", async (action) => {
+    expect(await requestsFor("page", [action, "guides/setup"], { locale: "vi" })).toEqual([
+      { url: `https://dewee.sh/api/v1/pages/guides%2Fsetup/${action}?locale=vi`, method: "POST" },
+    ]);
+  });
 
-    expect(requests).toEqual([
-      {
-        url: `https://dewee.sh/api/v1/posts/post-slug/${action}?locale=en`,
-        method: "POST",
-      },
+  it("sends no query when publishing by id", async () => {
+    expect(await requestsFor("post", ["publish", "item-id"], {})).toEqual([
+      { url: "https://dewee.sh/api/v1/posts/item-id/publish", method: "POST" },
+    ]);
+  });
+
+  it("keeps the locale query on get", async () => {
+    expect(await requestsFor("post", ["get", "post-slug"], { locale: "en" })).toEqual([
+      { url: "https://dewee.sh/api/v1/posts/post-slug?locale=en", method: "GET" },
     ]);
   });
 });

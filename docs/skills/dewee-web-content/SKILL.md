@@ -34,8 +34,11 @@ pages are out of scope.
    Image, Callout, Quote, Steps, Timeline, Faq, Columns and Divider. Give each block an `id`,
    then put a line `::widget{id="…"}` on its own where it goes; blocks you do not place show
    after the body. The CLI reads them from the file named by `blocks:` in the front matter (or
-   `--blocks`). Validate first with `POST /api/v1/blocks/validate` and
-   `{ "context": "post", "blocks": [...], "body_md": "…" }`.
+   `--blocks`). Validate first, without saving: over MCP call `validate_post` (or
+   `validate_page`) with `content` set to what you would send to `create_post`, or with `id` plus
+   the `update_post` fields; it runs every write check (schema, blocks, widget lines, slug,
+   translation, version) and returns `{ valid, issues: [{ path, message }] }`. Over REST use
+   `POST /api/v1/blocks/validate` with `{ "context": "post", "blocks": [...], "body_md": "…" }`.
    Interactive widgets: Poll (readers may change their vote), Quiz (one answer; the `answer` and
    `explanation` are shown only after the reader answers, never in the page or the Markdown) and
    Survey (one submission; results and free text only at `/admin/widgets`, with CSV export).
@@ -121,5 +124,11 @@ Pick the widget by what the reader must take away.
   the reader. EN is the default locale.
 - Keep titles under 60 characters and descriptions under 160; the site builds OG cards,
   `.md` twins and `llms.txt` entries from them.
-- Never unpublish or delete someone else's page without being asked. Restoring a revision
-  (`list_revisions`, `restore_revision`) is the safe undo.
+- Never unpublish, archive or delete someone else's page or post without being asked. Restoring
+  a revision is the safe undo: `list_revisions`, read one with `get_revision`, then
+  `restore_revision` with the current `version`, and check the result with `get_page`.
+- Status changes (`publish_*`, `unpublish_*`, `archive_*`) are reversible and safe to repeat;
+  pass `version` so a stale read cannot flip the status. `delete_*` is permanent, needs the
+  current `version` and `confirm_slug`, and is never part of a routine update: prefer
+  `archive_*`. Over MCP there is no `Idempotency-Key`; after a timeout on `create_*`,
+  `update_*`, `restore_revision` or `delete_*`, re-read before you retry.
