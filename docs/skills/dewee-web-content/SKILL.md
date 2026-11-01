@@ -1,17 +1,19 @@
 ---
 name: dewee-web-content
-description: Create or update dewee.sh custom pages (/p/<slug>), blog posts and media through the dewee-web CLI or the remote MCP server at https://dewee.sh/mcp. Use when asked to publish an announcement, write a blog post, build a landing page from blocks, or upload an image to cdn.dewee.sh.
+description: Create or update dewee.sh custom pages (/p/<slug>), blog posts and media, and propose changes to the bilingual docs (/docs) as GitHub pull requests, through the dewee-web CLI or the remote MCP server at https://dewee.sh/mcp. Use when asked to publish an announcement, write a blog post, build a landing page from blocks, upload an image to cdn.dewee.sh, or fix or add a docs page.
 ---
 
 # dewee.sh content operator
 
 The site's hand-built pages live in code (this repo). Custom pages (`/p/<slug>`) and blog posts
-(`/blog/<slug>`) live in D1 and are edited through the API. This skill covers only the second kind.
+(`/blog/<slug>`) live in D1 and are edited through the API. The docs (`/docs`) are Markdown in
+Git: the API reads them and proposes changes as pull requests (see **Docs** below). Other code
+pages are out of scope.
 
 ## Before you start
 
 1. You need an API key with the smallest scopes that fit: `pages:read|write`,
-   `posts:read|write`, `media:write`, `leads:read`. Only the four super-admins can create keys
+   `posts:read|write`, `media:write`, `leads:read`, `docs:read|write`. Only the four super-admins can create keys
    at `https://dewee.sh/admin/keys`. Never print the key or paste it into a file in a repo.
 2. Pick one interface:
    - **CLI:** `npx -y dewee-web <command>` with `DEWEE_WEB_API_KEY` in the environment. Add
@@ -62,6 +64,30 @@ The site's hand-built pages live in code (this repo). Custom pages (`/p/<slug>`)
    `cdn.dewee.sh` URL. Every image needs real alt text, gallery images included. Videos are
    `.mp4`/`.webm` files on https or `/media/`, with `.vtt` captions when there is speech.
 7. **Report** the published URLs (EN and VI) and anything you could not verify.
+
+## Docs (pull requests, not publishing)
+
+The docs are `src/content/docs/{en,vi}/<section>/<slug>.md` in the site repo. Reads come from
+the docs base branch (`dev`), which can differ from what is deployed. A write opens a branch and
+a pull request; nothing changes on the site until a reviewer merges it and it deploys. `pages:*`
+grants nothing here: reading needs `docs:read`, proposing needs `docs:write`.
+
+1. **Find the page.** `list_docs` (CLI `docs list`) shows each file's id `section/slug`,
+   locale, title and blob `sha`.
+2. **Read the whole file.** `get_doc` (CLI `docs get <section/slug> --locale en --out f.md`)
+   returns `content` (front matter + body) and `sha` per locale. Edit that whole file.
+3. **Check before proposing.** `validate_doc` with `mode: "update"` (or `"create"`) runs the
+   build's checks and returns errors, warnings and a diff, without writing. Errors name the file
+   line, e.g. `en.body.line.12`. Front matter: `title` 3–60 chars, `description` 140–160,
+   `section` equal to the folder, `order`, optional `screens`, `updated: YYYY-MM-DD`. A
+   screenshot is `::shot{id="…"}` on its own paragraph and listed in `screens`.
+4. **Propose.** `update_doc` with `{ section, slug, en: { content, expected_sha }, note }`.
+   Send `vi` too when the change affects both languages; a warning reminds you when the twin is
+   untouched. A new page uses `create_doc` with both `en` and `vi`. A `409 version_conflict`
+   means the file changed since you read it: read again, re-apply, retry.
+5. **Hand over the link.** The result has `pull_request.url` and `status: "pr_opened"`. Say the
+   change is proposed, not live. Repeating the same call returns the same pull request
+   (`replayed: true`), so a retry after a timeout is safe.
 
 ## Data and comparison widgets
 

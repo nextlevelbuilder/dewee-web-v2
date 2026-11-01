@@ -108,6 +108,21 @@ dewee-web media upload diagram.png
 
 Prints the CDN URL (`https://cdn.dewee.sh/media/yyyy/mm/<uuid>.png`). PNG, JPEG, WebP, GIF and AVIF up to 10 MB are accepted.
 
+## Docs
+
+The docs at `/docs` live in Git, so the CLI reads them from the docs base branch and proposes changes as pull requests. Nothing goes live until a reviewer merges the pull request and the site deploys. Reading needs `docs:read` and proposing needs `docs:write`.
+
+```sh
+dewee-web docs list --locale en --section get-started
+dewee-web docs get get-started/quickstart --locale en --out quickstart.md
+# edit quickstart.md, then check it and see the diff (writes nothing; exit code 2 when invalid)
+dewee-web docs validate get-started/quickstart --en quickstart.md --en-sha <sha printed by get>
+dewee-web docs update get-started/quickstart --en quickstart.md --en-sha <sha> --note "Clarify step 2"
+dewee-web docs create console/new-page --en new-page.en.md --vi new-page.vi.md
+```
+
+Files are whole Markdown docs: front matter (`title`, `description` of 140–160 characters, `section`, `order`, optional `screens`, `updated`) and the body. `--en-sha` / `--vi-sha` is the blob SHA you edited; if the file changed since, the API answers `version_conflict (409)`. A new page needs both languages. Running the same `update` or `create` again prints the same pull request instead of opening another.
+
 ## MCP
 
 The site runs a remote MCP server at `https://dewee.sh/mcp` (Streamable HTTP, Bearer key). Clients that support remote servers with headers can connect directly. For stdio-only clients, `dewee-web mcp` bridges stdin/stdout to it:
@@ -124,7 +139,7 @@ The site runs a remote MCP server at `https://dewee.sh/mcp` (Streamable HTTP, Be
 }
 ```
 
-The tools available depend on the key's scopes (for example `create_page` needs `pages:write`).
+The tools available depend on the key's scopes (for example `create_page` needs `pages:write`, `update_doc` needs `docs:write`).
 
 ## Output and exit codes
 

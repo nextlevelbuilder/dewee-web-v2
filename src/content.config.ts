@@ -6,26 +6,12 @@
  */
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
-import { z } from "astro/zod";
-import { CCP_SCREENS, type CcpScreenId } from "./content/ccp-screens";
-import { DOC_SECTION_IDS } from "./content/pages/docs";
-
-const screenIds = CCP_SCREENS.map((s) => s.id) as [CcpScreenId, ...CcpScreenId[]];
+import { docFrontMatterSchema } from "./lib/docs-schema";
 
 const docs = defineCollection({
   loader: glob({ pattern: "{en,vi}/**/*.md", base: "./src/content/docs" }),
-  schema: z.object({
-    /** Page title without the brand suffix (SeoHead adds " · dewee"). */
-    title: z.string().min(3).max(60),
-    /** Meta description; DESIGN.md asks for 140–160 characters. */
-    description: z.string().min(140).max(160),
-    section: z.enum(DOC_SECTION_IDS),
-    /** Position inside the section (ascending). */
-    order: z.number().int().min(0),
-    /** Console screenshots shown on the page, placed with `::shot{id="…"}` lines. */
-    screens: z.array(z.enum(screenIds)).optional(),
-    updated: z.coerce.date(),
-  }),
+  // Shared with the docs change proposals of the content MCP (src/lib/server/docs/).
+  schema: docFrontMatterSchema,
 });
 
 export const collections = { docs };
