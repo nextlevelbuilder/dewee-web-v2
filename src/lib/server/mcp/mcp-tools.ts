@@ -15,6 +15,7 @@ import { findRow, getPage, listPages, listQuerySchema } from "../pages/page-quer
 import { listRevisions, restoreRevision } from "../pages/page-revisions";
 import { createPageInput, kindSchema, localeSchema, updatePageInput, type PageKind } from "../pages/page-schema";
 import { changeStatus, createPage, updatePage } from "../pages/page-service";
+import { DOCS_MCP_TOOLS } from "../docs/docs-mcp-tools";
 import type { McpServer, ToolDef } from "./json-rpc";
 
 export type McpCtx = { env: PlatformEnv; principal: Principal };
@@ -195,6 +196,7 @@ export const MCP_TOOLS: readonly Tool[] = [
       return restoreRevision(ctx.env.DB, a.kind, id, a.revision_id, { actor: ctx.principal.actor, ifMatch: a.version });
     },
   },
+  ...DOCS_MCP_TOOLS,
 ];
 
 export const MCP_SERVER: McpServer<McpCtx> = {
@@ -204,6 +206,7 @@ export const MCP_SERVER: McpServer<McpCtx> = {
   instructions:
     "Manage dewee.sh custom pages (/p/<slug>) and blog posts (/blog/<slug>) in English (en) and Vietnamese (vi). " +
     "Before composing a page, call list_blocks and get_block_schema. Posts are Markdown and may place widgets inline: call list_blocks with context post, then put ::widget{id} lines in body_md. New content is a draft until published. " +
-    "Pass the `version` you last read when updating to avoid overwriting other edits. Link EN and VI versions with the same translation_key.",
+    "Pass the `version` you last read when updating to avoid overwriting other edits. Link EN and VI versions with the same translation_key. " +
+    "Docs (/docs) live in Git: list_docs and get_doc read them, validate_doc previews a change, and create_doc / update_doc open a pull request for review instead of publishing.",
   tools: MCP_TOOLS,
 };
