@@ -4,7 +4,8 @@
  * conversation (src/lib/server/chat-room.ts), optional Discord team notifications
  * (src/lib/server/notify.ts), self-hosted fonts (astro.config.mjs). Security facts come from the
  * dewee product (AES-256-GCM secrets at rest, SHA-256 hashed API keys). Retention periods are not
- * decided yet, so only the criteria are stated. The VI version is On-Premises only.
+ * decided yet, so only the criteria are stated. The VI version is On-Premises only, apart from the
+ * Chrome extension section, which mirrors docs/privacy-policy.md in nextlevelbuilder/dewee-chrome-ext.
  */
 import type { Bi } from "~/i18n/config";
 import type { LegalDoc } from "./types";
@@ -16,7 +17,7 @@ export const PRIVACY: Bi<LegalDoc> = {
   en: {
     meta: {
       title: "Privacy Policy",
-      description: "What personal data dewee collects on its website, chat and product, why, where it is stored, who helps us process it, how long we keep it and your rights.",
+      description: "What personal data dewee collects on its website, chat, product and Chrome extension, why, where it is kept, who processes it, how long and your rights.",
       crumb: "Privacy",
     },
     hero: {
@@ -95,6 +96,29 @@ export const PRIVACY: Bi<LegalDoc> = {
         ],
       },
       {
+        id: "chrome-extension",
+        title: "The dewee Chrome extension",
+        short: "The extension talks only to the dewee server you connect it to. It has no analytics or trackers, and it never reads your other tabs.",
+        body: [
+          "The dewee Chrome extension is a side panel client for your dewee Cloud account or your own dewee Gateway. It sends data only to that server, and it has no analytics, telemetry, advertising or third-party trackers.",
+          {
+            table: {
+              head: ["What", "When", "Where it goes and where it is kept"],
+              rows: [
+                ["Connection profiles (server address, name, theme, language)", "When you add or change a profile", "Kept in the browser (chrome.storage.local); not sent anywhere"],
+                ["Your sign-in: dewee Cloud tokens or a personal, scoped Gateway API key", "When you connect", "Sent only to that server to authenticate. Kept in browser session storage, cleared when the browser closes, unless you turn on “Remember on this device”. Never synced"],
+                ["Chat messages and agent replies", "When you chat", "Your dewee server; the extension does not store them"],
+                ["Values you type into a credential card an agent sends", "When you submit the card", "Only that card’s answer endpoint on your dewee server; never stored by the extension"],
+                ["Text you select on a page, with its title and address (“Ask dewee”, off by default)", "Only when you press Ask dewee and then send", "Your dewee server, as a chat message"],
+                ["Content of tabs an agent operates (“connected browser”, off by default)", "Only in tabs the agent opened, on sites you allowed, while access is valid", "Your dewee server, so the agent can read and act on the page"],
+              ],
+            },
+          },
+          "The connected browser never reads your other tabs. Password, payment and one-time-code values are never read and never typed by an agent, and actions that look like submitting, publishing, deleting or paying ask you first. You can pause, stop or revoke access in the side panel at any time.",
+          "Site access is optional and asked for one site at a time. Signing out or removing a profile deletes its sign-in from the browser, and removing the extension deletes everything it stored. Its use of information received from Chrome APIs follows the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/policies), including the Limited Use requirements.",
+        ],
+      },
+      {
         id: "transfers",
         title: "International transfers",
         short: "Some of our providers work outside your country. Where the law requires it, we rely on approved safeguards.",
@@ -165,7 +189,7 @@ export const PRIVACY: Bi<LegalDoc> = {
   vi: {
     meta: {
       title: "Chính sách quyền riêng tư",
-      description: "dewee thu thập dữ liệu cá nhân nào trên website, khung chat và khi triển khai On-Premises, vì sao, lưu ở đâu, ai cùng xử lý, giữ bao lâu và quyền của bạn.",
+      description: "dewee thu thập dữ liệu cá nhân nào trên website, khung chat, tiện ích Chrome và bản On-Premises, vì sao, lưu ở đâu, ai cùng xử lý, giữ bao lâu và quyền của bạn.",
       crumb: "Quyền riêng tư",
     },
     hero: {
@@ -240,6 +264,29 @@ export const PRIVACY: Bi<LegalDoc> = {
             ],
           },
           "Danh sách đầy đủ các đơn vị xử lý dữ liệu cá nhân cho chúng tôi có trên [trang GDPR](/vi/gdpr#sub-processors).",
+        ],
+      },
+      {
+        id: "chrome-extension",
+        title: "Tiện ích dewee cho Chrome",
+        short: "Tiện ích chỉ trao đổi dữ liệu với máy chủ dewee mà bạn kết nối. Tiện ích không có công cụ phân tích hay theo dõi, và không bao giờ đọc các tab khác của bạn.",
+        body: [
+          "Tiện ích dewee cho Chrome là một khung bên (side panel) kết nối tới tài khoản dewee Cloud hoặc dewee Gateway của chính bạn. Tiện ích chỉ gửi dữ liệu tới máy chủ đó, và không có công cụ phân tích, đo lường, quảng cáo hay theo dõi của bên thứ ba.",
+          {
+            table: {
+              head: ["Loại dữ liệu", "Khi nào", "Gửi tới đâu, lưu ở đâu"],
+              rows: [
+                ["Hồ sơ kết nối (địa chỉ máy chủ, tên, giao diện, ngôn ngữ)", "Khi bạn thêm hoặc sửa hồ sơ", "Lưu trong trình duyệt (chrome.storage.local); không gửi đi đâu"],
+                ["Thông tin đăng nhập: token dewee Cloud hoặc API key cá nhân, giới hạn quyền, của Gateway", "Khi bạn kết nối", "Chỉ gửi tới máy chủ đó để xác thực. Lưu trong bộ nhớ phiên của trình duyệt và bị xoá khi đóng trình duyệt, trừ khi bạn bật “Ghi nhớ trên thiết bị này”. Không bao giờ đồng bộ"],
+                ["Tin nhắn chat và câu trả lời của agent", "Khi bạn chat", "Máy chủ dewee của bạn; tiện ích không lưu lại"],
+                ["Giá trị bạn nhập vào thẻ yêu cầu thông tin bí mật do agent gửi", "Khi bạn gửi thẻ", "Chỉ tới địa chỉ nhận câu trả lời của thẻ đó trên máy chủ dewee của bạn; tiện ích không lưu lại"],
+                ["Đoạn văn bản bạn bôi đen trên trang, kèm tiêu đề và địa chỉ trang (“Hỏi dewee”, tắt mặc định)", "Chỉ khi bạn bấm Hỏi dewee rồi gửi", "Máy chủ dewee của bạn, dưới dạng tin nhắn chat"],
+                ["Nội dung các tab do agent điều khiển (“trình duyệt kết nối”, tắt mặc định)", "Chỉ trong tab do agent mở, trên các trang bạn cho phép, khi quyền còn hiệu lực", "Máy chủ dewee của bạn, để agent đọc và thao tác trên trang"],
+              ],
+            },
+          },
+          "Trình duyệt kết nối không bao giờ đọc các tab khác của bạn. Agent không đọc và không gõ giá trị mật khẩu, thông tin thanh toán hay mã dùng một lần, và các thao tác giống như gửi, đăng, xoá hoặc thanh toán đều hỏi bạn trước. Bạn có thể tạm dừng, dừng hoặc thu hồi quyền trong khung bên bất cứ lúc nào.",
+          "Quyền truy cập trang web là tuỳ chọn và được hỏi riêng cho từng trang. Đăng xuất hoặc xoá hồ sơ sẽ xoá thông tin đăng nhập khỏi trình duyệt, và gỡ tiện ích sẽ xoá mọi thứ tiện ích đã lưu. Việc dùng thông tin nhận từ API của Chrome tuân theo [Chính sách dữ liệu người dùng của Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/policies), bao gồm các yêu cầu Limited Use.",
         ],
       },
       {
