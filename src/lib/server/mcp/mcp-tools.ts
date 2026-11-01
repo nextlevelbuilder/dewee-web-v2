@@ -7,34 +7,20 @@ import { POST_WIDGETS_HELP } from "../../blocks/post-widgets/widget-directives";
 import { blockJsonSchema, listBlocks } from "../../blocks/registry";
 import { notFound } from "../api/api-errors";
 import { leadsQuerySchema, listLeads } from "../api/leads-query";
-import type { PlatformEnv } from "../api/platform-env";
-import type { ApiScope } from "../auth/api-key-format";
-import { requireScope, type Principal } from "../auth/request-auth";
+import { requireScope } from "../auth/request-auth";
 import { decodeBase64Image, mediaJsonBody, uploadMedia } from "../media/media-upload";
-import { findRow, getPage, listPages, listQuerySchema } from "../pages/page-queries";
+import { getPage, listPages, listQuerySchema } from "../pages/page-queries";
 import { listRevisions, restoreRevision } from "../pages/page-revisions";
-import { createPageInput, kindSchema, localeSchema, updatePageInput, type PageKind } from "../pages/page-schema";
+import { createPageInput, kindSchema, updatePageInput, type PageKind } from "../pages/page-schema";
 import { changeStatus, createPage, updatePage } from "../pages/page-service";
-import type { McpServer, ToolDef } from "./json-rpc";
+import type { McpServer } from "./json-rpc";
+import { getRevisionTool, lifecycleTools, statusInput } from "./mcp-lifecycle-tools";
+import { has, idField, lookupLocale, refInput, resolveId, scopeFor, type McpCtx, type Tool } from "./mcp-tool-kit";
 
-export type McpCtx = { env: PlatformEnv; principal: Principal };
-type Tool = ToolDef<McpCtx>;
+export type { McpCtx } from "./mcp-tool-kit";
 
-const has = (scope: ApiScope) => (ctx: McpCtx) => ctx.principal.scopes.includes(scope);
-const scopeFor = (kind: PageKind, mode: "read" | "write"): ApiScope => `${kind}s:${mode}` as ApiScope;
-
-const idField = z.string().min(1).max(200).describe("The UUID, or the slug (then set lookup_locale for Vietnamese).");
-const lookupLocale = localeSchema.optional().describe("Locale used to resolve a slug id (default en).");
-const refInput = z.object({ id: idField, lookup_locale: lookupLocale }).strict();
-const statusInput = refInput.extend({ version: z.number().int().positive().optional().describe("Expected current version (409 if it changed).") }).strict();
 const getInput = refInput.extend({ kind: kindSchema.default("page").describe("page (default) or post.") }).strict();
 const updateInput = z.object({ id: idField, lookup_locale: lookupLocale, ...updatePageInput.shape }).strict();
-
-async function resolveId(ctx: McpCtx, kind: PageKind, id: string, locale?: "en" | "vi"): Promise<string> {
-  const row = await findRow(ctx.env.DB, kind, id, locale ?? "en");
-  if (!row) throw notFound(`No ${kind} with id or slug "${id}"${locale ? ` in ${locale}` : ""}.`);
-  return row.id;
-}
 
 function contentTools(kind: PageKind): Tool[] {
   const read = scopeFor(kind, "read");
@@ -44,7 +30,7 @@ function contentTools(kind: PageKind): Tool[] {
     {
       name: `list_${kind}s`,
       title: `List ${kind}s`,
-      description: `List or search ${noun}s (newest first). Filters: locale, status, q (text search), tag. Listings omit blocks and body_md; use get_page for the full record.`,
+      description: `List or search ${noun}s (newest first). Filters: locale, status, q (text search), tag. Listings omit blocks and body_md; use get_page${kind === "post" ? " with kind post" : ""} for the full record.`,
       input: listQuerySchema,
       annotations: { readOnlyHint: true },
       enabled: has(read),
@@ -83,7 +69,7 @@ function contentTools(kind: PageKind): Tool[] {
       enabled: has(write),
       run: async (args, ctx) => {
         const a = statusInput.parse(args);
-        return changeStatus(ctx.env.DB, kind, await resolveId(ctx, kind, a.id, a.lookup_locale), "publish", { actor: ctx.principal.actor, ifMatch: a.version });
+        return changeStatus(ctx.env.DB, kind, await resolveId(ctx, kind, a.id, a.lookup_locale), "publish", { actor: ctx.principal.actor, ifMatch: a.version, note: a.note });
       },
     },
   ];
@@ -91,7 +77,7 @@ function contentTools(kind: PageKind): Tool[] {
     tools.splice(1, 0, {
       name: "get_page",
       title: "Get a page or post",
-      description: "Fetch one custom page (kind page, default) or blog post (kind post) with its blocks, Markdown body, status and version.",
+      description: "Fetch one custom page (kind page, default) or blog post (kind post) with its blocks, Markdown body, status and version. This is also how to read a post: get_page with kind post.",
       input: getInput,
       annotations: { readOnlyHint: true },
       enabled: (ctx) => has("pages:read")(ctx) || has("posts:read")(ctx),
@@ -101,20 +87,8 @@ function contentTools(kind: PageKind): Tool[] {
         return getPage(ctx.env.DB, a.kind, a.id, a.lookup_locale);
       },
     });
-    tools.push({
-      name: "unpublish_page",
-      title: "Unpublish a page",
-      description: "Move a published custom page back to draft (it stops being public).",
-      input: statusInput,
-      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
-      enabled: has(write),
-      run: async (args, ctx) => {
-        const a = statusInput.parse(args);
-        return changeStatus(ctx.env.DB, kind, await resolveId(ctx, kind, a.id, a.lookup_locale), "unpublish", { actor: ctx.principal.actor, ifMatch: a.version });
-      },
-    });
   }
-  return tools;
+  return [...tools, ...lifecycleTools(kind)];
 }
 
 const listBlocksInput = z.object({ context: z.enum(["page", "post"]).optional().describe("Only blocks usable in a page or in a post.") }).strict();
@@ -181,6 +155,7 @@ export const MCP_TOOLS: readonly Tool[] = [
       return { revisions: await listRevisions(ctx.env.DB, a.kind, await resolveId(ctx, a.kind, a.id, a.lookup_locale)) };
     },
   },
+  getRevisionTool,
   {
     name: "restore_revision",
     title: "Restore a revision",
@@ -204,6 +179,7 @@ export const MCP_SERVER: McpServer<McpCtx> = {
   instructions:
     "Manage dewee.sh custom pages (/p/<slug>) and blog posts (/blog/<slug>) in English (en) and Vietnamese (vi). " +
     "Before composing a page, call list_blocks and get_block_schema. Posts are Markdown and may place widgets inline: call list_blocks with context post, then put ::widget{id} lines in body_md. New content is a draft until published. " +
-    "Pass the `version` you last read when updating to avoid overwriting other edits. Link EN and VI versions with the same translation_key.",
+    "Read one record with get_page (kind page or post). Check a write first with validate_page / validate_post (dry run, nothing saved). " +
+    "Pass the `version` you last read when updating or changing status to avoid overwriting other edits; delete_* requires it. Prefer archive_* over delete_*. Link EN and VI versions with the same translation_key.",
   tools: MCP_TOOLS,
 };
