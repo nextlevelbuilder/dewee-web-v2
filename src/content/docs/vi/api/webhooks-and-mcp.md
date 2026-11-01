@@ -62,6 +62,8 @@ Gateway có thể đóng vai MCP server tại `POST /mcp/server`, để một cl
 
 `/mcp/server` là địa chỉ mà mọi cấu hình được sinh ra đều dùng. Đường dẫn cũ `/mcp` vẫn trả lời client MCP, kèm header `Deprecation` và header `Link` trỏ sang `/mcp/server`, và sẽ bị gỡ trong một bản phát hành sau, nên hãy chuyển các client hiện có sang `/mcp/server`.
 
+Để client quản lý workspace dưới danh nghĩa người dùng đã đăng nhập thay vì đóng vai một agent, xem [Workspace MCP](/docs/api/workspace-mcp).
+
 Hai công tắc quyết định client có kết nối được hay không:
 
 - **Runtime.** Trên gateway On-Premises, endpoint này **mặc định tắt**. Người vận hành bật nó bằng `GOCLAW_MCP_PUBLIC_ENABLED=1` hoặc `tools.mcp.public.enabled` trong file cấu hình.
