@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 import { heading, href, icon, iconSrc, optText, text } from "./block-fields";
-import type { BlockDef } from "./block-types";
+import { PAGE_AND_POST, type BlockDef } from "./block-types";
 
 const MOODS = ["happy", "awake", "wink", "sleepy", "love", "surprised", "focused"] as const;
 const ACCESSORIES = ["none", "glasses", "headset", "cap"] as const;
@@ -153,6 +153,7 @@ export const MARKETING_BLOCKS: BlockDef[] = [
   {
     type: "Steps",
     category: "section",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "Up to six steps written as notebook exercises; `highlight` (0-based) marks the step we take on.",
     schema: steps,
@@ -161,6 +162,7 @@ export const MARKETING_BLOCKS: BlockDef[] = [
   {
     type: "Faq",
     category: "section",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "Questions and answers as native details/summary; also emitted as FAQPage JSON-LD.",
     schema: faq,
@@ -169,6 +171,7 @@ export const MARKETING_BLOCKS: BlockDef[] = [
   {
     type: "Quote",
     category: "section",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "A pull quote in display italics on the red margin rule.",
     schema: quote,
@@ -185,10 +188,11 @@ export const MARKETING_BLOCKS: BlockDef[] = [
   {
     type: "Timeline",
     category: "section",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "A ruler timeline (horizontal on wide screens); the last entry pulses as 'now'.",
     schema: timeline,
-    example: { items: [{ date: "Feb 2026", text: "GoClaw's first commit" }, { date: "Oct 2026", text: "dewee v3.40" }], label: "Milestones" },
+    example: { items: [{ date: "Feb 2026", text: "GoClaw's first commit" }, { date: "Oct 2026", text: "dewee v3.43" }], label: "Milestones" },
   },
   {
     type: "ProofStrip",

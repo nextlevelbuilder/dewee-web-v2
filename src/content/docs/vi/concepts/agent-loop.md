@@ -72,7 +72,7 @@ Hãy dùng agent predefined cho bàn hỗ trợ khách hàng và trợ lý dùng
 - **Cắt gọn kết quả tool** (tuỳ chọn bật, `contextPruning.mode: "cache-ttl"`). Khi vượt 25% ngữ cảnh, các kết quả tool cũ bị rút gọn chỉ còn phần đầu và phần cuối; vượt 50%, các kết quả lớn bị thay bằng một đoạn giữ chỗ (placeholder). Tin nhắn hệ thống, tin nhắn đầu tiên của người dùng và ba câu trả lời gần nhất của agent không bao giờ bị cắt.
 - **Nén giữa vòng lặp.** Runtime chừa lại 20.000 token và nén lịch sử khi nó vượt 85% ngân sách còn lại. Model viết bản tóm tắt trong vòng 30 giây; nếu không kịp, một cơ chế dự phòng cố định sẽ giữ lại bản tóm tắt sẵn có, các nhóm lệnh gọi tool hoàn chỉnh và những tin nhắn mới nhất.
 - **Tóm tắt sau lượt chạy.** Sau mỗi lượt chạy, session có hơn 50 tin nhắn hoặc dùng quá 75% ngữ cảnh sẽ được tóm tắt ở chế độ nền. Bốn tin nhắn cuối được giữ nguyên.
-- **Ghi bộ nhớ trước khi tóm tắt.** Trước bản tóm tắt đó, agent có một lượt ngắn (tối đa 5 vòng lặp, 90 giây) để lưu các ghi chú lâu dài vào `memory/YYYY-MM-DD.md`. Phần này được cấu hình trong `compaction.memory_flush`. Xem [Bộ nhớ và kho tri thức](/docs/concepts/memory-and-knowledge).
+- **Ghi bộ nhớ trước khi tóm tắt.** Trước bản tóm tắt đó, agent có một lượt ngắn (tối đa 5 vòng lặp, 90 giây) để lưu các ghi chú lâu dài vào `memory/YYYY-MM-DD.md`. Phần này được cấu hình trong `compaction.memory_flush`. Lượt này chỉ dùng được các tool mà chính lượt chạy đó được phép, nên danh sách tool của kênh hoặc nhóm cũng giới hạn nó, và lượt chạy từ chat công khai trên website thì bỏ qua bước này. Xem [Bộ nhớ và kho tri thức](/docs/concepts/memory-and-knowledge).
 
 ## Dừng và theo dõi lượt chạy
 

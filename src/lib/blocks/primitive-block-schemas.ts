@@ -5,7 +5,7 @@
  */
 import { z } from "zod";
 import { button, heading, imageSrc, optText, text } from "./block-fields";
-import type { BlockDef } from "./block-types";
+import { PAGE_AND_POST, type BlockDef } from "./block-types";
 
 const richText = z
   .object({ heading: heading.optional(), markdown: text(20000), width: z.enum(["prose", "wide"]).optional() })
@@ -52,6 +52,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
   {
     type: "Image",
     category: "primitive",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "One image with alt text and an optional caption. `src` must be https:// or a /media/ path from the media upload.",
     schema: image,
@@ -60,6 +61,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
   {
     type: "Callout",
     category: "primitive",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "A boxed aside (note, tip, warning or success). `body` supports inline markup.",
     schema: callout,
@@ -76,6 +78,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
   {
     type: "Columns",
     category: "primitive",
+    contexts: PAGE_AND_POST,
     render: "section",
     description: "Two or three columns of Markdown, each with an optional title.",
     schema: columns,
@@ -84,6 +87,7 @@ export const PRIMITIVE_BLOCKS: BlockDef[] = [
   {
     type: "Divider",
     category: "primitive",
+    contexts: PAGE_AND_POST,
     render: "inline",
     description: "A hairline rule, optionally with a centred label.",
     schema: divider,

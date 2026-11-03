@@ -5,15 +5,21 @@
  * one by one (CSS only) and are fully visible without JS or with reduced motion.
  * Both calls to action carry `data-hero-cta` so the analytics layer can name hero clicks
  * (see PosthogAnalytics.astro and GoogleTagManager.astro); no tracking code lives here.
+ * The H1 always renders as the control text. `altTitle` is the experiment's headline, kept as
+ * ready-made markup in `data-h1-alt` and swapped in on the client only for enrolled visitors
+ * (src/lib/hero-h1-experiment.ts), so SEO, the Markdown twin and no-JS visitors see control.
  */
 import { escapeHtml, inlineMarkup } from "~/lib/inline-markup";
 import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
 import Icon from "~/components/ui/Icon.astro";
+import { H1_PENDING_CLASS, H1_PENDING_SINCE_DATASET_KEY, H1_RESOLVE_TIMEOUT_MS } from "~/lib/hero-h1-experiment";
 
 type Line = { who: string; role?: string; text: string; me?: boolean };
 interface Props {
   eyebrow: string;
   title: string;
+  /** Experiment headline (same `*em*` markup as `title`); not rendered unless the client swaps it in. */
+  altTitle?: string;
   lede: string;
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
@@ -23,10 +29,13 @@ interface Props {
   /** `label` names the chat for screen readers; `caption` is the visible note that it is simulated. */
   chat: { channel: string; label: string; caption?: string; lines: Line[] };
 }
-const { eyebrow, title, lede, primary, secondary, microcopy, note, chat } = Astro.props;
+const { eyebrow, title, altTitle, lede, primary, secondary, microcopy, note, chat } = Astro.props;
 // Each sentence of the promise gets its own line so the break never lands mid-thought, and
 // its last two words are glued together so no sentence ends on a lonely word ("is / yours.").
-const titleLines = title.split(/(?<=[.!?])\s+/).map((l) => l.replace(/\s+(\S+)$/, "\u00a0$1"));
+const lines = (text: string) => text.split(/(?<=[.!?])\s+/).map((l) => l.replace(/\s+(\S+)$/, "\u00a0$1"));
+const lineHtml = (l: string) => `<span class="hero__line">${inlineMarkup(l)}</span>`;
+const titleLines = lines(title);
+const altTitleHtml = altTitle ? lines(altTitle).map(lineHtml).join("") : undefined;
 
 const initials = (name: string) => name.split(/\s+/).slice(-1)[0].slice(0, 1).toUpperCase();
 // Highlight @mentions and ✓ like a real chat client would.
@@ -41,7 +50,21 @@ const richText = (text: string) =>
   <div class="container hero__grid">
     <div class="hero__copy">
       <p class="eyebrow" data-reveal>{eyebrow}</p>
-      <h1 class="hero__title" data-reveal>{titleLines.map((l) => <span class="hero__line" set:html={inlineMarkup(l)} />)}</h1>
+      {altTitleHtml && (
+        // Runs before the H1 is parsed. Only consented visitors with PostHog present can be enrolled,
+        // so only they wait (briefly) for the flag; everyone else is never hidden. The timestamp
+        // starts the shared deadline that both the module and the CSS reveal below honour.
+        <script is:inline define:vars={{ pending: H1_PENDING_CLASS, sinceKey: H1_PENDING_SINCE_DATASET_KEY }}>
+          try {
+            if (window.posthog && localStorage.getItem("dewee.cookies") === "all") {
+              var d = document.documentElement;
+              d.dataset[sinceKey] = String(performance.now());
+              d.classList.add(pending);
+            }
+          } catch (e) {}
+        </script>
+      )}
+      <h1 class="hero__title" data-reveal data-h1-alt={altTitleHtml} style={altTitleHtml ? `--h1-deadline: ${H1_RESOLVE_TIMEOUT_MS}ms` : undefined}>{titleLines.map((l) => <span class="hero__line" set:html={inlineMarkup(l)} />)}</h1>
       <p class="lede hero__lede" data-reveal>{lede}</p>
       <div class="hero__actions" data-reveal>
         <a class="btn btn--primary btn--lg" href={primary.href} data-hero-cta="primary">{primary.label}<Icon name="arrow-right" class="arrow" /></a>
@@ -84,6 +107,20 @@ const richText = (text: string) =>
   </div>
 </section>
 
+<script>
+  import { runHeroH1Experiment } from "~/lib/hero-h1-experiment";
+  const h1 = document.querySelector<HTMLElement>("h1[data-h1-alt]");
+  let consented = false;
+  try { consented = localStorage.getItem("dewee.cookies") === "all"; } catch { consented = false; }
+  runHeroH1Experiment({
+    root: document.documentElement,
+    h1,
+    categoryHtml: h1?.dataset.h1Alt,
+    consented,
+    posthog: (window as unknown as { posthog?: Parameters<typeof runHeroH1Experiment>[0]["posthog"] }).posthog,
+  });
+</script>
+
 <style>
   .hero { position: relative; padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) clamp(3rem, 2rem + 4vw, 5.5rem); isolation: isolate; }
   .hero__bg { position: absolute; inset: 0; z-index: -1; --drum-x: 76%; --drum-y: 46%; }
@@ -92,6 +129,14 @@ const richText = (text: string) =>
   /* Balanced lines keep a one-sentence promise from stranding a short word ("got") mid-title. */
   .hero__title { max-inline-size: 18ch; }
   .hero__line { display: block; text-wrap: balance; }
+  /* While the experiment flag loads, the headline keeps its box but is invisible. The animation is
+     the safety net: it starts revealing control at the script's deadline (`--h1-deadline`, set from
+     H1_RESOLVE_TIMEOUT_MS), even if the script never runs. The animation clock starts when the H1 is
+     first styled, which is after the inline script's timestamp, so CSS never reveals before the
+     script has stopped being allowed to swap. No space is reserved for the longer category text:
+     reserving it would also change what the control arm sees. */
+  :global(html.js.h1-test-pending) .hero__title { opacity: 0; animation: h1-reveal var(--dur-1) var(--h1-deadline) forwards; }
+  @keyframes h1-reveal { to { opacity: 1; } }
   .hero__lede { max-inline-size: 36rem; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-2); }
   .hero__micro { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-3); }

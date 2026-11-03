@@ -3,7 +3,7 @@ title: Cài đặt và chạy gateway
 description: Chạy runtime dewee bằng Docker hoặc từ mã nguồn, đặt các biến môi trường cần thiết, chọn edition, và giữ hệ thống ổn định với nâng cấp, sao lưu và khôi phục.
 section: runtime
 order: 1
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 Runtime là phần làm việc thật sự của dewee: agent, tool, channel, lịch chạy và workflow đều chạy bên trong một tiến trình gateway duy nhất. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises; với On-Premises, bạn vận hành gateway này trên hạ tầng của mình. Nếu bạn tự cài đặt, hãy làm theo [Tự cài đặt dewee](/docs/get-started/self-install). Trang này dành cho người vận hành: cài đặt, trỏ tới cơ sở dữ liệu và giữ cho nó chạy ổn định.
@@ -66,6 +66,7 @@ Thiết lập đến từ một file cấu hình JSON và từ biến môi trư�
 | `GOCLAW_DATA_DIR`, `GOCLAW_WORKSPACE` | Nơi gateway giữ dữ liệu và file làm việc của agent. |
 | `GOCLAW_LOG_LEVEL`, `GOCLAW_LOG_FILE` | `debug`, `info`, `warn` hoặc `error`, và file log tuỳ chọn. |
 | `GOCLAW_EDITION` | `standard` hoặc `lite`. Xem bên dưới. |
+| `GOCLAW_REQUIRE_AUTH` | `1` buộc gateway yêu cầu xác thực kể cả trên địa chỉ loopback. Hãy đặt biến này khi gateway nằm sau reverse proxy trên cùng máy; xem [bên dưới](#sau-reverse-proxy-trên-cùng-máy). |
 
 API key của model provider thường được thêm trong dashboard hoặc console, nơi chúng được lưu ở dạng mã hoá. Gateway cũng đọc `GOCLAW_ANTHROPIC_API_KEY`, `GOCLAW_OPENAI_API_KEY` và `GOCLAW_OPENROUTER_API_KEY` khi khởi động.
 
@@ -74,13 +75,26 @@ API key của model provider thường được thêm trong dashboard hoặc con
 
 ## Mạng và xác thực
 
-Gateway từ chối khởi động trên một địa chỉ không phải loopback nếu không có gateway token. Chỉ khi phát triển trên máy cá nhân bạn mới nên bỏ qua kiểm tra này bằng `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. Khi gateway có thể được truy cập từ máy khác, hãy đặt nó sau TLS terminator hoặc reverse proxy của bạn.
+Gateway từ chối khởi động trên một địa chỉ không phải loopback nếu không có gateway token. Chỉ khi phát triển trên máy cá nhân bạn mới nên bỏ qua kiểm tra này bằng `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. Trên địa chỉ loopback như `127.0.0.1`, gateway không có token vẫn để mở, để phục vụ việc phát triển trên máy cá nhân. Khi gateway có thể được truy cập từ máy khác, hãy đặt nó sau TLS terminator hoặc reverse proxy của bạn.
+
+### Sau reverse proxy trên cùng máy
+
+Khi một reverse proxy trên cùng máy công bố gateway ra ngoài, chẳng hạn Nginx, Caddy hay bộ định tuyến của một nền tảng hosting, request tới gateway đều đi từ chính máy đó. Hãy đặt `GOCLAW_REQUIRE_AUTH=1` để gateway vẫn đòi credential ở mọi bên gọi:
+
+- Gateway luôn yêu cầu xác thực, kể cả khi lắng nghe trên `127.0.0.1`.
+- Gateway từ chối khởi động nếu `GOCLAW_GATEWAY_TOKEN` chưa được đặt hoặc ngắn hơn 32 ký tự. Token sinh bằng `openssl rand -hex 32`, `./prepare-env.sh` hay `dewee onboard` đều đạt yêu cầu. Token phải đến từ biến môi trường hoặc file cấu hình, không chỉ từ cơ sở dữ liệu.
+- Đặt biến này cùng với `GOCLAW_ALLOW_INSECURE_NO_AUTH` sẽ bị từ chối khi khởi động.
+- Các thay đổi cấu hình từ dashboard hoặc qua `config.apply` và `config.patch` không thể xoá hay làm ngắn gateway token.
+- Webhook chỉ dành cho bên gọi cục bộ với `localhost_only` sẽ từ chối mọi bên gọi; xem [Webhook sau reverse proxy](/docs/api/webhooks-and-mcp#webhook-sau-reverse-proxy).
+- Ghép nối trình duyệt vẫn hoạt động: một yêu cầu ghép nối chỉ có quyền truy cập sau khi người vận hành, đã xác thực bằng gateway token hoặc một API key admin, phê duyệt nó.
+
+Mọi giá trị khác rỗng, `0`, `false`, `no` hoặc `off` đều bật chế độ này. Không đặt biến này thì việc phát triển trên máy cá nhân vẫn như trước. `docker-compose.selfhosted.yml` chuyển `GOCLAW_REQUIRE_AUTH` vào gateway; hãy đặt nó là `1` khi có proxy công bố runtime ra ngoài.
 
 Đặt `GOCLAW_PUBLIC_URL` là địa chỉ công khai của gateway (ví dụ `https://dewee.example.com`). Gateway đưa địa chỉ này cho các dịch vụ bên ngoài, chẳng hạn URL callback và webhook của kênh hay link tải file. Khi đã đặt, không request nào thay đổi được nó. Nếu không đặt, gateway chỉ học địa chỉ từ request của system owner hoặc admin của master tenant. Các workspace khác không bao giờ thay đổi được nó.
 
 Gateway chỉ đọc `X-Forwarded-Host` và `X-Forwarded-Proto` từ các proxy có trong `GOCLAW_TRUSTED_PROXIES`, một danh sách địa chỉ IP, dải CIDR hoặc tên máy cách nhau bằng dấu phẩy (ví dụ `127.0.0.1,::1` khi nginx chạy cùng máy, hoặc tên service Docker Compose của container proxy). Với mọi client khác, các header này bị bỏ qua. Trình cài đặt self-hosted và các file Compose đã tự đặt giá trị này cho proxy đi kèm; ở nơi khác danh sách mặc định rỗng. Một mục không hợp lệ sẽ khiến gateway không khởi động.
 
-Truy cập MCP công khai vào gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) mặc định tắt. Đọc [Webhook và MCP](/docs/api/webhooks-and-mcp) trước khi bật.
+Truy cập MCP công khai vào gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) mặc định tắt. Đọc [Webhook và MCP](/docs/api/webhooks-and-mcp) trước khi bật; giới hạn theo workspace của nó, `GOCLAW_MCP_PUBLIC_TENANT_REQUESTS_PER_MINUTE` và `GOCLAW_MCP_PUBLIC_TENANT_MAX_CONCURRENT_TOOL_CALLS`, được giải thích ở mục [Giới hạn, hạn mức và thu hồi key](/docs/api/webhooks-and-mcp#giới-hạn-hạn-mức-và-thu-hồi-key).
 
 ## Edition
 

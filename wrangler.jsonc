@@ -4,7 +4,7 @@
   "name": "dewee-web-v2",
   "main": "./src/worker.ts",
   "compatibility_date": "2026-09-20",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "observability": { "enabled": true },
   "assets": {
     "binding": "ASSETS",
@@ -28,14 +28,18 @@
     "CHAT_AGENT_DAILY_BUDGET": "500",
     "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
     "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
-    "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_"
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_",
+    // Docs change proposals open pull requests here (GitHub App secrets: DOCS_GITHUB_APP_*).
+    "DOCS_GITHUB_REPO": "nextlevelbuilder/dewee-web-v2",
+    "DOCS_GITHUB_BASE": "dev"
   },
   "d1_databases": [
     { "binding": "DB", "database_name": "dewee-web-v2", "database_id": "46e17095-7779-4881-b927-0cd1fb318932", "migrations_dir": "migrations" }
   ],
   "kv_namespaces": [
     { "binding": "KV", "id": "2668d74d0ee84ee787a173976a6ba32a" },
-    { "binding": "SESSION", "id": "2668d74d0ee84ee787a173976a6ba32a" }
+    { "binding": "SESSION", "id": "2668d74d0ee84ee787a173976a6ba32a" },
+    { "binding": "OAUTH_KV", "id": "2668d74d0ee84ee787a173976a6ba32a" }
   ],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn" }],
   "durable_objects": {
@@ -61,14 +65,18 @@
         "CHAT_AGENT_DAILY_BUDGET": "500",
         "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
         "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
-        "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_"
+        "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_",
+        // Docs change proposals open pull requests here (GitHub App secrets: DOCS_GITHUB_APP_*).
+        "DOCS_GITHUB_REPO": "nextlevelbuilder/dewee-web-v2",
+        "DOCS_GITHUB_BASE": "dev"
       },
       "d1_databases": [
         { "binding": "DB", "database_name": "dewee-web-v2-staging", "database_id": "73c97265-f207-435a-9cb3-2e231f02fb5d", "migrations_dir": "migrations" }
       ],
       "kv_namespaces": [
         { "binding": "KV", "id": "d4d8211f3fd249098ab37e16590743d4" },
-        { "binding": "SESSION", "id": "d4d8211f3fd249098ab37e16590743d4" }
+        { "binding": "SESSION", "id": "d4d8211f3fd249098ab37e16590743d4" },
+        { "binding": "OAUTH_KV", "id": "d4d8211f3fd249098ab37e16590743d4" }
       ],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn-staging" }],
       "durable_objects": {

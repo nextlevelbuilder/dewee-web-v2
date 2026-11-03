@@ -1,0 +1,326 @@
+/*
+ * Inline widgets in blog posts (src/lib/blocks/post-widgets). The HTML is rendered as a string,
+ * so these rules are global and scoped by the `.post-body` and `.pw-*` classes. Colours come
+ * from tokens only, so light and dark themes both work; motion is opt-in per reader.
+ */
+.post-body { max-inline-size: var(--measure); }
+.post-body > .pw { margin-block: var(--space-6); }
+.post-body > .pw + .pw { margin-block-start: var(--space-5); }
+.pw figure { margin: 0; }
+.pw figcaption, .pw-gallery__caption { margin-block-start: var(--space-2); font-size: var(--step--1); color: var(--ink-3); }
+.pw img { max-inline-size: 100%; block-size: auto; }
+.pw-head { display: grid; gap: var(--space-2); margin-block-end: var(--space-4); }
+.pw-head__eyebrow { font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent-ink); }
+.post-body .pw-head__title { margin: 0; }
+.pw-head__lede { color: var(--ink-2); }
+
+/* Preview-only notices: the public page renders nothing in their place. */
+.pw-notice {
+  padding: var(--space-2) var(--space-3); border: 1px dashed var(--warning); border-radius: var(--radius-2);
+  background: var(--warning-soft); color: var(--ink); font-size: var(--step--1);
+}
+
+/* Reused page blocks at reading width. */
+.pw-image img { inline-size: 100%; }
+.pw-callout {
+  --tone: var(--accent); --tone-soft: var(--accent-soft); --tone-ink: var(--accent-ink);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4) var(--space-5);
+  border: 1px solid color-mix(in oklch, var(--tone) 35%, var(--rule)); border-inline-start: 3px solid var(--tone);
+  border-radius: var(--radius-2); background: color-mix(in oklch, var(--tone-soft) 70%, var(--surface)); color: var(--ink-2);
+}
+.pw-callout--tip, .pw-callout--success { --tone: var(--success); --tone-soft: var(--success-soft); --tone-ink: color-mix(in oklch, var(--success) 65%, var(--ink)); }
+.pw-callout--warning { --tone: var(--warning); --tone-soft: var(--warning-soft); --tone-ink: color-mix(in oklch, var(--warning) 60%, var(--ink)); }
+.pw-callout__icon { color: var(--tone-ink); padding-block-start: 0.15em; }
+.pw-callout__title { font-weight: 600; color: var(--tone-ink); }
+.pw-callout__text > * + * { margin-block-start: 0.4em; }
+.pw-quote blockquote { margin: 0; }
+.pw-quote figcaption { display: flex; flex-wrap: wrap; gap: 0 var(--space-2); }
+.pw-quote figcaption b { color: var(--ink); font-weight: 600; }
+.post-body .pw-steps, .post-body .pw-timeline { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+.pw-steps__item { padding: var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); }
+.pw-steps__item--hl { border-color: var(--accent); }
+.pw-steps__label, .pw-timeline__date { font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent-ink); }
+.pw-steps__title { font-weight: 600; color: var(--ink); }
+.pw-timeline li { display: grid; gap: var(--space-1); padding-inline-start: var(--space-4); border-inline-start: 2px solid var(--rule-strong); }
+.post-body .pw-steps li + li, .post-body .pw-timeline li + li { margin-block-start: 0; }
+.pw-faq { display: grid; gap: var(--space-2); }
+.pw-faq__item { border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); }
+.pw-faq__item summary { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); cursor: pointer; color: var(--ink); font-weight: 600; list-style: none; }
+.pw-faq__item summary::-webkit-details-marker { display: none; }
+.pw-faq__item[open] summary .icon { transform: rotate(45deg); }
+.pw-faq__item > p { padding: 0 var(--space-4) var(--space-4); }
+.pw-columns { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.pw-columns__col > * + * { margin-block-start: 0.8em; }
+.pw-columns__title { font-weight: 600; color: var(--ink); }
+.pw-divider { border: 0; border-block-start: 1px solid var(--rule); }
+div.pw-divider { display: flex; align-items: center; gap: var(--space-3); color: var(--ink-3); font-size: var(--step--1); }
+div.pw-divider::before, div.pw-divider::after { content: ""; flex: 1; border-block-start: 1px solid var(--rule); }
+
+/* Gallery: a scroll-snapping row that works without JavaScript; buttons arrive with it. */
+.pw-gallery__viewport { display: grid; gap: var(--space-2); }
+.post-body .pw-gallery__track, .post-body .pw-gallery__grid { list-style: none; margin: 0; padding: 0; }
+.pw-gallery__track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--space-3); overflow-x: auto;
+  scroll-snap-type: x mandatory; overscroll-behavior-x: contain; border-radius: var(--radius-2);
+}
+.pw-gallery__track:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.post-body .pw-gallery__track > li { margin: 0; scroll-snap-align: start; }
+.pw-gallery img { inline-size: 100%; aspect-ratio: 16 / 10; object-fit: contain; background: var(--paper-2); border-radius: var(--radius-2); border: 1px solid var(--rule); }
+.pw-gallery__controls { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); order: 2; }
+.pw-gallery__controls[hidden] { display: none; }
+.pw-gallery__count { min-inline-size: 4.5em; text-align: center; font-size: var(--step--1); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pw-gallery__btn {
+  display: inline-grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border: 1px solid var(--rule);
+  border-radius: var(--radius-round); background: var(--surface); color: var(--ink);
+}
+.pw-gallery__btn:hover:not(:disabled) { background: var(--surface-hover); }
+.pw-gallery__btn:disabled { opacity: 0.45; cursor: default; }
+.pw-gallery__grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
+.post-body .pw-gallery__grid li + li { margin-block-start: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .pw-gallery__track { scroll-behavior: smooth; }
+}
+
+/* Video and embeds: 16:9 boxes that never overflow the column. */
+.pw-video__media { display: block; inline-size: 100%; block-size: auto; border-radius: var(--radius-2); background: var(--ink); }
+.pw-video figcaption, .pw-embed figcaption, .pw-social__meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-3); }
+.pw-video figcaption a, .pw-embed figcaption a { color: var(--accent-ink); }
+.pw-embed__frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-2); border: 1px solid var(--rule); background: var(--ink); }
+.pw-embed__frame iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
+.pw-embed__poster { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-inverse); text-decoration: none; }
+.post-body .pw-embed__poster img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; border: 0; border-radius: 0; opacity: 0.85; }
+.pw-embed__play {
+  position: relative; display: grid; place-items: center; inline-size: 4rem; block-size: 4rem; border-radius: var(--radius-round);
+  background: var(--accent); color: var(--accent-contrast); box-shadow: var(--shadow-2);
+}
+.pw-embed__title {
+  position: absolute; inset-inline: 0; inset-block-end: 0; padding: var(--space-3) var(--space-4); font-weight: 600; text-align: start;
+  background: linear-gradient(to top, color-mix(in oklch, var(--ink) 80%, transparent), transparent); color: var(--ink-inverse);
+}
+.pw-embed__poster:hover .pw-embed__play, .pw-embed__poster:focus-visible .pw-embed__play { background: var(--accent-ink); }
+.pw-embed__poster:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .pw-embed__play { transition: transform var(--dur-2) var(--ease-out); }
+  .pw-embed__poster:hover .pw-embed__play { transform: scale(1.06); }
+}
+
+/* Social card: a static quote with a link out; nothing loads from the network it quotes. */
+.pw-social { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); }
+.pw-social__platform { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); color: var(--ink-3); }
+.post-body .pw-social__quote { margin: 0; padding: 0; border: 0; font-family: inherit; font-size: var(--step-0); font-style: normal; color: var(--ink); }
+.pw-social__quote > * + * { margin-block-start: 0.6em; }
+.pw-social__title { font-weight: 600; }
+.pw-social__image { inline-size: 100%; }
+.pw-social__author b { color: var(--ink); }
+.pw-social__meta a { display: inline-flex; align-items: center; gap: 0.3em; color: var(--accent-ink); }
+
+/* Code: label strip, copy button (shown by JavaScript) and highlight colours mapped to tokens.
+   The mapping mirrors the docs' Shiki palette (DocBody.astro), which is scoped to that component. */
+.pw-code { overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper-3); }
+.pw-code__bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  min-block-size: 2.25rem; padding-inline: var(--space-4) var(--space-2); border-block-end: 1px solid var(--rule); background: var(--paper-2);
+}
+.pw-code__lang { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.pw-code__copy { display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: 2rem; padding-inline: var(--space-2); border-radius: var(--radius-1); font-size: var(--step--2); font-weight: 500; color: var(--ink-2); }
+.pw-code__copy[hidden] { display: none; }
+.pw-code__copy:hover { background: var(--surface-hover); color: var(--ink); }
+.pw-code__copy[data-state="copied"] { color: var(--success); }
+.post-body .pw-code__pre { margin: 0; border-radius: 0; background: transparent; padding: var(--space-4); overflow-x: auto; font-size: var(--step--1); line-height: 1.65; }
+.pw-code__pre:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.pw-code > figcaption { padding: var(--space-2) var(--space-4); margin: 0; border-block-start: 1px solid var(--rule); }
+.pw-code { --hl-string: color-mix(in oklch, var(--success) 70%, var(--ink)); --hl-number: color-mix(in oklch, var(--seal) 75%, var(--ink)); --hl-func: var(--brand-blue); }
+:root[data-theme="dark"] .pw-code { --hl-string: var(--success); --hl-number: var(--seal); --hl-func: var(--warning); }
+.hl-c { color: var(--ink-3); font-style: italic; }
+.hl-k, .hl-t { color: var(--accent-ink); }
+.hl-s { color: var(--hl-string); }
+.hl-n, .hl-v { color: var(--hl-number); }
+.hl-f, .hl-a { color: var(--hl-func); }
+.hl-ins { color: var(--hl-string); }
+.hl-del { color: var(--danger); }
+@media (max-width: 959px), (pointer: coarse) {
+  .pw-code__copy { min-block-size: 2.75rem; min-inline-size: 2.75rem; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .pw-callout, .pw-social { padding: var(--space-3) var(--space-4); }
+  .pw-embed__play { inline-size: 3.25rem; block-size: 3.25rem; }
+}
+
+/* Tables in widgets (chart data, comparisons): the box scrolls, never the page. `contain`
+   keeps a wide table from widening the grid column the post body sits in; `position` keeps
+   visually hidden labels (absolutely positioned) inside the scroll box. */
+.pw-scroll { position: relative; contain: inline-size; max-inline-size: 100%; overflow-x: auto; overscroll-behavior-x: contain; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--surface); }
+.pw-scroll:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.post-body .pw-table { display: table; inline-size: 100%; overflow: visible; }
+.pw-table caption { padding: var(--space-3) var(--space-4) var(--space-2); text-align: start; font-weight: 600; color: var(--ink); }
+.post-body .pw-table td { font-variant-numeric: tabular-nums; }
+.post-body .pw-table tr:last-child > * { border-block-end: 0; }
+
+/* Chart: series colours come from tokens; the pattern of the line tells series apart too. */
+.pw-chart {
+  --pw-chart-1: var(--accent); --pw-chart-2: var(--seal); --pw-chart-3: var(--success); --pw-chart-4: var(--warning);
+  --pw-chart-5: var(--brand-sky); --pw-chart-6: var(--brand-magenta); --pw-chart-7: var(--ink-3);
+  --pw-chart-8: color-mix(in oklch, var(--accent) 45%, var(--paper));
+  display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface);
+  container-type: inline-size;
+}
+.pw-chart__title { font-weight: 600; color: var(--ink); }
+.pw-chart__title span { font-weight: 400; color: var(--ink-3); }
+.pw-chart__plot { display: grid; gap: var(--space-3); }
+.pw-chart--pie .pw-chart__plot, .pw-chart--donut .pw-chart__plot { grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); align-items: center; }
+.pw-chart__svg { display: block; inline-size: 100%; block-size: auto; overflow: visible; font-family: var(--font-body-stack); }
+.pw-chart__grid { stroke: var(--rule); stroke-width: 1; }
+.pw-chart__grid--zero { stroke: var(--rule-strong); }
+.pw-chart__tick { fill: var(--ink-3); }
+.pw-chart__value { fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.pw-chart__c1 { --c: var(--pw-chart-1); } .pw-chart__c2 { --c: var(--pw-chart-2); } .pw-chart__c3 { --c: var(--pw-chart-3); } .pw-chart__c4 { --c: var(--pw-chart-4); }
+.pw-chart__c5 { --c: var(--pw-chart-5); } .pw-chart__c6 { --c: var(--pw-chart-6); } .pw-chart__c7 { --c: var(--pw-chart-7); } .pw-chart__c8 { --c: var(--pw-chart-8); }
+.pw-chart rect, .pw-chart__dot, .pw-chart__slice { fill: var(--c); }
+.pw-chart__dot { stroke: var(--surface); stroke-width: 1.5; }
+.pw-chart__slice { stroke: var(--surface); stroke-width: 2; }
+.pw-chart__line { fill: none; stroke: var(--c); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.post-body .pw-chart__legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); font-size: var(--step--1); color: var(--ink-2); }
+.post-body .pw-chart__legend li { margin: 0; display: inline-flex; align-items: center; gap: var(--space-2); }
+.pw-chart--pie .pw-chart__legend, .pw-chart--donut .pw-chart__legend { flex-direction: column; }
+.pw-chart__key { inline-size: 0.8rem; block-size: 0.8rem; border-radius: 3px; background: var(--c); flex: none; }
+.pw-chart__swatch { flex: none; overflow: visible; }
+.pw-chart__num { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pw-chart__data > summary { inline-size: fit-content; cursor: pointer; font-size: var(--step--1); font-weight: 500; color: var(--accent-ink); }
+.pw-chart__data[open] > summary { margin-block-end: var(--space-2); }
+.pw .pw-chart > figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-3); margin: 0; }
+.pw-chart__source a { color: var(--accent-ink); }
+
+/* Diagram: Mermaid source until the client draws it; the drawing follows the theme. */
+.pw-diagram__view { position: relative; contain: inline-size; overflow-x: auto; padding: var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); }
+.pw-diagram__note { margin-block-end: var(--space-2); font-size: var(--step--2); color: var(--ink-3); }
+.post-body .pw-diagram__source { margin: 0; max-block-size: 24rem; }
+.pw-diagram[data-state="drawing"] .pw-diagram__view { min-block-size: 12rem; }
+.pw-diagram[data-state="drawing"] .pw-diagram__view > * { visibility: hidden; }
+/* Mermaid caps the drawing at its natural width (inline max-width); on a phone a wide diagram
+   keeps a legible size and scrolls inside its box instead of shrinking to fit. */
+.pw-diagram__svg svg { display: block; margin-inline: auto; inline-size: max(100%, 34rem); block-size: auto; }
+
+/* Comparison table: the option column to look at is tinted; the criterion column stays put. */
+.pw-compare__table th[scope="row"] { position: sticky; inset-inline-start: 0; z-index: 1; min-inline-size: 8rem; background: var(--paper-2); }
+.pw-compare__table td, .pw-compare__table thead th { min-inline-size: 8rem; }
+.post-body .pw-compare__table .pw-compare__hl { background: color-mix(in oklch, var(--accent-soft) 70%, var(--surface)); }
+.pw-compare__pick { display: block; font-size: var(--step--2); font-weight: 500; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent-ink); }
+.pw-mark { display: inline-flex; align-items: center; gap: var(--space-1); vertical-align: middle; font-weight: 500; }
+.pw-mark--yes { color: color-mix(in oklch, var(--success) 70%, var(--ink)); }
+.pw-mark--no { color: var(--danger); }
+.pw-mark--partial { color: color-mix(in oklch, var(--warning) 65%, var(--ink)); }
+:root[data-theme="dark"] .pw-mark--yes { color: var(--success); }
+:root[data-theme="dark"] .pw-mark--partial { color: var(--warning); }
+.pw-mark__text { color: var(--ink-2); }
+
+/* Before/after: side by side without JavaScript; stacked behind a slider with it. */
+.pw-ba__stage { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.pw .pw-ba__item img { display: block; inline-size: 100%; }
+.pw .pw-ba__label { margin: var(--space-1) 0 0; font-size: var(--step--2); font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-2); }
+.pw-ba--slider .pw-ba__stage { position: relative; grid-template-columns: minmax(0, 1fr); gap: 0; overflow: hidden; border-radius: var(--radius-2); border: 1px solid var(--rule); }
+.pw-ba--slider .pw-ba__item { grid-area: 1 / 1; position: relative; }
+.post-body .pw-ba--slider .pw-ba__item img { aspect-ratio: var(--pw-ba-ratio, 16 / 10); object-fit: cover; border: 0; border-radius: 0; }
+.pw-ba--slider .pw-ba__after { clip-path: inset(0 0 0 var(--pw-ba-pos, 50%)); }
+.pw-ba--slider .pw-ba__stage::after {
+  content: ""; position: absolute; inset-block: 0; inset-inline-start: var(--pw-ba-pos, 50%); inline-size: 2px; margin-inline-start: -1px;
+  background: var(--surface); box-shadow: 0 0 0 1px color-mix(in oklch, var(--ink) 35%, transparent); pointer-events: none;
+}
+.pw .pw-ba--slider .pw-ba__label {
+  position: absolute; inset-block-start: var(--space-2); margin: 0; padding: 0.15em 0.6em; border-radius: var(--radius-1);
+  background: color-mix(in oklch, var(--ink) 72%, transparent); color: var(--ink-inverse);
+}
+.pw-ba--slider .pw-ba__before .pw-ba__label { inset-inline-start: var(--space-2); }
+.pw-ba--slider .pw-ba__after .pw-ba__label { inset-inline-end: var(--space-2); }
+.pw-ba__range { display: block; inline-size: 100%; min-block-size: 2.75rem; margin: var(--space-1) 0 0; accent-color: var(--accent); cursor: ew-resize; }
+.pw-ba__range[hidden] { display: none; }
+.pw-ba__range:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* The SVG scales with the column; on a narrow one its text grows in drawing units to stay legible. */
+@container (max-width: 34rem) {
+  .pw-chart__tick, .pw-chart__value { font-size: 17px; }
+}
+@container (max-width: 34rem) and (min-width: 24rem) {
+  .pw-chart__tick, .pw-chart__value { font-size: 15px; }
+}
+
+@media (max-width: 480px) {
+  .pw-chart { padding: var(--space-3) var(--space-4); }
+  .pw-chart--pie .pw-chart__plot, .pw-chart--donut .pw-chart__plot { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .pw-chart--pie .pw-chart__svg, .pw-chart--donut .pw-chart__svg { max-inline-size: 14rem; }
+  .pw-diagram__view { padding: var(--space-3); }
+}
+
+/* Poll, quiz and survey: real forms; results replace the form after an answer (client). */
+.pw-form { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); }
+.pw-form__set { display: grid; gap: var(--space-4); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.pw-form__set[hidden], .pw-form__results[hidden] { display: none; }
+.pw-form__question { padding: 0; font-family: var(--font-display-stack); font-size: var(--step-1); line-height: var(--leading-snug); color: var(--ink); }
+.pw-form__intro { color: var(--ink-2); }
+/* A rendered legend is not a grid item, so the fieldset gap does not space it from the options. */
+legend.pw-form__question { margin-block-end: var(--space-3); }
+legend.pw-form__prompt { margin-block-end: var(--space-2); }
+.pw-form__q { display: grid; gap: var(--space-2); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.pw-form__prompt { padding: 0; font-weight: 600; color: var(--ink); }
+.pw-form__optional { font-weight: 400; color: var(--ink-3); font-size: var(--step--1); }
+.pw-form__options { display: grid; gap: var(--space-2); }
+.pw-form__option {
+  display: flex; align-items: center; gap: var(--space-3); min-block-size: 2.75rem; padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper); color: var(--ink); cursor: pointer;
+}
+.pw-form__option:hover { background: var(--surface-hover); border-color: var(--rule-strong); }
+.pw-form__option:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.pw-form__option:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pw-form__option input { flex: none; inline-size: 1.15rem; block-size: 1.15rem; margin: 0; accent-color: var(--accent); }
+.pw-form__set:disabled .pw-form__option { cursor: default; opacity: 0.7; }
+.pw-form textarea {
+  inline-size: 100%; min-block-size: 5rem; padding: var(--space-2) var(--space-3); border: 1px solid var(--rule-strong); border-radius: var(--radius-2);
+  background: var(--paper); color: var(--ink); font: inherit; resize: vertical;
+}
+.pw-form textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pw-form__hint, .pw-form__note { font-size: var(--step--1); color: var(--ink-3); }
+.pw-form__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pw-form__status:empty { display: none; }
+.pw-form__status { font-size: var(--step--1); color: var(--danger); font-weight: 500; }
+.pw-form__results { display: grid; gap: var(--space-3); }
+.pw-form__results:focus { outline: none; }
+.pw-form__thanks, .pw-form__closed { color: var(--ink); font-weight: 500; }
+.pw-form__change { justify-self: start; min-block-size: 2.75rem; }
+.pw-quiz__verdict { color: var(--ink); }
+.pw-quiz__verdict--right strong { color: color-mix(in oklch, var(--success) 70%, var(--ink)); }
+.pw-quiz__verdict--wrong strong { color: var(--danger); }
+.pw-quiz__explanation { color: var(--ink-2); }
+.pw-tally { display: grid; gap: var(--space-2); }
+.pw-tally__head { font-size: var(--step--2); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--accent-ink); }
+.post-body .pw-tally__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.post-body .pw-tally__list li + li { margin-block-start: 0; }
+.pw-tally__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); color: var(--ink); }
+.pw-tally__label { overflow-wrap: anywhere; }
+.pw-tally__mine { color: var(--accent-ink); font-weight: 600; }
+.pw-tally__pct { font-variant-numeric: tabular-nums; font-weight: 600; }
+.pw-tally__bar { grid-column: 1 / -1; block-size: 0.5rem; border-radius: var(--radius-round); background: var(--paper-3); overflow: hidden; }
+.pw-tally__bar::before { content: ""; display: block; block-size: 100%; inline-size: var(--pw-pct, 0%); border-radius: inherit; background: var(--rule-strong); }
+.pw-tally__row--mine .pw-tally__bar::before { background: var(--accent); }
+.pw-tally__row--answer .pw-tally__bar::before { background: var(--success); }
+.pw-tally__total { font-size: var(--step--1); color: var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .pw-tally__bar::before { transition: inline-size var(--dur-4) var(--ease-out); }
+}
+
+/* Demo: a facade until the reader asks; then a sandboxed frame at the chosen aspect ratio. */
+.pw-demo__frame { position: relative; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-2); background: var(--paper-2); }
+.pw-demo__frame--16x9 { aspect-ratio: 16 / 9; }
+.pw-demo__frame--4x3 { aspect-ratio: 4 / 3; }
+.pw-demo__frame--1x1 { aspect-ratio: 1; }
+.pw-demo__frame--3x4 { aspect-ratio: 3 / 4; }
+.pw-demo__frame iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; background: var(--surface); }
+.pw-demo__facade { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-4); text-align: center; overflow: auto; }
+.pw-demo__title { font-family: var(--font-display-stack); font-size: var(--step-1); line-height: var(--leading-snug); color: var(--ink); }
+.pw-demo__desc { max-inline-size: 40ch; color: var(--ink-2); font-size: var(--step--1); }
+.pw-demo__note { font-size: var(--step--2); color: var(--ink-3); }
+.post-body .pw-demo__load { text-decoration: none; }
+.pw-demo figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-3); }
+.pw-demo figcaption a { color: var(--accent-ink); }
+@media (max-width: 480px) {
+  .pw-form { padding: var(--space-3) var(--space-4); }
+  .pw-demo__desc { display: none; }
+}

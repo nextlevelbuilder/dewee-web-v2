@@ -18,7 +18,7 @@ describe("/developers content", () => {
     for (const locale of LOCALES) {
       expect(DEVELOPERS[locale].mcp.tools.map((t) => t.name)).toEqual(served);
     }
-    expect(served).toHaveLength(16);
+    expect(served).toHaveLength(29);
   });
 
   it("documents exactly the API key scopes", () => {
@@ -32,6 +32,8 @@ describe("/developers content", () => {
     expect(vi.api.facts.map((f) => f.code)).toEqual(en.api.facts.map((f) => f.code));
     expect(vi.api.snippets.map((s) => s.code)).toEqual(en.api.snippets.map((s) => s.code));
     expect(vi.cli.snippets.map((s) => s.code)).toEqual(en.cli.snippets.map((s) => s.code));
+    expect(vi.mcp.oauth.snippets.map((s) => s.code)).toEqual(en.mcp.oauth.snippets.map((s) => s.code));
+    expect(vi.mcp.oauth.steps).toHaveLength(en.mcp.oauth.steps.length);
     expect(vi.webmcp.publicTools.map((t) => t.name)).toEqual(en.webmcp.publicTools.map((t) => t.name));
     expect(vi.webmcp.adminTools.map((t) => t.name)).toEqual(en.webmcp.adminTools.map((t) => t.name));
     expect(vi.markdown.items.map((i) => i.code)).toEqual(en.markdown.items.map((i) => i.code));

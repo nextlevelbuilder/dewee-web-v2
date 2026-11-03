@@ -4,7 +4,7 @@
  * site paths, anchors, http(s) and mailto, and images to https:// or /media/ sources.
  * Headings get stable ids, and a Markdown `#` is demoted to h2 because the page owns the h1.
  */
-import { Marked, type Tokens } from "marked";
+import { Marked, type TokenizerAndRendererExtension, type Tokens } from "marked";
 import { escapeHtml } from "../inline-markup";
 import { isSafeHref, isSafeImageSrc } from "./block-fields";
 
@@ -23,13 +23,26 @@ export function headingId(text: string): string {
   );
 }
 
-function createRenderer() {
+export type SafeMarkedOptions = {
+  /** Extra block or inline syntax (the blog's `::widget{…}` directive). */
+  extensions?: TokenizerAndRendererExtension[];
+  /** Replaces the default `<pre><code>` output (the blog highlights code on the server). */
+  code?: (token: Tokens.Code) => string;
+};
+
+/**
+ * A Marked instance with the safe renderer. One instance renders one document: heading ids stay
+ * unique across every `parser()` call made on it.
+ */
+export function createSafeMarked(opts: SafeMarkedOptions = {}): Marked {
   const seen = new Map<string, number>();
   const marked = new Marked({
     gfm: true,
     breaks: false,
     async: false,
+    ...(opts.extensions?.length ? { extensions: opts.extensions } : {}),
     renderer: {
+      ...(opts.code ? { code: opts.code } : {}),
       html({ text }: Tokens.HTML | Tokens.Tag) {
         return escapeHtml(text);
       },
@@ -60,7 +73,7 @@ function createRenderer() {
 
 /** Renders untrusted Markdown to safe HTML. A fresh renderer per call keeps heading ids unique per document. */
 export function renderMarkdown(source: string): string {
-  return createRenderer().parse(source ?? "", { async: false }) as string;
+  return createSafeMarked().parse(source ?? "", { async: false }) as string;
 }
 
 /** Headings (h2/h3) for an on-this-page list, in document order. */

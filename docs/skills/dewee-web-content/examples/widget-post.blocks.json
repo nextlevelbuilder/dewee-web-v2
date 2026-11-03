@@ -1,0 +1,232 @@
+[
+  {
+    "id": "rollout-chart",
+    "type": "Chart",
+    "props": {
+      "kind": "bar",
+      "title": "Teams using the agent, week by week",
+      "labels": [
+        "Week 1",
+        "Week 2",
+        "Week 3"
+      ],
+      "series": [
+        {
+          "name": "Teams",
+          "values": [
+            12,
+            31,
+            58
+          ]
+        }
+      ],
+      "unit": "teams",
+      "labelHeading": "Week",
+      "caption": "Illustrative numbers for this sample post."
+    }
+  },
+  {
+    "id": "rollout-steps",
+    "type": "Steps",
+    "props": {
+      "label": "Step",
+      "items": [
+        {
+          "title": "Invite",
+          "body": "Add the agent to a team chat."
+        },
+        {
+          "title": "Approve",
+          "body": "A person approves the first run."
+        },
+        {
+          "title": "Repeat",
+          "body": "The agent takes the same job every week."
+        }
+      ]
+    }
+  },
+  {
+    "id": "request-flow",
+    "type": "Diagram",
+    "props": {
+      "source": "flowchart LR\n  chat[Chat app] --> gw[dewee gateway]\n  gw --> agent[Agent]\n  agent --> tools[Tools]\n  tools --> ok{A person approves}\n  ok -->|yes| reply[Reply in the chat]\n  ok -->|no| agent",
+      "alt": "A request goes from the chat app to the dewee gateway, then to the agent and its tools. A person approves the result; approved replies go back to the chat, rejected ones return to the agent.",
+      "caption": "How a request flows."
+    }
+  },
+  {
+    "id": "widget-choice",
+    "type": "ComparisonTable",
+    "props": {
+      "title": "Which widget carries the numbers",
+      "criterionHeading": "What you need",
+      "columns": [
+        "Chart",
+        "ComparisonTable",
+        "Callout"
+      ],
+      "rows": [
+        {
+          "criterion": "Works without JavaScript",
+          "cells": [
+            {
+              "mark": "yes"
+            },
+            {
+              "mark": "yes"
+            },
+            {
+              "mark": "yes"
+            }
+          ]
+        },
+        {
+          "criterion": "Shows a trend at a glance",
+          "cells": [
+            {
+              "mark": "yes"
+            },
+            {
+              "mark": "no"
+            },
+            {
+              "mark": "no"
+            }
+          ]
+        },
+        {
+          "criterion": "Exact numbers in RSS and the .md twin",
+          "cells": [
+            {
+              "mark": "yes",
+              "text": "as a Markdown table"
+            },
+            {
+              "mark": "yes"
+            },
+            {
+              "mark": "partial",
+              "text": "only the words you write"
+            }
+          ]
+        },
+        {
+          "criterion": "Best for",
+          "cells": [
+            "Series over time or shares of a whole",
+            "Options side by side",
+            "One number that matters"
+          ]
+        }
+      ],
+      "highlight": 0,
+      "highlightLabel": "For trends"
+    }
+  },
+  {
+    "id": "screens",
+    "type": "Gallery",
+    "props": {
+      "label": "dewee ecosystem logos",
+      "caption": "Three of the products that run on dewee.",
+      "images": [
+        {
+          "src": "https://dewee.sh/img/ecosystem/goclaw.svg",
+          "alt": "GoClaw logo",
+          "caption": "GoClaw"
+        },
+        {
+          "src": "https://dewee.sh/img/ecosystem/agentkit.svg",
+          "alt": "AgentKit logo",
+          "caption": "AgentKit"
+        },
+        {
+          "src": "https://dewee.sh/img/ecosystem/dewee-webchat.svg",
+          "alt": "dewee webchat logo",
+          "caption": "Webchat"
+        }
+      ]
+    }
+  },
+  {
+    "id": "og-cards",
+    "type": "BeforeAfter",
+    "props": {
+      "before": {
+        "src": "https://dewee.sh/og/en/pricing.png",
+        "alt": "The social card of the English pricing page",
+        "label": "English"
+      },
+      "after": {
+        "src": "https://dewee.sh/og/vi/pricing.png",
+        "alt": "The social card of the Vietnamese pricing page",
+        "label": "Tiếng Việt"
+      },
+      "pixelWidth": 1200,
+      "pixelHeight": 630,
+      "caption": "The same pricing card in both languages. Drag the slider, or use the arrow keys."
+    }
+  },
+  {
+    "id": "walkthrough",
+    "type": "VideoEmbed",
+    "props": {
+      "url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+      "title": "YouTube player demo",
+      "caption": "Loads from youtube-nocookie.com only after a click."
+    }
+  },
+  {
+    "id": "clip",
+    "type": "Video",
+    "props": {
+      "title": "A flower opening",
+      "caption": "A short muted loop. It starts on its own only for readers who allow motion.",
+      "sources": [
+        {
+          "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+          "type": "video/webm"
+        },
+        {
+          "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+          "type": "video/mp4"
+        }
+      ],
+      "autoplay": true,
+      "muted": true,
+      "loop": true
+    }
+  },
+  {
+    "id": "reaction",
+    "type": "SocialCard",
+    "props": {
+      "url": "https://bsky.app/profile/dewee.sh/post/3l2example",
+      "author": "dewee",
+      "handle": "@dewee.sh",
+      "date": "2026-10-20",
+      "text": "Our first post with inline widgets is live. No scripts from the network it quotes."
+    }
+  },
+  {
+    "id": "install",
+    "type": "CodeBlock",
+    "props": {
+      "language": "bash",
+      "filename": "Terminal",
+      "code": "curl -fsSL https://dewee.sh/install.sh | sh\ndewee-web posts create post.md --publish"
+    }
+  },
+  {
+    "type": "Quote",
+    "props": {
+      "text": "Unplaced blocks render after the body, in order.",
+      "cite": "The post format"
+    }
+  },
+  {"id": "first-agent-poll", "type": "Poll", "props": {"question": "Where would your first agent work?", "options": [{"id": "support", "label": "Customer support"}, {"id": "sales", "label": "Sales follow-up"}, {"id": "ops", "label": "Internal operations"}]}},
+  {"id": "approval-quiz", "type": "Quiz", "props": {"question": "Who approves the first run of a new agent?", "options": [{"id": "agent", "label": "The agent itself"}, {"id": "person", "label": "A person on your team"}, {"id": "nobody", "label": "Nobody, it just runs"}], "answer": "person", "explanation": "A person approves the first run, so the agent only repeats work someone has checked."}},
+  {"id": "next-post-survey", "type": "Survey", "props": {"title": "Help us plan the next post", "questions": [{"id": "role", "prompt": "What is your role?", "kind": "single", "required": true, "options": [{"id": "eng", "label": "Engineering"}, {"id": "ops", "label": "Operations"}, {"id": "other", "label": "Something else"}]}, {"id": "topics", "prompt": "Which topics should we cover?", "kind": "multi", "options": [{"id": "setup", "label": "Setup"}, {"id": "security", "label": "Security"}, {"id": "pricing", "label": "Pricing"}]}, {"id": "wish", "prompt": "Anything else?", "kind": "text"}]}},
+  {"id": "pen-demo", "type": "Demo", "props": {"url": "https://codepen.io/codepen/embed/PNaGbb?default-tab=result", "title": "A CodePen demo", "description": "A small interactive example: try it here instead of reading a screenshot.", "aspectRatio": "16:9"}}
+]

@@ -4,6 +4,7 @@
  * so it only uses relative imports and erasable TypeScript (Node runs it with type stripping).
  *
  * Rules: read `<main>` (or `[data-md-root]`), drop chrome and anything marked `data-md-skip`,
+ * use the Markdown in a block's `data-md` (a widget the converter cannot read, like a form) as is,
  * keep headings, lists, links (absolute), code, quotes, tables and image alt text.
  * The front matter carries title, description, canonical URL and language.
  */
@@ -148,6 +149,12 @@ function block(el: HTMLElement, ctx: Ctx): string {
   for (const child of el.childNodes) {
     if (!isEl(child)) { run.push(child); continue; }
     if (skipped(child)) continue;
+    const given = child.getAttribute("data-md");
+    if (given !== undefined) {
+      flush();
+      if (given.trim()) out.push(given.trim());
+      continue;
+    }
     const tag = child.tagName.toLowerCase();
     const h = /^h([1-6])$/.exec(tag);
     if (h) {

@@ -4,6 +4,8 @@
  * sitemap and the llms files. Failures degrade to an empty list so the static part still ships.
  */
 import { localePath, LOCALES, type Locale } from "~/i18n/config";
+import { postBodyMarkdown } from "~/lib/blocks/post-widgets/post-body";
+import { widgetLabels } from "~/lib/blocks/post-widgets/widget-labels";
 import { markdownTwinPath } from "./seo-paths";
 import { sectionOf, type SectionId } from "./page-sections";
 import type { Alternate } from "./sitemap-xml";
@@ -133,6 +135,15 @@ export async function listDynamicPages(db: D1Database, copy: { changelog: IndexC
   return out;
 }
 
+function parseBlocks(text: string | null): unknown[] {
+  try {
+    const value: unknown = JSON.parse(text ?? "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
 export type PostMarkdown = { path: string; title: string; markdown: string };
 
 /** Published, indexable posts of one locale that have a Markdown body, newest first (llms-full.txt). */
@@ -140,12 +151,14 @@ export async function listPostMarkdown(db: D1Database, locale: Locale, limit = 2
   try {
     const { results } = await db
       .prepare(
-        "SELECT kind, locale, slug, title, description, translation_key, published_at, updated_at, seo, body_md FROM pages WHERE kind = 'post' AND locale = ?1 AND status = 'published' AND body_md IS NOT NULL AND body_md != '' ORDER BY published_at DESC LIMIT ?2",
+        "SELECT kind, locale, slug, title, description, translation_key, published_at, updated_at, seo, body_md, blocks FROM pages WHERE kind = 'post' AND locale = ?1 AND status = 'published' AND ((body_md IS NOT NULL AND body_md != '') OR blocks != '[]') ORDER BY published_at DESC LIMIT ?2",
       )
       .bind(locale, limit)
-      .all<Row & { body_md: string }>();
+      .all<Row & { body_md: string | null; blocks: string | null }>();
     const rows = results ?? [];
-    const bodies = new Map(rows.map((r) => [localePath(locale, ROUTE_FOR_KIND.post(r.slug)), r.body_md]));
+    // Widgets become their Markdown stand-ins; a post without blocks comes back unchanged.
+    const labels = widgetLabels(locale);
+    const bodies = new Map(rows.map((r) => [localePath(locale, ROUTE_FOR_KIND.post(r.slug)), postBodyMarkdown({ body_md: r.body_md, blocks: parseBlocks(r.blocks) }, labels)]));
     return pagesFromRows(rows).flatMap((p) => {
       const markdown = bodies.get(p.path);
       return markdown ? [{ path: p.path, title: p.title, markdown }] : [];

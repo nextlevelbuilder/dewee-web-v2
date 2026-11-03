@@ -1,0 +1,40 @@
+# Flags stale release metadata: fails when GitHub shows a newer stable dewee release than
+# FACTS.stableRelease. Kept out of CI / Deploy so a new runtime release never blocks unrelated
+# website PRs or deploys; it runs daily, on demand, and on PRs that touch the release data.
+# Network errors and missing access are warnings. The token only lifts the API rate limit while
+# the runtime repository is readable anonymously; if it goes private, add a read-only
+# RELEASES_READ_TOKEN secret, otherwise a 404 skips the check with a warning.
+name: Release metadata
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - src/content/facts.ts
+      - src/content/releases.ts
+      - scripts/check-stable-release.ts
+      - scripts/lib/stable-release.ts
+      - .github/workflows/release-metadata.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check stable release metadata
+        run: pnpm releases:check
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASES_READ_TOKEN || github.token }}

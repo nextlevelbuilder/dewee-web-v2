@@ -13,7 +13,7 @@ export type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 export type RouteAuth = "public" | "any" | ApiScope;
 
 /** Named response schemas in the OpenAPI components section. */
-export type ResponseShape = "Me" | "Page" | "PageList" | "Deleted" | "RevisionList" | "Revision" | "BlockList" | "BlockSchema" | "BlockValidation" | "Media" | "LeadList";
+export type ResponseShape = "Me" | "Page" | "PageList" | "Deleted" | "RevisionList" | "Revision" | "BlockList" | "BlockSchema" | "BlockValidation" | "Media" | "LeadList" | "DocList" | "Doc" | "DocValidation" | "DocProposal";
 
 export type RouteCtx<Q = unknown> = {
   request: Request;
@@ -38,7 +38,7 @@ export type RouteDef = {
   /** OpenAPI-style template relative to /api/v1, e.g. `/pages/{id}/publish`. */
   path: string;
   operationId: string;
-  tag: "Account" | "Pages" | "Posts" | "Revisions" | "Blocks" | "Media" | "Leads";
+  tag: "Account" | "Pages" | "Posts" | "Revisions" | "Blocks" | "Media" | "Leads" | "Docs";
   summary: string;
   description?: string;
   auth: RouteAuth;

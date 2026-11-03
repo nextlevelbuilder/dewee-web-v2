@@ -3,7 +3,7 @@ title: Install and run the gateway
 description: Run the dewee runtime with Docker or from source, set the environment it needs, choose an edition, and keep it healthy with upgrades, backups and restores.
 section: runtime
 order: 1
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 The runtime is the part of dewee that does the work: agents, tools, channels, schedules and workflows all run inside one gateway process. Every deployment runs the same gateway, whether we host it or you do. This page is for the operator who installs it, points it at a database and keeps it running.
@@ -66,6 +66,7 @@ Settings come from a JSON config file and from environment variables, and the en
 | `GOCLAW_DATA_DIR`, `GOCLAW_WORKSPACE` | Where the gateway keeps its data and the agents' working files. |
 | `GOCLAW_LOG_LEVEL`, `GOCLAW_LOG_FILE` | `debug`, `info`, `warn` or `error`, and an optional log file. |
 | `GOCLAW_EDITION` | `standard` or `lite`. See below. |
+| `GOCLAW_REQUIRE_AUTH` | `1` makes the gateway require authentication even on a loopback address. Set it behind a reverse proxy on the same host; see [below](#behind-a-reverse-proxy-on-the-same-host). |
 
 Model provider keys are usually added in the dashboard or the console, where they are stored encrypted. `GOCLAW_ANTHROPIC_API_KEY`, `GOCLAW_OPENAI_API_KEY` and `GOCLAW_OPENROUTER_API_KEY` are also read at startup.
 
@@ -74,13 +75,26 @@ Model provider keys are usually added in the dashboard or the console, where the
 
 ## Network and authentication
 
-The gateway refuses to start on a non-loopback address without a gateway token. Only for local development can you bypass this with `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. Put the gateway behind your own TLS terminator or reverse proxy when it is reachable from other machines.
+The gateway refuses to start on a non-loopback address without a gateway token. Only for local development can you bypass this with `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. On a loopback address such as `127.0.0.1`, a gateway without a token stays open, which is meant for local development. Put the gateway behind your own TLS terminator or reverse proxy when it is reachable from other machines.
+
+### Behind a reverse proxy on the same host
+
+When a reverse proxy on the same host publishes the gateway, such as Nginx, Caddy or a hosting platform's router, requests reach the gateway from the same machine. Set `GOCLAW_REQUIRE_AUTH=1` so the gateway still asks every caller for a credential:
+
+- The gateway always requires authentication, even when it is bound to `127.0.0.1`.
+- It refuses to start unless `GOCLAW_GATEWAY_TOKEN` is set and at least 32 characters long. Tokens made with `openssl rand -hex 32`, `./prepare-env.sh` or `dewee onboard` all qualify. The token must come from the environment or the config file, not only from the database.
+- Setting it together with `GOCLAW_ALLOW_INSECURE_NO_AUTH` is rejected at startup.
+- Config writes from the dashboard or through `config.apply` and `config.patch` cannot remove or shorten the gateway token.
+- Webhooks limited to local callers with `localhost_only` refuse every caller; see [Webhooks behind a reverse proxy](/docs/api/webhooks-and-mcp#webhooks-behind-a-reverse-proxy).
+- Browser pairing still works: a pairing request gains access only after an operator authenticated with the gateway token, or an admin API key, approves it.
+
+Any value other than empty, `0`, `false`, `no` or `off` turns it on. Without the variable, local development works as before. `docker-compose.selfhosted.yml` passes `GOCLAW_REQUIRE_AUTH` through to the gateway; set it to `1` when a proxy publishes the runtime.
 
 Set `GOCLAW_PUBLIC_URL` to the gateway's public address (for example `https://dewee.example.com`). The gateway hands this address to outside services, such as channel callback and webhook URLs and download links. When it is set, no request can change it. Without it, the gateway learns the address from requests by the system owner or admins of the master tenant only. Other workspaces never change it.
 
 The gateway reads `X-Forwarded-Host` and `X-Forwarded-Proto` only from the proxies listed in `GOCLAW_TRUSTED_PROXIES`, a comma-separated list of IP addresses, CIDR ranges or hostnames (for example `127.0.0.1,::1` when nginx runs on the same machine, or the proxy container's Docker Compose service name). From any other client those headers are ignored. The self-hosted installer and Compose files already set it for the proxy they ship; elsewhere the list is empty by default. An invalid entry stops the gateway from starting.
 
-Public MCP access to the gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) is off by default. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) before you turn it on.
+Public MCP access to the gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) is off by default. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) before you turn it on; its per-workspace limits, `GOCLAW_MCP_PUBLIC_TENANT_REQUESTS_PER_MINUTE` and `GOCLAW_MCP_PUBLIC_TENANT_MAX_CONCURRENT_TOOL_CALLS`, are explained under [Limits, quota and revocation](/docs/api/webhooks-and-mcp#limits-quota-and-revocation).
 
 ## Editions
 

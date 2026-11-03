@@ -1,0 +1,53 @@
+/**
+ * Interface strings for the OAuth consent page and the connected-apps admin page. English-only,
+ * like the rest of /admin: only the super admins ever see them.
+ */
+export const OAUTH_UI = {
+  consent: {
+    title: "Connect an app",
+    ask: (name: string) => `Allow ${name} to use the dewee.sh content tools?`,
+    publishedBy: "Published by",
+    unverified: "This app's name is not verified.",
+    sendsTo: "Access will be sent to",
+    loopback: "This sends access to an app on your computer. Continue only if you just started connecting from it.",
+    signedInAs: "Signing in as",
+    scopes: "Allow this app to",
+    requested: "requested",
+    notRequested: "not requested",
+    writeNote: "Write access and leads stay off unless you tick them here. You can revoke the connection at any time under Connected apps.",
+    allow: "Allow",
+    deny: "Deny",
+    noScope: "Tick at least one permission, or choose Deny.",
+  },
+  scopeLabels: {
+    "pages:read": "Read landing pages",
+    "pages:write": "Create, edit, publish and delete landing pages",
+    "posts:read": "Read blog posts",
+    "posts:write": "Create, edit, publish and delete blog posts",
+    "media:write": "Upload images",
+    "leads:read": "Read leads (names and emails from the site's forms)",
+    "docs:read": "Read the /docs pages",
+    "docs:write": "Propose /docs changes as GitHub pull requests",
+  } as Record<string, string>,
+  errors: {
+    notConfigured: "OAuth sign-in is not configured on this deployment. Use an API key instead.",
+    badRequest: "This sign-in link is not valid. Start connecting again from your app.",
+    clientUnverified: "This app could not be verified: its client metadata document could not be loaded. Start again from the app later.",
+    expired: "This page expired, was already used or was opened in another browser. Start connecting again from your app.",
+    rateLimited: "Too many attempts. Wait a few minutes and try again.",
+  },
+  connections: {
+    title: "Connected apps",
+    lede: "Apps such as ChatGPT that connected to the content MCP by signing in with an admin account. Revoking one signs it out at once; it must ask for access again.",
+    app: "App",
+    account: "Account",
+    scopes: "Permissions",
+    since: "Connected",
+    expires: "Expires",
+    revoke: "Revoke",
+    confirmRevoke: "Revoke this connection? The app loses access immediately.",
+    revoked: "Connection revoked.",
+    none: "No apps are connected with OAuth.",
+    notConfigured: "OAuth sign-in is not configured on this deployment (the OAUTH_KV binding is missing), so only API keys work.",
+  },
+} as const;

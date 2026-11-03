@@ -5,7 +5,7 @@
  */
 import { randomAlphanumeric, sha256Hex } from "./crypto-helpers";
 
-export const API_SCOPES = ["pages:read", "pages:write", "posts:read", "posts:write", "media:write", "leads:read"] as const;
+export const API_SCOPES = ["pages:read", "pages:write", "posts:read", "posts:write", "media:write", "leads:read", "docs:read", "docs:write"] as const;
 export type ApiScope = (typeof API_SCOPES)[number];
 
 const KEY_RE = /^dwk_([a-z0-9]{8})_([A-Za-z0-9]{32,128})$/;

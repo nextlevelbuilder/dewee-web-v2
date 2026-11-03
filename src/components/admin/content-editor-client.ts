@@ -4,6 +4,7 @@
  * CSRF header. Keyboard: Ctrl/⌘+S saves; every control is a native button, input or link.
  */
 import { api } from "./admin-ui-client";
+import { insertDirective, uniqueWidgetId } from "./post-widget-insert";
 
 type Messages = Record<"saving" | "saved" | "conflict" | "validJson" | "badJson" | "confirmDelete" | "confirmRestore" | "generic", string>;
 type Record_ = { id: string; version: number; status: string; title: string };
@@ -39,14 +40,13 @@ export function payloadFromForm(form: HTMLFormElement, kind: "page" | "post", is
   if (note && !isNew) body.note = note;
 
   let jsonError: string | null = null;
+  try {
+    body.blocks = JSON.parse(String(data.get("blocks") ?? "").trim() || "[]");
+  } catch (err) {
+    jsonError = err instanceof Error ? err.message : String(err);
+  }
   if (kind === "page") {
     body.layout = text("layout") || "default";
-    const raw = String(data.get("blocks") ?? "").trim() || "[]";
-    try {
-      body.blocks = JSON.parse(raw);
-    } catch (err) {
-      jsonError = err instanceof Error ? err.message : String(err);
-    }
   } else {
     body.body_md = String(data.get("body_md") ?? "");
     body.author = text("author") || null;
@@ -68,6 +68,7 @@ export function initContentEditor(): void {
   const issuesBox = root.querySelector<HTMLElement>("[data-ed-issues]");
   const previewForm = document.getElementById("ed-preview-form") as HTMLFormElement | null;
   const blocksInput = form.querySelector<HTMLTextAreaElement>("textarea[name=blocks]");
+  const bodyInput = form.querySelector<HTMLTextAreaElement>("textarea[name=body_md]");
   let busy = false;
 
   const say = (text: string, tone: "error" | "success" | "" = "") => {
@@ -148,15 +149,19 @@ export function initContentEditor(): void {
       return showIssues(null, err instanceof Error ? err.message : String(err));
     }
     const seq = ++validateSeq;
-    const res = await api<{ data: { valid: boolean; issues: Issue[] } }>("POST", "/blocks/validate", { blocks });
+    // Posts also check the body's ::widget{id} lines against the blocks, like a save would.
+    const payload = kind === "post" ? { blocks, context: kind, body_md: bodyInput?.value ?? "" } : { blocks };
+    const res = await api<{ data: { valid: boolean; issues: Issue[] } }>("POST", "/blocks/validate", payload);
     if (seq !== validateSeq) return;
     if (res.ok) showIssues(res.data.data.issues, null);
     else failure(res);
   };
-  blocksInput?.addEventListener("input", () => {
+  const scheduleValidation = () => {
     window.clearTimeout(validateTimer);
     validateTimer = window.setTimeout(validateBlocks, 500);
-  });
+  };
+  blocksInput?.addEventListener("input", scheduleValidation);
+  bodyInput?.addEventListener("input", scheduleValidation);
 
   const save = async () => {
     if (busy) return;
@@ -240,10 +245,22 @@ export function initContentEditor(): void {
       } catch (err) {
         return showIssues(null, err instanceof Error ? err.message : String(err));
       }
-      blocks.push(JSON.parse(btn.dataset.edInsert ?? "{}"));
-      blocksInput.value = JSON.stringify(blocks, null, 2);
-      blocksInput.focus();
-      blocksInput.setSelectionRange(blocksInput.value.length, blocksInput.value.length);
+      const block = JSON.parse(btn.dataset.edInsert ?? "{}") as { type: string; props: unknown };
+      if (kind === "post" && bodyInput) {
+        // A post widget gets an id and a ::widget line at the cursor, so it lands where the writer is.
+        const widgetId = uniqueWidgetId(block.type, blocks);
+        blocks.push({ id: widgetId, ...block });
+        blocksInput.value = JSON.stringify(blocks, null, 2);
+        const next = insertDirective(bodyInput.value, bodyInput.selectionStart, widgetId);
+        bodyInput.value = next.text;
+        bodyInput.focus();
+        bodyInput.setSelectionRange(next.cursor, next.cursor);
+      } else {
+        blocks.push(block);
+        blocksInput.value = JSON.stringify(blocks, null, 2);
+        blocksInput.focus();
+        blocksInput.setSelectionRange(blocksInput.value.length, blocksInput.value.length);
+      }
       void validateBlocks();
     });
   });

@@ -9,16 +9,20 @@ import { isSuperAdmin, normalizeEmail } from "./allowlist";
 import { API_SCOPES, bearerToken, type ApiScope } from "./api-key-format";
 import { verifyApiKey } from "./api-key-store";
 import { audit } from "./audit-log";
+import { looksLikeApiKey } from "../oauth/oauth-config";
+import { validateMcpAccessToken } from "../oauth/oauth-server";
 import { verifyAccessJwt } from "./cf-access";
 import { createSession, csrfValid, getSession, purgeExpiredSessions, SESSION_COOKIE, setSessionCookie, type AdminSession } from "./session-store";
 
 export type Principal = {
-  kind: "api_key" | "session";
+  kind: "api_key" | "oauth" | "session";
   email: string;
   scopes: ApiScope[];
   /** Human-readable actor for audit rows and revisions. */
   actor: string;
   keyId?: string;
+  /** OAuth client id (a Client ID Metadata Document URL) for OAuth callers. */
+  clientId?: string;
 };
 
 type Ctx = { request: Request; cookies: AstroCookies; locals: App.Locals; clientAddress?: string };
@@ -53,10 +57,17 @@ function waitUntilFrom(locals: App.Locals): ((p: Promise<unknown>) => void) | un
 /**
  * API/MCP caller. Bearer API keys carry their own scopes. An admin session (the admin UI and
  * WebMCP editor tools) has every scope, but its writes must pass the Origin + CSRF check.
+ * With `allowOAuth` (only /mcp) a bearer that is not a `dwk_` key is checked as an OAuth access
+ * token issued for this site's MCP resource; its scopes are the ones the admin approved.
  */
-export async function authenticate(ctx: Ctx, opts: { allowSession?: boolean } = {}): Promise<Principal> {
+export async function authenticate(ctx: Ctx, opts: { allowSession?: boolean; allowOAuth?: boolean } = {}): Promise<Principal> {
   const env = platformEnv();
   const token = bearerToken(ctx.request.headers.get("authorization"));
+  if (token && opts.allowOAuth && !looksLikeApiKey(token)) {
+    const grant = await validateMcpAccessToken(env, new URL(ctx.request.url), token);
+    if (!grant) throw unauthorized("The access token is invalid, expired or revoked. Sign in again.", { invalidToken: true });
+    return { kind: "oauth", email: grant.email, scopes: grant.scopes, actor: `${grant.email} (oauth ${clientLabel(grant.clientId)})`, clientId: grant.clientId };
+  }
   if (token) {
     const key = await verifyApiKey(env.DB, token, waitUntilFrom(ctx.locals));
     if (!key) throw unauthorized("The API key is invalid, expired or revoked.");
@@ -75,6 +86,11 @@ export async function authenticate(ctx: Ctx, opts: { allowSession?: boolean } = 
   throw unauthorized();
 }
 
+/** A short, log-safe name for an OAuth client: the host of its metadata URL, or a truncated id. */
+function clientLabel(clientId: string): string {
+  return URL.parse(clientId)?.host ?? clientId.slice(0, 40);
+}
+
 export function requireScope(principal: Principal, scope: ApiScope): void {
-  if (!principal.scopes.includes(scope)) throw forbidden(`This API key lacks the "${scope}" scope.`);
+  if (!principal.scopes.includes(scope)) throw forbidden(`This ${principal.kind === "oauth" ? "sign-in" : "API key"} lacks the "${scope}" scope.`);
 }

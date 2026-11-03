@@ -6,6 +6,8 @@ interface Env {
   DB: D1Database;
   KV: KVNamespace;
   SESSION: KVNamespace;
+  /** OAuth grants, codes and tokens for the content MCP (hashed; props encrypted). Unbound turns OAuth sign-in off. */
+  OAUTH_KV?: KVNamespace;
   MEDIA: R2Bucket;
   CHAT_ROOM: DurableObjectNamespace<import("./lib/server/chat-room").ChatRoom>;
   SITE_URL: string;
@@ -43,6 +45,16 @@ interface Env {
   /** Cloudflare Turnstile site key (public) and secret key (secret); both unset skips the challenge. */
   TURNSTILE_SITE_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
+  /** Repository (`owner/name`) that docs change proposals target; unset turns the docs tools off. */
+  DOCS_GITHUB_REPO?: string;
+  /** Branch that docs pull requests go into (default `dev`). */
+  DOCS_GITHUB_BASE?: string;
+  /** GitHub App for docs proposals: app id, installation id and private key PEM (secrets). */
+  DOCS_GITHUB_APP_ID?: string;
+  DOCS_GITHUB_APP_INSTALLATION_ID?: string;
+  DOCS_GITHUB_APP_PRIVATE_KEY?: string;
+  /** Fallback when no GitHub App is set: a fine-grained token for the docs repository only (secret). */
+  DOCS_GITHUB_TOKEN?: string;
 }
 
 /** Types `env` from "cloudflare:workers" with the same bindings. */

@@ -114,3 +114,10 @@ describe("htmlToMarkdown", () => {
     expect(markdown).not.toContain("Outside");
   });
 });
+
+describe("htmlToMarkdown data-md", () => {
+  it("uses a block's own Markdown instead of its HTML", () => {
+    const { markdown } = htmlToMarkdown(page('<p>Before.</p><div data-md="**Q &amp; A?**\n\n- Yes\n- No"><form><input name="x"></form></div><p>After.</p>'), origin);
+    expect(markdown).toContain("Before.\n\n**Q & A?**\n\n- Yes\n- No\n\nAfter.");
+  });
+});

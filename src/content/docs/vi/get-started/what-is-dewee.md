@@ -34,7 +34,7 @@ Tại Việt Nam, dewee được cung cấp theo hai hình thức Tự cài đ�
 - **Tách biệt dữ liệu.** Agent, session, bộ nhớ, provider, skill và MCP server đều thuộc về một tenant, và mọi truy vấn đều giới hạn trong tenant đó. Xem [Multi-tenancy](/docs/concepts/multi-tenancy).
 - **Kiểm soát.** Vai trò và phân quyền cho con người, API key theo phạm vi cho chương trình, phê duyệt ghép nối trước khi agent trả lời người gửi mới, và phê duyệt các lệnh shell rủi ro. Xem [Mô hình bảo mật](/docs/security/overview).
 - **Minh bạch.** Mỗi lượt chạy của agent để lại một trace gồm các lần gọi model, gọi tool, số token và chi phí ước tính; nhật ký hoạt động ghi lại ai đã thay đổi gì. Xem [Tracing](/docs/concepts/tracing).
-- **Tự chọn model.** 31 loại provider, từ Anthropic, OpenAI, Gemini đến OpenRouter, Ollama chạy nội bộ và mọi endpoint tương thích OpenAI, có cơ chế fallback khi một provider gặp lỗi. Xem [LLM provider](/docs/integrations/llm-providers).
+- **Tự chọn model.** 32 loại provider, từ Anthropic, OpenAI, Gemini đến OpenRouter, Ollama chạy nội bộ và mọi endpoint tương thích OpenAI, có cơ chế fallback khi một provider gặp lỗi. Xem [LLM provider](/docs/integrations/llm-providers).
 
 ## dewee không phải là gì
 

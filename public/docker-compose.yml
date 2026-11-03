@@ -108,6 +108,9 @@ services:
       DEWEE_CUSTOMER_BUNDLE_DIR: /app/app-assets
       DEWEE_SETUP_TOKEN_MODE: loopback
       DEWEE_PUBLISHED_BIND_ADDR: ${DEWEE_BIND_ADDR:-127.0.0.1}
+      # Reverse proxies in front of the control panel whose X-Forwarded-For/-Proto
+      # are believed (IP addresses and CIDR ranges, comma-separated). Empty: none.
+      DEWEE_TRUSTED_PROXY_CIDRS: ${DEWEE_TRUSTED_PROXY_CIDRS:-}
       DEWEE_INVITE_EMAIL_PROVIDER: disabled
     ports:
       - "${DEWEE_BIND_ADDR:-127.0.0.1}:${DEWEE_APP_PORT:-4321}:4321"

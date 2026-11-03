@@ -30,6 +30,7 @@ opening a pull request.
 | `migrations/` | D1 SQL migrations, applied in order |
 | `public/` | static files served as-is |
 | `plans/` | plans and reports (not shipped) |
+| `docs/experiments/` | pre-registered A/B tests (e.g. `homepage-h1.md`: hypothesis, sample size, stopping rule, flag switch) |
 
 ## Content platform (API, MCP, CLI, WebMCP)
 
@@ -39,17 +40,31 @@ blocks. Everything else is code. `/developers` is the public guide.
 | Surface | Where | Notes |
 |---|---|---|
 | Blocks | `src/lib/blocks/registry.ts` | the only block types the builder accepts; each has a schema |
+| Post widgets | `src/lib/blocks/post-widgets/` | blocks with `contexts` incl. `post`, placed in `body_md` by `::widget{id="…"}`; one renderer for page, preview, RSS and `.md` (how to add one: `post-widget-registry.ts`) |
+| Widget answers | `src/lib/server/post-widget-votes/` | Poll/Quiz/Survey forms post to `/api/post-widgets/vote`; `/api/post-widgets/results` gives aggregates; D1 `widget_responses` keeps a salted hash per voter, never the cookie or IP; survey results only in `/admin/widgets` |
 | Page service | `src/lib/server/pages/` | validation, slugs, versions (stale writes get 409), revisions |
+| Docs proposals | `src/lib/server/docs/` | `/docs` Markdown stays in Git: reads come from `DOCS_GITHUB_BASE` (default `dev`) and writes open a branch plus a pull request, never a direct push; checks shared with the build (`src/lib/docs-schema.ts`); stale `expected_sha` gets 409 |
 | REST | `/api/v1/*`, spec at `/api/v1/openapi.json` | one route table drives both dispatch and the spec (`src/lib/server/api/`) |
-| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key only; `tools/list` shows only what the key's scopes allow |
+| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key or OAuth access token; `tools/list` shows only what the scopes allow |
+| OAuth | `src/lib/server/oauth/`, `/oauth/authorize`, `/oauth/token` | for ChatGPT-style clients: PKCE S256, client metadata documents (no dynamic registration), super-admins only, consent picks the scopes; grants live in `OAUTH_KV` and are revoked at `/admin/connections` |
 | CLI | `cli/` (`dewee-web`) | REST client plus an MCP stdio bridge (`dewee-web mcp`) |
 | WebMCP | `src/components/webmcp/` | public tools on every page (read as Markdown, language, theme, chat); admin tools in `/admin` |
-| Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, pages, posts, leads, audit log |
+| Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, connected apps, pages, posts, leads, widget answers, audit log |
 
 - **Scopes:** `pages:read`, `pages:write`, `posts:read`, `posts:write`, `media:write`,
-  `leads:read`. Keys are shown once, stored hashed, and only super-admins can create them.
+  `leads:read`, `docs:read`, `docs:write`. Keys are shown once, stored hashed, and only super-admins can create them.
 - **Writes are idempotent** with an `Idempotency-Key` header. Admin browser calls send the session
   plus `X-CSRF-Token`; API keys never reach the browser.
+- **Docs GitHub access** comes only from worker secrets: a GitHub App (`DOCS_GITHUB_APP_ID`,
+  `DOCS_GITHUB_APP_INSTALLATION_ID`, `DOCS_GITHUB_APP_PRIVATE_KEY`; Contents and Pull requests
+  read/write on this repo only) or a fine-grained `DOCS_GITHUB_TOKEN`. Without them the docs
+  tools answer 503. `DOCS_GITHUB_REPO` / `DOCS_GITHUB_BASE` are plain vars in `wrangler.jsonc`.
+- **OAuth operations:** `OAUTH_KV` shares the existing `KV` namespace (its keys never collide with
+  rate-limit or form keys) and needs no secret. The worker must keep the `global_fetch_strictly_public`
+  compatibility flag, or client metadata documents are refused. Without `OAUTH_KV` the metadata
+  answers 404, the token endpoint 503 and only API keys work. The issuer is `SITE_URL`; the hourly
+  cron purges expired grants. Revoke a grant at `/admin/connections`; every grant, deny and revoke
+  is in the audit log.
 - To operate content (not code) with an AI agent, use `docs/skills/dewee-web-content/SKILL.md`.
 - Local run: `pnpm build && pnpm exec wrangler d1 migrations apply DB --local && pnpm exec wrangler dev --port 4389 --var ENVIRONMENT:development`.
   Outside production the sign-in code is logged to the console when `RESEND_API_KEY` is unset.
@@ -112,7 +127,9 @@ Use `pnpm preview` for anything that touches the worker (chat, API, MCP, redirec
 Work on a feature branch, open a PR into `dev`, and promote `dev` to `main` with a PR.
 
 CI (`.github/workflows/ci-deploy.yml`) runs `pnpm test`, `pnpm check` and `pnpm build` on every
-PR and push. Deploy steps (remote D1 migrations → `wrangler deploy` → smoke test of `/`, `/vi`,
+PR and push. `.github/workflows/release-metadata.yml` runs `pnpm releases:check` daily
+and on PRs that touch the release data; it fails when GitHub has a newer stable dewee release than
+`FACTS.stableRelease`, without blocking unrelated PRs or deploys. Deploy steps (remote D1 migrations → `wrangler deploy` → smoke test of `/`, `/vi`,
 `/index.md`) run only on pushes to `dev`/`main` when the repository variable
 `DEPLOY_ENABLED=true` and the secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (the
 account that owns dewee.sh) are set. Worker secrets (`DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`,
