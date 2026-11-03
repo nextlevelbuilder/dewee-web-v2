@@ -52,6 +52,8 @@ type DevelopersPage = {
     lede: string;
     remote: { title: string; body: string; snippets: DevSnippet[] };
     stdio: { title: string; body: string; snippets: DevSnippet[] };
+    /** OAuth sign-in for clients that cannot send a header, such as ChatGPT. */
+    oauth: { title: string; body: string; steps: string[]; snippets: DevSnippet[]; note: string };
     toolsTitle: string;
     toolsNote: string;
     tools: DevTool[];
@@ -146,6 +148,8 @@ poll, quiz, survey, sandboxed demo, callout, steps.`,
     }
   }
 }`,
+  chatgpt: `Server URL      https://dewee.sh/mcp
+Authentication  OAuth`,
   stdio: `{
   "mcpServers": {
     "dewee-web": {
@@ -319,7 +323,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
     mcp: {
       eyebrow: "MCP",
       title: "Plug your agent *straight in*.",
-      lede: "A remote MCP server at https://dewee.sh/mcp speaks JSON-RPC 2.0 over streamable HTTP. It uses the same API keys, and tools/list shows only the tools your key's scopes allow.",
+      lede: "A remote MCP server at https://dewee.sh/mcp speaks JSON-RPC 2.0 over streamable HTTP. It takes the same API keys, or an OAuth sign-in for ChatGPT, and tools/list shows only the tools your scopes allow.",
       remote: {
         title: "Remote, with a header",
         body: "For clients that support remote servers, such as Claude Code and Cursor.",
@@ -332,6 +336,18 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         title: "Local, over stdio",
         body: "For clients that only launch local servers. The CLI bridges stdio to the remote server, so nothing else runs on your machine.",
         snippets: [{ label: "Any client that reads mcpServers", code: CODE.stdio }],
+      },
+      oauth: {
+        title: "Sign in with OAuth, for ChatGPT",
+        body: "Clients that cannot send a header, such as ChatGPT, sign in instead of using a key. Only dewee.sh admins can approve a sign-in, and the app gets only the permissions you tick.",
+        steps: [
+          "In ChatGPT, add a connector with the server URL below and choose OAuth. No client ID or secret is needed: ChatGPT identifies itself with a client metadata document, and dynamic registration is off.",
+          "Sign in to dewee.sh with your admin email when ChatGPT opens the sign-in page.",
+          "Check which app is asking and where it sends you back, then tick the permissions. Read access is ticked by default; write access and leads are always opt-in.",
+          "See or revoke every connected app at /admin/connections. Revoking signs the app out at once. Access tokens last an hour and refresh for up to 30 days.",
+        ],
+        snippets: [{ label: "ChatGPT connector", code: CODE.chatgpt }],
+        note: "This is the dewee.sh content MCP for pages, posts and docs. It is not the MCP endpoint of your own dewee runtime (<gateway-origin>/mcp/workspace or /mcp/server), which signs in against that gateway.",
       },
       toolsTitle: "The 29 tools",
       toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed.",
@@ -533,7 +549,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
     mcp: {
       eyebrow: "MCP",
       title: "Cắm agent của bạn *vào thẳng*.",
-      lede: "MCP server từ xa tại https://dewee.sh/mcp dùng JSON-RPC 2.0 qua streamable HTTP. Server dùng chung API key, và tools/list chỉ hiện những công cụ mà scope của key cho phép.",
+      lede: "MCP server từ xa tại https://dewee.sh/mcp dùng JSON-RPC 2.0 qua streamable HTTP. Server dùng chung API key, hoặc đăng nhập OAuth cho ChatGPT, và tools/list chỉ hiện những công cụ mà scope của bạn cho phép.",
       remote: {
         title: "Từ xa, kèm header",
         body: "Cho các client hỗ trợ server từ xa, như Claude Code và Cursor.",
@@ -546,6 +562,18 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         title: "Chạy cục bộ qua stdio",
         body: "Cho các client chỉ khởi chạy server cục bộ. CLI làm cầu nối stdio tới server từ xa, nên máy bạn không phải chạy thêm gì.",
         snippets: [{ label: "Mọi client đọc cấu hình mcpServers", code: CODE.stdio }],
+      },
+      oauth: {
+        title: "Đăng nhập bằng OAuth, cho ChatGPT",
+        body: "Các client không gửi được header, như ChatGPT, sẽ đăng nhập thay cho API key. Chỉ admin của dewee.sh mới duyệt được một lần đăng nhập, và ứng dụng chỉ nhận những quyền bạn đánh dấu.",
+        steps: [
+          "Trong ChatGPT, thêm connector với server URL bên dưới và chọn OAuth. Không cần client ID hay secret: ChatGPT tự định danh bằng client metadata document, còn đăng ký động (dynamic registration) đã tắt.",
+          "Khi ChatGPT mở trang đăng nhập, hãy đăng nhập dewee.sh bằng email admin của bạn.",
+          "Kiểm tra ứng dụng nào đang xin quyền và nó sẽ chuyển bạn về đâu, rồi đánh dấu các quyền. Quyền đọc được chọn sẵn; quyền ghi và leads luôn phải tự chọn.",
+          "Xem hoặc thu hồi mọi ứng dụng đã kết nối tại /admin/connections. Thu hồi sẽ đăng xuất ứng dụng ngay. Access token có hạn một giờ và được làm mới trong tối đa 30 ngày.",
+        ],
+        snippets: [{ label: "Connector ChatGPT", code: CODE.chatgpt }],
+        note: "Đây là MCP nội dung của dewee.sh cho trang, bài viết và docs. Nó không phải endpoint MCP của runtime dewee bạn tự chạy (<gateway-origin>/mcp/workspace hoặc /mcp/server), vốn đăng nhập qua chính gateway đó.",
       },
       toolsTitle: "29 công cụ",
       toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy.",
