@@ -3,7 +3,7 @@ title: Webhooks and MCP
 description: Let other systems trigger agents and send channel messages through signed webhooks, and connect Claude Code, Cursor, VS Code or Gemini CLI to dewee over MCP.
 section: api
 order: 3
-updated: 2026-10-13
+updated: 2026-11-03
 ---
 
 Two endpoints exist for other software to call dewee. **Webhooks** let a system you run, such as a CRM, a form or a monitoring tool, start an agent or post a message to a chat app. The **public MCP server** lets an AI coding assistant search a workspace's memory and skills and work with its workflows. Both are narrow on purpose: each accepts only its own kind of credential and exposes a fixed set of actions.
@@ -114,6 +114,26 @@ The CLI also covers status, activation and the connection test:
 | `dewee mcp test` | Tests the key in `DEWEE_MCP_TOKEN`, or one piped in with `--mcp-token-stdin`. `--agent` picks the agent and `--call-tool` also calls a read-only tool |
 
 The key is never accepted as a command-line argument. `dewee mcp test` prints its result even when the check fails, and exits non-zero with an exit code that follows the kind of failure, so a script can tell a rejected key from a missing permission. With `--remote` it runs the handshake from your machine against the advertised endpoint, which also checks DNS, TLS and your reverse proxy. It sends the key only to an endpoint on the same origin as the gateway the CLI is configured for; to test another host, name it explicitly with `--remote --endpoint <url>`, and the CLI warns you which host receives the key. With a server name, `dewee mcp test <server>` still tests an MCP server that dewee connects to.
+
+### Sign in with Dewee instead of a key
+
+A client can also reach `/mcp/server` by signing in with Dewee (OAuth) instead of carrying an MCP API key. Ask for a configuration that holds only the endpoint address, with no `Authorization` header and no `DEWEE_MCP_TOKEN`:
+
+```bash
+dewee mcp connect-config --client claude --auth oauth
+```
+
+The output also says how each client starts the sign-in. Without `--auth`, or with `--auth key`, you get the API-key configuration above, unchanged.
+
+- The client must support MCP authorization with a Client ID Metadata Document or with a client id registered in advance. Dewee does not offer dynamic client registration, so a client that can only register dynamically cannot sign in.
+- Cursor cannot sign in this way yet, because its `cursor://` redirect is not accepted. Keep the default API-key configuration for Cursor.
+
+### Review and revoke connected apps
+
+| Command | What it does |
+|---|---|
+| `dewee mcp authorizations list` | Lists the apps connected by signing in. A workspace member sees their own; a workspace owner or admin sees every member's. Only active ones are shown unless you pass `--all`; `--json` prints machine-readable output |
+| `dewee mcp authorizations revoke <grant-id>` | Revokes one connection, and the app must sign in again. Asks for confirmation on a terminal; `--force` skips the question and is required in scripts. Also accepts `--dry-run` and `--json` |
 
 ### Check the status
 

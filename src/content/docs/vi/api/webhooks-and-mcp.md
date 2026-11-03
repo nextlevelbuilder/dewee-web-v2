@@ -3,7 +3,7 @@ title: Webhook và MCP
 description: Cho hệ thống khác kích hoạt agent và gửi tin nhắn qua channel bằng webhook có chữ ký, và kết nối Claude Code, Cursor, VS Code hay Gemini CLI tới dewee qua MCP.
 section: api
 order: 3
-updated: 2026-10-13
+updated: 2026-11-03
 ---
 
 Có hai endpoint dành riêng cho phần mềm khác gọi vào dewee. **Webhook** cho một hệ thống bạn đang chạy, như CRM, biểu mẫu hay công cụ giám sát, khởi động agent hoặc đăng tin nhắn lên ứng dụng chat. **MCP server công khai** cho trợ lý lập trình AI tìm trong bộ nhớ và skill của workspace và làm việc với workflow của nó. Cả hai đều cố ý hẹp: mỗi endpoint chỉ nhận đúng loại credential của mình và chỉ mở một tập thao tác cố định.
@@ -114,6 +114,26 @@ CLI cũng có lệnh xem trạng thái, bật tắt và kiểm tra kết nối:
 | `dewee mcp test` | Kiểm tra key trong `DEWEE_MCP_TOKEN`, hoặc key truyền qua stdin với `--mcp-token-stdin`. `--agent` chọn agent, `--call-tool` gọi thêm một tool chỉ đọc |
 
 Key không bao giờ được nhận qua tham số dòng lệnh. `dewee mcp test` in kết quả ngay cả khi kiểm tra thất bại, và thoát với mã khác 0 tuỳ theo loại lỗi, để script phân biệt được key bị từ chối với thiếu quyền. Với `--remote`, lệnh chạy bước bắt tay từ máy của bạn tới endpoint được công bố, nhờ đó kiểm tra luôn DNS, TLS và reverse proxy. Lệnh chỉ gửi key tới endpoint cùng origin với gateway mà CLI đang cấu hình; muốn kiểm tra một host khác, hãy chỉ rõ bằng `--remote --endpoint <url>`, và CLI sẽ cảnh báo host nào nhận key. Khi có tên server, `dewee mcp test <server>` vẫn kiểm tra một MCP server mà dewee kết nối tới như trước.
+
+### Đăng nhập bằng Dewee thay cho key
+
+Client cũng có thể kết nối tới `/mcp/server` bằng cách đăng nhập với Dewee (OAuth) thay vì mang theo một API key MCP. Hãy sinh cấu hình chỉ chứa địa chỉ endpoint, không có header `Authorization` và không có `DEWEE_MCP_TOKEN`:
+
+```bash
+dewee mcp connect-config --client claude --auth oauth
+```
+
+Kết quả cũng cho biết cách mỗi client bắt đầu đăng nhập. Không có `--auth`, hoặc với `--auth key`, bạn nhận cấu hình dùng API key như trên, không thay đổi gì.
+
+- Client phải hỗ trợ cơ chế ủy quyền MCP bằng Client ID Metadata Document hoặc bằng client id được đăng ký trước. Dewee không hỗ trợ đăng ký client động, nên client chỉ biết đăng ký động sẽ không đăng nhập được.
+- Cursor chưa đăng nhập được theo cách này, vì địa chỉ chuyển hướng `cursor://` của nó chưa được chấp nhận. Với Cursor, hãy giữ cấu hình mặc định dùng API key.
+
+### Xem và thu hồi ứng dụng đã kết nối
+
+| Lệnh | Tác dụng |
+|---|---|
+| `dewee mcp authorizations list` | Liệt kê các ứng dụng đã kết nối bằng cách đăng nhập. Thành viên workspace thấy ứng dụng của chính mình; chủ sở hữu hoặc admin của workspace thấy ứng dụng của mọi thành viên. Chỉ hiện các kết nối còn hiệu lực, trừ khi bạn truyền `--all`; `--json` in kết quả cho máy đọc |
+| `dewee mcp authorizations revoke <grant-id>` | Thu hồi một kết nối, và ứng dụng phải đăng nhập lại. Lệnh hỏi xác nhận khi chạy trong terminal; `--force` bỏ qua câu hỏi và là bắt buộc trong script. Lệnh cũng nhận `--dry-run` và `--json` |
 
 ### Xem trạng thái
 

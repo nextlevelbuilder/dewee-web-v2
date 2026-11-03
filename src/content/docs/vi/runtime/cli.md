@@ -3,7 +3,7 @@ title: Tham chiếu CLI
 description: "Dòng lệnh dewee: global flag, cách CLI tìm gateway và key của bạn, định dạng đầu ra, và mọi nhóm lệnh cho agent, skill, workflow, bộ nhớ và quản trị."
 section: runtime
 order: 2
-updated: 2026-10-16
+updated: 2026-11-03
 ---
 
 Chính binary `dewee` dùng để chạy gateway cũng là client dòng lệnh của nó. Phần lớn lệnh nói chuyện với một gateway đang chạy qua HTTP hoặc WebSocket, trên máy hay từ xa, nên người vận hành có thể viết script cho gần như mọi việc làm được trong console. Một vài lệnh bảo trì làm việc trực tiếp với cơ sở dữ liệu và chỉ dùng trên máy chủ.
@@ -87,7 +87,7 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 |---|---|
 | `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; cùng `access`, `grant`, `revoke`, `deps`, `evolve` và `suggestions` |
-| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` cho server đăng nhập bằng OAuth |
+| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config` (`--auth oauth` cho client đăng nhập bằng Dewee thay vì dùng key); `access`, `grant`, `revoke`; `oauth` cho server đăng nhập bằng OAuth; `authorizations` (`list`, `revoke`) cho các ứng dụng đã kết nối tới endpoint MCP công khai bằng cách đăng nhập, xem [Webhook và MCP](/docs/api/webhooks-and-mcp#xem-và-thu-hồi-ứng-dụng-đã-kết-nối) |
 | `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` để phê duyệt hoặc từ chối yêu cầu cài đặt; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee hooks` | Chỉ có `access`: hook chạy cho những agent nào và ai được sửa nó |
 | `dewee channels` | `list`, `add`, `delete` |
