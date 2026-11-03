@@ -61,6 +61,7 @@ dewee mcp list --json
 |---|---|
 | `dewee onboard` | Thiết lập lần đầu trên máy chủ: cơ sở dữ liệu, secret, migration, `.env.local` |
 | `dewee setup` | Trình hướng dẫn cho provider, model, agent và channel. Cần gateway đang chạy |
+| `dewee workspace-setup` | `next` thực hiện lượt tiếp theo của quy trình thiết lập workspace có hướng dẫn trong console; `--replace-key`, có thể kèm `--step <id>`, yêu cầu nhập key mới cho một provider đã lưu. Xem [Trang Tổng quan](/docs/console/overview#trang-tổng-quan) |
 | `dewee doctor` | In phiên bản, đường dẫn cấu hình và trạng thái cơ sở dữ liệu |
 | `dewee config` | `show` (đã che secret), `path`, `validate` |
 | `dewee auth` | `status` và `logout` cho tài khoản ChatGPT kết nối qua gateway |

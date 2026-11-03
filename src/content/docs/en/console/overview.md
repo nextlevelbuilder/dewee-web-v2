@@ -4,7 +4,7 @@ description: Sign in to the dewee console, switch between workspaces, learn the 
 section: console
 order: 1
 screens: [sign-in, overview]
-updated: 2026-10-14
+updated: 2026-11-03
 ---
 
 The console is where you run a dewee workspace day to day. Agents, channels, knowledge, monitoring and administration sit in one place, and every area checks your role before it shows or changes anything. This page covers signing in, the layout, what changes with your deployment mode, and where each area is explained.
@@ -61,6 +61,10 @@ The chip at the top of the console shows **Runtime ready**, **Runtime setting up
 - While the runtime is being provisioned, a stepper shows three steps: **Runtime**, **Provider** and **Super Agent**. Use **Refresh status** to check again. If provisioning fails, use **Retry setup** or **Open support**.
 - Once the runtime is up, a **Setup assistant** asks a few questions and does the rest. Select **Set up manually instead** to use the stepper's forms: **Connect provider**, then **Create Super Agent**.
 - A member who cannot change setup sees **Your workspace owner is finishing setup** until the owner or an admin is done.
+
+When the setup assistant asks **Which AI services do you already pay for?**, the choices include OpenCode Go and OpenRouter.
+
+Scripts and agents can drive the same guided setup with `POST /v1/workspace-setup/next` or `dewee workspace-setup next`. Each response lists, in `intents`, the intents the next turn accepts. When the assistant asks to test or repair a provider stored with an API key, the intent `replace_key` (`--replace-key` in the CLI) replaces that question with the key card for the same provider record, so you can enter a new key. Add `step_id` (`--step <id>`) to name the step.
 
 After setup, Overview becomes a dashboard of how the workspace is running: requests, tokens, cost, latency and errors for the chosen date range, with **Compare** against the previous period and **Export summary**. Below that are **Leaderboards** for top agents and channels, and panels for **Pending approvals**, **Recent failed traces** and **Runtime health**. Days are UTC calendar days, as on the Usage page.
 

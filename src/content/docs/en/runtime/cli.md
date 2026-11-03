@@ -61,6 +61,7 @@ dewee mcp list --json
 |---|---|
 | `dewee onboard` | First-time setup on the host: database, secrets, migrations, `.env.local` |
 | `dewee setup` | Interactive wizard for a provider, model, agent and channel. Needs a running gateway |
+| `dewee workspace-setup` | `next` takes the next turn of the console's guided workspace setup; `--replace-key`, optionally with `--step <id>`, asks for a new key for a stored provider. See [The Overview page](/docs/console/overview#the-overview-page) |
 | `dewee doctor` | Prints the version, config path and database status |
 | `dewee config` | `show` (secrets redacted), `path`, `validate` |
 | `dewee auth` | `status` and `logout` for a ChatGPT account connected through the gateway |
