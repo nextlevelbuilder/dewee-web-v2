@@ -3,7 +3,7 @@ title: Workspace MCP
 description: Connect Claude Code, Cursor, VS Code, ChatGPT or Gemini CLI to /mcp/workspace with Dewee sign-in, read agents, workflows and schedules, and toggle a schedule.
 section: api
 order: 4
-updated: 2026-11-01
+updated: 2026-11-03
 ---
 
 The workspace MCP endpoint, `/mcp/workspace`, lets an AI client manage a workspace **as you**: list agents, workflows and schedules, check usage and health, and switch a schedule on or off. It is a different endpoint from the [public MCP server](/docs/api/webhooks-and-mcp#the-public-mcp-server) at `/mcp/server`, where a client acts as one agent with an MCP API key. Here there is no agent and no API key: you sign in with your Dewee account and approve the client on a consent page.
@@ -173,9 +173,9 @@ To cut off every client at once, an operator removes the workspace from `tools.m
 | `401` | `workspace_membership_revoked` | You are no longer a member of the workspace |
 | `401` | `workspace_tenant_inactive` | The workspace is inactive or gone |
 | `403` | `workspace_tenant_not_enabled` | The workspace is not on the endpoint's allowlist |
-| `429` | `rate_limited`, `too_many_concurrent_calls` | Over the limits below; wait for `Retry-After` |
+| `429` | `rate_limited`, `too_many_concurrent_calls`, `tenant_rate_limited`, `tenant_too_many_concurrent_calls` | Over the limits below; the `tenant_` codes mean the whole workspace is over its budget. Wait for `Retry-After` |
 | `503` | `workspace_oauth_verifier_unavailable` | The gateway cannot check tokens right now; retry later |
 
-The endpoint uses the same limit settings as `/mcp/server` (requests per minute, concurrent tool calls, call timeout and body size) but keeps its own budget for each connection, so traffic on one endpoint never spends the other's. Neither endpoint accepts the other's tokens.
+The endpoint uses the same limit settings as `/mcp/server` (requests per minute, concurrent tool calls, call timeout and body size) but keeps its own budget for each connection, so traffic on one endpoint never spends the other's. The [workspace budget](/docs/api/webhooks-and-mcp#limits-quota-and-revocation) that all connections of a workspace share applies here too, counted separately from `/mcp/server`. Neither endpoint accepts the other's tokens.
 
 The gateway logs every call with the operation, outcome, workspace, user, client id and token id, never the arguments, the results or the token.

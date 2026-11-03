@@ -3,7 +3,7 @@ title: Cài đặt và chạy gateway
 description: Chạy runtime dewee bằng Docker hoặc từ mã nguồn, đặt các biến môi trường cần thiết, chọn edition, và giữ hệ thống ổn định với nâng cấp, sao lưu và khôi phục.
 section: runtime
 order: 1
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 Runtime là phần làm việc thật sự của dewee: agent, tool, channel, lịch chạy và workflow đều chạy bên trong một tiến trình gateway duy nhất. Tại Việt Nam, dewee được cung cấp dưới hình thức Tự cài đặt và On-Premises; với On-Premises, bạn vận hành gateway này trên hạ tầng của mình. Nếu bạn tự cài đặt, hãy làm theo [Tự cài đặt dewee](/docs/get-started/self-install). Trang này dành cho người vận hành: cài đặt, trỏ tới cơ sở dữ liệu và giữ cho nó chạy ổn định.
@@ -80,7 +80,7 @@ Gateway từ chối khởi động trên một địa chỉ không phải loopba
 
 Gateway chỉ đọc `X-Forwarded-Host` và `X-Forwarded-Proto` từ các proxy có trong `GOCLAW_TRUSTED_PROXIES`, một danh sách địa chỉ IP, dải CIDR hoặc tên máy cách nhau bằng dấu phẩy (ví dụ `127.0.0.1,::1` khi nginx chạy cùng máy, hoặc tên service Docker Compose của container proxy). Với mọi client khác, các header này bị bỏ qua. Trình cài đặt self-hosted và các file Compose đã tự đặt giá trị này cho proxy đi kèm; ở nơi khác danh sách mặc định rỗng. Một mục không hợp lệ sẽ khiến gateway không khởi động.
 
-Truy cập MCP công khai vào gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) mặc định tắt. Đọc [Webhook và MCP](/docs/api/webhooks-and-mcp) trước khi bật.
+Truy cập MCP công khai vào gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) mặc định tắt. Đọc [Webhook và MCP](/docs/api/webhooks-and-mcp) trước khi bật; giới hạn theo workspace của nó, `GOCLAW_MCP_PUBLIC_TENANT_REQUESTS_PER_MINUTE` và `GOCLAW_MCP_PUBLIC_TENANT_MAX_CONCURRENT_TOOL_CALLS`, được giải thích ở mục [Giới hạn, hạn mức và thu hồi key](/docs/api/webhooks-and-mcp#giới-hạn-hạn-mức-và-thu-hồi-key).
 
 ## Edition
 

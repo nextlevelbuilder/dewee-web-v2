@@ -3,7 +3,7 @@ title: Install and run the gateway
 description: Run the dewee runtime with Docker or from source, set the environment it needs, choose an edition, and keep it healthy with upgrades, backups and restores.
 section: runtime
 order: 1
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 The runtime is the part of dewee that does the work: agents, tools, channels, schedules and workflows all run inside one gateway process. Every deployment runs the same gateway, whether we host it or you do. This page is for the operator who installs it, points it at a database and keeps it running.
@@ -80,7 +80,7 @@ Set `GOCLAW_PUBLIC_URL` to the gateway's public address (for example `https://de
 
 The gateway reads `X-Forwarded-Host` and `X-Forwarded-Proto` only from the proxies listed in `GOCLAW_TRUSTED_PROXIES`, a comma-separated list of IP addresses, CIDR ranges or hostnames (for example `127.0.0.1,::1` when nginx runs on the same machine, or the proxy container's Docker Compose service name). From any other client those headers are ignored. The self-hosted installer and Compose files already set it for the proxy they ship; elsewhere the list is empty by default. An invalid entry stops the gateway from starting.
 
-Public MCP access to the gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) is off by default. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) before you turn it on.
+Public MCP access to the gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) is off by default. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) before you turn it on; its per-workspace limits, `GOCLAW_MCP_PUBLIC_TENANT_REQUESTS_PER_MINUTE` and `GOCLAW_MCP_PUBLIC_TENANT_MAX_CONCURRENT_TOOL_CALLS`, are explained under [Limits, quota and revocation](/docs/api/webhooks-and-mcp#limits-quota-and-revocation).
 
 ## Editions
 

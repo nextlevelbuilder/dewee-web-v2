@@ -3,7 +3,7 @@ title: Workspace MCP
 description: Kết nối Claude Code, Cursor, VS Code, ChatGPT hay Gemini CLI tới /mcp/workspace bằng đăng nhập Dewee, đọc agent, workflow, lịch chạy và bật tắt một lịch chạy.
 section: api
 order: 4
-updated: 2026-11-01
+updated: 2026-11-03
 ---
 
 Endpoint workspace MCP, `/mcp/workspace`, cho một client AI quản lý workspace **dưới danh nghĩa của bạn**: liệt kê agent, workflow và lịch chạy, xem mức sử dụng và tình trạng workspace, bật hoặc tắt một lịch chạy. Nó khác với [MCP server công khai](/docs/api/webhooks-and-mcp#mcp-server-công-khai) ở `/mcp/server`, nơi client đóng vai một agent và dùng MCP API key. Ở đây không có agent và không có API key: bạn đăng nhập bằng tài khoản Dewee và duyệt client trên trang đồng ý.
@@ -173,9 +173,9 @@ Thành viên workspace có quyền quản lý truy cập API có thể ngắt k�
 | `401` | `workspace_membership_revoked` | Bạn không còn là thành viên của workspace |
 | `401` | `workspace_tenant_inactive` | Workspace không hoạt động hoặc không còn tồn tại |
 | `403` | `workspace_tenant_not_enabled` | Workspace không nằm trong danh sách cho phép của endpoint |
-| `429` | `rate_limited`, `too_many_concurrent_calls` | Vượt giới hạn bên dưới; hãy đợi theo `Retry-After` |
+| `429` | `rate_limited`, `too_many_concurrent_calls`, `tenant_rate_limited`, `tenant_too_many_concurrent_calls` | Vượt giới hạn bên dưới; các mã `tenant_` nghĩa là cả workspace đã vượt ngân sách. Hãy đợi theo `Retry-After` |
 | `503` | `workspace_oauth_verifier_unavailable` | Gateway hiện không kiểm tra được token; hãy thử lại sau |
 
-Endpoint dùng cùng thiết lập giới hạn với `/mcp/server` (số request mỗi phút, số tool call đồng thời, thời gian chờ mỗi lần gọi và kích thước body) nhưng giữ ngân sách riêng cho từng kết nối, nên lưu lượng ở endpoint này không bao giờ tiêu vào ngân sách của endpoint kia. Không endpoint nào nhận token của endpoint còn lại.
+Endpoint dùng cùng thiết lập giới hạn với `/mcp/server` (số request mỗi phút, số tool call đồng thời, thời gian chờ mỗi lần gọi và kích thước body) nhưng giữ ngân sách riêng cho từng kết nối, nên lưu lượng ở endpoint này không bao giờ tiêu vào ngân sách của endpoint kia. [Ngân sách của workspace](/docs/api/webhooks-and-mcp#giới-hạn-hạn-mức-và-thu-hồi-key), dùng chung cho mọi kết nối của một workspace, cũng áp dụng ở đây và được tính riêng với `/mcp/server`. Không endpoint nào nhận token của endpoint còn lại.
 
 Gateway ghi log mọi lần gọi với thao tác, kết quả, workspace, người dùng, client id và id của token, không bao giờ ghi tham số, kết quả trả về hay bản thân token.

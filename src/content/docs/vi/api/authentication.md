@@ -3,7 +3,7 @@ title: Xác thực
 description: "Cách xác thực với API của dewee: tạo API key, chọn scope phù hợp, gửi key qua HTTP và WebSocket, và xử lý khi key hết hạn, bị thu hồi hoặc tenant thay đổi."
 section: api
 order: 2
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 Mọi lời gọi tới runtime, trừ các endpoint kiểm tra sức khoẻ, đều mang theo credential. Với script, tích hợp và CLI, credential đó là **API key**: gắn với một tenant, bị giới hạn bởi scope, và thu hồi được bất cứ lúc nào. Trang này giải thích cách tạo và cách gửi key.
@@ -91,4 +91,4 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 | `401` | Thiếu credential, credential không tồn tại, đã hết hạn hoặc bị thu hồi |
 | `403` | Key hợp lệ nhưng scope không cho phép thao tác, ví dụ ghi bằng key Read |
 | `409` | Trong console, workspace chưa khởi tạo xong nên chưa tạo được key |
-| `429` | Quá nhiều request; chờ theo thời gian trong `Retry-After` |
+| `429` | Quá nhiều request; chờ theo thời gian trong `Retry-After`. Ở các endpoint MCP, mã lỗi bắt đầu bằng `tenant_` nghĩa là cả workspace đã vượt ngân sách, không riêng key của bạn; xem [Giới hạn, hạn mức và thu hồi key](/docs/api/webhooks-and-mcp#giới-hạn-hạn-mức-và-thu-hồi-key) |
