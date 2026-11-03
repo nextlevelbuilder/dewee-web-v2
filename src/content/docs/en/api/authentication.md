@@ -16,6 +16,8 @@ Every call to the runtime, except the health checks, carries a credential. For s
 | Gateway token | The operator of a self-hosted runtime | Full admin access to the gateway. Keep it on the server and do not hand it to integrations |
 | Webhook secret | Systems that call a webhook | Only valid on that webhook. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) |
 
+A gateway bound to a loopback address without a gateway token asks for no credential at all, which is meant for local development. Behind a reverse proxy on the same host, set `GOCLAW_REQUIRE_AUTH=1` so every caller must authenticate; see [Install and run the gateway](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host).
+
 ## Create an API key
 
 **In the console**, open **API keys & docs**, select **Create key**, choose the **Access** level and an expiry, and create the key. The levels are **Read**, **Read and write**, **MCP read** and **MCP read and write**; expiry can be 1 hour, 1 day, 30 days, 90 days or none. The key is shown once, so copy it into your secret manager straight away. Creating or rotating keys is limited to 20 per hour, and revoking to 30 per hour.

@@ -56,6 +56,10 @@ Dấu thời gian phải lệch không quá 5 phút so với đồng hồ của 
 > [!WARNING]
 > Xoay vòng secret bằng `POST /v1/webhooks/{id}/rotate` làm secret cũ mất hiệu lực ngay lập tức, không có thời gian chồng lấp. Hãy cập nhật bên gửi cùng lúc.
 
+### Webhook sau reverse proxy
+
+Webhook tạo với `localhost_only` dành cho bên gọi trên chính máy chạy gateway. Khi gateway chạy với `GOCLAW_REQUIRE_AUTH=1`, như nên làm khi nằm sau [reverse proxy trên cùng máy](/docs/runtime/install-and-run#sau-reverse-proxy-trên-cùng-máy), các webhook này từ chối mọi bên gọi, vì proxy trên cùng máy có thể chuyển tiếp request mà không thêm header nào. Ở chế độ này, tạo hoặc cập nhật webhook với `localhost_only=true` trả về `400`. Edition Lite luôn đặt `localhost_only`, nên Lite không tạo được webhook ở chế độ này; hãy dùng edition Standard cho webhook đặt sau proxy.
+
 ## MCP server công khai
 
 Gateway có thể đóng vai MCP server tại `POST /mcp/server`, để một client MCP như Claude Code, Cursor, VS Code hay Gemini CLI dùng workspace ngay trong trình soạn thảo. Nó khác với các MCP server mà chính dewee kết nối tới, vốn được quản lý trong [Tool, MCP và hook](/docs/console/tools-mcp-and-hooks).

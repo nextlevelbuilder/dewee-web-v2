@@ -16,6 +16,8 @@ Mọi lời gọi tới runtime, trừ các endpoint kiểm tra sức khoẻ, đ
 | Gateway token | Người vận hành runtime On-Premises | Toàn quyền admin trên gateway. Giữ trên máy chủ, đừng giao cho tích hợp |
 | Secret của webhook | Hệ thống gọi vào webhook | Chỉ có hiệu lực với webhook đó. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp) |
 
+Gateway lắng nghe trên địa chỉ loopback mà không có gateway token sẽ không đòi credential nào, để phục vụ việc phát triển trên máy cá nhân. Khi gateway nằm sau reverse proxy trên cùng máy, hãy đặt `GOCLAW_REQUIRE_AUTH=1` để mọi bên gọi đều phải xác thực; xem [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sau-reverse-proxy-trên-cùng-máy).
+
 ## Tạo API key
 
 **Trong console**, mở **API key & tài liệu**, chọn **Tạo key**, chọn mức **Quyền truy cập** và thời hạn, rồi tạo key. Các mức là **Đọc**, **Đọc và ghi**, **MCP đọc** và **MCP đọc và ghi**; thời hạn có thể là 1 giờ, 1 ngày, 30 ngày, 90 ngày hoặc không hết hạn. Key chỉ hiện một lần, hãy chép ngay vào trình quản lý secret. Việc tạo hoặc xoay vòng key giới hạn 20 lần mỗi giờ, còn thu hồi là 30 lần mỗi giờ.

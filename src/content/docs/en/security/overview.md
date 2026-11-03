@@ -3,14 +3,14 @@ title: Security overview
 description: What dewee locks down by default, which agent capabilities stay open until you tighten them, and the five layers of checks between a message and your systems.
 section: security
 order: 1
-updated: 2026-10-14
+updated: 2026-11-03
 ---
 
 This page is written for the person who has to sign off on dewee: what is protected out of the box, what you are expected to configure, and where each check lives. It describes what the runtime does today, including the defaults that are permissive. The product-level summary is on the [Security](/security) page.
 
 ## The short version
 
-- **The edge is closed by default.** Nobody reaches the gateway without a token, strangers cannot message your agents without approval, and the public MCP endpoint is off.
+- **The edge is closed by default.** Nobody reaches the gateway from another machine without a token, strangers cannot message your agents without approval, and the public MCP endpoint is off.
 - **Agent capabilities start permissive.** A new gateway gives agents the full tool set, runs commands without asking, and has the Docker sandbox off. You narrow this with policy, per gateway and per agent.
 - **Secrets are encrypted when the encryption key is set.** Onboarding and the Docker setup generate the key. API keys are stored only as hashes.
 - **Tenants are isolated in every query.** A request without a tenant context fails.
@@ -19,7 +19,7 @@ This page is written for the person who has to sign off on dewee: what is protec
 
 | Area | Default |
 |---|---|
-| Gateway access | A token is required on any non-loopback address; the gateway will not start without one |
+| Gateway access | A token is required on any non-loopback address; the gateway will not start without one. On loopback too with `GOCLAW_REQUIRE_AUTH=1`, which a reverse proxy on the same host needs |
 | WebSocket | The first frame must be an authenticated `connect`; anything else is rejected |
 | RPC methods | Methods that have no permission class are denied |
 | Chat-app direct messages | Unknown senders get a pairing code and wait for approval |
@@ -81,7 +81,7 @@ Every tenant-owned table carries a tenant ID, and every query filters on it. Eve
 ## Before you go live
 
 1. Keep `GOCLAW_ENCRYPTION_KEY` set, and store it with your backups.
-2. Set a strong gateway token and put TLS in front of the gateway.
+2. Set a strong gateway token and put TLS in front of the gateway. If a reverse proxy on the same host publishes it, set `GOCLAW_REQUIRE_AUTH=1`; see [Install and run the gateway](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host).
 3. Narrow the tool profile and turn on command approval for agents that can run commands.
 4. Turn the sandbox on for agents that execute code.
 5. Set `gateway.injection_action` to `block` if your agents talk to the public.

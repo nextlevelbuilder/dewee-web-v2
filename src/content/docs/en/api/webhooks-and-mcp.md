@@ -56,6 +56,10 @@ The timestamp must be within 5 minutes of the gateway's clock, and a signature c
 > [!WARNING]
 > Rotating a secret with `POST /v1/webhooks/{id}/rotate` invalidates the old one immediately; there is no overlap. Update the sender at the same moment.
 
+### Webhooks behind a reverse proxy
+
+A webhook created with `localhost_only` is meant for callers on the gateway's own host. When the gateway runs with `GOCLAW_REQUIRE_AUTH=1`, as it should behind a [reverse proxy on the same host](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host), such webhooks refuse every caller, because a same-host proxy may forward requests without adding headers. In this mode, creating or updating a webhook with `localhost_only=true` returns `400`. The Lite edition always sets `localhost_only`, so Lite cannot create webhooks in this mode; use the Standard edition for webhooks behind a proxy.
+
 ## The public MCP server
 
 The gateway can act as an MCP server at `POST /mcp/server`, so an MCP client such as Claude Code, Cursor, VS Code or Gemini CLI can use a workspace from inside the editor. It is not the same as the MCP servers dewee itself connects to, which you manage under [Tools, MCP and hooks](/docs/console/tools-mcp-and-hooks).
