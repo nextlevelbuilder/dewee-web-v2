@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.3",
+    "@cloudflare/workers-oauth-provider": "1.2.3",
     "astro": "^7.3.5",
     "marked": "^18.0.14",
     "mermaid": "12.2.0",

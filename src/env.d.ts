@@ -6,6 +6,8 @@ interface Env {
   DB: D1Database;
   KV: KVNamespace;
   SESSION: KVNamespace;
+  /** OAuth grants, codes and tokens for the content MCP (hashed; props encrypted). Unbound turns OAuth sign-in off. */
+  OAUTH_KV?: KVNamespace;
   MEDIA: R2Bucket;
   CHAT_ROOM: DurableObjectNamespace<import("./lib/server/chat-room").ChatRoom>;
   SITE_URL: string;
