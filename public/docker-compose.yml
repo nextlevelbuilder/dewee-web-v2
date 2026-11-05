@@ -31,6 +31,9 @@ services:
     # files group 999 (the database containers' user). dewee.env stays 0600.
     user: "0:0"
     entrypoint: ["/app/dewee", "selfhost", "init-secrets", "--out", "/secrets/dewee.env", "--docker"]
+    environment:
+      # The control panel address init-secrets prints; keep it on the published port.
+      DEWEE_SELFHOST_PUBLIC_URL: http://localhost:${DEWEE_APP_PORT:-4321}
     volumes:
       - dewee-secrets:/secrets
     restart: "no"
@@ -84,6 +87,8 @@ services:
       DEWEE_HOME: /secrets
       # Where `docker compose exec dewee dewee selfhost status` reaches the control panel.
       DEWEE_SELFHOST_APP_URL: http://dewee-app:4321
+      # The browser address `selfhost access-link` prints links for; keep it on the published port.
+      DEWEE_SELFHOST_PUBLIC_URL: http://localhost:${DEWEE_APP_PORT:-4321}
     volumes:
       - *secrets-ro
       - dewee-data:/app/data

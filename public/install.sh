@@ -688,7 +688,14 @@ mkdir -p "\$run" "\$logs"
 for svc in runtime ccp; do
   pid_file="\$run/\$svc.pid"
   if [ -f "\$pid_file" ] && kill -0 "\$(cat "\$pid_file")" 2>/dev/null; then continue; fi
-  nohup /bin/sh "$bin/dewee-\$svc-run" >>"\$logs/\$svc.log" 2>&1 &
+  # setsid gives the service its own session, so it outlives the terminal
+  # that started it. A background job is never a group leader here, so setsid
+  # execs in place and \$! stays the service's PID for dewee-stop.
+  if command -v setsid >/dev/null 2>&1; then
+    setsid nohup /bin/sh "$bin/dewee-\$svc-run" </dev/null >>"\$logs/\$svc.log" 2>&1 &
+  else
+    nohup /bin/sh "$bin/dewee-\$svc-run" </dev/null >>"\$logs/\$svc.log" 2>&1 &
+  fi
   echo \$! >"\$pid_file"
 done
 EOF
@@ -831,6 +838,27 @@ EOF
 
 # ── Readiness and first run ───────────────────────────────────────────────
 
+# detect_first_install sets FIRST_INSTALL from durable state. A first run
+# writes FIRST_INSTALL_MARKER before it points `current` at the bundle and
+# removes it only once the setup link was shown, so a run that failed half way
+# (for example at PostgreSQL) leaves the next run a first install. dewee.env is
+# written only after PostgreSQL is ready, so `current` without it is such a
+# failed run from an installer that predates the marker.
+detect_first_install() {
+  FIRST_INSTALL_MARKER="$OPT_HOME/.first-install-pending"
+  FIRST_INSTALL=1
+  if [ ! -e "$FIRST_INSTALL_MARKER" ] && [ -L "$OPT_HOME/current" ] && [ -f "$ENV_FILE" ]; then
+    FIRST_INSTALL=0
+  fi
+}
+
+# owner_exists asks the running control panel: /setup redirects once any
+# account exists. A pending marker can outlive the owner when an earlier run
+# could not print the link and the owner was created another way.
+owner_exists() {
+  [ "$(curl -s -o /dev/null --max-time 5 -w '%{http_code}' "http://$(probe_host):$OPT_PORT/setup" 2>/dev/null)" = 302 ]
+}
+
 probe_host() {
   case "$OPT_BIND" in
     0.0.0.0|::|127.*|localhost|::1) printf '127.0.0.1' ;;
@@ -880,6 +908,7 @@ open_url() {
 # setup link. Only the control panel address is ever shown.
 finish() {
   local base="http://localhost:$OPT_PORT" setup_link=""
+  SETUP_LINK_SHOWN=0
   if [ "$FIRST_INSTALL" = 1 ]; then
     setup_link="$("$@" 2>/dev/null)" || setup_link=""
   fi
@@ -888,6 +917,7 @@ finish() {
   if [ -n "$setup_link" ]; then
     say "Create your owner account with this one-time setup link (valid 30 minutes):"
     say "  $setup_link"
+    SETUP_LINK_SHOWN=1
     open_url "$setup_link"
   else
     open_url "$base/"
@@ -1025,11 +1055,11 @@ main() {
   fi
 
   ENV_FILE="$OPT_HOME/dewee.env"
-  FIRST_INSTALL=1
-  [ -L "$OPT_HOME/current" ] && FIRST_INSTALL=0
+  detect_first_install
   mkdir -p "$OPT_HOME/versions" "$OPT_HOME/logs" "$OPT_HOME/data" "$OPT_HOME/workspace"
 
   download_bundle
+  [ "$FIRST_INSTALL" = 1 ] && : >"$FIRST_INSTALL_MARKER"
   swap_current
   setup_postgres
   write_env
@@ -1043,9 +1073,18 @@ main() {
   fi
   start_services
   wait_ready
+  if [ "$FIRST_INSTALL" = 1 ] && owner_exists; then
+    FIRST_INSTALL=0
+    rm -f "$FIRST_INSTALL_MARKER"
+  fi
   finish "$OPT_HOME/current/bin/dewee" selfhost access-link --purpose setup \
     --base-url "http://localhost:$OPT_PORT" --env-file "$ENV_FILE"
-  say "Setup link again later: dewee selfhost access-link --purpose setup"
+  if [ "$SETUP_LINK_SHOWN" = 1 ]; then
+    rm -f "$FIRST_INSTALL_MARKER"
+    say "Setup link again later: dewee selfhost access-link --purpose setup"
+  elif [ "$FIRST_INSTALL" = 1 ]; then
+    say "Could not create the setup link. Run: dewee selfhost access-link --purpose setup"
+  fi
 }
 
 if [ "${DEWEE_INSTALL_LIB:-0}" != 1 ]; then
