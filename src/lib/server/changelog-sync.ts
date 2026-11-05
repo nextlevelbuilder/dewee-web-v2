@@ -9,8 +9,11 @@ import { channelOf, parseTag } from "./seo/changelog/release-groups";
 
 type GithubRelease = { tag_name: string; name: string | null; prerelease: boolean; draft: boolean; published_at: string | null; body: string | null };
 
-/** Newest releases per run; bursts rarely exceed a few dozen an hour. */
+/** Releases per GitHub page. */
 const PER_PAGE = 100;
+/** Pages per run (1,000 releases). Every run walks all pages so a gap left by an outage is filled;
+ * the newest page is always rewritten (notes get edited), older pages only add missing tags. */
+const MAX_PAGES = 10;
 
 function isRelease(value: unknown): value is GithubRelease {
   if (!value || typeof value !== "object") return false;
@@ -23,17 +26,15 @@ export async function syncChangelog(env: Env): Promise<{ synced: number }> {
   if (!env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is not set; changelog sync cannot read releases");
   const repo = env.CHANGELOG_REPO;
   if (!/^[\w.-]+\/[\w.-]+$/.test(repo ?? "")) throw new Error("CHANGELOG_REPO must be owner/name");
-  const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=${PER_PAGE}`, {
-    headers: {
-      authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      accept: "application/vnd.github+json",
-      "user-agent": "dewee.sh-changelog-sync",
-      "x-github-api-version": "2022-11-28",
-    },
-  });
-  if (!res.ok) throw new Error(`GitHub releases ${res.status}`);
-  const payload: unknown = await res.json();
-  if (!Array.isArray(payload)) throw new Error("GitHub releases: unexpected response");
+  const known = new Set(
+    ((await env.DB.prepare("SELECT tag FROM releases").all<{ tag: string }>()).results ?? []).map((r) => r.tag),
+  );
+  const payload: GithubRelease[] = [];
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const batch = await fetchReleasePage(repo, env.GITHUB_TOKEN, page);
+    payload.push(...(page === 1 ? batch : batch.filter((r) => !known.has(r.tag_name))));
+    if (batch.length < PER_PAGE) break;
+  }
   const now = new Date().toISOString();
   const stmts = payload
     .filter(isRelease)
@@ -53,4 +54,19 @@ export async function syncChangelog(env: Env): Promise<{ synced: number }> {
     );
   if (stmts.length) await env.DB.batch(stmts);
   return { synced: stmts.length };
+}
+
+async function fetchReleasePage(repo: string, token: string, page: number): Promise<GithubRelease[]> {
+  const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=${PER_PAGE}&page=${page}`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+      accept: "application/vnd.github+json",
+      "user-agent": "dewee.sh-changelog-sync",
+      "x-github-api-version": "2022-11-28",
+    },
+  });
+  if (!res.ok) throw new Error(`GitHub releases ${res.status}`);
+  const payload: unknown = await res.json();
+  if (!Array.isArray(payload)) throw new Error("GitHub releases: unexpected response");
+  return payload.filter(isRelease);
 }
