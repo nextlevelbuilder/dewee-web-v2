@@ -1,6 +1,6 @@
 /**
  * Hourly cron: pull the latest releases of the (private) dewee repo from GitHub into D1 `releases`.
- * Requires a read-only GITHUB_TOKEN secret; without it the snapshot seeded by migrations stays.
+ * Requires a read-only GITHUB_TOKEN secret; without it every run throws so the cron logs the failure.
  * Notes are sanitised with the same rules as the seed (scripts/snapshot-releases.ts) before they
  * are stored, and no github.com URL is kept: the repository is private.
  */
@@ -19,7 +19,8 @@ function isRelease(value: unknown): value is GithubRelease {
 }
 
 export async function syncChangelog(env: Env): Promise<{ synced: number }> {
-  if (!env.GITHUB_TOKEN) return { synced: 0 };
+  // Throw rather than skip: a missing token once left /changelog frozen on the seed for weeks unnoticed.
+  if (!env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is not set; changelog sync cannot read releases");
   const repo = env.CHANGELOG_REPO;
   if (!/^[\w.-]+\/[\w.-]+$/.test(repo ?? "")) throw new Error("CHANGELOG_REPO must be owner/name");
   const res = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=${PER_PAGE}`, {
