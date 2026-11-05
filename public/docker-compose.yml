@@ -31,6 +31,9 @@ services:
     # files group 999 (the database containers' user). dewee.env stays 0600.
     user: "0:0"
     entrypoint: ["/app/dewee", "selfhost", "init-secrets", "--out", "/secrets/dewee.env", "--docker"]
+    environment:
+      # The control panel address init-secrets prints; keep it on the published port.
+      DEWEE_SELFHOST_PUBLIC_URL: http://localhost:${DEWEE_APP_PORT:-4321}
     volumes:
       - dewee-secrets:/secrets
     restart: "no"
@@ -84,6 +87,8 @@ services:
       DEWEE_HOME: /secrets
       # Where `docker compose exec dewee dewee selfhost status` reaches the control panel.
       DEWEE_SELFHOST_APP_URL: http://dewee-app:4321
+      # The browser address `selfhost access-link` prints links for; keep it on the published port.
+      DEWEE_SELFHOST_PUBLIC_URL: http://localhost:${DEWEE_APP_PORT:-4321}
     volumes:
       - *secrets-ro
       - dewee-data:/app/data
@@ -108,6 +113,9 @@ services:
       DEWEE_CUSTOMER_BUNDLE_DIR: /app/app-assets
       DEWEE_SETUP_TOKEN_MODE: loopback
       DEWEE_PUBLISHED_BIND_ADDR: ${DEWEE_BIND_ADDR:-127.0.0.1}
+      # Reverse proxies in front of the control panel whose X-Forwarded-For/-Proto
+      # are believed (IP addresses and CIDR ranges, comma-separated). Empty: none.
+      DEWEE_TRUSTED_PROXY_CIDRS: ${DEWEE_TRUSTED_PROXY_CIDRS:-}
       DEWEE_INVITE_EMAIL_PROVIDER: disabled
     ports:
       - "${DEWEE_BIND_ADDR:-127.0.0.1}:${DEWEE_APP_PORT:-4321}:4321"
