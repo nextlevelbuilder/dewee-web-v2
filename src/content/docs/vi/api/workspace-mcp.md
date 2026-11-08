@@ -130,6 +130,8 @@ Tham số được kiểm tra theo schema của từng tool. Tham số mà tool 
 
 `cron_list` mặc định trả tối đa 20 job; giới hạn yêu cầu lớn nhất là 100. Kết quả gồm `jobs`, `hasMore` và `nextCursor`. Dùng cursor được trả về với cùng bộ lọc để xem tiếp, hoặc bỏ cursor để bắt đầu lại. Cursor rỗng hoặc không hợp lệ gây lỗi. Cursor chỉ đánh dấu vị trí, không phải ảnh chụp: hãy duyệt lại từ đầu để thấy các job mới hơn được thêm vào.
 
+Khi thao tác ghi cấu hình workflow được bật, `workflows_update` có thể thay thế bản nháp. Đọc `updated_at` bằng `workflows_get` rồi truyền đầy đủ giá trị đó vào `expected_version` để tránh ghi đè một chỉnh sửa đồng thời. Phiên bản cũ trả `VERSION_CONFLICT`; hãy đọc lại workflow và đối chiếu thay đổi. Thao tác cần owner hoặc admin của workspace và sự phê duyệt của một owner hoặc admin khác; sau khi được duyệt, gọi lại yêu cầu giống hệt với `approval_id`. Xem [Workflow](/docs/concepts/workflows) để biết độ chính xác timestamp và cách tương ứng qua CLI, HTTP và WebSocket.
+
 `cron_status`, `cron_runs` và `hooks_list` không có.
 
 ## Thay đổi một lịch chạy

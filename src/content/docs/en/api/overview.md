@@ -73,6 +73,10 @@ The channel instance writer API lists groups at `GET /v1/channels/instances/{id}
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` and `POST /v1/vault/links/batch` accept at most 500 IDs per request, counting duplicate entries. Larger arrays receive a localized HTTP 400 validation error rather than partial processing. Split larger selections and track each result.
 
+### Conditional workflow draft updates
+
+For `PUT /v1/workflows/{id}`, pass the draft's current `updated_at` as `expected_version` to reject a concurrent edit. A stale value returns HTTP 409 with `VERSION_CONFLICT`; reload and reconcile before retrying. Omit it for an unconditional update. The equivalent WebSocket method is `workflows.update` with `expectedVersion`. See [Workflows](/docs/concepts/workflows) for timestamp precision and CLI and Workspace MCP usage.
+
 ## Route groups
 
 | Group | Examples of what you can manage |

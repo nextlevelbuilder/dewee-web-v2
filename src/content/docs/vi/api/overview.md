@@ -73,6 +73,10 @@ API writer của channel instance liệt kê nhóm tại `GET /v1/channels/insta
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` và `POST /v1/vault/links/batch` nhận tối đa 500 ID mỗi yêu cầu, tính cả mục trùng. Mảng lớn hơn nhận lỗi kiểm tra HTTP 400 theo ngôn ngữ, thay vì xử lý một phần. Hãy chia lựa chọn lớn và theo dõi từng kết quả.
 
+### Cập nhật bản nháp workflow có điều kiện
+
+Với `PUT /v1/workflows/{id}`, truyền `updated_at` hiện tại của bản nháp vào `expected_version` để từ chối khi có chỉnh sửa đồng thời. Giá trị cũ trả HTTP 409 với `VERSION_CONFLICT`; hãy tải lại và đối chiếu trước khi thử lại. Bỏ trường này để cập nhật không điều kiện. Phương thức WebSocket tương ứng là `workflows.update` với `expectedVersion`. Xem [Workflow](/docs/concepts/workflows) để biết độ chính xác timestamp và cách dùng qua CLI và Workspace MCP.
+
 ## Các nhóm route
 
 | Nhóm | Ví dụ những gì bạn quản lý được |

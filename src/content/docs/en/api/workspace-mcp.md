@@ -130,6 +130,8 @@ Arguments are checked against each tool's schema. An argument the tool does not 
 
 `cron_list` returns up to 20 jobs by default; the maximum requested limit is 100. Its result contains `jobs`, `hasMore` and `nextCursor`. Continue with that cursor and the same filters, or omit it to restart. Empty or invalid cursors are errors. Cursors mark a position, not a snapshot: start a fresh traversal to see newly inserted newer jobs.
 
+When workflow configuration writes are enabled, `workflows_update` can replace a draft. Read `updated_at` with `workflows_get` and pass its full value as `expected_version` to prevent overwriting a concurrent edit. A stale version returns `VERSION_CONFLICT`; read the workflow again and reconcile the changes. Updating requires a workspace owner or admin and approval from another owner or admin; repeat the identical call with the approved `approval_id`. See [Workflows](/docs/concepts/workflows) for timestamp precision and the CLI, HTTP and WebSocket equivalents.
+
 `cron_status`, `cron_runs` and `hooks_list` are not available.
 
 ## Change a schedule
