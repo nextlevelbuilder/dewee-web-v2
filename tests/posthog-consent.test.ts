@@ -6,7 +6,7 @@ const source = readFileSync("src/components/layout/PosthogAnalytics.astro", "utf
 const script = source.match(/<script is:inline define:vars=\{\{ config \}\}>([\s\S]*?)<\/script>/)?.[1];
 if (!script) throw new Error("PostHog script not found");
 
-function setup(choice: string | null) {
+function setup(choice: string | null, storageBlocked = false) {
   const windowListeners = new Map<string, (event: any) => void>();
   const documentListeners = new Map<string, (event: any) => void>();
   const posthog = { __loaded: true, init: vi.fn(), register: vi.fn(), capture: vi.fn(), opt_in_capturing: vi.fn(), opt_out_capturing: vi.fn() };
@@ -14,7 +14,7 @@ function setup(choice: string | null) {
     posthog,
     config: { key: "test", props: {}, appHost: "app.example.test", variantKey: "h1Variant" },
     location: { origin: "https://example.test", href: "https://example.test/" },
-    localStorage: { getItem: () => choice },
+    localStorage: { getItem: () => { if (storageBlocked) throw new Error("storage blocked"); return choice; } },
     document: { addEventListener: (name: string, fn: (event: any) => void) => documentListeners.set(name, fn), documentElement: { dataset: {} } },
     addEventListener: (name: string, fn: (event: any) => void) => windowListeners.set(name, fn),
     setTimeout: (fn: () => void) => fn(), URL, Element: class {},
@@ -49,6 +49,13 @@ describe("PostHog consent", () => {
     const { posthog } = setup("all");
     expect(posthog.init).toHaveBeenCalledOnce();
     expect(posthog.opt_in_capturing).toHaveBeenCalledOnce();
+  });
+
+  it("fails closed when browser storage is blocked until explicit acceptance", () => {
+    const { posthog, windowListeners } = setup(null, true);
+    expect(posthog.init).not.toHaveBeenCalled();
+    windowListeners.get("dewee:analytics-consent")!({});
+    expect(posthog.init).toHaveBeenCalledOnce();
   });
 
   it("does not load the real SDK stub until acceptance on a fresh page", () => {
