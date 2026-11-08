@@ -93,6 +93,14 @@ dewee --server https://dewee.example.com --token <token> traces get <trace-id> -
 
 Chẩn đoán đánh giá ngữ nghĩa cung cấp lý do lỗi đã phân loại, gợi ý khôi phục, danh tính model đánh giá theo cấu hình, cùng xác suất và số đếm hợp lệ. Một số nội dung chẩn đoán cũ được ẩn khi không thể tin cậy nguồn gốc. Điều này không thay đổi kết quả chạy hay quyền truy cập; cấu trúc metadata trace của khách hàng được giữ nguyên.
 
+Ví dụ, kết quả API trace có thể chứa đoạn sau khi việc đánh giá thất bại (các trường khác được lược bỏ):
+
+```json
+{"status":"evaluation_failed","failure_reason":"rate_limited","attempts":1}
+```
+
+Đây là lỗi của lượt đánh giá, không nhất thiết là lỗi của lượt chạy agent. Hãy xem gợi ý cố định trong `failure_detail` nếu có; phản hồi không đưa ra nội dung lỗi gốc của provider. Thông tin phiên bản model cũ không đáng tin được ẩn, còn nhãn quyết định cũ không nhận diện được được gom vào nhóm đã che mà vẫn giữ tổng xác suất và số đếm.
+
 ## Xuất sang OpenTelemetry
 
 Trace luôn được ghi vào cơ sở dữ liệu của dewee. Bạn cũng có thể gửi span tới một backend OTLP như Jaeger, Grafana Tempo hoặc Datadog. Việc xuất OpenTelemetry là tuỳ chọn lúc build: build với tag `otel`, hoặc build Docker image với `ENABLE_OTEL=true`. Bản build tiêu chuẩn không kèm tính năng này. Sau đó bật nó trong phần `telemetry` của cấu hình:

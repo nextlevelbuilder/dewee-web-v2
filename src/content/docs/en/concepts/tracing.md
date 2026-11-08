@@ -93,6 +93,14 @@ dewee --server https://dewee.example.com --token <token> traces get <trace-id> -
 
 Semantic evaluation diagnostics provide classified failure reasons and recovery hints, the configured evaluator model identity, and valid probabilities and counts. Some older diagnostic text is withheld when its provenance cannot be trusted. This does not change runtime outcomes or authorization; customer trace metadata retains its existing shape.
 
+For example, a failed evaluation can include this excerpt in trace API output (other fields are omitted):
+
+```json
+{"status":"evaluation_failed","failure_reason":"rate_limited","attempts":1}
+```
+
+The failure is for the evaluation, not necessarily the underlying agent run. Inspect the fixed `failure_detail` hint when present; the response does not expose a raw provider error body. Historical untrusted model-version text is withheld, and unknown historical decision labels are grouped into a redacted bucket without discarding their probability mass or counts.
+
 ## Exporting to OpenTelemetry
 
 Traces always go to dewee's own database. You can also send spans to an OTLP backend such as Jaeger, Grafana Tempo or Datadog. OpenTelemetry export is opt-in at build time: build with the `otel` tag, or build the Docker image with `ENABLE_OTEL=true`. Standard builds leave it out. Then turn it on in the `telemetry` section of the config:
