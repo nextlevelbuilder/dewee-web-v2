@@ -106,6 +106,14 @@ Phiên bản 1 bắt buộc có `version` và `url` HTTP(S) tuyệt đối. Các
 
 Gateway coi ngữ cảnh là dữ liệu bên ngoài không đáng tin cậy chỉ cho lượt chạy hiện tại, không phải chỉ dẫn. Nội dung trang không được lưu vào lịch sử chat, bản tóm tắt, memory, log hay nội dung trace, và không thay đổi tool hoặc quyền. Nếu ngữ cảnh bị từ chối, toàn bộ lần gửi thất bại với `page_context_invalid` hoặc `page_context_unsupported`; chỉ gửi lại không kèm ngữ cảnh nếu người dùng vẫn muốn gửi tin nhắn. Không nối nội dung trang vào tin nhắn để thay thế. CLI và MCP không có trang để đính kèm nên hợp đồng này không áp dụng.
 
+## Yêu cầu thông tin xác thực trong chat website
+
+Khi gateway và widget hỗ trợ, agent có thể dùng một thẻ trong cuộc trò chuyện trên website để yêu cầu thông tin xác thực từ thành viên workspace đã đăng nhập. Tính năng này mặc định tắt: người vận hành self-hosted phải bật trên gateway và agent phải được bật quyền yêu cầu thông tin xác thực. Chỉ khách có danh tính chat được xác minh là thành viên workspace mới thao tác được trên thẻ; khách ẩn danh không được cấp quyền quản trị thông tin xác thực.
+
+Thẻ không bao giờ hiển thị secret. Chọn **Mở biểu mẫu bảo mật** để mở biểu mẫu do chính Dewee cung cấp ở tab mới và nhập secret tại đó, không nhập vào chat. Yêu cầu hết hạn sau một giờ và có thể hủy ngay trên thẻ. Sau khi lưu thông tin xác thực, cuộc trò chuyện ban đầu tiếp tục một lần từ chỗ đã dừng. Tải lại trang sẽ khôi phục trạng thái hiện tại: đang chờ, hoàn tất, hết hạn hoặc đã hủy. Việc mở biểu mẫu bảo mật được giới hạn theo từng khách.
+
+Chat website dùng luồng riêng chỉ dành cho thành viên. Với liên kết nhập thông tin xác thực được gửi qua kênh nhắn tin, xem [Secret, vai trò và audit](/vi/docs/security/secrets-roles-and-audit).
+
 ## Bảo mật
 
 - **Gateway token ở yên trên server.** Trình duyệt chỉ giữ một visitor token được ký bằng HMAC.

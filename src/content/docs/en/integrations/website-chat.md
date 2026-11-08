@@ -106,6 +106,14 @@ Version 1 requires `version` and an absolute HTTP(S) `url`. It optionally accept
 
 The gateway treats the attachment as untrusted external data for the current run, not as instructions. It does not store page text in chat history, summaries, memory, logs or trace text, and the attachment changes neither tools nor permissions. A refused attachment rejects the whole send with `page_context_invalid` or `page_context_unsupported`; retry without it only if the person still wants the message sent. Never append the page text to the person's message as a fallback. The CLI and MCP have no page to attach, so this contract does not apply to them.
 
+## Credential requests in website chat
+
+Where the gateway and widget support it, an agent can ask a signed-in workspace member for a credential with a card in the website conversation. This capability is off by default: a self-hosted operator must enable it on the gateway, and the agent must have credential requests enabled. Only a visitor whose chat identity is verified as a workspace member can act on the card; anonymous visitors do not gain credential administration.
+
+The card never displays the secret. Select **Open secure form** to open a first-party hosted form in a new tab and enter the secret there, not in chat. The request expires after one hour and can be cancelled from the card. Once the credential is saved, the original conversation continues once from where it stopped. Reloading the page restores the current pending, completed, expired or cancelled state. Opening the secure form is rate limited per visitor.
+
+Website chat uses its own member-only flow. For credential links delivered through a messaging channel, see [Secrets, roles and audit](/docs/security/secrets-roles-and-audit).
+
 ## Security
 
 - **The gateway token stays on your server.** The browser only holds a visitor token signed with HMAC.
