@@ -97,7 +97,7 @@ export const COOKIES: Bi<LegalDoc> = {
         title: "Your choices",
         short: "Choose “Essential only” on the notice, or clear storage in your browser. The site still works.",
         body: [
-          "Essential items do not need your consent. Analytics cookies do, so they wait for your “Accept”. To change your answer, clear this site’s storage in your browser and the notice will ask again. In the dewee app, open **Account → Product analytics** and turn off **Share setup analytics**, or clear the `dewee_analytics` cookie for app.dewee.sh to make the notice appear again. You can also block cookies in your browser settings at any time.",
+          "Essential items do not need your consent. Analytics cookies do, so they wait for your “Accept”. To change your answer, clear this site’s storage in your browser and the notice will ask again. In the dewee app, open “Account → Product analytics” and turn off “Share setup analytics”, or clear the `dewee_analytics` cookie for app.dewee.sh to make the notice appear again. You can also block cookies in your browser settings at any time.",
           "If you do, the site keeps working, but it will forget your theme, show the cookie notice again and start a new chat conversation. Administrators need the session cookie to sign in.",
         ],
       },
@@ -192,7 +192,7 @@ export const COOKIES: Bi<LegalDoc> = {
         title: "Lựa chọn của bạn",
         short: "Chọn “Chỉ thiết yếu” trên thông báo, hoặc xoá dữ liệu trong trình duyệt. Website vẫn chạy bình thường.",
         body: [
-          "Các mục thiết yếu không cần bạn đồng ý. Cookie phân tích thì cần, nên chúng chờ bạn bấm “Đồng ý”. Muốn đổi lựa chọn, bạn xoá dữ liệu của website này trong trình duyệt, thông báo sẽ hỏi lại. Trong ứng dụng dewee, mở **Tài khoản → Phân tích sản phẩm** và tắt **Chia sẻ phân tích thiết lập**, hoặc xoá cookie `dewee_analytics` của app.dewee.sh để ứng dụng hỏi lại. Bạn cũng có thể chặn cookie trong phần cài đặt trình duyệt bất cứ lúc nào.",
+          "Các mục thiết yếu không cần bạn đồng ý. Cookie phân tích thì cần, nên chúng chờ bạn bấm “Đồng ý”. Muốn đổi lựa chọn, bạn xoá dữ liệu của website này trong trình duyệt, thông báo sẽ hỏi lại. Trong ứng dụng dewee, mở “Tài khoản → Phân tích sản phẩm” và tắt “Chia sẻ phân tích thiết lập”, hoặc xoá cookie `dewee_analytics` của app.dewee.sh để ứng dụng hỏi lại. Bạn cũng có thể chặn cookie trong phần cài đặt trình duyệt bất cứ lúc nào.",
           "Khi đó website vẫn hoạt động, nhưng sẽ quên giao diện bạn chọn, hiện lại thông báo cookie và bắt đầu một cuộc chat mới. Quản trị viên cần cookie phiên để đăng nhập.",
         ],
       },

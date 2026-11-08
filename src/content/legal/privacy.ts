@@ -120,7 +120,7 @@ export const PRIVACY: Bi<LegalDoc> = {
           { sub: "One ID for this website and the app" },
           "If you already accepted cookies on this website, choosing “Allow analytics” in the app reuses the anonymous PostHog ID from this website instead of creating a new one. It links the two only through that random ID, never through your name or email.",
           { sub: "How to withdraw" },
-          "In the app, open **Account → Product analytics** and turn off **Share setup analytics**. The choice applies to this browser. You can also clear the `dewee_analytics` cookie for app.dewee.sh; the app then asks again, and you can choose “Essential only”. Our [Cookie Policy](/cookies#app) lists the cookies involved.",
+          "In the app, open “Account → Product analytics” and turn off “Share setup analytics”. The choice applies to this browser. You can also clear the `dewee_analytics` cookie for app.dewee.sh; the app then asks again, and you can choose “Essential only”. Our [Cookie Policy](/cookies#app) lists the cookies involved.",
         ],
       },
       {
@@ -317,7 +317,7 @@ export const PRIVACY: Bi<LegalDoc> = {
           { sub: "Một mã chung cho website và ứng dụng" },
           "Nếu bạn đã đồng ý cookie trên website này, khi bạn chọn “Cho phép phân tích” trong ứng dụng, ứng dụng dùng lại mã PostHog ẩn danh từ website thay vì tạo mã mới. Hai bên chỉ được liên kết qua mã ngẫu nhiên đó, không bao giờ qua họ tên hay email của bạn.",
           { sub: "Cách rút lại sự đồng ý" },
-          "Trong ứng dụng, mở **Tài khoản → Phân tích sản phẩm** và tắt **Chia sẻ phân tích thiết lập**. Lựa chọn áp dụng cho trình duyệt này. Bạn cũng có thể xoá cookie `dewee_analytics` của app.dewee.sh; ứng dụng sẽ hỏi lại và bạn có thể chọn “Chỉ thiết yếu”. [Chính sách cookie](/vi/cookies#app) liệt kê các cookie liên quan.",
+          "Trong ứng dụng, mở “Tài khoản → Phân tích sản phẩm” và tắt “Chia sẻ phân tích thiết lập”. Lựa chọn áp dụng cho trình duyệt này. Bạn cũng có thể xoá cookie `dewee_analytics` của app.dewee.sh; ứng dụng sẽ hỏi lại và bạn có thể chọn “Chỉ thiết yếu”. [Chính sách cookie](/vi/cookies#app) liệt kê các cookie liên quan.",
         ],
       },
       {
