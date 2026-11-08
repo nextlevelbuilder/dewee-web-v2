@@ -147,7 +147,7 @@ For a paged schedule list, use `dewee cron list --limit 20 --json`; pass the ret
 | `dewee import-export` | `preview`, `import` |
 | `dewee workstations` | `list`, `create`, `delete` |
 
-For trace reads and exports, a temporary storage error is not evidence that the trace was deleted; retry after recovery. If a download is interrupted, retry it. See [Tracing](/docs/concepts/tracing) for missing or pruned child traces and export limits.
+For trace reads and exports, a temporary storage error is not evidence that the trace was deleted; retry after recovery. If a download is interrupted, retry it. `dewee traces export <id>` writes no file when the tree exceeds ten child levels or contains a cycle; export a deeper sub-trace by its own ID. See [Tracing](/docs/concepts/tracing) for error codes and pruned child traces.
 
 ## Host maintenance
 

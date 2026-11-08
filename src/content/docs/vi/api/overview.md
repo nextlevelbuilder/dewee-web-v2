@@ -69,6 +69,8 @@ Nếu lượt chat đã dừng vẫn đang được lưu, `chat.send` có thể 
 
 ### Writer nhóm kênh và lựa chọn theo lô
 
+Channel webhook Feishu đang bật không thể dùng target đã được channel đang bật khác hoặc cấu hình file đang hoạt động sử dụng. API channel trả HTTP 409 / `ALREADY_EXISTS`: hãy chuyển sang chế độ WebSocket hoặc nhờ người vận hành cấp target còn trống. Channel đã tắt không giữ target. Kiểm tra khi lưu chỉ điều phối trong một tiến trình Gateway; vẫn cần kiểm tra lúc khởi động giữa các replica.
+
 API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status` (`added` hoặc `removed`), `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` và `POST /v1/vault/links/batch` nhận tối đa 500 ID mỗi yêu cầu, tính cả mục trùng. Mảng lớn hơn nhận lỗi kiểm tra HTTP 400 theo ngôn ngữ, thay vì xử lý một phần. Hãy chia lựa chọn lớn và theo dõi từng kết quả.
@@ -76,6 +78,10 @@ API writer của channel instance liệt kê nhóm tại `GET /v1/channels/insta
 ### Cập nhật bản nháp workflow có điều kiện
 
 Với `PUT /v1/workflows/{id}`, truyền `updated_at` hiện tại của bản nháp vào `expected_version` để từ chối khi có chỉnh sửa đồng thời. Giá trị cũ trả HTTP 409 với `VERSION_CONFLICT`; hãy tải lại và đối chiếu trước khi thử lại. Bỏ trường này để cập nhật không điều kiện. Phương thức WebSocket tương ứng là `workflows.update` với `expectedVersion`. Xem [Workflow](/docs/concepts/workflows) để biết độ chính xác timestamp và cách dùng qua CLI và Workspace MCP.
+
+### Lỗi xuất trace
+
+`GET /v1/traces/{id}/export` trả HTTP 422 với `trace_export_too_deep` và `max_depth: 10` nếu trace vượt quá mười cấp trace con, hoặc `trace_export_cycle` nếu liên kết cha tạo thành vòng lặp. Hãy xuất trace con sâu hơn bằng ID riêng; vòng lặp nằm ngoài giới hạn độ sâu có thể được báo là quá sâu. Kết quả xuất thành công vẫn có định dạng JSON gzip. Xem [Tracing](/docs/concepts/tracing) để biết cách khôi phục và việc dọn trace.
 
 ## Các nhóm route
 

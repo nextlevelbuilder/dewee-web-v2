@@ -147,7 +147,7 @@ dewee workflows apply -f workflow.json
 | `dewee import-export` | `preview`, `import` |
 | `dewee workstations` | `list`, `create`, `delete` |
 
-Khi đọc hoặc xuất trace, lỗi lưu trữ tạm thời không chứng minh trace đã bị xóa; hãy thử lại sau khi dịch vụ phục hồi. Nếu tải xuống bị gián đoạn, hãy thử lại. Xem [Tracing](/docs/concepts/tracing) về trace con bị thiếu hoặc đã dọn và các giới hạn khi xuất.
+Khi đọc hoặc xuất trace, lỗi lưu trữ tạm thời không chứng minh trace đã bị xóa; hãy thử lại sau khi dịch vụ phục hồi. Nếu tải xuống bị gián đoạn, hãy thử lại. `dewee traces export <id>` không ghi file khi cây vượt quá mười cấp con hoặc có vòng lặp; hãy xuất trace con sâu hơn bằng ID riêng. Xem [Tracing](/docs/concepts/tracing) để biết mã lỗi và trace con đã được dọn.
 
 ## Bảo trì máy chủ
 

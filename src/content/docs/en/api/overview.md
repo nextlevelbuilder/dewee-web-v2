@@ -69,6 +69,8 @@ If a stopped chat turn is still being saved, `chat.send` can return `FAILED_PREC
 
 ### Channel group writers and batch selections
 
+An enabled Feishu webhook channel cannot claim a target already used by another enabled channel or active file configuration. The channel API returns HTTP 409 / `ALREADY_EXISTS`: switch to WebSocket mode or ask an operator for a free target. Disabled channels do not reserve targets. The save check coordinates within one Gateway process; startup checks remain necessary across replicas.
+
 The channel instance writer API lists groups at `GET /v1/channels/instances/{id}/writers/groups`, lists writers at `GET /v1/channels/instances/{id}/writers`, and tests a user at `POST /v1/channels/instances/{id}/writers/test`. Add with `POST /v1/channels/instances/{id}/writers` and remove with `DELETE /v1/channels/instances/{id}/writers/{userId}`; writes require an admin. Successful writes return `status` (`added` or `removed`), `group_id` and `user_id`. Removing a missing writer returns 404; removing the last writer returns 409. Consult the running gateway's OpenAPI reference for request fields.
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` and `POST /v1/vault/links/batch` accept at most 500 IDs per request, counting duplicate entries. Larger arrays receive a localized HTTP 400 validation error rather than partial processing. Split larger selections and track each result.
@@ -76,6 +78,10 @@ The channel instance writer API lists groups at `GET /v1/channels/instances/{id}
 ### Conditional workflow draft updates
 
 For `PUT /v1/workflows/{id}`, pass the draft's current `updated_at` as `expected_version` to reject a concurrent edit. A stale value returns HTTP 409 with `VERSION_CONFLICT`; reload and reconcile before retrying. Omit it for an unconditional update. The equivalent WebSocket method is `workflows.update` with `expectedVersion`. See [Workflows](/docs/concepts/workflows) for timestamp precision and CLI and Workspace MCP usage.
+
+### Trace export errors
+
+`GET /v1/traces/{id}/export` returns HTTP 422 with `trace_export_too_deep` and `max_depth: 10` if a trace exceeds ten child levels, or `trace_export_cycle` if its parent links form a cycle. Export a deeper sub-trace by its own ID; a cycle beyond the depth limit can be reported as too deep. Successful exports retain the gzip JSON format. See [Tracing](/docs/concepts/tracing) for recovery and pruning details.
 
 ## Route groups
 
