@@ -146,6 +146,8 @@ The following tools require a gateway and control plane that include the connect
 | `browser_devices_revoke` | Revoke your browser, its grants and live connection |
 | `browser_grants_revoke` | Revoke one grant and cancel commands running under it |
 
+These tools map to `dewee browser devices list`, `rename` and `revoke`, and `dewee browser grants list` and `revoke`; their results match the corresponding CLI `--json` output. Managing an existing personal browser or grant does not itself grant an agent access to a tab.
+
 Rename is a configuration operation; the two revocations are destructive operations. The first revoke call opens a hosted confirmation for you, the requesting member. After confirming, repeat the same request with `approval_id`; a second owner or admin is not required for these two operations. Revoking your own inactive browser or grant is idempotent. An unknown or another person's ID still returns `NOT_FOUND` after confirmation. Enrollment, connection and grant creation remain in the extension.
 
 ## Change a schedule
