@@ -104,7 +104,7 @@ export function withSecurityHeaders(response: Response, env: Env): Response {
   const res = new Response(response.body, response);
   const h = res.headers;
   h.set("x-content-type-options", "nosniff");
-  h.set("referrer-policy", "strict-origin-when-cross-origin");
+  if (h.get("referrer-policy") !== "no-referrer") h.set("referrer-policy", "strict-origin-when-cross-origin");
   h.set("permissions-policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
   if (!h.has("x-frame-options")) h.set("x-frame-options", "SAMEORIGIN");
   h.set("strict-transport-security", "max-age=31536000");

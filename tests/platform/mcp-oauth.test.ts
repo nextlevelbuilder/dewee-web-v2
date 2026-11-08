@@ -13,7 +13,7 @@ import { sqliteD1 } from "../helpers/sqlite-d1";
 const env: Record<string, unknown> = {};
 // The Workers runtime exposes compatibility flags as a global; wrangler.jsonc sets this one.
 (globalThis as { Cloudflare?: unknown }).Cloudflare = { compatibilityFlags: { global_fetch_strictly_public: true } };
-vi.mock("cloudflare:workers", () => ({ env, WorkerEntrypoint: class {} }));
+vi.mock("cloudflare:workers", () => ({ env, WorkerEntrypoint: class {}, DurableObject: class {} }));
 
 const { handleOAuthRoute, oauthApi, validateMcpAccessToken, listConnectedApps } = await import("../../src/lib/server/oauth/oauth-server");
 const { beginAuthorize, finishAuthorize } = await import("../../src/lib/server/oauth/oauth-consent");
@@ -24,6 +24,7 @@ const { handleMessage } = await import("../../src/lib/server/mcp/json-rpc");
 const { MCP_SERVER } = await import("../../src/lib/server/mcp/mcp-tools");
 const { OAuthOperationQueue } = await import("../../src/lib/server/oauth/oauth-operation-queue");
 const { OAuthAuthorityCore } = await import("../../src/lib/server/oauth/oauth-authority-core");
+const { withSecurityHeaders } = await import("../../src/lib/server/edge-routes");
 
 const ORIGIN = "https://dewee.sh";
 const RESOURCE = `${ORIGIN}/mcp`;
@@ -113,6 +114,13 @@ afterEach(() => {
 });
 
 describe("discovery", () => {
+  it("preserves OAuth's no-referrer policy while keeping the default for other responses", () => {
+    const privateResponse = withSecurityHeaders(new Response(null, { headers: { "referrer-policy": "no-referrer" } }), env as never);
+    expect(privateResponse.headers.get("referrer-policy")).toBe("no-referrer");
+    const normalResponse = withSecurityHeaders(new Response(null), env as never);
+    expect(normalResponse.headers.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
+  });
+
   it("publishes protected resource metadata for https://dewee.sh/mcp", async () => {
     const res = await handleOAuthRoute(new Request(`${ORIGIN}/.well-known/oauth-protected-resource/mcp`), env as never, ctx);
     expect(res!.status).toBe(200);
