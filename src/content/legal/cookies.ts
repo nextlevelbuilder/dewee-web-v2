@@ -61,14 +61,15 @@ export const COOKIES: Bi<LegalDoc> = {
       {
         id: "app",
         title: "In the dewee app",
-        short: "The app at app.dewee.sh sets one cookie to remember whether you allow analytics, and measures nothing until you do.",
+        short: "The app remembers your analytics choice and sends no analytics events to PostHog until you allow them.",
         body: [
-          "The dewee app at app.dewee.sh asks you once whether it may measure how new accounts get from signup to their first team action, with “Essential only” or “Allow analytics”. Nothing is measured before you choose “Allow analytics”. Our [Privacy Policy](/privacy#app-analytics) lists exactly what is measured. Self-hosted installs of dewee never send these events.",
+          "The dewee app at app.dewee.sh asks you once whether it may measure how new accounts get from signup to their first team action, with “Essential only” or “Allow analytics”. It sends no analytics events to PostHog until you allow them. Before you answer, it may hold a pending signup in a short-lived cookie and record setup milestones on its server; some can be sent later if you opt in. Our [Privacy Policy](/privacy#app-analytics) explains what is sent. Self-hosted installs of dewee never send these events.",
           {
             table: {
               head: ["Name", "Type", "What it does", "How long"],
               rows: [
                 ["`dewee_analytics`", "Cookie, set by app.dewee.sh", "Remembers your answer: `granted.` followed by a random anonymous ID, or `denied`. Clear it and the app asks again", "About 6 months (182 days)"],
+                ["`dewee_pending_signup`", "Cookie, set by app.dewee.sh", "Before you answer, temporarily holds the sign-in method and account creation time so a signup can be sent if you later allow analytics. Cleared when you answer", "Up to 1 day"],
                 ["PostHog, `ph_<project key>_posthog`", "Cookie, set by this website", "If you already accepted cookies here, the app reads this ID when you choose “Allow analytics” and reuses it, so this website and the app share one anonymous ID", "1 year"],
               ],
             },
@@ -156,14 +157,15 @@ export const COOKIES: Bi<LegalDoc> = {
       {
         id: "app",
         title: "Trong ứng dụng dewee",
-        short: "Ứng dụng tại app.dewee.sh đặt một cookie để ghi nhớ bạn có cho phép phân tích hay không, và không đo lường gì cho tới khi bạn cho phép.",
+        short: "Ứng dụng ghi nhớ lựa chọn phân tích và không gửi sự kiện phân tích tới PostHog cho tới khi bạn cho phép.",
         body: [
-          "Ứng dụng dewee tại app.dewee.sh hỏi bạn một lần xem có được đo lường cách tài khoản mới đi từ lúc đăng ký tới thao tác nhóm đầu tiên hay không, với hai lựa chọn “Chỉ thiết yếu” hoặc “Cho phép phân tích”. Không có gì được đo lường trước khi bạn chọn “Cho phép phân tích”. [Chính sách quyền riêng tư](/vi/privacy#app-analytics) liệt kê chính xác những gì được đo lường. Bản dewee tự cài đặt không bao giờ gửi các sự kiện này.",
+          "Ứng dụng dewee tại app.dewee.sh hỏi bạn một lần xem có được đo lường cách tài khoản mới đi từ lúc đăng ký tới thao tác nhóm đầu tiên hay không, với hai lựa chọn “Chỉ thiết yếu” hoặc “Cho phép phân tích”. Ứng dụng không gửi sự kiện phân tích tới PostHog cho tới khi bạn cho phép. Trước khi bạn trả lời, ứng dụng có thể giữ thông tin đăng ký đang chờ trong cookie ngắn hạn và ghi nhận các mốc thiết lập trên máy chủ; một số mốc có thể được gửi nếu sau đó bạn đồng ý. [Chính sách quyền riêng tư](/vi/privacy#app-analytics) giải thích dữ liệu được gửi. Bản dewee tự cài đặt không bao giờ gửi các sự kiện này.",
           {
             table: {
               head: ["Tên", "Loại", "Công dụng", "Thời hạn"],
               rows: [
                 ["`dewee_analytics`", "Cookie, do app.dewee.sh đặt", "Ghi nhớ lựa chọn của bạn: `granted.` kèm một mã ẩn danh ngẫu nhiên, hoặc `denied`. Xoá cookie này thì ứng dụng sẽ hỏi lại", "Khoảng 6 tháng (182 ngày)"],
+                ["`dewee_pending_signup`", "Cookie, do app.dewee.sh đặt", "Trước khi bạn trả lời, tạm giữ cách đăng nhập và thời điểm tạo tài khoản để gửi lượt đăng ký nếu sau đó bạn cho phép phân tích. Cookie được xóa khi bạn trả lời", "Tối đa 1 ngày"],
                 ["PostHog, `ph_<project key>_posthog`", "Cookie, do website này đặt", "Nếu bạn đã đồng ý cookie trên website này, ứng dụng đọc mã này khi bạn chọn “Cho phép phân tích” và dùng lại nó, nên website và ứng dụng dùng chung một mã ẩn danh", "1 năm"],
               ],
             },

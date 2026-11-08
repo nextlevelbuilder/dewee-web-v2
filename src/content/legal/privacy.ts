@@ -103,19 +103,22 @@ export const PRIVACY: Bi<LegalDoc> = {
       {
         id: "app-analytics",
         title: "Analytics in the dewee app",
-        short: "Only if you choose “Allow analytics”, the dewee app records four anonymous setup milestones. No email, no names, no content.",
+        short: "Only with your consent, the app sends anonymous setup milestones and claim outcomes. No email, names or content.",
         body: [
-          "The dewee app at app.dewee.sh asks once, with “Essential only” or “Allow analytics”, whether it may measure how new accounts get from signup to their first team action. Nothing is measured before you choose “Allow analytics”. After that, the app sends four events to PostHog, the same project this website uses: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` and `activation_first_team_action`.",
+          "The dewee app at app.dewee.sh asks once, with “Essential only” or “Allow analytics”, whether it may measure how new accounts get from signup to their first team action. It sends no analytics events to PostHog before you allow them. After consent, it can send four setup milestones: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` and `activation_first_team_action`. A complimentary-access claim can also send `claim_succeeded` or `claim_failed` under the same consent rules.",
+          "Before you answer, the app may hold the sign-in method and account creation time in a short-lived cookie and record workspace milestones on its server. If you allow analytics later, it may send the pending signup within one day and unsettled milestones from the previous 14 days for workspaces you own, using their original times. A milestone reached by a request that already carried a decline is not sent later. See our [Cookie Policy](/cookies#app) for the cookies.",
           { sub: "What the events carry" },
           {
             list: [
               "A random anonymous ID, kept in the app’s `dewee_analytics` cookie.",
+              "The event time, which can be the original time of a milestone sent after you opt in.",
               "The sign-in method: `github`, `google` or `magic_link`.",
               "The kind of first team action: `task`, `invite` or `approval`.",
+              "For a claim outcome, the access mode or a limited failure-reason code, never the claim code.",
               "`site`, which names the app as the source of the event.",
             ],
           },
-          { sub: "What we never collect" },
+          { sub: "What these events do not collect" },
           "Your email, your name, your workspace’s name, the content of messages or tasks, a location worked out from your IP address, or any tokens. PostHog person profiles and GeoIP enrichment are turned off for these events. Self-hosted installs of dewee never send them.",
           { sub: "One ID for this website and the app" },
           "If you already accepted cookies on this website, choosing “Allow analytics” in the app reuses the anonymous PostHog ID from this website instead of creating a new one. It links the two only through that random ID, never through your name or email.",
@@ -300,19 +303,22 @@ export const PRIVACY: Bi<LegalDoc> = {
       {
         id: "app-analytics",
         title: "Phân tích trong ứng dụng dewee",
-        short: "Chỉ khi bạn chọn “Cho phép phân tích”, ứng dụng dewee mới ghi lại bốn mốc thiết lập ẩn danh. Không email, không tên, không nội dung.",
+        short: "Chỉ khi bạn đồng ý, ứng dụng mới gửi các mốc thiết lập và kết quả nhận quyền ẩn danh. Không email, tên hay nội dung.",
         body: [
-          "Ứng dụng dewee tại app.dewee.sh hỏi bạn một lần, với hai lựa chọn “Chỉ thiết yếu” hoặc “Cho phép phân tích”, xem có được đo lường cách tài khoản mới đi từ lúc đăng ký tới thao tác nhóm đầu tiên hay không. Không có gì được đo lường trước khi bạn chọn “Cho phép phân tích”. Sau đó, ứng dụng gửi bốn sự kiện tới PostHog, cùng dự án mà website này dùng: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` và `activation_first_team_action`.",
+          "Ứng dụng dewee tại app.dewee.sh hỏi bạn một lần, với hai lựa chọn “Chỉ thiết yếu” hoặc “Cho phép phân tích”, xem có được đo lường cách tài khoản mới đi từ lúc đăng ký tới thao tác nhóm đầu tiên hay không. Ứng dụng không gửi sự kiện phân tích tới PostHog trước khi bạn cho phép. Sau khi đồng ý, ứng dụng có thể gửi bốn mốc thiết lập: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` và `activation_first_team_action`. Việc nhận quyền sử dụng được tặng cũng có thể gửi `claim_succeeded` hoặc `claim_failed` theo cùng lựa chọn đồng ý.",
+          "Trước khi bạn trả lời, ứng dụng có thể giữ cách đăng nhập và thời điểm tạo tài khoản trong một cookie ngắn hạn và ghi nhận các mốc workspace trên máy chủ. Nếu sau đó bạn cho phép phân tích, ứng dụng có thể gửi lượt đăng ký đang chờ trong vòng một ngày và các mốc chưa xử lý trong 14 ngày trước đó của workspace bạn sở hữu, kèm thời điểm ban đầu. Mốc được ghi nhận bởi yêu cầu đã mang lựa chọn từ chối sẽ không được gửi về sau. Xem [Chính sách cookie](/vi/cookies#app) để biết các cookie liên quan.",
           { sub: "Sự kiện mang theo những gì" },
           {
             list: [
               "Một mã ẩn danh ngẫu nhiên, lưu trong cookie `dewee_analytics` của ứng dụng.",
+              "Thời điểm sự kiện, có thể là thời điểm ban đầu của mốc được gửi sau khi bạn đồng ý.",
               "Cách đăng nhập: `github`, `google` hoặc `magic_link`.",
               "Loại thao tác nhóm đầu tiên: `task`, `invite` hoặc `approval`.",
+              "Với kết quả nhận quyền được tặng, chế độ truy cập hoặc mã lý do lỗi thuộc danh sách giới hạn, không bao giờ là mã nhận quà.",
               "`site`, cho biết sự kiện đến từ ứng dụng.",
             ],
           },
-          { sub: "Những gì chúng tôi không bao giờ thu thập" },
+          { sub: "Những gì các sự kiện này không thu thập" },
           "Email, họ tên, tên workspace, nội dung tin nhắn hay công việc, vị trí suy ra từ địa chỉ IP, hay bất kỳ token nào. Hồ sơ người dùng (person profile) và tính năng bổ sung vị trí theo IP (GeoIP) của PostHog đều tắt cho các sự kiện này. Bản dewee tự cài đặt không bao giờ gửi chúng.",
           { sub: "Một mã chung cho website và ứng dụng" },
           "Nếu bạn đã đồng ý cookie trên website này, khi bạn chọn “Cho phép phân tích” trong ứng dụng, ứng dụng dùng lại mã PostHog ẩn danh từ website thay vì tạo mã mới. Hai bên chỉ được liên kết qua mã ngẫu nhiên đó, không bao giờ qua họ tên hay email của bạn.",
