@@ -3,14 +3,14 @@
  * per-channel details) live in src/content/integrations.ts; this file holds page chrome and the
  * short notes for subscription and local providers. Facts verified against the dewee repo
  * (internal/channels, internal/providers, internal/audio, internal/tools, docs/05) and the
- * v3.28–v3.40 release notes. Channel and provider counts come from FACTS (src/content/facts.ts). The website section describes dewee-webchat v0.1.0, checked
+ * v3.28–v3.43 release notes. Channel and provider counts come from FACTS (src/content/facts.ts). The website section describes dewee-webchat v0.1.0, checked
  * against github.com/nextlevelbuilder/dewee-webchat (README and package README).
  */
 import type { Bi } from "~/i18n/config";
 import type { ProviderGroupId } from "~/content/integrations";
 import { FACTS } from "~/content/facts";
 
-const { channels: CH, providers: PR } = FACTS;
+const { channels: CH, providers: PR, providerTypes: PT } = FACTS;
 
 /** dewee-webchat links and the embed snippet; the same in both locales. */
 export const WEBCHAT = {
@@ -53,15 +53,15 @@ export const INTEGRATIONS_PAGE: Bi<{
 }> = {
   en: {
     meta: {
-      title: `Integrations: ${CH} channels, ${PR} model providers`,
+      title: `Integrations: ${CH} channels, ${PR} featured providers`,
       description:
-        `Put your agents where your team already works: ${CH} chat channels (Telegram, Zalo, Slack, Lark, WhatsApp and more), ${PR} model providers and any MCP server.`,
+        `Put your agents where your team already works: ${CH} chat channels (Telegram, Zalo, Slack, Lark, WhatsApp and more), ${PR} featured providers and any MCP server.`,
       crumb: "Integrations",
     },
     hero: {
       eyebrow: "Integrations",
       title: "Works where your team *already* talks.",
-      lede: `${CH} chat channels, ${PR} model providers, five voice engines and any MCP server. Your people and your agents meet in the tools they already use. Switching models is one setting, and a fallback steps in when a provider fails.`,
+      lede: `${CH} chat channels, ${PR} featured model providers, five voice engines and any MCP server. Your people and your agents meet in the tools they already use. Switching models is one setting, and a fallback steps in when a provider fails.`,
       note: "no new app to roll out",
       primary: "See every channel",
       secondary: "Missing one? Ask us",
@@ -84,8 +84,8 @@ export const INTEGRATIONS_PAGE: Bi<{
     },
     models: {
       eyebrow: "Models",
-      title: `${PR} providers, *one* setting to switch.`,
-      lede: "Bring API keys, use the AI subscriptions your team already pays for, or keep prompts on your own hardware. If a provider rate-limits, times out or goes down, the agent moves to the next model on its list.",
+      title: `${PR} featured providers, *one* setting to switch.`,
+      lede: `Bring API keys, use the AI subscriptions your team already pays for, or keep prompts on your own hardware. If a provider rate-limits, times out or goes down, the agent moves to the next model on its list. These ${PR} are the ones we feature; the runtime accepts ${PT} provider types in all, because one vendor can have more than one and any OpenAI-compatible endpoint works too.`,
       groups: { api: "API providers", subscription: "Subscriptions, via OAuth or CLI", local: "Local" },
       notes: {
         codex: "Your ChatGPT plan, GPT-6 Astra included",
@@ -153,15 +153,15 @@ export const INTEGRATIONS_PAGE: Bi<{
   },
   vi: {
     meta: {
-      title: `Tích hợp: ${CH} kênh chat, ${PR} nhà cung cấp model`,
+      title: `Tích hợp: ${CH} kênh chat, ${PR} nhà cung cấp nổi bật`,
       description:
-        `Đưa agent vào nơi đội bạn đang làm việc: ${CH} kênh chat (Telegram, Zalo, Slack, Lark, WhatsApp và nhiều hơn), ${PR} nhà cung cấp model và mọi MCP server.`,
+        `Đưa agent vào nơi đội bạn đang làm việc: ${CH} kênh chat (Telegram, Zalo, Slack, Lark, WhatsApp và nhiều hơn), ${PR} nhà cung cấp model nổi bật và mọi MCP server.`,
       crumb: "Tích hợp",
     },
     hero: {
       eyebrow: "Tích hợp",
       title: "Làm việc ngay nơi đội ngũ *đang* trò chuyện.",
-      lede: `${CH} kênh chat, ${PR} nhà cung cấp model, năm engine giọng nói và mọi MCP server. Con người và agent gặp nhau ngay trên những công cụ họ vốn dùng. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.`,
+      lede: `${CH} kênh chat, ${PR} nhà cung cấp model nổi bật, năm engine giọng nói và mọi MCP server. Con người và agent gặp nhau ngay trên những công cụ họ vốn dùng. Đổi model chỉ là một dòng cài đặt, và có model dự phòng thế chỗ khi một nhà cung cấp gặp sự cố.`,
       note: "không cần cài thêm app mới",
       primary: "Xem mọi kênh",
       secondary: "Còn thiếu? Hỏi chúng tôi",
@@ -184,8 +184,8 @@ export const INTEGRATIONS_PAGE: Bi<{
     },
     models: {
       eyebrow: "Model",
-      title: `${PR} nhà cung cấp, đổi chỉ bằng *một* cài đặt.`,
-      lede: "Dùng API key, dùng luôn gói AI mà đội bạn đang trả tiền, hoặc giữ prompt trên phần cứng của riêng bạn. Nếu một nhà cung cấp bị giới hạn tốc độ, quá thời gian hoặc ngừng hoạt động, agent chuyển sang model kế tiếp trong danh sách.",
+      title: `${PR} nhà cung cấp nổi bật, đổi chỉ bằng *một* cài đặt.`,
+      lede: `Dùng API key, dùng luôn gói AI mà đội bạn đang trả tiền, hoặc giữ prompt trên phần cứng của riêng bạn. Nếu một nhà cung cấp bị giới hạn tốc độ, quá thời gian hoặc ngừng hoạt động, agent chuyển sang model kế tiếp trong danh sách. ${PR} nhà cung cấp này là những cái chúng tôi giới thiệu; runtime chấp nhận tổng cộng ${PT} loại provider, vì một hãng có thể có nhiều hơn một loại và endpoint tương thích OpenAI nào cũng dùng được.`,
       groups: { api: "Nhà cung cấp qua API", subscription: "Gói thuê bao, qua OAuth hoặc CLI", local: "Chạy local" },
       notes: {
         codex: "Gói ChatGPT của bạn, có cả GPT-6 Astra",

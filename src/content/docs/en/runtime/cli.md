@@ -3,7 +3,7 @@ title: CLI reference
 description: "The dewee command line: global flags, how it finds the gateway and your key, output formats, and every command group for agents, skills, workflows and more."
 section: runtime
 order: 2
-updated: 2026-10-16
+updated: 2026-11-03
 ---
 
 The same `dewee` binary that runs the gateway is also its command-line client. Most commands talk to a running gateway over HTTP or WebSocket, locally or remotely, so an operator can script almost everything the console does. A few maintenance commands work on the database directly and are meant for the host.
@@ -61,6 +61,7 @@ dewee mcp list --json
 |---|---|
 | `dewee onboard` | First-time setup on the host: database, secrets, migrations, `.env.local` |
 | `dewee setup` | Interactive wizard for a provider, model, agent and channel. Needs a running gateway |
+| `dewee workspace-setup` | `next` takes the next turn of the console's guided workspace setup; `--replace-key`, optionally with `--step <id>`, asks for a new key for a stored provider. See [The Overview page](/docs/console/overview#the-overview-page) |
 | `dewee doctor` | Prints the version, config path and database status |
 | `dewee config` | `show` (secrets redacted), `path`, `validate` |
 | `dewee auth` | `status` and `logout` for a ChatGPT account connected through the gateway |
@@ -87,7 +88,7 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 |---|---|
 | `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` for grants and the open/restricted mode |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; plus `access`, `grant`, `revoke`, `deps`, `evolve` and `suggestions` |
-| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` for servers that sign in with OAuth |
+| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config` (`--auth oauth` for a client that signs in with Dewee instead of a key); `access`, `grant`, `revoke`; `oauth` for servers that sign in with OAuth; `authorizations` (`list`, `revoke`) for apps connected to the public MCP endpoint by signing in, see [Webhooks and MCP](/docs/api/webhooks-and-mcp#review-and-revoke-connected-apps) |
 | `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` to approve or deny install requests; `access` for grants and the open/restricted mode |
 | `dewee hooks` | `access` only: which agents a hook runs for and who may change it |
 | `dewee channels` | `list`, `add`, `delete` |

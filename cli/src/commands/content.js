@@ -3,12 +3,13 @@
  * fields file and/or flags); posts take a Markdown file whose front matter holds the metadata.
  */
 import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { intFlag, stringFlag } from "../args.js";
 import { parseFrontMatter } from "../front-matter.js";
 import { apiRequest, itemPath } from "../http.js";
 import { info, printJson, printTable } from "../output.js";
 
-const POST_KEYS = new Set(["title", "slug", "locale", "description", "tags", "author", "cover", "translation_key", "translationKey", "seo", "layout", "status"]);
+const POST_KEYS = new Set(["title", "slug", "locale", "description", "tags", "author", "cover", "translation_key", "translationKey", "seo", "layout", "status", "blocks"]);
 
 /** @param {string} path */
 async function readJsonFile(path) {
@@ -26,7 +27,18 @@ async function readJsonFile(path) {
 }
 
 /**
- * Metadata + body from a Markdown post file.
+ * A post's widgets: a JSON array file, `[{ "id": "…", "type": "…", "props": { … } }]`.
+ * @param {string} path
+ */
+async function readBlocksFile(path) {
+  const blocks = await readJsonFile(path);
+  if (!Array.isArray(blocks)) throw new Error(`${path} must contain a JSON array of blocks.`);
+  return blocks;
+}
+
+/**
+ * Metadata + body from a Markdown post file. `blocks:` in the front matter names a JSON file of
+ * widgets, relative to the Markdown file, so a post and its widgets travel together.
  * @param {string} path
  * @returns {Promise<Record<string, unknown>>}
  */
@@ -38,7 +50,10 @@ export async function postFieldsFromMarkdown(path) {
     if (!POST_KEYS.has(key)) throw new Error(`${path}: unknown front matter key "${key}". Allowed: ${[...POST_KEYS].join(", ")}.`);
     if (value === null) continue;
     if (key === "translationKey") fields.translation_key = value;
-    else if (key === "tags") fields.tags = Array.isArray(value) ? value.map(String) : String(value).split(",").map((t) => t.trim()).filter(Boolean);
+    else if (key === "blocks") {
+      if (typeof value !== "string" || !value.trim()) throw new Error(`${path}: "blocks" must be the path of a JSON file, e.g. blocks: ./post.blocks.json`);
+      fields.blocks = await readBlocksFile(resolve(dirname(path), value.trim()));
+    } else if (key === "tags") fields.tags = Array.isArray(value) ? value.map(String) : String(value).split(",").map((t) => t.trim()).filter(Boolean);
     else fields[key] = value;
   }
   fields.body_md = body.replace(/^\n+/, "");
@@ -108,6 +123,7 @@ export async function contentCommand(kind, config, [action, ...args], flags) {
     }
     case "create": {
       const fields = kind === "post" ? await postFieldsFromMarkdown(need(args[0], "a Markdown file")) : await pageFieldsFromFlags(flags);
+      if (kind === "post") await postBlocksFlag(fields, flags);
       if (kind === "post" && locale) fields.locale = locale;
       if (flags.publish) fields.status = "published";
       const res = await apiRequest(config, "POST", `/${plural}`, { json: fields, headers: idempotency(flags) });
@@ -116,6 +132,7 @@ export async function contentCommand(kind, config, [action, ...args], flags) {
     case "update": {
       const ref = need(args[0], "an id or slug");
       const fields = kind === "post" ? await postFieldsFromMarkdown(need(args[1], "a Markdown file")) : await pageFieldsFromFlags(flags);
+      if (kind === "post") await postBlocksFlag(fields, flags);
       delete fields.status;
       if (version !== undefined) fields.version = version;
       const note = stringFlag(flags, "note");
@@ -132,6 +149,16 @@ export async function contentCommand(kind, config, [action, ...args], flags) {
     default:
       throw new Error(`Unknown command "${plural} ${action ?? ""}". See \`dewee-web ${plural} --help\`.`);
   }
+}
+
+/**
+ * `--blocks file.json` on posts wins over the front matter's `blocks:`.
+ * @param {Record<string, unknown>} fields
+ * @param {Record<string, string | true>} flags
+ */
+async function postBlocksFlag(fields, flags) {
+  const file = stringFlag(flags, "blocks");
+  if (file) fields.blocks = await readBlocksFile(file);
 }
 
 /** @param {Record<string, string | true>} flags */

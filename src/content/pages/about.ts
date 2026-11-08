@@ -2,8 +2,8 @@
  * /about: NextLevelBuilder.io, the founders, how we work, the ecosystem.
  * Sources: plans/reports/scout-260924-2346-ecosystem-story.md §B (mission and values from
  * nlb-web, founder facts), §A.4 and §C (GitHub counts read 2026-09-24), src/content/facts.ts (test
- * count and latest stable release, verified 2026-10-19), src/content/plans.ts (On-Premises includes
- * one year of maintenance), dewee GitHub releases (stable v3.28 to v3.40 since early September 2026).
+ * count and latest stable release, verified 2026-10-29), src/content/plans.ts (On-Premises includes
+ * one year of maintenance), dewee GitHub releases (stable v3.28 to v3.43 since early September 2026).
  */
 import type { Bi } from "~/i18n/config";
 import { FACTS } from "~/content/facts";

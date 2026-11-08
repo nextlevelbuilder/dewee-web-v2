@@ -3,7 +3,7 @@ title: Authentication
 description: "How to authenticate to the dewee API: creating API keys, choosing scopes, sending them over HTTP and WebSocket, and handling expiry and revocation."
 section: api
 order: 2
-updated: 2026-09-25
+updated: 2026-11-03
 ---
 
 Every call to the runtime, except the health checks, carries a credential. For scripts, integrations and the CLI that credential is an **API key**: bound to one tenant, limited by scopes, and revocable at any time. This page explains how to create one and how to send it.
@@ -15,6 +15,8 @@ Every call to the runtime, except the health checks, carries a credential. For s
 | API key | Scripts, integrations, CI, the CLI, MCP clients | Scoped, bound to a tenant, can expire. The one to use |
 | Gateway token | The operator of a self-hosted runtime | Full admin access to the gateway. Keep it on the server and do not hand it to integrations |
 | Webhook secret | Systems that call a webhook | Only valid on that webhook. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) |
+
+A gateway bound to a loopback address without a gateway token asks for no credential at all, which is meant for local development. Behind a reverse proxy on the same host, set `GOCLAW_REQUIRE_AUTH=1` so every caller must authenticate; see [Install and run the gateway](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host).
 
 ## Create an API key
 
@@ -91,4 +93,4 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 | `401` | Missing, unknown, expired or revoked credential |
 | `403` | The key is valid but its scopes do not allow the operation, for example writing with a Read key |
 | `409` | In the console, the workspace has not finished provisioning, so keys cannot be created yet |
-| `429` | Too many requests; wait for the time in `Retry-After` |
+| `429` | Too many requests; wait for the time in `Retry-After`. On the MCP endpoints, a `tenant_` error code means the whole workspace is over its budget, not just your key; see [Limits, quota and revocation](/docs/api/webhooks-and-mcp#limits-quota-and-revocation) |

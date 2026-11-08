@@ -34,7 +34,7 @@ The runtime can live on our shared cloud, on a dedicated runtime on TOSE, or on 
 - **Isolation.** Agents, sessions, memory, providers, skills and MCP servers belong to one tenant, and every query is scoped to it. See [Multi-tenancy](/docs/concepts/multi-tenancy).
 - **Control.** Roles and permissions for people, scoped API keys for programs, pairing approval before an agent answers a new sender, and approval for risky shell commands. See [Security model](/docs/security/overview).
 - **Visibility.** Every agent run leaves a trace with its model calls, tool calls, tokens and estimated cost, and the activity log records who changed what. See [Tracing](/docs/concepts/tracing).
-- **Your choice of models.** 31 provider types, from Anthropic, OpenAI and Gemini to OpenRouter, local Ollama and any OpenAI-compatible endpoint, with fallback when a provider fails. See [LLM providers](/docs/integrations/llm-providers).
+- **Your choice of models.** 32 provider types, from Anthropic, OpenAI and Gemini to OpenRouter, local Ollama and any OpenAI-compatible endpoint, with fallback when a provider fails. See [LLM providers](/docs/integrations/llm-providers).
 
 ## What dewee is not
 

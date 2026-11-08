@@ -6,7 +6,7 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 
-const MIGRATIONS = ["0001_init.sql", "0011_chat_session_context.sql"];
+const MIGRATIONS = ["0001_init.sql", "0011_chat_session_context.sql", "0012_post_widget_responses.sql"];
 
 class Statement {
   constructor(private db: DatabaseSync, private sql: string, private params: SQLInputValue[] = []) {}

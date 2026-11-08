@@ -1,6 +1,6 @@
 ---
 title: Providers, fallback and reasoning
-description: How dewee talks to 31 LLM provider types, what happens when a call fails, how usage caps and prompt caching work, and how reasoning effort is set per agent.
+description: How dewee talks to 32 LLM provider types, what happens when a call fails, how usage caps and prompt caching work, and how reasoning effort is set per agent.
 section: concepts
 order: 3
 updated: 2026-09-25
@@ -10,12 +10,12 @@ The agent loop never talks to a model vendor directly. It calls one provider int
 
 ## Provider types and adapters
 
-A provider is an account you register in a tenant: a name, a `provider_type`, a key or other credential, and a base URL where needed. There are 31 provider types, served by six adapter families.
+A provider is an account you register in a tenant: a name, a `provider_type`, a key or other credential, and a base URL where needed. There are 32 provider types, served by six adapter families. A provider type is a kind of connection the runtime accepts, not a vendor: one vendor can need more than one (Z.ai and its Coding Plan, for example).
 
 | Adapter family | Provider types |
 |---|---|
 | Anthropic native (HTTP + SSE) | `anthropic_native` |
-| OpenAI-compatible | `openai_compat`, `openrouter`, `groq`, `deepseek`, `gemini_native`, `vertex`, `mistral`, `xai`, `minimax_native`, `cohere`, `perplexity`, `bailian`, `alibaba_token_plan`, `yescale`, `zai`, `zai_coding`, `ollama`, `ollama_cloud`, `novita`, `byteplus`, `byteplus_coding`, `kimi_coding`, `cloudflare_workers_ai`, `cline_pass`, `opencode_go`, `vercel_ai_gateway` |
+| OpenAI-compatible | `openai_compat`, `openrouter`, `groq`, `deepseek`, `gemini_native`, `vertex`, `mistral`, `xai`, `minimax_native`, `cohere`, `perplexity`, `bailian`, `alibaba_token_plan`, `yescale`, `zai`, `zai_coding`, `ollama`, `ollama_cloud`, `novita`, `byteplus`, `byteplus_coding`, `kimi_coding`, `cloudflare_workers_ai`, `cline_pass`, `opencode_go`, `vercel_ai_gateway`, `atlascloud` |
 | DashScope (Qwen) | `dashscope` |
 | ChatGPT subscription (Codex OAuth) | `chatgpt_oauth` |
 | Claude CLI (local binary) | `claude_cli` |

@@ -1,5 +1,6 @@
 ---
 /** Saved preview of any page or post by id, drafts included (super admins only). */
+import { POST_PAGE_CSP } from "~/lib/blocks/media-urls";
 import PagePreview from "~/components/admin/PagePreview.astro";
 import { requireAdmin } from "~/components/admin/admin-guard";
 import { platformEnv } from "~/lib/server/api/platform-env";
@@ -15,6 +16,8 @@ if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
 const row = await platformEnv().DB.prepare("SELECT * FROM pages WHERE id = ?").bind(id).first<PageRow>();
 if (!row) return new Response(null, { status: 404 });
 const rec = toRecord(row);
+// Post previews may hold video players; frames are limited to the same hosts as the public post.
+Astro.response.headers.set("content-security-policy", POST_PAGE_CSP);
 ---
 
 <PagePreview doc={rec} />

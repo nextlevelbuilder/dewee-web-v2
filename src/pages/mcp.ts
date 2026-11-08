@@ -1,7 +1,9 @@
 /**
  * Remote MCP server (Streamable HTTP, stateless, JSON responses). Clients POST JSON-RPC 2.0 with
- * `Authorization: Bearer dwk_…`; tools are defined in src/lib/server/mcp/mcp-tools.ts.
- * There is no server-initiated stream, so GET and DELETE answer 405.
+ * `Authorization: Bearer dwk_…` (an API key) or an OAuth access token from this site's
+ * authorization server (src/lib/server/oauth/); tools are defined in src/lib/server/mcp/mcp-tools.ts.
+ * A 401 points at the OAuth discovery document. There is no server-initiated stream, so GET and
+ * DELETE answer 405.
  */
 import type { APIRoute } from "astro";
 import { errorResponse, forbidden, json } from "~/lib/server/api/api-errors";
@@ -9,6 +11,8 @@ import { platformEnv } from "~/lib/server/api/platform-env";
 import { authenticate } from "~/lib/server/auth/request-auth";
 import { handlePayload, parseError, SUPPORTED_PROTOCOL_VERSIONS } from "~/lib/server/mcp/json-rpc";
 import { MCP_SERVER } from "~/lib/server/mcp/mcp-tools";
+import { mcpChallenge } from "~/lib/server/oauth/oauth-config";
+import { oauthIssuerFor } from "~/lib/server/oauth/oauth-server";
 
 export const prerender = false;
 
@@ -36,7 +40,7 @@ export const POST: APIRoute = async (ctx) => {
       return json({ error: { code: "bad_request", message: `Unsupported MCP-Protocol-Version ${version}. Supported: ${SUPPORTED_PROTOCOL_VERSIONS.join(", ")}.` } }, { status: 400 });
     }
 
-    const principal = await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false });
+    const principal = await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false, allowOAuth: true });
 
     if (Number(request.headers.get("content-length") ?? "0") > MAX_BODY_BYTES) {
       return json({ error: { code: "payload_too_large", message: "The request body is too large." } }, { status: 413 });
@@ -55,6 +59,7 @@ export const POST: APIRoute = async (ctx) => {
     if (result === null) return new Response(null, { status: 202, headers: { "cache-control": "no-store" } });
     return json(result);
   } catch (err) {
-    return errorResponse(err);
+    const issuer = oauthIssuerFor(platformEnv(), url);
+    return errorResponse(err, { challenge: (invalid) => mcpChallenge(issuer, { invalid }) });
   }
 };

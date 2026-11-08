@@ -1,8 +1,8 @@
 /**
  * /roadmap: Now / Next / Later, checked against the dewee repository on 19 Oct 2026.
  * Sources (read-only, the dewee repo and its GitHub releases):
- * - Now: decision policies (v3.41.0-beta.1 and beta.2 release notes; the shadow-only evaluator shipped
- *   in v3.39.0); self-improvement engine (plans/261007-1206, status in-progress, first parts in
+ * - Now: decision policies (managed from RGD, the control plane and the CLI since v3.41.0; the
+ *   shadow-only evaluator shipped in v3.39.0); self-improvement engine (plans/261007-1206, status in-progress, first parts in
  *   v3.39.0); plans/260826 docs + API reference epic (in progress). The control plane redesign left
  *   this column when v3.34.0 shipped it as stable.
  * - Next: plans/260819 owner-level control plane (waves shipped in v3.22 and v3.31);
@@ -10,8 +10,10 @@
  *   plans/261013-2200-773-public-mcp-oauth (pending).
  * - Later: plans/260917-1815-jev-reflex-memory-gate/stage-2-plus-roadmap.md (deferred register,
  *   explicitly "authorizes nothing").
- * - Shipped: GitHub releases v3.34 to v3.40 (25 Sep to 15 Oct 2026, stable only), eight in all with the
+ * - Shipped: GitHub releases v3.34 to v3.43 (25 Sep to 29 Oct 2026, stable only), eleven in all with the
  *   v3.38.1 patch, whose notes are only a compare link, so its line says no more than "patch".
+ *   The v3.41, v3.42 and v3.43 lines were added 29 Oct 2026; the Now, Next and Later plans were last
+ *   checked on 19 Oct 2026.
  * No dates are promised for anything that has not shipped.
  */
 import type { Bi } from "~/i18n/config";
@@ -57,7 +59,7 @@ export const ROADMAP: Bi<RoadmapPage> = {
             {
               title: "Decision policies you can test first",
               body: "Write down when an agent should carry on, ask for clarification or stay quiet in a group chat. The policy is measured on labelled messages first and switched on only after it passes.",
-              meta: "In beta, v3.41.0-beta.2",
+              meta: "First parts shipped in v3.41",
             },
             {
               title: "Agents that improve from evidence",
@@ -125,10 +127,13 @@ export const ROADMAP: Bi<RoadmapPage> = {
     },
     shipped: {
       eyebrow: "Recently shipped",
-      title: "Eight stable releases *in three weeks*.",
+      title: "Eleven stable releases *in about a month*.",
       lede: "The roadmap is a promise about direction. The changelog is the record of what actually shipped.",
-      label: "dewee stable releases from 25 September to 15 October 2026",
+      label: "dewee stable releases from 25 September to 29 October 2026",
       items: [
+        { date: "29 Oct · v3.43", text: "Run limits that hold on resume, a stricter public webchat, and a smoother self-hosted setup" },
+        { date: "27 Oct · v3.42", text: "Private credential links, dial-time checks on outbound connections, and webchat managed from the control plane" },
+        { date: "21 Oct · v3.41", text: "Sign-in for your own product with Dewee Connect, and decision policies you can manage" },
         { date: "15 Oct · v3.40", text: "A connected browser for agents, and a rebuilt admin console" },
         { date: "14 Oct · v3.39", text: "Access grants for agents and tools, and the first self-improvement loop" },
         { date: "9 Oct · v3.38.1", text: "A patch release on top of v3.38" },
@@ -177,7 +182,7 @@ export const ROADMAP: Bi<RoadmapPage> = {
             {
               title: "Chính sách quyết định, đo trước khi bật",
               body: "Ghi rõ khi nào agent nên làm tiếp, hỏi lại cho rõ hay im lặng trong nhóm chat. Chính sách được đo trên các tin nhắn đã gắn nhãn trước, và chỉ bật sau khi đạt.",
-              meta: "Đang beta, v3.41.0-beta.2",
+              meta: "Phần đầu đã có trong v3.41",
             },
             {
               title: "Agent cải thiện dựa trên bằng chứng",
@@ -245,10 +250,13 @@ export const ROADMAP: Bi<RoadmapPage> = {
     },
     shipped: {
       eyebrow: "Vừa phát hành",
-      title: "Tám bản stable *trong ba tuần*.",
+      title: "Mười một bản stable *trong khoảng một tháng*.",
       lede: "Lộ trình là lời hứa về hướng đi. Changelog mới là ghi chép về những gì đã thật sự phát hành.",
-      label: "Các bản stable của dewee từ 25/9 đến 15/10/2026",
+      label: "Các bản stable của dewee từ 25/9 đến 29/10/2026",
       items: [
+        { date: "29/10 · v3.43", text: "Giới hạn lượt chạy được giữ khi tiếp tục, webchat công khai chặt chẽ hơn, và thiết lập bản tự cài suôn sẻ hơn" },
+        { date: "27/10 · v3.42", text: "Link credential riêng tư, kiểm tra lúc dial với kết nối ra ngoài, và webchat quản lý từ control plane" },
+        { date: "21/10 · v3.41", text: "Đăng nhập cho sản phẩm của bạn với Dewee Connect, và decision policy có thể quản lý" },
         { date: "15/10 · v3.40", text: "Trình duyệt kết nối cho agent, và admin console được dựng lại" },
         { date: "14/10 · v3.39", text: "Cấp quyền truy cập cho agent và công cụ, cùng vòng tự cải thiện đầu tiên" },
         { date: "9/10 · v3.38.1", text: "Bản vá bổ sung cho v3.38" },

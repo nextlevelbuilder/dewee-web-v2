@@ -69,7 +69,7 @@ const doc = {
 };
 const E = ADMIN.editor;
 const heading = isNew ? `${E.newTitle} ${kind}` : doc.title;
-const catalog = kind === "page" ? listBlocks() : [];
+const catalog = listBlocks(kind);
 const statusClass = (s: string) => (s === "published" ? "chip chip--success" : s === "draft" ? "chip chip--warning" : "chip");
 const otherLocale = doc.locale === "en" ? "vi" : "en";
 ---
@@ -175,20 +175,19 @@ const otherLocale = doc.locale === "en" ? "vi" : "en";
           </div>
         )}
 
-        {kind === "page" ? (
-          <div class="field">
-            <label for="ed-blocks">{E.blocks}</label>
-            <textarea id="ed-blocks" name="blocks" rows="22" class="adm-mono ed__code" spellcheck="false" aria-describedby="ed-blocks-hint ed-blocks-issues">{doc.blocks}</textarea>
-            <p class="hint" id="ed-blocks-hint">{E.blocksHint}</p>
-            <div id="ed-blocks-issues" class="ed__issues" aria-live="polite" data-ed-issues></div>
-          </div>
-        ) : (
+        {kind === "post" && (
           <div class="field">
             <label for="ed-body">{E.body}</label>
-            <textarea id="ed-body" name="body_md" rows="24" class="adm-mono ed__code" spellcheck="true" aria-describedby="ed-body-hint">{doc.body_md}</textarea>
+            <textarea id="ed-body" name="body_md" rows="24" class="adm-mono ed__code" spellcheck="true" aria-describedby="ed-body-hint ed-blocks-issues">{doc.body_md}</textarea>
             <p class="hint" id="ed-body-hint">{E.bodyHint}</p>
           </div>
         )}
+        <div class="field">
+          <label for="ed-blocks">{kind === "post" ? E.postBlocks : E.blocks}</label>
+          <textarea id="ed-blocks" name="blocks" rows={kind === "post" ? 14 : 22} class="adm-mono ed__code" spellcheck="false" aria-describedby="ed-blocks-hint ed-blocks-issues">{doc.blocks}</textarea>
+          <p class="hint" id="ed-blocks-hint">{kind === "post" ? E.postBlocksHint : E.blocksHint}</p>
+          <div id="ed-blocks-issues" class="ed__issues" aria-live="polite" data-ed-issues></div>
+        </div>
 
         <details class="ed__seo">
           <summary>{E.seo}</summary>
@@ -253,13 +252,13 @@ const otherLocale = doc.locale === "en" ? "vi" : "en";
 
         {catalog.length > 0 && (
           <div class="adm-panel">
-            <h2>{E.catalog}</h2>
+            <h2>{kind === "post" ? E.widgetCatalog : E.catalog}</h2>
             <ul class="ed__catalog" role="list">
               {catalog.map((b) => (
                 <li>
                   <div class="ed__cat-head">
                     <code>{b.type}</code>
-                    <button class="btn btn--sm" type="button" data-ed-insert={JSON.stringify({ type: b.type, props: b.example })}><Icon name="plus" />{E.insert}</button>
+                    <button class="btn btn--sm" type="button" data-ed-insert={JSON.stringify({ type: b.type, props: b.example })}><Icon name="plus" />{kind === "post" ? E.insertWidget : E.insert}</button>
                   </div>
                   <p>{b.description}</p>
                   <details data-ed-schema={b.type}>

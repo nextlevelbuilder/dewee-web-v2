@@ -4,7 +4,7 @@ description: Connect messaging platforms to your agents, decide who may talk to 
 section: console
 order: 9
 screens: [channels, connectivity, contacts, pending-messages]
-updated: 2026-10-14
+updated: 2026-10-27
 ---
 
 Channels put your agents where your customers and colleagues already talk: Telegram, Zalo, Slack and other messaging apps. This page covers four areas in the **Connect** group of the menu: **Channels**, where you connect platforms, **Pairing inbox**, where you approve new senders, **Contacts**, where you see who has written in, and **Pending messages**, where queued messages wait.
@@ -34,7 +34,7 @@ To connect one:
 1. Select **New channel**.
 2. On **General**, enter the **Internal name** (a lowercase slug), the **Display name**, the **Platform** and the **Owner agent** that answers messages. The **Enabled** switch decides whether the channel processes messages.
 3. On **Credentials**, paste the platform's tokens, for example the bot token from BotFather for Telegram. Values are stored encrypted and never shown again; leave a stored field blank to keep it.
-4. On **Identity & Policies**, set the **DM policy**, the **Group policy** and **Require mention in groups**. More options sit under **Advanced platform settings**.
+4. On **Identity & Policies**, set the **DM policy**, the **Group policy** and **Require mention in groups**. Platform options such as network, limits and streaming are on the **Advanced** tab.
 5. Select **Connect channel**. For Zalo OA the button is **Create & continue setup**: register the generated Callback and Webhook URLs in Zalo, paste the webhook secret, then authorize the Official Account.
 
 Feishu/Lark in webhook mode receives events on the gateway's own address. Only the master workspace can set a custom **Webhook Path**, a separate **Webhook Port** or a custom **Domain**; other workspaces cannot set these fields and use `/feishu/events` on the main address with the built-in Lark or Feishu domain. Only one channel can receive events on a given path, so on a shared gateway prefer WebSocket mode (the default) for Feishu channels outside the master workspace.
@@ -49,7 +49,8 @@ Open a channel to see all its tabs. **Managers**, **Contexts** and **Passive Mem
 - **Managers**: pick a group or topic and a workspace member, then select **Grant manager**. Managers can edit this channel's settings and see its pairing inbox for the group they manage.
 - **Contexts**: the groups and topics the channel has seen. A group shows up once the agent is added to it.
 - **Passive Memory**: lets the agent learn from channel conversations. Turn on **Enable passive memory**, which is off by default. Keep **Review mode** on **Manual review** so you approve each extracted item, or pick **Auto-save**. You can also set the scan interval, limits, **Types to capture** and **Exclusions**, then **Save memory settings**. **Run extraction** starts a scan now. See [Memory, knowledge base and storage](/docs/console/memory-and-knowledge).
-- **Delivery**: **Reply delivery** overrides how this channel sends replies. Set **Quick acknowledgement** (**Model-generated**, **Sidecar-generated**, **Fixed template** or **Off**), **Intermediate replies** while the agent uses tools, and **Final reply split** for long answers. Anything left on **Workspace default** follows the agent's and workspace's settings.
+- **Delivery**: **Reply delivery** overrides how this channel sends replies. **Human-like delivery** is the channel-level switch for every override on this tab; choosing an override while it follows the workspace turns it on for this channel. Set **Quick acknowledgement** (**Model-generated**, **Sidecar-generated**, **Fixed template** or **Off**), **Intermediate replies** while the agent uses tools, and **Final reply split** for long answers. Anything left on **Workspace default** follows the agent's and workspace's settings. **Model and size tuning** sets an optional provider, model and size limits for quick acknowledgements and progress updates.
+- **Advanced**: the platform's remaining settings, grouped into **Network**, **Limits**, **Streaming**, **Behaviour**, **Inbound identity check**, **Watch server** and **Integrations**. Only the groups the platform supports appear. A new channel starts with the values shown. On a saved channel, a setting you never changed shows what the platform does without it, and **Reset to default** removes the channel's own value. Settings that point at an MCP server or tool offer the workspace's enabled servers from **Capabilities › MCP**; a tool name can be typed when the server's tools cannot be listed. Telegram's custom Bot API server and proxy, Feishu's webhook port and path, and a Feishu domain other than Lark or Feishu are set by the platform operator, not here.
 - **Activity**: the runtime does not report per-channel activity yet. Use [Traces](/docs/console/monitoring) to follow conversations.
 
 Select **Save changes** to save a channel. Turning **Enabled** off keeps its setup but stops it processing messages. **Delete channel** cannot be undone.

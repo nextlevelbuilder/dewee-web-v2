@@ -4,7 +4,7 @@
  */
 
 /** Flags that never take a value. */
-const BOOLEAN_FLAGS = new Set(["json", "publish", "help", "draft"]);
+const BOOLEAN_FLAGS = new Set(["json", "publish", "help", "draft", "create"]);
 
 /**
  * @param {string[]} argv
