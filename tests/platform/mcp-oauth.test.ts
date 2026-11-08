@@ -121,6 +121,11 @@ describe("discovery", () => {
     expect(normalResponse.headers.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
   });
 
+  it("preserves origin-only referrers for OAuth forms", () => {
+    const response = withSecurityHeaders(new Response(null, { headers: { "referrer-policy": "origin" } }), env as never);
+    expect(response.headers.get("referrer-policy")).toBe("origin");
+  });
+
   it("publishes protected resource metadata for https://dewee.sh/mcp", async () => {
     const res = await handleOAuthRoute(new Request(`${ORIGIN}/.well-known/oauth-protected-resource/mcp`), env as never, ctx);
     expect(res!.status).toBe(200);

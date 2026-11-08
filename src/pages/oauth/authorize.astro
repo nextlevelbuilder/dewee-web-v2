@@ -18,8 +18,8 @@ import { fromWireOutcome, oauthAuthority } from "~/lib/server/oauth/oauth-author
 export const prerender = false;
 
 privateHeaders(Astro);
-// Authorization parameters can include client metadata URLs and state.
-Astro.response.headers.set("referrer-policy", "no-referrer");
+// Keep OAuth parameters out of Referer while retaining Origin on browser form posts for CSRF checks.
+Astro.response.headers.set("referrer-policy", "origin");
 const env = platformEnv();
 const ip = clientIp(Astro);
 const C = OAUTH_UI.consent;

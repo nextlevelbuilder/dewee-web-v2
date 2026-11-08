@@ -18,8 +18,8 @@ import { audit } from "~/lib/server/auth/audit-log";
 export const prerender = false;
 
 privateHeaders(Astro);
-// The next URL may contain an OAuth client identifier and authorization state.
-Astro.response.headers.set("referrer-policy", "no-referrer");
+// Keep OAuth parameters out of Referer while retaining Origin on browser form posts for CSRF checks.
+Astro.response.headers.set("referrer-policy", "origin");
 const env = platformEnv();
 const ip = clientIp(Astro);
 let next = safeNext(Astro.url.searchParams.get("next"));
