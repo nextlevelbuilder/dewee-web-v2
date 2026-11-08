@@ -3,7 +3,7 @@ title: Tool và quyền hạn
 description: Cách dewee quyết định agent được gọi tool nào, cách lệnh shell được lọc và phê duyệt, và những mặc định còn thoáng bạn nên siết lại trước khi đưa vào vận hành.
 section: concepts
 order: 4
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tool là cách agent hành động. Trước mỗi lần gọi model, dewee lọc danh sách tool qua một chuỗi chính sách, và mỗi lệnh shell còn phải qua thêm các bước kiểm tra khi chạy. Giá trị mặc định khá thoáng; phần cuối trang liệt kê những gì nên siết lại.
@@ -60,6 +60,8 @@ Mọi lệnh đều được đối chiếu với 16 nhóm chặn, tất cả đ
 
 Lệnh khớp với `package_install` không bị từ chối ngay mà trở thành một yêu cầu phê duyệt.
 
+Với agent bị giới hạn quyền dùng package, lệnh quá lớn hoặc phức tạp để kiểm tra an toàn có thể bị từ chối. Hãy tách thành các lệnh nhỏ, rõ ràng. Nội dung literal thông thường và các dạng lệnh được hỗ trợ vẫn dùng được; từ chối quyền không chuyển sang cách thực thi khác.
+
 ### Phê duyệt lệnh
 
 | Thiết lập | Giá trị | Mặc định |
@@ -84,6 +86,8 @@ Khi bật `tools.execApproval.scopedPackageGrantsEnabled` (mặc định tắt),
 - **Che thông tin nhạy cảm.** Output của tool được quét tìm các mẫu key, token và chuỗi kết nối, cùng giá trị thực của các secret mà runtime đang giữ. Phần khớp được thay bằng `[REDACTED]` trước khi model hoặc người dùng nhìn thấy.
 - **CLI có thông tin xác thực.** Các preset cho `gh`, `gcloud`, `gws`, `aws`, `kubectl` và `terraform` cho phép agent chạy những công cụ này bằng thông tin xác thực đã lưu mà agent không bao giờ nhìn thấy. Lệnh chạy không qua shell, và các biến bắt đầu bằng `GOCLAW_` hoặc `DEWEE_`, hay kết thúc bằng `_TOKEN`, `_SECRET`, `_KEY` hoặc `_PASSWORD` bị gỡ bỏ trước khi chạy.
 
+Việc che giữ lại tên khóa gán dễ đọc và cấu trúc object, array xung quanh, đồng thời thay giá trị thông tin xác thực. JSON hợp lệ, kể cả JSON được tuần tự hóa trong trường chuỗi, vẫn phân tích được; các tên trường thông tin xác thực phổ biến được xử lý mà không che định danh metadata thông thường. Che lại output đã an toàn cho kết quả ổn định.
+
 ## MCP server
 
 dewee kết nối tới MCP server qua `stdio`, `sse` hoặc `streamable-http`, kiểm tra tình trạng mỗi 30 giây, và kết nối lại với thời gian chờ tăng dần từ 2 đến 60 giây, tối đa 10 lần. Quyền truy cập được cấp theo agent và theo người dùng, mỗi lần cấp có danh sách `tool_allow` và `tool_deny` riêng; danh sách chặn luôn thắng. Người dùng cũng có thể gửi yêu cầu truy cập để quản trị viên phê duyệt.
@@ -102,6 +106,10 @@ Lệnh có thể chạy trong một container Docker thay vì trực tiếp trê
 | Giới hạn | 512 MB bộ nhớ, 1 CPU, 256 tiến trình, 1 MB output, 300 giây |
 
 Khi sandbox đang bật mà không có Docker, `exec` báo lỗi chứ không quay về chạy trên máy chủ.
+
+Skill được phép truy cập có thể nằm trong workspace hoặc các mount skill tenant và hệ thống được duyệt ở chế độ chỉ đọc, dùng đường dẫn hiện có bên trong sandbox. Thư mục của tenant khác và thư mục skill tùy chỉnh master bị loại trừ; ghi vẫn chỉ được thực hiện trong workspace. Mount chỉ đọc của tenant không phải cơ chế thu hồi từng file trong một script được phép đang chạy.
+
+Khi gateway đang tắt, lệnh cần sandbox mới báo sandbox đã dừng hoặc không khả dụng; hệ thống không thử tạo lại container hay chạy ngoài sandbox. Sandbox đang được cache chỉ tồn tại tới bước dọn dẹp thông thường. Hãy thử lại sau khi gateway khởi động và nhận việc trở lại.
 
 ## Các mặc định cần xem lại
 

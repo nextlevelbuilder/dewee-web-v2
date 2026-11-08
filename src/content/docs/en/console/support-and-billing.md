@@ -4,7 +4,7 @@ description: Find guidance, open and follow support tickets, request runtime pac
 section: console
 order: 14
 screens: [support, billing]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 **Support** is where you ask for help with your workspace: find guidance, open a ticket, or request a runtime package. **Billing** is where a dewee AaaS workspace manages its subscription, payment method, invoices and refunds. On Dedicated and On-Premises, access comes from your annual licence instead, so there is no plan to buy here.
@@ -70,6 +70,12 @@ The page has these cards:
 - **Payment method**: select **Update in secure portal** to change it. Before you subscribe, it shows **No payment method yet**.
 - **Plans**: compares the free plan and the **Annual plan**. Your plan is marked **Current**, and the Annual plan is marked **Unlocks channels**.
 - **Invoices & receipts**: select **Open invoices & receipts** to download invoices and payment receipts.
+
+### Claim complimentary access
+
+If you received a gift by email, sign in at [the claim page](https://app.dewee.sh/claim) with the verified address it was sent to. Under **Gifts waiting for you**, choose **Apply** and select an owned workspace if asked. If the gift is missing, check that the account email is verified and matches the recipient address, and that the claim window has not expired.
+
+You can also open a claim link or enter a code on the claim page, or use the workspace Billing card. Opening a link does not redeem it: select **Apply** to confirm. During sign-in or workspace setup the code is held for 30 minutes, including when a magic link opens in another tab. Sign-out clears it; a plain claim page does not reuse a previous account's held code. After the handoff expires, reopen the link or paste the code again. Self-install recipients claim on the hosted page, then follow the normal activation steps.
 
 ### Subscribe
 

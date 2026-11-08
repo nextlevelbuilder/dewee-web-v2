@@ -4,7 +4,7 @@ description: Bật hoặc tắt tool tích hợp cho workspace, kết nối MCP 
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tool là cách agent hành động: tìm kiếm trên web, đọc file, gọi một API. dewee mặc định từ chối mọi thứ, nên agent chỉ dùng được một tool sau khi bạn cho phép. Trang này nói về ba khu vực quyết định agent được gọi những gì và điều gì chạy quanh các lần gọi đó, cùng hai khu vực **Gói runtime** và **Giọng nói**.
@@ -23,6 +23,8 @@ Chủ workspace và vai trò Admin có sẵn giữ tất cả các khoá này. C
 ## Tool tích hợp
 
 Trang **Công cụ tích hợp** (trong menu là **Công cụ có sẵn**) liệt kê các tool đi kèm runtime, nhóm theo danh mục có thể thu gọn. Bạn tìm được theo tên hoặc danh mục. Mỗi dòng cho biết mức rủi ro (**Rủi ro cao**, **Rủi ro trung bình** hoặc **Rủi ro thấp**), thiết lập đang là **Mặc định** hay **Ghi đè** riêng của workspace, và một công tắc để bật tool. Agent chỉ gọi được các tool đang bật ở đây.
+
+Trong dashboard gateway, Browser có nút **Settings** ngay cả khi thiết lập mặc định trống hoặc chỉ có ghi đè của workspace. Dùng biểu mẫu và quyền hiện có để cấu hình [Trình duyệt kết nối](/docs/integrations/chrome-extension).
 
 ::shot{id="tools"}
 

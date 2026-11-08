@@ -3,7 +3,7 @@ title: Webhooks and MCP
 description: Let other systems trigger agents and send channel messages through signed webhooks, and connect Claude Code, Cursor, VS Code or Gemini CLI to dewee over MCP.
 section: api
 order: 3
-updated: 2026-10-13
+updated: 2026-11-08
 ---
 
 Two endpoints exist for other software to call dewee. **Webhooks** let a system you run, such as a CRM, a form or a monitoring tool, start an agent or post a message to a chat app. The **public MCP server** lets an AI coding assistant search a workspace's memory and skills and work with its workflows. Both are narrow on purpose: each accepts only its own kind of credential and exposes a fixed set of actions.
@@ -31,6 +31,8 @@ curl https://dewee.example.com/v1/webhooks/llm \
 
 In `sync` mode the answer comes back in the response, and the call times out after 30 seconds with `504`. In `async` mode the gateway answers `202` straight away and posts the result to your `callback_url`, which must be HTTPS. A `session_key` keeps related calls in one conversation.
 
+For a synchronous call, the gateway saves the call record before starting the agent, even without an idempotency key. If storage fails, it returns a server error and does not start the agent; retry once storage has recovered. The existing idempotency replay and conflict rules still apply.
+
 ### Send a message
 
 A `message` webhook takes a `channel_name`, a `chat_id` and `content` of up to 16 KB, plus an optional `media_url`. With `fallback_to_text`, media is dropped on channels that cannot show it instead of failing the call.
@@ -55,6 +57,10 @@ The timestamp must be within 5 minutes of the gateway's clock, and a signature c
 
 > [!WARNING]
 > Rotating a secret with `POST /v1/webhooks/{id}/rotate` invalidates the old one immediately; there is no overlap. Update the sender at the same moment.
+
+### Webhooks behind a reverse proxy
+
+A webhook created with `localhost_only` is meant for callers on the gateway's own host. When the gateway runs with `GOCLAW_REQUIRE_AUTH=1`, as it should behind a [reverse proxy on the same host](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host), such webhooks refuse every caller, because a same-host proxy may forward requests without adding headers. In this mode, creating or updating a webhook with `localhost_only=true` returns `400`. The Lite edition always sets `localhost_only`, so Lite cannot create webhooks in this mode; use the Standard edition for webhooks behind a proxy.
 
 ## The public MCP server
 
@@ -84,7 +90,7 @@ The client acts as one agent in its tenant, chosen with the `X-Dewee-Agent` head
 
 In the console, open **API keys & docs** and the **Connect an MCP client** tab. It walks through five steps:
 
-1. **Endpoint status.** Chips show whether the runtime is linked, whether the endpoint is available on this runtime, and whether MCP is enabled for the workspace. Below them are the exact endpoint address, the number of read and write tools, and the limits. A workspace admin can **Enable MCP** or **Turn off MCP** here, after a confirmation; other members see the state and are asked to contact an admin.
+1. **Endpoint status.** Chips show whether the runtime is linked, whether the endpoint is available on this runtime, and whether MCP is enabled for the workspace. Below them are the exact endpoint address, the number of read and write tools, and the limits, including the **Workspace limits** row. A workspace admin can **Enable MCP** or **Turn off MCP** here, after a confirmation; other members see the state and are asked to contact an admin.
 2. **Choose an agent.** Pick the agent the client talks to, or leave it empty to use the workspace's default agent.
 3. **Issue a key.** The key works only for MCP and can read by default. Tick **Also allow write tools** only if the client needs to change data. The key is shown once, so copy it straight away.
 4. **Copy the client config.** Choose Claude Code, Cursor, VS Code or Gemini CLI and copy the configuration, which already contains the endpoint and the agent you picked. It always carries the placeholder `<your-mcp-key>`, never the key itself; replace the placeholder with your key.
@@ -109,11 +115,31 @@ The CLI also covers status, activation and the connection test:
 
 | Command | What it does |
 |---|---|
-| `dewee mcp status` | Shows the endpoint and workspace state described below |
+| `dewee mcp status` | Shows the endpoint and workspace state described below, with a **Workspace limits** line |
 | `dewee mcp activate`, `dewee mcp deactivate` | Turns public MCP access on or off for the workspace. Asks for confirmation unless you pass `--yes`; `--dry-run` prints the request without sending it |
 | `dewee mcp test` | Tests the key in `DEWEE_MCP_TOKEN`, or one piped in with `--mcp-token-stdin`. `--agent` picks the agent and `--call-tool` also calls a read-only tool |
 
 The key is never accepted as a command-line argument. `dewee mcp test` prints its result even when the check fails, and exits non-zero with an exit code that follows the kind of failure, so a script can tell a rejected key from a missing permission. With `--remote` it runs the handshake from your machine against the advertised endpoint, which also checks DNS, TLS and your reverse proxy. It sends the key only to an endpoint on the same origin as the gateway the CLI is configured for; to test another host, name it explicitly with `--remote --endpoint <url>`, and the CLI warns you which host receives the key. With a server name, `dewee mcp test <server>` still tests an MCP server that dewee connects to.
+
+### Sign in with Dewee instead of a key
+
+A client can also reach `/mcp/server` by signing in with Dewee (OAuth) instead of carrying an MCP API key. Ask for a configuration that holds only the endpoint address, with no `Authorization` header and no `DEWEE_MCP_TOKEN`:
+
+```bash
+dewee mcp connect-config --client claude --auth oauth
+```
+
+The output also says how each client starts the sign-in. Without `--auth`, or with `--auth key`, you get the API-key configuration above, unchanged.
+
+- The client must support MCP authorization with a Client ID Metadata Document or with a client id registered in advance. Dewee does not offer dynamic client registration, so a client that can only register dynamically cannot sign in.
+- Cursor cannot sign in this way yet, because its `cursor://` redirect is not accepted. Keep the default API-key configuration for Cursor.
+
+### Review and revoke connected apps
+
+| Command | What it does |
+|---|---|
+| `dewee mcp authorizations list` | Lists the apps connected by signing in. A workspace member sees their own; a workspace owner or admin sees every member's. Only active ones are shown unless you pass `--all`; `--json` prints machine-readable output |
+| `dewee mcp authorizations revoke <grant-id>` | Revokes one connection, and the app must sign in again. Asks for confirmation on a terminal; `--force` skips the question and is required in scripts. Also accepts `--dry-run` and `--json` |
 
 ### Check the status
 
@@ -125,7 +151,7 @@ The key is never accepted as a command-line argument. `dewee mcp test` prints it
 | `workspace_active` | Public MCP access is on for this workspace |
 | `endpoint_url` | The exact address to give a client. Set only when the gateway's public URL (`GOCLAW_PUBLIC_URL`) is configured; it is never taken from request headers |
 | `endpoint_url_source` | `configured` when `endpoint_url` is set, `unset` otherwise. When unset, `endpoint_url` is empty and `endpoint_url_next_action` says how to fix it |
-| `agent_header`, `protocol_version`, `limits`, `tools` | The agent header, the MCP version, the limits the endpoint enforces, and how many read and write tools it exposes |
+| `agent_header`, `protocol_version`, `limits`, `tools` | The agent header, the MCP version, the limits the endpoint enforces, and how many read and write tools it exposes. `limits` includes the [workspace budget](#limits-quota-and-revocation): `tenant_requests_per_minute`, `tenant_burst`, `tenant_max_concurrent_tool_calls`, and `tenant_rejections` with `rate_limited` and `concurrency_limited` for requests that budget refused |
 | `can_manage_activation` | The caller may turn access on or off |
 | `can_call_tool` | The caller may run a connection test that calls a tool |
 
@@ -158,7 +184,25 @@ The key you test is never logged, echoed back or stored. A key of another worksp
 
 Each credential may send 120 requests per minute (bursts of 20) and run 4 tool calls at a time, each with a 60-second deadline. Request bodies are capped at 1 MiB. Over a limit, the endpoint answers `429`; a body over the cap gets `413`. The server speaks the stateless Streamable HTTP transport of MCP `2026-07-28`, and older clients negotiate down. Generic HTTP clients are covered by automated tests; Claude Code, Cursor, VS Code with Copilot and Gemini CLI have been verified by hand.
 
-These budgets are **per credential, not per workspace**: a workspace with three MCP keys gets three times the budget. Some read tools spend the workspace's own paid quota, for example `web_search` uses the workspace's search providers, so treat even a read key as able to consume that quota.
+On top of each credential's budget, every workspace has one budget that all of its keys share, so adding keys never raises the workspace's ceiling:
+
+| Setting | Env variable | Default |
+|---|---|---|
+| `tools.mcp.public.tenant_requests_per_minute` | `GOCLAW_MCP_PUBLIC_TENANT_REQUESTS_PER_MINUTE` | 600 requests per minute, bursts of 100 |
+| `tools.mcp.public.tenant_max_concurrent_tool_calls` | `GOCLAW_MCP_PUBLIC_TENANT_MAX_CONCURRENT_TOOL_CALLS` | 16 tool calls at a time |
+
+`0` means the default, and a negative value stops the gateway from starting. The workspace budget is counted separately for `/mcp/server` and `/mcp/workspace`, and inside each gateway process. `dewee mcp status`, the console and the gateway dashboard show it as **Workspace limits**.
+
+When the workspace budget is used up, the endpoint answers `429` with one of these codes:
+
+| Code | Meaning | `Retry-After` |
+|---|---|---|
+| `tenant_rate_limited` | The workspace's keys together sent too many requests this minute | `60` |
+| `tenant_too_many_concurrent_calls` | The workspace's keys together already run the maximum number of tool calls | `5` |
+
+Slowing down one key does not help here, because the limit covers every key of the workspace. Wait for `Retry-After`, spread the clients' work over time, or ask the operator to raise the workspace limits.
+
+Some read tools spend the workspace's own paid quota, for example `web_search` uses the workspace's search providers, so treat even a read key as able to consume that quota.
 
 A revoked or expired key fails on its very next request; there is no cache window. An MCP-only key cannot manage keys itself, so revoking a leaked key needs an owner or admin, on the console's **API keys & docs** page or with an admin credential. To cut off every client of a workspace at once without revoking keys, turn workspace access off.
 

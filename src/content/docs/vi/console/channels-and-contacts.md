@@ -4,7 +4,7 @@ description: Kết nối nền tảng nhắn tin với agent, quyết định ai
 section: console
 order: 9
 screens: [channels, connectivity, contacts, pending-messages]
-updated: 2026-10-27
+updated: 2026-11-08
 ---
 
 Kênh đưa agent tới đúng nơi khách hàng và đồng nghiệp của bạn đang trò chuyện: Telegram, Zalo, Slack và các ứng dụng nhắn tin khác. Trang này nói về bốn khu vực trong nhóm **Kết nối** của menu: **Kênh**, nơi bạn kết nối nền tảng, **Hộp ghép nối**, nơi bạn phê duyệt người gửi mới, **Danh bạ**, nơi bạn xem ai đã nhắn tới, và **Tin nhắn đang chờ**, nơi các tin nhắn đang xếp hàng.
@@ -39,6 +39,8 @@ Các nền tảng được hỗ trợ gồm Telegram, Discord, Slack, WhatsApp, 
 
 Feishu/Lark ở chế độ webhook nhận sự kiện qua chính địa chỉ của gateway. Chỉ workspace master mới đặt được **Đường dẫn webhook** riêng, **Cổng webhook** riêng hoặc **Tên miền** tùy chỉnh; các workspace khác không đặt được những trường này và dùng `/feishu/events` trên địa chỉ chính với domain Lark hoặc Feishu có sẵn. Mỗi đường dẫn chỉ một kênh nhận được sự kiện, vì vậy trên gateway dùng chung, các kênh Feishu ngoài workspace master nên dùng chế độ WebSocket (mặc định).
 
+Webhook Feishu đang bật không thể dùng đích đã được một kênh đang bật khác hoặc một kênh cấu hình bằng file đang hoạt động giữ. Khi xung đột, hệ thống trả HTTP 409 / `ALREADY_EXISTS`: hãy dùng WebSocket hoặc nhờ người vận hành cấp đích còn trống. Kênh đã tắt không giữ đích; các chỉnh sửa khác vẫn được phép nếu giữ nguyên đích đang dùng. Kiểm tra khi lưu chỉ điều phối trong một tiến trình gateway; kiểm tra khi khởi động vẫn cần thiết giữa các replica.
+
 **Chính sách DM** có các lựa chọn **Yêu cầu ghép nối**, **Mở**, **Chỉ danh sách cho phép** và **Tắt**. **Chính sách nhóm** có **Cần phê duyệt ghép nối**, **Mở**, **Chỉ danh sách cho phép** và **Tắt**. Ở hầu hết nền tảng, cả hai mặc định là ghép nối; Zalo Personal mặc định là **Chỉ danh sách cho phép**. **Yêu cầu nhắc tên trong nhóm** mặc định được bật. **Cập nhật trạng thái task** quyết định cách tiến độ task được gửi tới kênh: **Kế thừa từ agent hoặc workspace**, **Tắt**, **Tiến độ**, **Hoàn tất** hoặc **Cả hai**.
 
 ### Các tab của kênh
@@ -55,8 +57,12 @@ Mở một kênh để xem mọi tab của nó. **Người quản lý**, **Ngữ
 
 Chọn **Lưu thay đổi** để lưu kênh. Tắt **Bật** sẽ giữ nguyên cấu hình nhưng kênh ngừng xử lý tin nhắn. **Xoá kênh** thì không hoàn tác được.
 
+Với quyền writer trong nhóm Telegram, người quản lý có thẩm quyền có thể cấp quyền qua tab **Người quản lý**. Khi thêm writer, hệ thống kiểm tra quyền hiện tại, kể cả ngay sau khi nhóm được nâng cấp; tin nhắn ẩn danh hoặc gửi dưới danh nghĩa kênh không thể cấp quyền, và các lượt từ chối tường minh vẫn có hiệu lực. Nếu bị từ chối, hãy nhờ người quản lý có quyền kiểm tra. Lỗi lưu trữ không xác nhận cấp quyền thành công: hãy kiểm tra kết quả trước khi thử lại.
+
 > [!WARNING]
 > Zalo Personal dùng giao thức không chính thức, nên tài khoản Zalo đăng nhập vào đó có thể bị khoá hoặc cấm. Hãy ưu tiên Zalo OA hoặc Zalo Bot khi có thể.
+
+Người vận hành cũng có thể liệt kê, kiểm tra, thêm hoặc xóa writer nhóm qua [CLI channel writers](/docs/runtime/cli). Các thao tác này còn có qua [API channel writer](/docs/api/overview) và [workspace MCP](/docs/api/workspace-mcp), với phê duyệt cho từng lần gọi MCP.
 
 ## Hộp ghép nối
 
@@ -85,6 +91,8 @@ Lúc bạn chọn **Phê duyệt**, hệ thống kiểm tra lại kênh một l�
 
 Chính sách mới chỉ áp dụng cho các lượt phê duyệt sau này; người gửi đã ghép nối vẫn giữ thời hạn cũ.
 
+Nếu lỗi dịch vụ tạm thời ngăn kiểm tra phê duyệt nhóm Telegram đã có, hãy gửi lại cùng tin nhắn sau khi dịch vụ phục hồi; không cần ghép nối lại. Nhóm chưa từng được ghép nối hoặc có phê duyệt đã hết hạn vẫn theo quy trình ghép nối thông thường. Forum topic dùng phê duyệt của nhóm.
+
 ## Danh bạ
 
 **Danh bạ** liệt kê mọi người mà các kênh của bạn đã nhận tin nhắn, với **Tên**, **Nền tảng**, **ID người gửi**, **Kênh**, **Trạng thái** (**Đã liên kết** hoặc **Chưa xác minh**), **Lần cuối hoạt động** và **Loại**. Bạn tìm bằng ô **Tìm theo tên hoặc ID người gửi…**, lọc theo **Nền tảng** hoặc **Loại liên hệ**, và dùng **Làm mới** để tải lại.
@@ -98,6 +106,8 @@ Một người thường nhắn tới từ nhiều ứng dụng. Để gộp cá
 3. Chọn **Gộp**. Lịch sử tin nhắn được giữ nguyên.
 
 Muốn tách ra lại, đánh dấu các liên hệ đó và chọn **Bỏ gộp mục đã chọn**, hoặc chọn **Tách** trên một dòng đã liên kết.
+
+Mỗi yêu cầu gộp hoặc tách nhận tối đa 500 ID, tính cả ID trùng lặp. Với lựa chọn lớn hơn, hãy gửi nhiều yêu cầu riêng và theo dõi kết quả từng yêu cầu.
 
 ## Tin nhắn đang chờ
 

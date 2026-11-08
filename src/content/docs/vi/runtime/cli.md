@@ -3,7 +3,7 @@ title: Tham chiếu CLI
 description: "Dòng lệnh dewee: global flag, cách CLI tìm gateway và key của bạn, định dạng đầu ra, và mọi nhóm lệnh cho agent, skill, workflow, bộ nhớ và quản trị."
 section: runtime
 order: 2
-updated: 2026-10-16
+updated: 2026-11-08
 ---
 
 Chính binary `dewee` dùng để chạy gateway cũng là client dòng lệnh của nó. Phần lớn lệnh nói chuyện với một gateway đang chạy qua HTTP hoặc WebSocket, trên máy hay từ xa, nên người vận hành có thể viết script cho gần như mọi việc làm được trong console. Một vài lệnh bảo trì làm việc trực tiếp với cơ sở dữ liệu và chỉ dùng trên máy chủ.
@@ -61,6 +61,7 @@ dewee mcp list --json
 |---|---|
 | `dewee onboard` | Thiết lập lần đầu trên máy chủ: cơ sở dữ liệu, secret, migration, `.env.local` |
 | `dewee setup` | Trình hướng dẫn cho provider, model, agent và channel. Cần gateway đang chạy |
+| `dewee workspace-setup` | `next` thực hiện lượt tiếp theo của quy trình thiết lập workspace có hướng dẫn trong console; `--replace-key`, có thể kèm `--step <id>`, yêu cầu nhập key mới cho một provider đã lưu. Xem [Trang Tổng quan](/docs/console/overview#trang-tổng-quan) |
 | `dewee doctor` | In phiên bản, đường dẫn cấu hình và trạng thái cơ sở dữ liệu |
 | `dewee config` | `show` (đã che secret), `path`, `validate` |
 | `dewee auth` | `status` và `logout` cho tài khoản ChatGPT kết nối qua gateway |
@@ -75,7 +76,11 @@ dewee mcp list --json
 | `dewee pairing` | `list`, `approve`, `revoke` cho người gửi từ ứng dụng chat đang chờ được cấp quyền |
 | `dewee tasks` | `comments list` và `comments add` trên task của nhóm agent |
 
+Lệnh `merge` và `unmerge` contact nhận tối đa 500 ID mỗi yêu cầu, tính cả ID trùng. Lựa chọn lớn hơn trả lỗi kiểm tra mà không thay đổi một phần contact; hãy chia thành nhiều yêu cầu và kiểm tra từng kết quả.
+
 `dewee agent chat` mở một cuộc trò chuyện tương tác với agent có tên trong `--name` (mặc định `default`). Thêm `--message` để hỏi đáp một lần, và `--session` để tiếp tục một session.
+
+Với `dewee agent chat`, ngữ cảnh người gọi được chọn theo thứ tự: `--user-id` tường minh, `GOCLAW_GATEWAY_USER_ID`, `GOCLAW_USER_ID` cũ, rồi `system`. Biến môi trường rỗng được coi là chưa đặt; cờ rỗng tường minh, giá trị chỉ có khoảng trắng hoặc chứa ký tự điều khiển ASCII bị từ chối trước khi kết nối. Khoảng trắng hai đầu được bỏ. Lệnh HTTP không dùng giá trị dự phòng cũ. Ngữ cảnh này không chứng minh danh tính hay quyền: gateway vẫn kiểm tra ràng buộc credential, vai trò, tenant và tư cách thành viên.
 
 ```bash
 dewee agent chat --name support-bot --message "Summarise today's open tickets"
@@ -87,13 +92,19 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 |---|---|
 | `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; cùng `access`, `grant`, `revoke`, `deps`, `evolve` và `suggestions` |
-| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` cho server đăng nhập bằng OAuth |
+| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config` (`--auth oauth` cho client đăng nhập bằng Dewee thay vì dùng key); `access`, `grant`, `revoke`; `oauth` cho server đăng nhập bằng OAuth; `authorizations` (`list`, `revoke`) cho các ứng dụng đã kết nối tới endpoint MCP công khai bằng cách đăng nhập, xem [Webhook và MCP](/docs/api/webhooks-and-mcp#xem-và-thu-hồi-ứng-dụng-đã-kết-nối) |
 | `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` để phê duyệt hoặc từ chối yêu cầu cài đặt; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee hooks` | Chỉ có `access`: hook chạy cho những agent nào và ai được sửa nó |
 | `dewee channels` | `list`, `add`, `delete` |
 | `dewee tts`, `dewee stt` | Provider giọng nói và `config` của chúng |
 
 Mỗi nhóm `access` có `list`, `grant`, `set-level`, `revoke` và `activity`; riêng provider và package có thêm `mode get` và `mode set`. Các mức quyền, chế độ và những gì được kiểm tra được giải thích ở [Cấp quyền theo tài nguyên](/docs/security/access-grants).
+
+### Writer của nhóm kênh
+
+`dewee channels writers groups <instance-id>` liệt kê nhóm và số writer theo thứ tự. `list <instance-id> --group <scope>` liệt kê writer (nhóm trống trả `[]` với `-o json`), còn `test <instance-id> --group <scope> --user <id>` trả `allowed` và `reason`. Dùng `add <instance-id> --group <scope> --user <id>`, có thể thêm `--display-name`, `--username` hoặc `--dry-run`. Dùng `remove <instance-id> --group <scope> --user <id> --yes`, hoặc `--dry-run` để xem trước; lệnh xóa không hỏi lại và bắt buộc một trong hai cờ.
+
+Mọi lệnh đều nhận `-o json`. Phạm vi nhóm là `group:<channel>:<chatId>`, hoặc `guild:<guildId>:*` trên Discord. Thêm và xóa yêu cầu quyền admin. Mã thoát là 2 khi dữ liệu không hợp lệ, 4 khi không đủ quyền, 5 khi không tìm thấy instance hoặc writer, và 6 khi xóa writer cuối cùng.
 
 ## Tự động hoá
 
@@ -110,6 +121,10 @@ Workflow có thể được giữ dưới dạng file và áp dụng từ CI:
 dewee workflows validate -f workflow.json
 dewee workflows apply -f workflow.json
 ```
+
+Để tránh ghi đè chỉnh sửa đồng thời của bản nháp, dùng `--expected-version <updated_at>` như hướng dẫn trong [Workflow](/docs/concepts/workflows). CLI phiên bản cũ vẫn được hỗ trợ; riêng cập nhật có điều kiện cần gateway tương thích.
+
+Để xem danh sách lịch theo trang, dùng `dewee cron list --limit 20 --json`; truyền `nextCursor` được trả về qua `--cursor` để xem tiếp, và giữ `--all` nếu đã dùng. Khi không có cờ phân trang, JSON vẫn là mảng đầy đủ. Nếu gateway cũ không cung cấp metadata phân trang, CLI báo lỗi tương thích thay vì thử lại bằng yêu cầu không giới hạn.
 
 ## Bộ nhớ, tri thức và file
 
@@ -133,6 +148,14 @@ dewee workflows apply -f workflow.json
 | `dewee workstations` | `list`, `create`, `delete` |
 
 ## Bảo trì máy chủ
+
+Người vận hành nền tảng có thể dùng `dewee tenant members list|add|remove` với gateway token và owner ID nền tảng đã cấu hình. Credential khác nhận `PERMISSION_DENIED` (mã thoát 4). `list` hỗ trợ `--role`, `--limit` (1–500), `--offset`, `-o json` và trả `{users, total, limit, offset}`. `add` thêm thành viên hoặc đổi vai trò (mặc định `member`), hỗ trợ `--dry-run`. `remove` cần `--yes` hoặc `--dry-run`; thành viên không tồn tại trả `NOT_FOUND` (mã 5). Tenant ngoài tenant nền tảng phải giữ ít nhất một owner: hãy thêm owner khác trước khi gỡ hoặc hạ vai trò owner cuối, nếu không lệnh trả `CONFLICT` (mã 6). Workspace khách hàng tự quản lý lời mời và vai trò trong ứng dụng; workspace MCP không cung cấp các lệnh vận hành này.
+
+### Cấp quyền miễn phí cho người vận hành
+
+Ở nơi tính năng được bật, super admin có thể cấp quyền cho danh sách email cụ thể bằng `dewee admin access-grants bulk-issue`. Trước tiên chạy `--dry-run`, xem kết quả từng người nhận, rồi chạy cùng yêu cầu không có `--dry-run` và xác nhận. Giữ cùng idempotency key sau khi hết thời gian chờ hoặc lỗi một phần: các lượt đã cấp được phát lại và các lượt còn lại có thể thử tiếp. Email nhận quà chỉ được gửi khi chọn `--notify`. Giới hạn là 100 người mỗi lô và 10 lượt commit lô mới mỗi người vận hành mỗi giờ; thử lại với cùng key không tính thêm lô.
+
+ACP Operations MCP cung cấp `ops_access_grants_issue`, `ops_access_grants_bulk_issue`, `ops_access_grants_revoke` và `ops_access_grants_extend`. Các tool ghi cần scope `access_grants:admin` của super admin và các công tắc triển khai do người vận hành bật; kết nối chỉ đọc không thấy hoặc gọi được chúng. Với API hoặc MCP, hãy xem trước rồi commit bằng preview digest trả về; REST dùng `POST /api/access-grants/bulk`. Đây là thao tác ACP, tách biệt với MCP workspace và MCP nội dung website. Chạy `dewee admin access-grants bulk-issue --help` và xem [hướng dẫn vận hành](https://github.com/nextlevelbuilder/dewee/blob/dev/docs/runbooks/complimentary-access-grants.md) để biết cờ và cách khôi phục hiện tại.
 
 Phần lớn các lệnh này chạy trên máy chủ gateway và làm việc trực tiếp với cơ sở dữ liệu và thư mục dữ liệu. Riêng `tenant-transfer` đi qua gateway và cần key của owner hoặc admin.
 

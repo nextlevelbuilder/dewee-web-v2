@@ -4,7 +4,7 @@ description: Review and curate what your agents remember, build a knowledge base
 section: console
 order: 10
 screens: [memory, knowledge-base, storage]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Agents answer better when they can recall what they learned and look things up. The **Data** group of the menu holds the areas for that: **Memory**, what agents keep across sessions, **Knowledge base** and **Knowledge graph**, the documents and entities they can search, and **Storage**, the files shared across the workspace. Everything here stays inside your workspace.
@@ -73,6 +73,8 @@ To add a document:
 Path and scope cannot change after the document is created. To load files instead, select **Import** and add Markdown, text, JSON or CSV files of up to 2 MB each. Each file becomes a searchable shared document.
 
 Select a document to preview it, see its summary and manage its **Links** to other documents with **Add link**. New documents wait for enrichment, which writes a summary, embeddings for semantic search and suggested links; until then, semantic search may miss them. When documents are waiting, **Rescan** queues them. **Delete document** removes a document from the knowledge base after a confirmation.
+
+Deleting a Vault document removes the selected record even if another scope has a document at the same path. Deleting an already missing record returns not found. It does not erase a source file: a later scan can register that file again.
 
 ### Graph
 

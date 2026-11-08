@@ -3,7 +3,7 @@ title: Tracing and observability
 description: What dewee records for every agent run, how long traces are kept, how cost and usage are totalled, and how to read traces from the console, CLI, API or OTel.
 section: concepts
 order: 10
-updated: 2026-10-16
+updated: 2026-11-08
 ---
 
 Every agent run in dewee leaves a trace: a record of what the agent was asked, which models and tools it called, how long each step took, what it cost and how it ended. Traces are the first place to look when an answer is wrong, slow or expensive. They are written in the background, so recording them does not slow a run down.
@@ -81,11 +81,17 @@ dewee traces timeline <trace-id>
 
 `list` returns up to 200 traces a page. To read traces on a remote gateway, pass `--server` and `--token`, or set `DEWEE_SERVER` and `DEWEE_API_KEY`. Explicit flags win.
 
+An export includes the requested trace and up to 10 child levels. A deeper tree is refused with HTTP 422 and `trace_export_too_deep`; export a deeper sub-trace by its own ID. Cyclic parent links are refused with `trace_export_cycle` (a cycle beyond the depth limit can be reported as too deep). The CLI writes no file on refusal. Previously pruned child traces can still be absent.
+
+A missing trace returns not found. A temporary storage error is a server error, not proof that the trace was deleted; retry when the service recovers. Failed export collection does not produce a successful download. Retry a download interrupted in transit.
+
 ```bash
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
 **Semantic evaluation** is off by default. When an operator turns it on and adds a TypeSafe API key, finished traces are sent to that external classifier, with credentials and personal data redacted, and labelled with signals such as whether the task succeeded. The labels become extra `dewee traces list` filters, such as `--semantic-decision`, and never change how an agent runs. `dewee traces semantic config get` shows whether it is on and why. The classifier is Jev, the same model the [decision layer](/docs/concepts/decision-layer) uses.
+
+Semantic evaluation diagnostics provide classified failure reasons and recovery hints, the configured evaluator model identity, and valid probabilities and counts. Some older diagnostic text is withheld when its provenance cannot be trusted. This does not change runtime outcomes or authorization; customer trace metadata retains its existing shape.
 
 ## Exporting to OpenTelemetry
 

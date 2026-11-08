@@ -3,7 +3,7 @@ title: Authentication
 description: "How to authenticate to the dewee API: creating API keys, choosing scopes, sending them over HTTP and WebSocket, and handling expiry and revocation."
 section: api
 order: 2
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 Every call to the runtime, except the health checks, carries a credential. For scripts, integrations and the CLI that credential is an **API key**: bound to one tenant, limited by scopes, and revocable at any time. This page explains how to create one and how to send it.
@@ -15,6 +15,8 @@ Every call to the runtime, except the health checks, carries a credential. For s
 | API key | Scripts, integrations, CI, the CLI, MCP clients | Scoped, bound to a tenant, can expire. The one to use |
 | Gateway token | The operator of a self-hosted runtime | Full admin access to the gateway. Keep it on the server and do not hand it to integrations |
 | Webhook secret | Systems that call a webhook | Only valid on that webhook. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) |
+
+A gateway bound to a loopback address without a gateway token asks for no credential at all, which is meant for local development. Behind a reverse proxy on the same host, set `GOCLAW_REQUIRE_AUTH=1` so every caller must authenticate; see [Install and run the gateway](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host).
 
 ## Create an API key
 
@@ -67,6 +69,8 @@ The `GoClaw` in these header names is the runtime's original name; use them exac
 
 `X-GoClaw-User-Id` only says whose data the request works on. It never changes what the key may do: on a key without an owner, naming the workspace owner or an admin does not give the request their role. The key keeps the role its scopes allow, inside its own tenant. To act with an owner's or admin's role, use a key tied to that person.
 
+For tenant administration, owner-bound API keys and customer sessions use their bound owner; a customer session also needs the endpoint's required scope. A caller-supplied user header cannot give an ownerless key tenant-admin authority. Gateway-token administration and global or tenant scope are separate checks.
+
 ## Check a key
 
 `GET /v1/auth/token/status` tells you whether a key or token is valid, which is a quick way to test a new integration. From the terminal, any read command does the same:
@@ -84,6 +88,10 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 > [!TIP]
 > Give each integration its own key with the narrowest scopes it needs and an expiry. When something goes wrong, you can revoke one key without breaking the others.
 
+## Identity test journeys and Connect links
+
+Where identity test mode is enabled on a development build, use a simulated test user for both session exchange and Connect handoff or OIDC verification. Real subjects are refused in test mode; use an application with test mode disabled for real-user testing. If a Connect link expires, start the connection flow again. Cleanup timing does not change that recovery.
+
 ## Common errors
 
 | Status | Meaning |
@@ -91,4 +99,4 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 | `401` | Missing, unknown, expired or revoked credential |
 | `403` | The key is valid but its scopes do not allow the operation, for example writing with a Read key |
 | `409` | In the console, the workspace has not finished provisioning, so keys cannot be created yet |
-| `429` | Too many requests; wait for the time in `Retry-After` |
+| `429` | Too many requests; wait for the time in `Retry-After`. On the MCP endpoints, a `tenant_` error code means the whole workspace is over its budget, not just your key; see [Limits, quota and revocation](/docs/api/webhooks-and-mcp#limits-quota-and-revocation) |

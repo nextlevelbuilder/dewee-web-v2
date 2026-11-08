@@ -3,14 +3,14 @@ title: Tổng quan bảo mật
 description: Những gì dewee khoá sẵn theo mặc định, những năng lực của agent còn mở cho tới khi bạn siết lại, và năm lớp kiểm tra giữa một tin nhắn với hệ thống của bạn.
 section: security
 order: 1
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Trang này viết cho người phải ký duyệt việc dùng dewee: cái gì được bảo vệ ngay từ đầu, cái gì bạn cần tự cấu hình, và mỗi lớp kiểm tra nằm ở đâu. Nội dung mô tả đúng những gì runtime đang làm, kể cả các mặc định còn thoáng. Bản tóm tắt ở mức sản phẩm có tại trang [Bảo mật](/security).
 
 ## Tóm tắt nhanh
 
-- **Vòng ngoài đóng theo mặc định.** Không ai gọi được gateway nếu không có token, người lạ không nhắn được cho agent khi chưa được phê duyệt, và endpoint MCP công khai đang tắt.
+- **Vòng ngoài đóng theo mặc định.** Không ai gọi được gateway từ máy khác nếu không có token, người lạ không nhắn được cho agent khi chưa được phê duyệt, và endpoint MCP công khai đang tắt.
 - **Năng lực của agent bắt đầu ở mức thoáng.** Gateway mới cho agent dùng toàn bộ tool, chạy lệnh mà không hỏi, và sandbox Docker đang tắt. Bạn thu hẹp lại bằng chính sách, cho cả gateway và từng agent.
 - **Secret được mã hoá khi đã đặt khoá mã hoá.** Onboarding và bộ cài Docker tự sinh khoá này. API key chỉ được lưu dưới dạng hash.
 - **Các tenant được tách biệt trong mọi truy vấn.** Request không có ngữ cảnh tenant sẽ thất bại.
@@ -19,7 +19,7 @@ Trang này viết cho người phải ký duyệt việc dùng dewee: cái gì �
 
 | Phạm vi | Mặc định |
 |---|---|
-| Truy cập gateway | Bắt buộc có token trên mọi địa chỉ không phải loopback; thiếu token thì gateway không khởi động |
+| Truy cập gateway | Bắt buộc có token trên mọi địa chỉ không phải loopback; thiếu token thì gateway không khởi động. Trên loopback cũng vậy khi đặt `GOCLAW_REQUIRE_AUTH=1`, điều cần làm khi có reverse proxy trên cùng máy |
 | WebSocket | Frame đầu tiên phải là `connect` đã xác thực; mọi thứ khác bị từ chối |
 | Phương thức RPC | Phương thức chưa được phân loại quyền sẽ bị từ chối |
 | Tin nhắn riêng trên ứng dụng chat | Người gửi lạ nhận mã ghép nối và chờ được phê duyệt |
@@ -81,7 +81,7 @@ Mọi bảng thuộc về tenant đều có tenant ID, và mọi truy vấn đ�
 ## Trước khi chạy thật
 
 1. Luôn đặt `GOCLAW_ENCRYPTION_KEY`, và cất khoá cùng bản sao lưu.
-2. Đặt gateway token đủ mạnh và đặt TLS phía trước gateway.
+2. Đặt gateway token đủ mạnh và đặt TLS phía trước gateway. Nếu một reverse proxy trên cùng máy công bố gateway ra ngoài, hãy đặt `GOCLAW_REQUIRE_AUTH=1`; xem [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sau-reverse-proxy-trên-cùng-máy).
 3. Thu hẹp tool profile và bật phê duyệt lệnh cho agent có thể chạy lệnh.
 4. Bật sandbox cho agent thực thi mã.
 5. Đặt `gateway.injection_action` thành `block` nếu agent của bạn trò chuyện với người ngoài.

@@ -4,7 +4,7 @@ description: Talk to your agents, attach files, follow tool calls as they run, d
 section: console
 order: 2
 screens: [chat, sessions]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 **Chat** is the quickest way to work with an agent: you type, the agent answers, and you watch the tools it uses along the way. **Sessions** is the record of every conversation your agents have had, from the console and from connected channels, so you can check what was said and which traces belong to it.
@@ -32,6 +32,8 @@ To start a conversation:
 4. Watch the reply stream in. Expand a tool call to see its arguments and result. Use **Stop generating** to stop a reply.
 
 To continue an earlier conversation, select it in the list. Use **Load earlier messages** to scroll back further. Select **New conversation** to start a fresh one with the same agent.
+
+An accepted turn is saved before model execution. After you stop a turn, a new message may briefly wait while the stopped turn finishes saving. If you see a retryable “run in progress” response, wait and retry in the same conversation. The draft and attachments are retained for this refusal, including on the first message of a new chat; the message is not automatically sent a second time.
 
 ### Rename, reset or delete a conversation
 

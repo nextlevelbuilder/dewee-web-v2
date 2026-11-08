@@ -3,7 +3,7 @@ title: Workflow
 description: Cách workflow trong dewee chạy một chuỗi bước cố định theo cùng một cách mỗi lần, cách bản nháp được xuất bản thành phiên bản, cùng giới hạn và cơ chế thử lại.
 section: concepts
 order: 7
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 Workflow là một đồ thị các bước cố định mà dewee chạy theo cùng một cách mỗi lần. Hãy dùng workflow khi một quy trình không được phép bỏ sót bước nào, chẳng hạn kiểm tra đơn hàng trước khi trả lời, hoặc xét duyệt bài trước khi đăng. Model chỉ làm việc bên trong các node có giới hạn rõ ràng, còn đồ thị quyết định bước tiếp theo. Workflow đang ở giai đoạn beta.
@@ -33,6 +33,10 @@ Bạn chỉnh sửa bản nháp, kiểm tra hợp lệ rồi chạy thử. Lần
 Lúc xuất bản, dewee lưu kèm quyền dùng tool của agent tạo ra workflow. Những thay đổi sau đó trên agent này không thể mở rộng những gì phiên bản đã xuất bản được phép làm.
 
 Quản trị viên hoặc chủ sở hữu tenant có thể xuất bản trực tiếp. Những người khác, kể cả agent, sẽ tạo một yêu cầu xuất bản. Chỉ một quản trị viên là người thật, khác với người gửi yêu cầu, mới được phê duyệt, và chỉ khi bản nháp vẫn khớp với bản đã gửi. Nếu bản nháp đã thay đổi trong lúc chờ, yêu cầu phê duyệt bị từ chối.
+
+Để tránh ghi đè chỉnh sửa đồng thời, đọc `updated_at` của workflow rồi truyền vào `dewee workflows apply -f workflow.json --expected-version <updated_at>`. Workspace MCP `workflows_update` dùng `expected_version`, WebSocket `workflows.update` dùng `expectedVersion`, còn HTTP `PUT /v1/workflows/{id}` dùng `expected_version`. Giữ đầy đủ độ chính xác của timestamp; các múi giờ tương đương biểu diễn cùng một thời điểm. PostgreSQL lưu độ chính xác micro giây. Giá trị cũ trả `VERSION_CONFLICT` (HTTP 409): tải lại và đối chiếu thay đổi trước khi gửi lại. Bỏ điều kiện giữ hành vi cập nhật không điều kiện; lệnh CLI có điều kiện không tạo workflow còn thiếu.
+
+CLI có điều kiện kiểm tra contract phiên bản 2 trên kết nối cập nhật và từ chối gateway cũ hoặc không rõ phiên bản trước khi thay đổi. Các yêu cầu phân quyền và phê duyệt MCP vẫn giữ nguyên.
 
 ## Lượt chạy và trigger
 

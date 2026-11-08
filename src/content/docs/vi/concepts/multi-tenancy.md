@@ -3,7 +3,7 @@ title: Tách biệt đa tenant
 description: Cách dewee tách riêng agent, session, bộ nhớ và thông tin xác thực của từng tenant, cách request xác định tenant, và cách sao lưu hay chuyển dữ liệu tenant.
 section: concepts
 order: 2
-updated: 2026-10-13
+updated: 2026-11-08
 ---
 
 Tenant là ranh giới tách biệt dữ liệu trong dewee. Agent, cuộc hội thoại, bộ nhớ, provider và tool đều thuộc về đúng một tenant, và runtime từ chối mọi truy vấn không chỉ rõ tenant. Trong console, ranh giới này được gọi là workspace: mỗi workspace gắn với một tenant trên runtime của nó.
@@ -66,7 +66,7 @@ API key thì lấy vai trò từ scope: `operator.admin` là admin, `operator.wr
 
 Tenant bị tạm ngưng, hoặc workspace có quyền sử dụng bị tạm ngưng, không thể chạy agent, chat, tạo API key hay thay đổi kênh. Owner của hệ thống vẫn có thể xem tenant và đổi trạng thái của nó.
 
-Thay đổi quyền truy cập có hiệu lực ngay ở request tiếp theo. Khi một key bị thu hồi hoặc đổi scope, hay một thành viên bị gỡ khỏi tenant, các phiên WebSocket đang mở sẽ nhận `TENANT_ACCESS_REVOKED` ở lần gọi kế tiếp.
+Sau khi được áp dụng vào runtime, thay đổi quyền có hiệu lực ở request tiếp theo. Khi một key bị thu hồi hoặc đổi scope, hay một thành viên bị gỡ khỏi tenant, các phiên WebSocket đang mở sẽ nhận `TENANT_ACCESS_REVOKED` ở lần gọi kế tiếp. Việc gỡ thành viên workspace có thể còn chờ trong lúc thử đồng bộ runtime; xem [Thành viên](/docs/console/members-roles-and-api-keys#thành-viên) trước khi coi việc thu hồi đã hoàn tất.
 
 ## Ghi đè theo từng tenant
 
@@ -91,9 +91,15 @@ dewee tenant-restore ./acme-backup.tar.gz --mode new --new-tenant-slug acme-copy
 
 Khôi phục có ba chế độ: `upsert` (mặc định, chỉ thêm các dòng còn thiếu, không đổi gì khác), `replace` (xoá dữ liệu của tenant trước rồi mới nạp, cần `--force`), và `new` (tạo tenant mới từ bản sao lưu). Sao lưu và khôi phục tenant cần PostgreSQL; bản Lite chỉ có một tenant và dùng lệnh sao lưu toàn hệ thống `dewee backup`.
 
+Bản sao lưu được hỗ trợ giữ lại dữ liệu riêng tư. Khôi phục bản có dữ liệu riêng tư đòi hỏi đúng tenant ban đầu, khóa mã hóa đã cấu hình và đích không có private instance hiện tại; sao chép dữ liệu đó sang tenant mới bị từ chối. Private instance đang hoạt động sau khôi phục vẫn bị cách ly; danh tính và ràng buộc trong bản lưu không tự cấp lại quyền hay sự đồng ý. Khả năng lưu giữ này chưa bật kích hoạt tài nguyên riêng tư hoặc khôi phục chủ sở hữu ban đầu.
+
+Hãy đọc cảnh báo khôi phục: bước xử lý file có thể thất bại sau khi nhập database. Nếu kết quả database chưa được xác nhận, hãy xem hoạt động của người vận hành trước khi thử lại. Chạy `dewee tenant-restore --help` để xem hợp đồng hiện tại và đọc [hướng dẫn bảo mật gateway](https://github.com/nextlevelbuilder/dewee/blob/dev/docs/09-security.md) để biết giới hạn. Tính năng này chưa cung cấp quy trình khôi phục thảm họa đầy đủ.
+
 ### Chuyển dữ liệu giữa các tenant
 
 Các runtime đời mới có thể sao chép hoặc chuyển những tài nguyên được chọn giữa hai tenant trên cùng runtime: agent, nhóm agent, MCP server, skill tuỳ chỉnh, hook, kênh, cron job, provider, task và dữ liệu lưu trữ của tenant. Bản sao nhận định danh mới; khi chuyển thì định danh được giữ nguyên. Bộ nhớ và tri thức của agent chỉ được đưa theo khi bạn yêu cầu. Người thực hiện phải là quản trị viên của cả hai tenant, mọi lần chuyển đều bắt đầu từ một bản xem trước đã lưu, và tính năng này chỉ có trên PostgreSQL. Dùng `dewee tenant-transfer` hoặc các endpoint `/v1/tenant/resource-transfers`. Skill tuỳ chỉnh được chuyển sẽ mang theo mọi phiên bản tệp sang tenant đích. Nếu tenant đích đã có sẵn một trong các phiên bản đó trên đĩa, lần chuyển sẽ dừng trước khi sao chép bất cứ thứ gì.
+
+Nếu một lần chuyển bị gián đoạn trước khi lấy được lease runtime, cơ chế khôi phục đánh dấu thất bại thay vì để nó chạy mãi. Hãy kiểm tra trạng thái trước: thử lại với cùng key sẽ trả kết quả đã khôi phục đó. Sau khi xem xét, hãy bắt đầu thao tác mới nếu cần. Các lần chuyển đang hoạt động hoặc đã commit vẫn giữ các lớp bảo vệ hiện có.
 
 ## Liên quan
 

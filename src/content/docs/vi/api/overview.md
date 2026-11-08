@@ -3,7 +3,7 @@ title: Tổng quan API
 description: "REST API, WebSocket RPC, chat tương thích OpenAI, MCP server công khai và webhook của runtime: mỗi phần để làm gì, tài liệu ở đâu, lỗi trông ra sao."
 section: api
 order: 1
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 API của runtime bao quát những gì agent làm và cách cấu hình chúng: agent, session, provider, channel, tool, bộ nhớ và nhiều thứ khác, nên các việc này tự động hoá được chứ không chỉ bấm tay. Những phần riêng của console như thành viên, thanh toán và hỗ trợ thì vẫn nằm trong console. Gateway phục vụ tất cả trên cùng một cổng: REST API dưới `/v1`, một WebSocket cho các phiên trực tiếp, và vài endpoint dành cho phần mềm khác gọi vào. Trang này vẽ bản đồ tổng thể; [Xác thực](/docs/api/authentication) giải thích về key, còn [Webhook và MCP](/docs/api/webhooks-and-mcp) nói về hai endpoint tích hợp.
@@ -64,6 +64,12 @@ Phản hồi cho biết vai trò và tenant của bạn. Gửi `connect` lần n
 - Trên WebSocket, request thất bại trả về `ok: false` kèm `code`, `message` của lỗi và gợi ý `retryable`.
 - Chat bị giới hạn tần suất theo người dùng hoặc IP, mặc định 20 request mỗi phút; vượt ngưỡng sẽ nhận `429` kèm `Retry-After`.
 - Body HTTP giới hạn 1 MB và frame WebSocket giới hạn 512 KB.
+
+### Writer nhóm kênh và lựa chọn theo lô
+
+API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status`, `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.
+
+`POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` và `POST /v1/vault/links/batch` nhận tối đa 500 ID mỗi yêu cầu, tính cả mục trùng. Mảng lớn hơn nhận lỗi kiểm tra HTTP 400 theo ngôn ngữ, thay vì xử lý một phần. Hãy chia lựa chọn lớn và theo dõi từng kết quả.
 
 ## Các nhóm route
 

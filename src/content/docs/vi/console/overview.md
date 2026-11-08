@@ -4,7 +4,7 @@ description: Cách đăng nhập console dewee, chuyển giữa các workspace, 
 section: console
 order: 1
 screens: [sign-in, overview]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Console là nơi bạn vận hành một workspace dewee hằng ngày. Agent, kênh chat, tri thức, giám sát và quản trị nằm chung một chỗ, và khu vực nào cũng kiểm tra vai trò của bạn trước khi hiển thị hay thay đổi dữ liệu. Trang này nói về cách đăng nhập, bố cục console, những gì thay đổi theo hình thức triển khai và nơi giải thích từng khu vực.
@@ -61,6 +61,12 @@ Nhãn trạng thái ở đầu console hiển thị **Runtime đã sẵn sàng**
 - Trong lúc runtime đang được cấp phát, thanh tiến trình hiển thị ba bước: **Runtime**, **Nhà cung cấp** và **Super Agent**. Dùng **Làm mới trạng thái** để kiểm tra lại. Nếu cấp phát thất bại, dùng **Thử thiết lập lại** hoặc **Mở hỗ trợ**.
 - Khi runtime đã chạy, **Trợ lý thiết lập** hỏi bạn vài câu và lo phần còn lại. Chọn **Tự thiết lập thủ công** để dùng các biểu mẫu theo bước: **Kết nối provider**, sau đó **Tạo Super Agent**.
 - Thành viên không được phép thay đổi thiết lập sẽ thấy **Chủ sở hữu workspace đang hoàn tất thiết lập** cho tới khi chủ sở hữu hoặc quản trị viên làm xong.
+
+Khi trợ lý thiết lập hỏi bạn đang trả phí cho những dịch vụ AI nào, các lựa chọn có cả OpenCode Go và OpenRouter.
+
+Script và agent có thể điều khiển cùng quy trình thiết lập có hướng dẫn này bằng `POST /v1/workspace-setup/next` hoặc `dewee workspace-setup next`. Mỗi phản hồi liệt kê trong `intents` những intent mà lượt tiếp theo chấp nhận. Khi trợ lý đề nghị kiểm tra kết nối hoặc sửa một provider đã lưu bằng API key, intent `replace_key` (`--replace-key` trong CLI) thay câu hỏi đó bằng thẻ nhập key cho chính bản ghi provider ấy, để bạn nhập key mới. Thêm `step_id` (`--step <id>`) để chỉ rõ bước.
+
+Nếu lỗi tra cứu dịch vụ tạm thời ngăn kiểm tra thẻ thông tin xác thực, thẻ vẫn ở trạng thái chờ. Hãy thử lại chính thẻ đó khi dịch vụ phục hồi; một lượt giữ thẻ chưa được thử không tiêu tốn lượt thử. Đích không tồn tại hoặc không khớp chính sách hay loại vẫn làm thẻ mất hiệu lực. Chỉ riêng lỗi tạm thời không đòi hỏi đổi quyền hay tạo yêu cầu mới.
 
 Sau khi thiết lập xong, Tổng quan trở thành bảng điều khiển cho biết workspace đang vận hành ra sao: yêu cầu, token, chi phí, độ trễ và lỗi trong khoảng thời gian bạn chọn, kèm **So sánh** với kỳ trước và **Xuất tóm tắt**. Bên dưới là **Bảng xếp hạng** agent và kênh hàng đầu, cùng các khung **Phê duyệt đang chờ**, **Trace thất bại gần đây** và **Tình trạng runtime**. Ngày được tính theo ngày lịch UTC, giống trang Mức sử dụng.
 

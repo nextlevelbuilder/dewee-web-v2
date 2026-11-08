@@ -3,7 +3,7 @@ title: API overview
 description: "The runtime's REST API, WebSocket RPC, OpenAI-compatible chat, public MCP server and webhooks: what each is for, where the reference lives, how errors look."
 section: api
 order: 1
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 The runtime's API covers what agents do and how they are configured: agents, sessions, providers, channels, tools, memory and more, so that work can be automated as well as clicked. Console-only matters such as members, billing and support stay in the console. The gateway serves all of it on one port: a REST API under `/v1`, a WebSocket for live sessions, and a few endpoints built for other tools to call. This page maps them out; [Authentication](/docs/api/authentication) explains the keys, and [Webhooks and MCP](/docs/api/webhooks-and-mcp) covers the two integration endpoints.
@@ -64,6 +64,12 @@ The reply tells you your role and tenant. Sending `connect` again on the same so
 - On the WebSocket, failed requests return `ok: false` with an error `code`, `message`, and a `retryable` hint.
 - Chat is rate-limited per user or IP, 20 requests per minute by default; over the limit you get `429` with `Retry-After`.
 - HTTP bodies are limited to 1 MB and WebSocket frames to 512 KB.
+
+### Channel group writers and batch selections
+
+The channel instance writer API lists groups at `GET /v1/channels/instances/{id}/writers/groups`, lists writers at `GET /v1/channels/instances/{id}/writers`, and tests a user at `POST /v1/channels/instances/{id}/writers/test`. Add with `POST /v1/channels/instances/{id}/writers` and remove with `DELETE /v1/channels/instances/{id}/writers/{userId}`; writes require an admin. Successful writes return `status`, `group_id` and `user_id`. Removing a missing writer returns 404; removing the last writer returns 409. Consult the running gateway's OpenAPI reference for request fields.
+
+`POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` and `POST /v1/vault/links/batch` accept at most 500 IDs per request, counting duplicate entries. Larger arrays receive a localized HTTP 400 validation error rather than partial processing. Split larger selections and track each result.
 
 ## Route groups
 

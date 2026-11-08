@@ -3,7 +3,7 @@ title: Agent teams and delegation
 description: How dewee agents hand work to each other, from cloning themselves to delegating over links to running a team with a lead, members and a shared task board.
 section: concepts
 order: 8
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 One agent does not have to do everything. A dewee agent can clone itself for side work, delegate a task to another agent it is linked to, or lead a team that shares a task board. Which of these an agent can do depends on how it is set up, not on a switch in its prompt.
@@ -28,6 +28,10 @@ dewee works out the mode from the agent's setup, checking team first, then deleg
 | Spawn depth | 1, so a sub-agent cannot spawn again |
 | Children per agent | 5 |
 | Finished sub-agents archived after | 60 minutes |
+
+These limits apply to synchronous and asynchronous spawns and native tasks. The concurrent limit counts running subagents across the tenant. The children limit counts a parent agent's running tasks plus completed asynchronous spawns and native tasks until archived; a synchronous spawn stops counting when it returns. If a limit is reached, wait for work to finish or be archived. An operator can adjust `maxChildrenPerAgent` or `archiveAfterMinutes`; Lite ceilings still apply. Cancelling a running synchronous spawn stops it and records the cancellation.
+
+Depth starts at 0 for the root and increases by one for each spawned child. For example, a maximum depth of 2 permits two child levels and refuses a third. The same rule applies to both spawn modes and native workers. Steering preserves task depth, and delegation preserves caller depth. If the limit is reached, run the work at an allowed level or ask an operator to review the configured limit.
 
 ## Delegation over agent links
 

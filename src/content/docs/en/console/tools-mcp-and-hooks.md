@@ -4,7 +4,7 @@ description: Turn built-in tools on or off for the workspace, connect MCP server
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tools are how agents act: search the web, read files, call an API. dewee starts from default-deny, so an agent can only use a tool once you allow it. This page covers the three areas that decide what agents can call and what runs around those calls, plus the **Runtime packages** and **Voice** areas.
@@ -23,6 +23,8 @@ The workspace owner and the built-in Admin role hold all of them. Speech-to-text
 ## Built-in tools
 
 **Built-in Tools** lists the tools that ship with the runtime, grouped in collapsible categories. Search by name or category. Each row shows the tool's risk (**High risk**, **Medium risk** or **Low risk**), whether its setting is the **Default** or an **Override** for this workspace, and a switch to enable it. Agents can only call tools that are enabled here.
+
+In the gateway dashboard, Browser also has a **Settings** action when its defaults are empty or only a workspace override exists. Use its existing settings form and permissions to configure [Connected browser](/docs/integrations/chrome-extension#ask-dewee-and-connected-browser).
 
 ::shot{id="tools"}
 

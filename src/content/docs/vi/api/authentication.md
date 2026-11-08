@@ -3,7 +3,7 @@ title: Xác thực
 description: "Cách xác thực với API của dewee: tạo API key, chọn scope phù hợp, gửi key qua HTTP và WebSocket, và xử lý khi key hết hạn, bị thu hồi hoặc tenant thay đổi."
 section: api
 order: 2
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 Mọi lời gọi tới runtime, trừ các endpoint kiểm tra sức khoẻ, đều mang theo credential. Với script, tích hợp và CLI, credential đó là **API key**: gắn với một tenant, bị giới hạn bởi scope, và thu hồi được bất cứ lúc nào. Trang này giải thích cách tạo và cách gửi key.
@@ -15,6 +15,8 @@ Mọi lời gọi tới runtime, trừ các endpoint kiểm tra sức khoẻ, đ
 | API key | Script, tích hợp, CI, CLI, client MCP | Có scope, gắn với tenant, có thể hết hạn. Đây là loại nên dùng |
 | Gateway token | Người vận hành runtime On-Premises | Toàn quyền admin trên gateway. Giữ trên máy chủ, đừng giao cho tích hợp |
 | Secret của webhook | Hệ thống gọi vào webhook | Chỉ có hiệu lực với webhook đó. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp) |
+
+Gateway lắng nghe trên địa chỉ loopback mà không có gateway token sẽ không đòi credential nào, để phục vụ việc phát triển trên máy cá nhân. Khi gateway nằm sau reverse proxy trên cùng máy, hãy đặt `GOCLAW_REQUIRE_AUTH=1` để mọi bên gọi đều phải xác thực; xem [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sau-reverse-proxy-trên-cùng-máy).
 
 ## Tạo API key
 
@@ -67,6 +69,8 @@ Chữ `GoClaw` trong tên header là tên gốc của runtime; hãy dùng đúng
 
 `X-GoClaw-User-Id` chỉ cho biết request làm việc trên dữ liệu của ai. Header này không bao giờ thay đổi việc key được phép làm: với key không gắn owner, ghi tên owner của workspace hay một admin cũng không cho request vai trò của họ. Key giữ vai trò mà các scope của nó cho phép, trong chính tenant của nó. Để thao tác với vai trò của owner hay admin, hãy dùng key gắn với đúng người đó.
 
+Khi quản trị tenant, API key gắn owner và phiên khách hàng dùng owner đã được ràng buộc; phiên khách hàng còn cần scope riêng của endpoint. Header người dùng do bên gọi cung cấp không cấp quyền quản trị tenant cho key không có owner. Quyền quản trị bằng gateway token và phạm vi toàn cục hoặc tenant là những bước kiểm tra riêng.
+
 ## Kiểm tra key
 
 `GET /v1/auth/token/status` cho biết key hoặc token có hợp lệ không, là cách nhanh để thử một tích hợp mới. Từ terminal, bất kỳ lệnh đọc nào cũng làm được việc tương tự:
@@ -84,6 +88,10 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 > [!TIP]
 > Cấp cho mỗi tích hợp một key riêng, với scope hẹp nhất đủ dùng và có thời hạn. Khi có sự cố, bạn thu hồi một key mà không làm hỏng các key khác.
 
+## Thử nghiệm danh tính và liên kết Connect
+
+Khi chế độ thử danh tính được bật trên bản development, hãy dùng người dùng thử mô phỏng cho cả trao đổi session lẫn xác minh Connect handoff hoặc OIDC. Chế độ thử từ chối danh tính thật; để thử với người thật, dùng ứng dụng đã tắt chế độ thử. Nếu liên kết Connect hết hạn, hãy bắt đầu lại quy trình kết nối. Thời điểm dọn dẹp không thay đổi cách khôi phục này.
+
 ## Lỗi thường gặp
 
 | Mã | Ý nghĩa |
@@ -91,4 +99,4 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 | `401` | Thiếu credential, credential không tồn tại, đã hết hạn hoặc bị thu hồi |
 | `403` | Key hợp lệ nhưng scope không cho phép thao tác, ví dụ ghi bằng key Read |
 | `409` | Trong console, workspace chưa khởi tạo xong nên chưa tạo được key |
-| `429` | Quá nhiều request; chờ theo thời gian trong `Retry-After` |
+| `429` | Quá nhiều request; chờ theo thời gian trong `Retry-After`. Ở các endpoint MCP, mã lỗi bắt đầu bằng `tenant_` nghĩa là cả workspace đã vượt ngân sách, không riêng key của bạn; xem [Giới hạn, hạn mức và thu hồi key](/docs/api/webhooks-and-mcp#giới-hạn-hạn-mức-và-thu-hồi-key) |
