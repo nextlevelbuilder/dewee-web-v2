@@ -57,7 +57,7 @@ Mở một kênh để xem mọi tab của nó. **Người quản lý**, **Ngữ
 
 Chọn **Lưu thay đổi** để lưu kênh. Tắt **Bật** sẽ giữ nguyên cấu hình nhưng kênh ngừng xử lý tin nhắn. **Xoá kênh** thì không hoàn tác được.
 
-Với quyền writer trong nhóm Telegram, người quản lý có thẩm quyền có thể cấp quyền qua tab **Người quản lý**. Khi thêm writer, hệ thống kiểm tra quyền hiện tại, kể cả ngay sau khi nhóm được nâng cấp; tin nhắn ẩn danh hoặc gửi dưới danh nghĩa kênh không thể cấp quyền, và các lượt từ chối tường minh vẫn có hiệu lực. Nếu bị từ chối, hãy nhờ người quản lý có quyền kiểm tra. Lỗi lưu trữ không xác nhận cấp quyền thành công: hãy kiểm tra kết quả trước khi thử lại.
+Để thêm writer trong nhóm Telegram, hãy trả lời tin nhắn của người đó trong nhóm bằng `/addwriter`. Một writer hiện có của nhóm có thể thêm người khác; quyền đầu tiên chỉ được khởi tạo khi nhóm chưa có quy tắc writer nào. Người quản lý có thẩm quyền cũng có thể cấp quyền qua tab **Người quản lý**. Khi thêm writer, hệ thống kiểm tra quyền hiện tại, kể cả ngay sau khi nhóm được nâng cấp; tin nhắn ẩn danh hoặc gửi dưới danh nghĩa kênh không thể cấp quyền, và các lượt từ chối tường minh vẫn có hiệu lực. Nếu bị từ chối, hãy nhờ người quản lý có quyền kiểm tra. Lỗi lưu trữ không xác nhận cấp quyền thành công: hãy kiểm tra kết quả trước khi thử lại.
 
 > [!WARNING]
 > Zalo Personal dùng giao thức không chính thức, nên tài khoản Zalo đăng nhập vào đó có thể bị khoá hoặc cấm. Hãy ưu tiên Zalo OA hoặc Zalo Bot khi có thể.

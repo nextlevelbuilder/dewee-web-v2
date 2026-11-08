@@ -57,7 +57,7 @@ Open a channel to see all its tabs. **Managers**, **Contexts** and **Passive Mem
 
 Select **Save changes** to save a channel. Turning **Enabled** off keeps its setup but stops it processing messages. **Delete channel** cannot be undone.
 
-For Telegram group writer access, an authorized manager can grant access from **Managers**. Adding a writer checks current permissions, including after a group upgrade; anonymous or channel-authored messages cannot grant access, and an existing explicit denial remains in force. If a grant is refused, ask an authorized manager to review it. A storage error does not confirm a successful grant: check the result before trying again.
+For Telegram group writer access, reply to the person's message in the group with `/addwriter`. An existing writer in that group can add another; the first grant can be bootstrapped only when the group has no writer rules. An authorized manager can also grant access from **Managers**. Adding a writer checks current permissions, including after a group upgrade; anonymous or channel-authored messages cannot grant access, and an existing explicit denial remains in force. If a grant is refused, ask an authorized manager to review it. A storage error does not confirm a successful grant: check the result before trying again.
 
 Operators can also list and test group writers or add and remove them through [the channel writers CLI](/docs/runtime/cli#channel-group-writers). The same operations are available through the [channel writer API](/docs/api/overview#channel-group-writers-and-batch-selections) and, with per-call approval, [workspace MCP](/docs/api/workspace-mcp#what-the-client-can-see).
 
