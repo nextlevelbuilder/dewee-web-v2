@@ -108,11 +108,11 @@ Gateway coi ngữ cảnh là dữ liệu bên ngoài không đáng tin cậy ch�
 
 ## Yêu cầu thông tin xác thực trong chat website
 
-Khi gateway và widget hỗ trợ, agent có thể dùng một thẻ trong cuộc trò chuyện trên website để yêu cầu thông tin xác thực từ thành viên workspace đã đăng nhập. Tính năng này mặc định tắt: người vận hành self-hosted phải bật trên gateway và agent phải được bật quyền yêu cầu thông tin xác thực. Chỉ khách có danh tính chat được xác minh là thành viên workspace mới thao tác được trên thẻ; khách ẩn danh không được cấp quyền quản trị thông tin xác thực.
+Khi gateway và widget hỗ trợ, agent có thể dùng một thẻ trong cuộc trò chuyện trên website để yêu cầu thông tin xác thực từ khách có danh tính chat đã được xác minh. Tính năng này mặc định tắt: người vận hành self-hosted phải bật trên gateway, agent phải được bật quyền yêu cầu thông tin xác thực và widget phải hỗ trợ tính năng này. Khách ẩn danh không dùng được thẻ; danh tính chat đã xác minh cũng không cấp quyền quản trị thông tin xác thực.
 
-Thẻ không bao giờ hiển thị secret. Chọn **Mở biểu mẫu bảo mật** để mở biểu mẫu do chính Dewee cung cấp ở tab mới và nhập secret tại đó, không nhập vào chat. Yêu cầu hết hạn sau một giờ và có thể hủy ngay trên thẻ. Sau khi lưu thông tin xác thực, cuộc trò chuyện ban đầu tiếp tục một lần từ chỗ đã dừng. Tải lại trang sẽ khôi phục trạng thái hiện tại: đang chờ, hoàn tất, hết hạn hoặc đã hủy. Việc mở biểu mẫu bảo mật được giới hạn theo từng khách.
+Thẻ không bao giờ hiển thị secret. Chọn **Mở biểu mẫu bảo mật** để mở biểu mẫu do chính Dewee cung cấp ở tab mới. Quản trị viên workspace có quyền phê duyệt phải đăng nhập và nhập secret tại đó, không nhập vào chat. Yêu cầu hết hạn sau một giờ và có thể hủy ngay trên thẻ. Sau khi lưu thông tin xác thực, cuộc trò chuyện ban đầu tiếp tục một lần từ chỗ đã dừng. Tải lại trang sẽ khôi phục trạng thái hiện tại: đang chờ, hoàn tất, hết hạn hoặc đã hủy. Việc mở biểu mẫu bảo mật được giới hạn theo từng khách.
 
-Chat website dùng luồng riêng chỉ dành cho thành viên. Với liên kết nhập thông tin xác thực được gửi qua kênh nhắn tin, xem [Secret, vai trò và audit](/vi/docs/security/secrets-roles-and-audit).
+Chat website dùng luồng riêng với danh tính đã xác minh. Với liên kết nhập thông tin xác thực được gửi qua kênh nhắn tin, xem [Secret, vai trò và audit](/vi/docs/security/secrets-roles-and-audit).
 
 ## Bảo mật
 
