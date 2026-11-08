@@ -66,7 +66,7 @@ const { locale } = Astro.props;
         try { localStorage.setItem(KEY, choice); } catch { /* still hide for this page */ }
         if (choice === "all") {
           const w = window as unknown as { gtag?: (...args: unknown[]) => void };
-          w.gtag?.("consent", "update", { analytics_storage: "granted", ad_storage: "granted", ad_user_data: "granted", ad_personalization: "granted" });
+          w.gtag?.("consent", "update", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
           window.dispatchEvent(new Event("dewee:analytics-consent"));
         }
         removeEventListener("scroll", onScroll);
