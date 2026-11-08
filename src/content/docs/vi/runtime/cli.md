@@ -172,4 +172,4 @@ Phần lớn các lệnh này chạy trên máy chủ gateway và làm việc tr
 
 Cách dùng an toàn được hướng dẫn trong [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sao-lưu-và-khôi-phục).
 
-Nếu `tenant-transfer` bị gián đoạn, hãy kiểm tra trạng thái trước khi thử lại: yêu cầu dùng cùng key báo lỗi đã phục hồi nếu lần chuyển dừng trước khi lấy được runtime lease. Xem [Chuyển giữa các tenant](/docs/concepts/multi-tenancy).
+Nếu `tenant-transfer` bị gián đoạn và bạn có operation ID, hãy kiểm tra `dewee tenant-transfer status <operation-id> --json` trước khi thử lại. Yêu cầu dùng cùng `--idempotency-key` báo lỗi đã phục hồi nếu lần chuyển dừng trước khi lấy được runtime lease; sau khi xem kết quả, hãy tạo thao tác mới nếu cần. Xem [Chuyển giữa các tenant](/vi/docs/concepts/multi-tenancy).

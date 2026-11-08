@@ -172,4 +172,4 @@ Most of these commands run on the gateway host and work on the database and data
 
 How to use them safely is covered in [Install and run the gateway](/docs/runtime/install-and-run#backups-and-restores).
 
-For an interrupted `tenant-transfer`, check status before retrying: a same-key retry reports the recovered failure if the transfer stopped before acquiring its runtime lease. See [Transfer between tenants](/docs/concepts/multi-tenancy#transfer-between-tenants).
+For an interrupted `tenant-transfer`, check `dewee tenant-transfer status <operation-id> --json` before retrying if you have the operation ID. A retry with the same `--idempotency-key` reports the recovered failure if the transfer stopped before acquiring its runtime lease; after inspecting the outcome, start a new operation if needed. See [Transfer between tenants](/docs/concepts/multi-tenancy#transfer-between-tenants).
