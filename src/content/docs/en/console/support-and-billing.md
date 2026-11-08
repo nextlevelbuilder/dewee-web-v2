@@ -73,7 +73,7 @@ The page has these cards:
 
 ### Claim complimentary access
 
-If you received a gift by email, sign in at [the claim page](https://app.dewee.sh/claim) with the verified address it was sent to. Under **Gifts waiting for you**, choose **Apply** and select an owned workspace if asked. If the gift is missing, check that the account email is verified and matches the recipient address, and that the claim window has not expired.
+Where claiming by verified email is available, sign in at [the claim page](https://app.dewee.sh/claim) with the verified address the gift was sent to. Under **Gifts waiting for you**, choose **Apply** and select an owned workspace if asked. If the gift is missing, check that the account email is verified and matches the recipient address, and that the claim window has not expired. If this option is not available yet, use the claim link or code supplied by the sender.
 
 You can also open a claim link or enter a code on the claim page, or use the workspace Billing card. Opening a link does not redeem it: select **Apply** to confirm. During sign-in or workspace setup the code is held for 30 minutes, including when a magic link opens in another tab. Sign-out clears it; a plain claim page does not reuse a previous account's held code. After the handoff expires, reopen the link or paste the code again. Self-install recipients claim on the hosted page, then follow the normal activation steps.
 
