@@ -54,7 +54,7 @@ it("consumes consent and codes once and revokes tokens across eviction", async (
     const cookie = consent.headers.filter(([name]) => name.toLowerCase() === "set-cookie").map(([, value]) => value.split(";")[0]).join("; ");
     expect(cookie).not.toBe("");
     const email = "hi@nextlevelbuilder.io";
-    const finish = () => authority.finish(new Request(url, { method: "POST", headers: { cookie, origin: url.origin } }), { email, handle: consent.view.handle, decision: "approve", scopes: ["pages:read"] });
+    const finish = () => authority.finish(new Request(url, { method: "POST", headers: { cookie, origin: url.origin, "content-length": "120", "content-type": "application/x-www-form-urlencoded" } }), { email, handle: consent.view.handle, decision: "approve", scopes: ["pages:read"] });
     const approvals = await Promise.all([finish(), finish()]);
     expect(approvals.filter((outcome) => outcome.kind === "redirect")).toHaveLength(1);
     const approved = approvals.find((outcome) => outcome.kind === "redirect")!;
