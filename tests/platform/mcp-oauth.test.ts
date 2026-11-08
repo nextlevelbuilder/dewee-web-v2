@@ -236,6 +236,17 @@ describe("consent", () => {
     expect(Object.keys(d)).not.toContain("admin:all");
   });
 
+  it("offers ChatGPT only its requested read scopes by default", async () => {
+    const { begun } = await signIn({
+      scopesTicked: ["pages:read", "posts:read", "docs:read"],
+      scope: "pages:read posts:read docs:read",
+    });
+    if (begun.kind !== "consent") throw new Error("expected consent");
+    expect(begun.view.scopes.filter((entry) => entry.checked).map((entry) => entry.scope))
+      .toEqual(["pages:read", "posts:read", "docs:read"]);
+    expect(begun.view.scopes.filter((entry) => !entry.requested).every((entry) => !entry.checked)).toBe(true);
+  });
+
   it("shows the verified client domain and the redirect host", async () => {
     const { begun } = await signIn({ scopesTicked: ["pages:read"] });
     expect(begun.kind).toBe("consent");
