@@ -146,7 +146,7 @@ The following tools require a gateway and control plane that include the connect
 | `browser_devices_revoke` | Revoke your browser, its grants and live connection |
 | `browser_grants_revoke` | Revoke one grant and cancel commands running under it |
 
-Rename is a configuration operation; the two revocations are destructive operations. The first revoke call opens a human approval; another workspace owner or admin must approve it, then the caller repeats the same request with `approval_id`. If there is no second owner or admin, revoke in the extension or with `dewee browser devices revoke` or `dewee browser grants revoke` instead. Expired or already-revoked grants and revoked browsers return `NOT_FOUND` on the MCP revoke precheck; the CLI treats those inactive records as already revoked. Enrollment, connection and grant creation remain in the extension.
+Rename is a configuration operation; the two revocations are destructive operations. The first revoke call opens a hosted confirmation for you, the requesting member. After confirming, repeat the same request with `approval_id`; a second owner or admin is not required for these two operations. Revoking your own inactive browser or grant is idempotent. An unknown or another person's ID still returns `NOT_FOUND` after confirmation. Enrollment, connection and grant creation remain in the extension.
 
 ## Change a schedule
 

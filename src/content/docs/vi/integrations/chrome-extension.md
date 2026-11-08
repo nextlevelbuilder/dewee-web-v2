@@ -128,7 +128,7 @@ Cả hai tính năng đều tắt cho tới khi bạn bật, và chỉ lúc đó
 
 Trong danh sách tool tích hợp của dashboard gateway, quản trị viên có thể mở **Settings** của Browser và cấu hình trình duyệt kết nối bằng biểu mẫu hiện có, kể cả khi mặc định trống hoặc chỉ có ghi đè của workspace. Quyền cần để lưu thiết lập không thay đổi.
 
-Khi các tool Workspace MCP cho trình duyệt kết nối đã khả dụng, bạn cũng có thể [xem trình duyệt, quyền đã cấp hoặc thu hồi chúng](/vi/docs/api/workspace-mcp). Thu hồi qua MCP cần một owner hoặc admin khác của workspace phê duyệt; bạn vẫn có thể dùng extension hoặc CLI `dewee browser`.
+Khi các tool Workspace MCP cho trình duyệt kết nối đã khả dụng, bạn cũng có thể [xem trình duyệt, quyền đã cấp hoặc thu hồi chúng](/vi/docs/api/workspace-mcp). Thu hồi qua MCP cần chính bạn xác nhận trên trang do Dewee cung cấp; bạn vẫn có thể dùng extension hoặc CLI `dewee browser`.
 
 ## Xử lý sự cố
 

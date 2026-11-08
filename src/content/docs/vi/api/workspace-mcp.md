@@ -146,7 +146,7 @@ Các tool sau cần gateway và control plane có bản cập nhật MCP cho tr�
 | `browser_devices_revoke` | Thu hồi trình duyệt, các quyền của nó và kết nối đang mở |
 | `browser_grants_revoke` | Thu hồi một quyền và hủy các lệnh đang chạy theo quyền đó |
 
-Đổi tên là thao tác cấu hình; hai thao tác thu hồi là thao tác phá hủy. Lần gọi thu hồi đầu tiên mở yêu cầu phê duyệt; một owner hoặc admin khác phải duyệt, sau đó người gọi lặp lại cùng yêu cầu với `approval_id`. Nếu không có owner hoặc admin thứ hai, hãy thu hồi trong extension hoặc dùng `dewee browser devices revoke` hay `dewee browser grants revoke`. Khi kiểm tra trước thu hồi qua MCP, quyền đã hết hạn hoặc đã thu hồi và trình duyệt đã thu hồi trả `NOT_FOUND`; CLI coi các bản ghi không còn hiệu lực đó là đã thu hồi. Việc đăng ký, kết nối và tạo quyền vẫn thực hiện trong extension.
+Đổi tên là thao tác cấu hình; hai thao tác thu hồi là thao tác phá hủy. Lần gọi thu hồi đầu tiên mở xác nhận do Dewee cung cấp cho chính bạn, người gửi yêu cầu. Sau khi xác nhận, gọi lại cùng yêu cầu với `approval_id`; hai thao tác này không cần owner hoặc admin thứ hai. Thu hồi lại trình duyệt hoặc quyền của chính bạn đã hết hiệu lực là thao tác lặp an toàn. ID không tồn tại hoặc thuộc người khác vẫn trả `NOT_FOUND` sau khi xác nhận. Việc đăng ký, kết nối và tạo quyền vẫn thực hiện trong extension.
 
 ## Thay đổi một lịch chạy
 
