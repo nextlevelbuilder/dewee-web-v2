@@ -110,11 +110,31 @@ The gateway treats the attachment as untrusted external data for the current run
 
 Where the gateway and widget support it, an agent can ask a signed-in workspace member for a credential with a card in the website conversation. This capability is off by default. It requires the gateway to verify both the visitor's chat identity and current workspace membership on the server; a verified chat identity alone is not enough. Keep it disabled on gateway versions that do not enforce this membership check. Anonymous visitors cannot use the card, and membership does not grant credential administration.
 
-On a supporting self-hosted gateway, set `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` and configure `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Enable `credential_requests` for the agent, and use a widget that advertises credential-request support. Check the deployed gateway and widget versions before enabling it.
+On a supporting self-hosted gateway, set `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` and configure `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Enable `credential_requests` for the agent, and use a widget that advertises credential-request support. To allow members to link their website chat identity, also enable identity exchange and `GOCLAW_WEBCHAT_MEMBER_LINK_PROOF_ENABLED=true`. Check the deployed gateway and widget versions before enabling these settings.
+
+In **My linked accounts** in the workspace, start linking and copy the one-time code. In the signed-in website chat, choose **Link workspace account**, enter the code in the separate form, then return to the workspace to review and confirm the account. Do not put the code in a chat message or shared page content.
 
 The card never displays the secret. Select **Open secure form** to open a first-party hosted form in a new tab. A signed-in workspace approval admin must enter the secret there, not in chat. The request expires after one hour and can be cancelled from the card. Once the credential is saved, the original conversation continues once from where it stopped. Reloading the page restores the current pending, completed, expired or cancelled state. Opening the secure form is rate limited per visitor.
 
 Website chat uses its own member-only flow. For credential links delivered through a messaging channel, see [Secrets, roles and audit](/docs/security/secrets-roles-and-audit).
+
+## Public images on Cloudflare Workers
+
+Where the deployed webchat package supports public image service bindings, a Worker can load images from an approved directory on a sibling hostname in the same Cloudflare zone. Configure both the image source and the service binding in the server handler, and allow the external origin in the widget:
+
+```ts
+createDeweeHandler({
+  // Other backend options, including the integration credentials
+  imageSources: ["https://images.example.com/products/"],
+  cloudflarePublicImageServices: [
+    { id: "catalog-v1", binding: env.PUBLIC_IMAGES, prefixes: ["https://images.example.com/products/"] },
+  ],
+});
+```
+
+Configure `PUBLIC_IMAGES` as a Worker service binding and include `https://images.example.com` in the widget's `imageOrigins`. Both source and service prefixes must allow the image. Service IDs must be unique and prefixes must not overlap; change the ID whenever a binding points to a different service, so existing tickets cannot reach it.
+
+The binding calls the target Worker directly and bypasses the source hostname's Cloudflare security rules. Every configured directory must be public to all chat visitors; do not bind private services or paths. The target receives a GET for the approved path without the original query, cookies or authorization headers. Invalid responses fail closed without a network fallback. See the [package image configuration](https://github.com/nextlevelbuilder/dewee-webchat#markdown-images) for the full requirements.
 
 ## Security
 
