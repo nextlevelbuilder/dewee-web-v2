@@ -50,4 +50,27 @@ describe("PostHog consent", () => {
     expect(posthog.init).toHaveBeenCalledOnce();
     expect(posthog.opt_in_capturing).toHaveBeenCalledOnce();
   });
+
+  it("does not load the real SDK stub until acceptance on a fresh page", () => {
+    const listeners = new Map<string, (event: unknown) => void>();
+    const insert = vi.fn();
+    const context: any = {
+      config: { key: "test", props: {}, appHost: "app.example.test", variantKey: "h1Variant" },
+      location: { origin: "https://example.test", href: "https://example.test/" },
+      localStorage: { getItem: () => null },
+      addEventListener: (name: string, fn: (event: unknown) => void) => listeners.set(name, fn),
+      document: {
+        createElement: () => ({}), getElementsByTagName: () => [{ parentNode: { insertBefore: insert } }],
+        addEventListener: vi.fn(), documentElement: { dataset: {} },
+      },
+      setTimeout, URL, Element: class {},
+    };
+    context.window = context;
+    runInNewContext(script!, context);
+    expect(context.posthog).toBeUndefined();
+    expect(insert).not.toHaveBeenCalled();
+    listeners.get("dewee:analytics-consent")!({});
+    expect(insert).toHaveBeenCalledOnce();
+    expect(context.posthog._i).toHaveLength(1);
+  });
 });
