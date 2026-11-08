@@ -95,6 +95,17 @@ Tuỳ chọn là thuộc tính kebab-case trên `<dewee-chat>`, thuộc tính `d
 
 Từ script của bạn, có thể gọi `open()`, `close()`, `toggle()`, `send(text)`, `stop()`, `newConversation()`, và lắng nghe các sự kiện `dewee:ready`, `dewee:open`, `dewee:close`, `dewee:send`, `dewee:reply`, `dewee:error`.
 
+## Ngữ cảnh trang cho một tin nhắn
+
+Với tích hợp có thu thập trang hiện tại, gateway có hợp đồng ngữ cảnh trang theo phiên bản. Tính năng phụ thuộc vào gateway và website-chat ingress đã triển khai: hãy kiểm tra hỗ trợ trước khi gửi. Không mặc định rằng widget hoặc backend hiện có tự thu thập hay chuyển tiếp ngữ cảnh trang.
+
+- Với client WebSocket của Gateway, kiểm tra `page_context_versions` trong phản hồi `connect`. Nếu danh sách có `1`, gửi ngữ cảnh qua `pageContext` trong `chat.send`.
+- Với client tự xây cho website-chat ingress của customer control plane, kiểm tra `page_context.versions` trong `GET config`. Nếu danh sách có `1`, gửi ngữ cảnh qua `page_context` trong body của `POST chat`. Nếu danh sách thiếu hoặc không có `1`, gửi tin nhắn không kèm ngữ cảnh.
+
+Phiên bản 1 bắt buộc có `version` và `url` HTTP(S) tuyệt đối. Các trường tuỳ chọn gồm `title`, `description`, `captured_at`, `selection`, và `content` với `format` (`text` hoặc `markdown`), `text`, `truncated`. Toàn bộ JSON sau mã hoá tối đa 64 KiB; trường không được nhận diện sẽ bị từ chối. Host có thể gửi `source` và `trust_level`, nhưng runtime bỏ qua giá trị được gửi và tự gán. Gateway còn giới hạn từng trường, bỏ fragment của URL, che giá trị query có vẻ là bí mật và thông tin xác thực, đồng thời từ chối URL chứa userinfo.
+
+Gateway coi ngữ cảnh là dữ liệu bên ngoài không đáng tin cậy chỉ cho lượt chạy hiện tại, không phải chỉ dẫn. Nội dung trang không được lưu vào lịch sử chat, bản tóm tắt, memory, log hay nội dung trace, và không thay đổi tool hoặc quyền. Nếu ngữ cảnh bị từ chối, toàn bộ lần gửi thất bại với `page_context_invalid` hoặc `page_context_unsupported`; chỉ gửi lại không kèm ngữ cảnh nếu người dùng vẫn muốn gửi tin nhắn. Không nối nội dung trang vào tin nhắn để thay thế. CLI và MCP không có trang để đính kèm nên hợp đồng này không áp dụng.
+
 ## Bảo mật
 
 - **Gateway token ở yên trên server.** Trình duyệt chỉ giữ một visitor token được ký bằng HMAC.

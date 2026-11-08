@@ -95,6 +95,17 @@ Options are attributes on `<dewee-chat>` in kebab-case, `data-*` attributes on t
 
 From your own scripts you can call `open()`, `close()`, `toggle()`, `send(text)`, `stop()` and `newConversation()`, and listen for the `dewee:ready`, `dewee:open`, `dewee:close`, `dewee:send`, `dewee:reply` and `dewee:error` events.
 
+## Page context for a single message
+
+For integrations that capture the current page, the gateway has a versioned page-context contract. Availability depends on the deployed gateway and website-chat ingress: check support before attaching anything. Do not assume that an existing widget or backend captures or forwards page context automatically.
+
+- For a Gateway WebSocket client, inspect `page_context_versions` in the `connect` response. If it includes `1`, send the attachment as `pageContext` in `chat.send`.
+- For a custom client of the customer control plane website-chat ingress, inspect `page_context.versions` in `GET config`. If it includes `1`, send the attachment as `page_context` in the `POST chat` body. If the list is missing or does not include `1`, send the message without an attachment.
+
+Version 1 requires `version` and an absolute HTTP(S) `url`. It optionally accepts `title`, `description`, `captured_at`, `selection`, and `content` with `format` (`text` or `markdown`), `text`, and `truncated`. The encoded JSON envelope is limited to 64 KiB; unknown fields are rejected. A host can include `source` and `trust_level`, but the runtime ignores their supplied values and assigns its own. The gateway also enforces field limits and removes URL fragments, redacts secret-looking query values and credentials, and rejects URLs with userinfo.
+
+The gateway treats the attachment as untrusted external data for the current run, not as instructions. It does not store page text in chat history, summaries, memory, logs or trace text, and the attachment changes neither tools nor permissions. A refused attachment rejects the whole send with `page_context_invalid` or `page_context_unsupported`; retry without it only if the person still wants the message sent. Never append the page text to the person's message as a fallback. The CLI and MCP have no page to attach, so this contract does not apply to them.
+
 ## Security
 
 - **The gateway token stays on your server.** The browser only holds a visitor token signed with HMAC.
