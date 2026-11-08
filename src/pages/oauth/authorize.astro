@@ -52,7 +52,15 @@ if (!authority) {
     Astro.response.status = 401;
     errorText = OAUTH_UI.errors.expired;
   } else {
-    return Astro.redirect(`/admin/login?next=${encodeURIComponent(Astro.url.pathname + Astro.url.search)}`, 303);
+    return new Response(null, {
+      status: 303,
+      headers: {
+        location: `/admin/login?next=${encodeURIComponent(Astro.url.pathname + Astro.url.search)}`,
+        "cache-control": "no-store",
+        "referrer-policy": "no-referrer",
+        "x-robots-tag": "noindex, nofollow",
+      },
+    });
   }
 } else if (Astro.request.method === "POST") {
   const limited = !(await rateLimit(env.KV, `oauth-authorize-ip:${ip}`, 30, 600)).ok;
