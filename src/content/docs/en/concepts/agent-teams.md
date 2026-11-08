@@ -29,7 +29,7 @@ dewee works out the mode from the agent's setup, checking team first, then deleg
 | Children per agent | 5 |
 | Finished sub-agents archived after | 60 minutes |
 
-These limits apply to synchronous and asynchronous spawns and native tasks. The concurrent limit counts running subagents across the tenant. The children limit counts a parent agent's running tasks plus completed asynchronous spawns and native tasks until archived; a synchronous spawn stops counting when it returns. If a limit is reached, wait for work to finish or be archived. An operator can adjust `maxChildrenPerAgent` or `archiveAfterMinutes`; Lite ceilings still apply. Cancelling a running synchronous spawn stops it and records the cancellation.
+These limits apply to synchronous and asynchronous spawns and native tasks. The concurrent limit counts running subagents across the tenant. The children limit counts a parent agent's running tasks plus completed asynchronous spawns and native tasks until archived; a synchronous spawn stops counting when it returns. A refusal says `max concurrent subagents reached (n/N)` or `max children per agent reached (n/N)`. Wait for work to finish or be archived; an operator can adjust `maxChildrenPerAgent` (1–20) or `archiveAfterMinutes`, subject to Lite ceilings. Cancelling a running synchronous spawn stops it and records the cancellation.
 
 Depth starts at 0 for the root and increases by one for each spawned child. For example, a maximum depth of 2 permits two child levels and refuses a third. The same rule applies to both spawn modes and native workers. Steering preserves task depth, and delegation preserves caller depth. If the limit is reached, run the work at an allowed level or ask an operator to review the configured limit.
 

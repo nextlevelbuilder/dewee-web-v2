@@ -29,7 +29,7 @@ dewee xác định chế độ dựa trên thiết lập của agent, xét nhóm
 | Số sub-agent con mỗi agent | 5 |
 | Sub-agent đã xong được lưu trữ sau | 60 phút |
 
-Các giới hạn này áp dụng cho spawn đồng bộ, bất đồng bộ và task native. Giới hạn chạy đồng thời tính các sub-agent đang chạy trong tenant. Giới hạn số con tính task đang chạy của agent cha cùng các spawn bất đồng bộ và task native đã xong nhưng chưa được lưu trữ; spawn đồng bộ ngừng được tính khi trả kết quả. Khi chạm giới hạn, hãy đợi công việc hoàn tất hoặc được lưu trữ. Người vận hành có thể chỉnh `maxChildrenPerAgent` hoặc `archiveAfterMinutes`; trần của Lite vẫn được áp dụng. Huỷ một spawn đồng bộ đang chạy sẽ dừng nó và ghi nhận trạng thái đã huỷ.
+Các giới hạn này áp dụng cho spawn đồng bộ, bất đồng bộ và task native. Giới hạn chạy đồng thời tính các sub-agent đang chạy trong tenant. Giới hạn số con tính task đang chạy của agent cha cùng các spawn bất đồng bộ và task native đã xong nhưng chưa được lưu trữ; spawn đồng bộ ngừng được tính khi trả kết quả. Khi bị từ chối, thông báo là `max concurrent subagents reached (n/N)` hoặc `max children per agent reached (n/N)`. Hãy đợi công việc hoàn tất hoặc được lưu trữ; người vận hành có thể chỉnh `maxChildrenPerAgent` (1–20) hoặc `archiveAfterMinutes`, trong phạm vi trần của Lite. Huỷ một spawn đồng bộ đang chạy sẽ dừng nó và ghi nhận trạng thái đã huỷ.
 
 Độ sâu của agent gốc là 0 và tăng một sau mỗi lần spawn con. Ví dụ, giới hạn độ sâu 2 cho phép hai cấp con và từ chối cấp thứ ba. Quy tắc này áp dụng cho cả hai chế độ spawn và worker native. Steering giữ độ sâu của task, còn delegation giữ độ sâu của bên gọi. Khi chạm giới hạn, hãy thực hiện công việc ở cấp được phép hoặc nhờ người vận hành xem lại cấu hình.
 
