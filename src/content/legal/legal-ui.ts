@@ -6,16 +6,29 @@
 import type { Bi } from "~/i18n/config";
 import type { LegalSlug } from "./types";
 
-/** ISO date of the current revision of all five documents */
-export const LEGAL_UPDATED = "2026-11-03";
+/** Revision dates are per document, so editing one policy does not redate the others. */
+type LegalRevision = { iso: string; en: { date: string; notebook: string }; vi: { date: string; notebook: string } };
+const ORIGINAL_REVISION: LegalRevision = {
+  iso: "2026-11-01",
+  en: { date: "1 November 2026", notebook: "Sunday, 1 November 2026" },
+  vi: { date: "1 tháng 11 năm 2026", notebook: "Chủ Nhật, ngày 1 tháng 11 năm 2026" },
+};
+const ANALYTICS_REVISION: LegalRevision = {
+  iso: "2026-11-08",
+  en: { date: "8 November 2026", notebook: "Sunday, 8 November 2026" },
+  vi: { date: "8 tháng 11 năm 2026", notebook: "Chủ Nhật, ngày 8 tháng 11 năm 2026" },
+};
+export const LEGAL_REVISIONS: Record<LegalSlug, LegalRevision> = {
+  terms: ORIGINAL_REVISION,
+  policy: ORIGINAL_REVISION,
+  privacy: ANALYTICS_REVISION,
+  cookies: ANALYTICS_REVISION,
+  gdpr: ORIGINAL_REVISION,
+};
 export const LEGAL_EMAIL = "hi@nextlevelbuilder.io";
 export const LEGAL_ORDER: LegalSlug[] = ["terms", "policy", "privacy", "cookies", "gdpr"];
 
 export type LegalUi = {
-  /** The revision date, written out */
-  updatedDate: string;
-  /** The date as you would write it at the top of a notebook page (decorative) */
-  notebookDate: string;
   shortLabel: string;
   next: { eyebrow: string; title: string; lede: string; primary: string; secondary: string };
   docs: Record<LegalSlug, { title: string; meta: string; icon: string }>;
@@ -23,8 +36,6 @@ export type LegalUi = {
 
 export const LEGAL_UI: Bi<LegalUi> = {
   en: {
-    updatedDate: "3 November 2026",
-    notebookDate: "Tuesday, 3 November 2026",
     shortLabel: "The short version",
     next: {
       eyebrow: "Next step",
@@ -42,8 +53,6 @@ export const LEGAL_UI: Bi<LegalUi> = {
     },
   },
   vi: {
-    updatedDate: "3 tháng 11 năm 2026",
-    notebookDate: "Thứ Ba, ngày 3 tháng 11 năm 2026",
     shortLabel: "Nói ngắn gọn",
     next: {
       eyebrow: "Bước tiếp theo",

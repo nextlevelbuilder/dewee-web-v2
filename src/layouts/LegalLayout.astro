@@ -9,7 +9,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import { localePath, pick, type Bi, type Locale } from "~/i18n/config";
 import { t } from "~/i18n/ui";
 import type { LegalDoc, LegalSlug } from "~/content/legal/types";
-import { LEGAL_EMAIL, LEGAL_ORDER, LEGAL_UI, LEGAL_UPDATED } from "~/content/legal/legal-ui";
+import { LEGAL_EMAIL, LEGAL_ORDER, LEGAL_REVISIONS, LEGAL_UI } from "~/content/legal/legal-ui";
 import LegalHero from "~/components/blocks/legal/LegalHero.astro";
 import LegalToc from "~/components/blocks/legal/LegalToc.astro";
 import LegalSection from "~/components/blocks/legal/LegalSection.astro";
@@ -25,6 +25,7 @@ interface Props {
 const { locale, slug, doc: bi } = Astro.props;
 const doc = pick(bi, locale);
 const ui = pick(LEGAL_UI, locale);
+const revision = LEGAL_REVISIONS[slug];
 const path = `/${slug}`;
 const others = LEGAL_ORDER.filter((s) => s !== slug).map((s) => ({
   title: ui.docs[s].title,
@@ -40,16 +41,16 @@ const others = LEGAL_ORDER.filter((s) => s !== slug).map((s) => ({
   locale={locale}
   path={path}
   breadcrumbs={[{ name: doc.meta.crumb, path }]}
-  modified={LEGAL_UPDATED}
+  modified={revision.iso}
 >
   <LegalHero
     eyebrow={doc.hero.eyebrow}
     title={doc.hero.title}
     lede={doc.hero.lede}
     updatedLabel={t(locale, "edited")}
-    updatedText={ui.updatedDate}
-    updatedIso={LEGAL_UPDATED}
-    notebookDate={ui.notebookDate}
+    updatedText={revision[locale].date}
+    updatedIso={revision.iso}
+    notebookDate={revision[locale].notebook}
   />
 
   <div class="section legal">

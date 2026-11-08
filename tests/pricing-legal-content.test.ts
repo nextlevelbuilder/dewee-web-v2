@@ -7,10 +7,21 @@ import { GDPR } from "../src/content/legal/gdpr";
 import { POLICY } from "../src/content/legal/policy";
 import { PRIVACY } from "../src/content/legal/privacy";
 import { TERMS } from "../src/content/legal/terms";
+import { LEGAL_REVISIONS } from "../src/content/legal/legal-ui";
 
 const PAGES = { pricing: PRICING, install: INSTALL, terms: TERMS, policy: POLICY, privacy: PRIVACY, cookies: COOKIES, gdpr: GDPR };
 
 describe("pricing and legal content", () => {
+  it("dates only the revised privacy and cookie policies as updated", () => {
+    expect(LEGAL_REVISIONS.privacy.iso).toBe("2026-11-08");
+    expect(LEGAL_REVISIONS.cookies.iso).toBe("2026-11-08");
+    for (const slug of ["terms", "policy", "gdpr"] as const) {
+      expect(LEGAL_REVISIONS[slug].iso).toBe("2026-11-01");
+    }
+    expect(LEGAL_REVISIONS.privacy.en.notebook).toContain("Sunday, 8 November 2026");
+    expect(LEGAL_REVISIONS.privacy.vi.notebook).toContain("Chủ Nhật, ngày 8 tháng 11 năm 2026");
+  });
+
   it("offers Self-install and On-Premises to the Vietnamese market", () => {
     expect(plansFor("vi").map((p) => p.id)).toEqual(["self-hosted", "on-premises"]);
     expect(plansFor("en").map((p) => p.id)).toEqual(PLANS.map((p) => p.id));
