@@ -167,7 +167,7 @@ Phần lớn các lệnh này chạy trên máy chủ gateway và làm việc tr
 | `dewee migrate` | `up`, `down`, `version`, `force`, `goto` để khắc phục sự cố |
 | `dewee backup` | Sao lưu toàn bộ cơ sở dữ liệu và file |
 | `dewee restore` | Khôi phục bản sao lưu. `--dry-run` để xem trước, `--force` để áp dụng, `smoke` để thử trên cơ sở dữ liệu tạm |
-| `dewee tenant-backup`, `dewee tenant-restore` | Tương tự cho một tenant |
+| `dewee tenant-backup`, `dewee tenant-restore` | Tương tự cho một tenant; xem trước [giới hạn khôi phục dữ liệu riêng tư](/vi/docs/concepts/multi-tenancy) |
 | `dewee tenant-transfer` | Xem trước, sao chép hoặc di chuyển tài nguyên giữa các tenant. Đang beta; chỉ với PostgreSQL |
 
 Cách dùng an toàn được hướng dẫn trong [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sao-lưu-và-khôi-phục).

@@ -167,7 +167,7 @@ Most of these commands run on the gateway host and work on the database and data
 | `dewee migrate` | `up`, `down`, `version`, `force`, `goto` for recovery |
 | `dewee backup` | Full backup of the database and files |
 | `dewee restore` | Restores a backup. `--dry-run` to preview, `--force` to apply, `smoke` to test in a scratch database |
-| `dewee tenant-backup`, `dewee tenant-restore` | The same for a single tenant |
+| `dewee tenant-backup`, `dewee tenant-restore` | The same for a single tenant; check [private-data restore restrictions](/docs/concepts/multi-tenancy) first |
 | `dewee tenant-transfer` | Previews, copies or moves resources between tenants. In beta; PostgreSQL only |
 
 How to use them safely is covered in [Install and run the gateway](/docs/runtime/install-and-run#backups-and-restores).
