@@ -25,7 +25,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Legal · Privacy",
       title: "Your data, *explained*.",
-      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, analytics only with your consent, and we would rather collect too little than too much.",
+      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, analytics events are sent only with your consent, and we would rather collect too little than too much.",
     },
     sections: [
       {
@@ -52,7 +52,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Workspace content", "Prompts, files, agent settings and conversations, plus AI provider keys (stored encrypted)", "You and your team, inside dewee"],
                 ["Licence check-ins", "An activation ID, a runtime token and the time of each check-in; never the raw key and never your content", "Dedicated and On-Premises runtimes"],
                 ["Technical data", "IP address, browser type and request logs", "Your browser, via our hosting provider Cloudflare"],
-                ["App analytics", "Which setup milestones a new account reached, the sign-in method, the kind of first team action and a random anonymous ID", "The dewee app at app.dewee.sh, only after you choose “Allow analytics”"],
+                ["App analytics", "Which setup milestones a new account reached, the sign-in method, the kind of first team action and a random anonymous ID", "The dewee app at app.dewee.sh; events are sent to PostHog only after you choose “Allow analytics”"],
               ],
             },
           },
@@ -226,7 +226,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Pháp lý · Quyền riêng tư",
       title: "Dữ liệu của bạn, *nói rõ*.",
-      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, chỉ phân tích khi bạn đồng ý, và thà thu thập ít còn hơn thu thập thừa.",
+      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, chỉ gửi sự kiện phân tích khi bạn đồng ý, và thà thu thập ít còn hơn thu thập thừa.",
     },
     sections: [
       {
@@ -252,7 +252,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Thông tin khách hàng", "Email liên hệ, thành viên và vai trò, đơn hàng và chứng từ thanh toán", "Bạn cung cấp khi mua và sử dụng dewee"],
                 ["Kiểm tra license", "Mã kích hoạt, runtime token và thời điểm mỗi lần kiểm tra; không bao giờ có license key gốc hay nội dung của bạn", "Runtime On-Premises"],
                 ["Dữ liệu kỹ thuật", "Địa chỉ IP, loại trình duyệt và nhật ký truy cập", "Trình duyệt của bạn, qua nhà cung cấp hạ tầng Cloudflare"],
-                ["Phân tích trong ứng dụng", "Những mốc thiết lập mà tài khoản mới đã đạt, cách đăng nhập, loại thao tác nhóm đầu tiên và một mã ẩn danh ngẫu nhiên", "Ứng dụng dewee tại app.dewee.sh, chỉ sau khi bạn chọn “Cho phép phân tích”"],
+                ["Phân tích trong ứng dụng", "Những mốc thiết lập mà tài khoản mới đã đạt, cách đăng nhập, loại thao tác nhóm đầu tiên và một mã ẩn danh ngẫu nhiên", "Ứng dụng dewee tại app.dewee.sh; sự kiện chỉ được gửi tới PostHog sau khi bạn chọn “Cho phép phân tích”"],
               ],
             },
           },
