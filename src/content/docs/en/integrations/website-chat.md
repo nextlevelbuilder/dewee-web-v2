@@ -108,13 +108,13 @@ The gateway treats the attachment as untrusted external data for the current run
 
 ## Credential requests in website chat
 
-Where the gateway and widget support it, an agent can ask a visitor with a verified chat identity for a credential with a card in the website conversation. This capability is off by default: a self-hosted operator must enable it on the gateway, the agent must have credential requests enabled, and the widget must support the capability. Anonymous visitors cannot use the card, and a verified chat identity does not grant credential administration.
+Where the gateway and widget support it, an agent can ask a signed-in workspace member for a credential with a card in the website conversation. This capability is off by default. It requires the gateway to verify both the visitor's chat identity and current workspace membership on the server; a verified chat identity alone is not enough. Keep it disabled on gateway versions that do not enforce this membership check. Anonymous visitors cannot use the card, and membership does not grant credential administration.
 
 On a supporting self-hosted gateway, set `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` and configure `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Enable `credential_requests` for the agent, and use a widget that advertises credential-request support. Check the deployed gateway and widget versions before enabling it.
 
 The card never displays the secret. Select **Open secure form** to open a first-party hosted form in a new tab. A signed-in workspace approval admin must enter the secret there, not in chat. The request expires after one hour and can be cancelled from the card. Once the credential is saved, the original conversation continues once from where it stopped. Reloading the page restores the current pending, completed, expired or cancelled state. Opening the secure form is rate limited per visitor.
 
-Website chat uses its own verified-identity flow. For credential links delivered through a messaging channel, see [Secrets, roles and audit](/docs/security/secrets-roles-and-audit).
+Website chat uses its own member-only flow. For credential links delivered through a messaging channel, see [Secrets, roles and audit](/docs/security/secrets-roles-and-audit).
 
 ## Security
 
