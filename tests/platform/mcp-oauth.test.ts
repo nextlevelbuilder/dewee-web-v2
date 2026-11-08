@@ -252,6 +252,8 @@ describe("consent", () => {
     const out = await finishAuthorize(api, env.DB as D1Database, req, { email: ADMIN, handle: begun.view.handle, decision: "deny", scopes: [] });
     if (out.kind !== "redirect") throw new Error("expected redirect");
     expect(new URL(out.location).searchParams.get("error")).toBe("access_denied");
+    expect(new URL(out.location).searchParams.get("iss")).toBe(ORIGIN);
+    expect(new URL(out.location).searchParams.get("state")).toBe("st-123");
     const row = await (env.DB as D1Database).prepare("SELECT action, actor FROM audit_log ORDER BY id DESC LIMIT 1").first();
     expect(row).toEqual({ action: "oauth.deny", actor: ADMIN });
   });
