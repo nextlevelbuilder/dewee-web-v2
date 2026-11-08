@@ -121,6 +121,8 @@ Run `./dewee doctor` on the host to print the version, the config path and wheth
 
 `dewee upgrade` brings the database schema up to date and runs data migrations. It is safe to run more than once, and the Docker image runs it on every start. Check first with `dewee upgrade --status` or `dewee upgrade --dry-run`. The lower-level `dewee migrate` command (`up`, `down`, `version`, `force`, `goto`) exists for recovery work. A binary refuses to start on a database whose schema is newer than it supports, on PostgreSQL and on the Lite (SQLite) edition alike, and the error names both versions. To roll back, run the newer binary's `dewee migrate down` first on PostgreSQL; Lite has no down migrations, so restore the backup taken before the upgrade.
 
+For a self-hosted customer control plane, upgrade the gateway before enabling versioned workspace-membership synchronization in the customer app. During rollback, preserve synchronization revisions and removal history; do not use an older writer that ignores them. A removal remains pending until the runtime confirms it.
+
 ### Signed release metadata
 
 The hosted release catalog verifies signed release metadata against the currently trusted public keys. Unsigned or untrusted releases must not be offered for update, and removing a signing key withdraws catalog entries that can no longer be verified. During key rotation, deploy trust for the new public key before retiring the old one; keep the signing private key in the release secret store and follow the [release signing script](https://github.com/nextlevelbuilder/dewee/blob/dev/scripts/ci/release-manifest-signing.mjs) and deployed operator procedures. A self-install release notice does not grant remote control of the installation. Reviewed plan, apply and rollback controls have separate rollout gates; do not assume they are available until your operator confirms them.
@@ -136,3 +138,5 @@ Back up the database before upgrading. SQLite upgrades preserve the instant of l
 ```
 
 `dewee backup` saves the database and the data files in one archive, and `--upload-s3` sends it to S3. `dewee restore` changes nothing until you add `--force`. `restore smoke` restores into a scratch database, refuses to touch the live one, and with `--verify-secrets` checks that your encryption key can still decrypt the stored secrets. For one tenant at a time, use `dewee tenant-backup` and `dewee tenant-restore`. All maintenance commands are listed in the [CLI reference](/docs/runtime/cli).
+
+For tenant archives containing private resources, review the [restore restrictions and recovery warnings](/docs/concepts/multi-tenancy) before proceeding; preserved private resources remain quarantined after restore.

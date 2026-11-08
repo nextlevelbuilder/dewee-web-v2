@@ -169,3 +169,5 @@ Most of these commands run on the gateway host and work on the database and data
 | `dewee tenant-transfer` | Previews, copies or moves resources between tenants. In beta; PostgreSQL only |
 
 How to use them safely is covered in [Install and run the gateway](/docs/runtime/install-and-run#backups-and-restores).
+
+For an interrupted `tenant-transfer`, check status before retrying: a same-key retry reports the recovered failure if the transfer stopped before acquiring its runtime lease. See [Transfer between tenants](/docs/concepts/multi-tenancy#transfer-between-tenants).

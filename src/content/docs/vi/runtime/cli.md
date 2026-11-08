@@ -169,3 +169,5 @@ Phần lớn các lệnh này chạy trên máy chủ gateway và làm việc tr
 | `dewee tenant-transfer` | Xem trước, sao chép hoặc di chuyển tài nguyên giữa các tenant. Đang beta; chỉ với PostgreSQL |
 
 Cách dùng an toàn được hướng dẫn trong [Cài đặt và chạy gateway](/docs/runtime/install-and-run#sao-lưu-và-khôi-phục).
+
+Nếu `tenant-transfer` bị gián đoạn, hãy kiểm tra trạng thái trước khi thử lại: yêu cầu dùng cùng key báo lỗi đã phục hồi nếu lần chuyển dừng trước khi lấy được runtime lease. Xem [Chuyển giữa các tenant](/docs/concepts/multi-tenancy).

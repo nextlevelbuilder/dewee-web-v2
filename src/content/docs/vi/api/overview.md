@@ -65,6 +65,8 @@ Phản hồi cho biết vai trò và tenant của bạn. Gửi `connect` lần n
 - Chat bị giới hạn tần suất theo người dùng hoặc IP, mặc định 20 request mỗi phút; vượt ngưỡng sẽ nhận `429` kèm `Retry-After`.
 - Body HTTP giới hạn 1 MB và frame WebSocket giới hạn 512 KB.
 
+Nếu lượt chat đã dừng vẫn đang được lưu, `chat.send` có thể trả `FAILED_PRECONDITION` với `retryable: true` và `details.reason: "run_in_progress"`. Các endpoint HTTP chat completions và responses trả cùng lý do với HTTP 409 trước khi bắt đầu stream. Hãy giữ nội dung và thử lại trong cùng cuộc trò chuyện sau khi lượt trước hoàn tất. Kênh kết nối nhận thông báo thử lại nếu hết thời gian chờ; tin nhắn không được tự động gửi lại.
+
 ### Writer nhóm kênh và lựa chọn theo lô
 
 API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status`, `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.

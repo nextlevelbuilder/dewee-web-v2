@@ -121,6 +121,8 @@ Chạy `./dewee doctor` trên máy chủ để in ra phiên bản, đường d�
 
 `dewee upgrade` đưa schema cơ sở dữ liệu lên bản mới nhất và chạy các migration dữ liệu. Lệnh an toàn khi chạy nhiều lần, và image Docker tự chạy nó mỗi lần khởi động. Kiểm tra trước bằng `dewee upgrade --status` hoặc `dewee upgrade --dry-run`. Lệnh cấp thấp hơn `dewee migrate` (`up`, `down`, `version`, `force`, `goto`) dành cho việc khắc phục sự cố. Một binary sẽ từ chối khởi động khi schema cơ sở dữ liệu mới hơn phiên bản nó hỗ trợ, trên PostgreSQL cũng như bản Lite (SQLite), và thông báo lỗi nêu rõ cả hai phiên bản. Để quay về bản cũ trên PostgreSQL, chạy `dewee migrate down` bằng binary mới trước; bản Lite không có migration down, nên hãy khôi phục bản sao lưu tạo trước khi nâng cấp.
 
+Với customer control plane tự vận hành, hãy nâng cấp gateway trước khi bật đồng bộ thành viên workspace có phiên bản trong ứng dụng khách hàng. Khi rollback, giữ lại phiên bản đồng bộ và lịch sử gỡ quyền; không dùng thành phần ghi cũ bỏ qua các thông tin này. Việc gỡ quyền vẫn đang chờ cho đến khi runtime xác nhận.
+
 ### Metadata phát hành có chữ ký
 
 Danh mục phát hành được lưu trữ xác minh metadata có chữ ký theo các khóa công khai đang được tin cậy. Bản không ký hoặc không đáng tin cậy không được đề xuất để cập nhật; gỡ một khóa ký sẽ rút các mục danh mục không còn xác minh được. Khi xoay vòng khóa, triển khai sự tin cậy cho khóa công khai mới trước khi ngừng dùng khóa cũ; giữ khóa ký riêng trong kho secret phát hành và làm theo [script ký bản phát hành](https://github.com/nextlevelbuilder/dewee/blob/dev/scripts/ci/release-manifest-signing.mjs) cùng quy trình vận hành của bản triển khai. Thông báo bản mới cho Self-install không cấp quyền điều khiển từ xa bản cài đặt. Các chức năng lập kế hoạch, áp dụng và khôi phục có cổng triển khai riêng; đừng coi chúng đã khả dụng khi người vận hành chưa xác nhận.
@@ -136,3 +138,5 @@ Hãy sao lưu database trước khi nâng cấp. Nâng cấp SQLite giữ đúng
 ```
 
 `dewee backup` lưu cơ sở dữ liệu và file dữ liệu vào một archive, và `--upload-s3` đẩy nó lên S3. `dewee restore` không thay đổi gì cho tới khi bạn thêm `--force`. `restore smoke` khôi phục vào một cơ sở dữ liệu thử, từ chối chạy trên cơ sở dữ liệu đang hoạt động, và với `--verify-secrets` sẽ kiểm tra khoá mã hoá của bạn còn giải mã được các secret đã lưu. Để làm việc với từng tenant, dùng `dewee tenant-backup` và `dewee tenant-restore`. Mọi lệnh bảo trì có trong [Tham chiếu CLI](/docs/runtime/cli).
+
+Trước khi khôi phục bản sao lưu tenant có tài nguyên riêng tư, hãy xem [giới hạn khôi phục và cảnh báo phục hồi](/docs/concepts/multi-tenancy); tài nguyên riêng tư được lưu vẫn bị cách ly sau khi khôi phục.

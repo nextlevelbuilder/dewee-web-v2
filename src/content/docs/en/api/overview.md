@@ -62,6 +62,8 @@ The reply tells you your role and tenant. Sending `connect` again on the same so
 
 - Errors come back as JSON with an `error` field and the usual status codes: `400`, `401`, `403`, `404`, `409`, `429` and `500`.
 - On the WebSocket, failed requests return `ok: false` with an error `code`, `message`, and a `retryable` hint.
+
+If a stopped chat turn is still being saved, `chat.send` can return `FAILED_PRECONDITION` with `retryable: true` and `details.reason: "run_in_progress"`. The HTTP chat completions and responses endpoints return the same reason with HTTP 409 before streaming begins. Keep the input and retry in the same conversation after the previous turn finishes. A connected channel receives a retry message if its wait expires; the message is not automatically resent.
 - Chat is rate-limited per user or IP, 20 requests per minute by default; over the limit you get `429` with `Retry-After`.
 - HTTP bodies are limited to 1 MB and WebSocket frames to 512 KB.
 
