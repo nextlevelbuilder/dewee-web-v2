@@ -23,6 +23,14 @@ export type AuthorizeOutcome =
   | { kind: "consent"; view: ConsentView; headers: Headers }
   | { kind: "error"; status: number; reason: "bad_request" | "client_unverified" | "expired" | "no_scope" };
 
+/** Keep an identifiable client in the audit trail without storing URL paths or query values. */
+async function clientAuditTarget(clientId: string): Promise<string> {
+  const host = URL.parse(clientId)?.host ?? "unknown";
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(clientId));
+  const fingerprint = Array.from(new Uint8Array(digest).slice(0, 8), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${host} (sha256:${fingerprint})`;
+}
+
 /** Turns library errors into an outcome. Only a validated redirect URI is ever redirected to. */
 function failure(err: unknown): AuthorizeOutcome {
   if (err instanceof AuthorizationError) {
@@ -70,7 +78,7 @@ export async function finishAuthorize(
   try {
     if (input.decision !== "approve") {
       const denied = await api.denyConsent(request, input.handle);
-      await audit(db, input.email, "oauth.deny", denied.request.clientId.slice(0, 300));
+      await audit(db, input.email, "oauth.deny", await clientAuditTarget(denied.request.clientId));
       return { kind: "redirect", location: denied.redirectTo, headers: denied.headers };
     }
     const scope = grantableScopes(input.scopes);
@@ -102,7 +110,7 @@ export async function finishAuthorize(
       props,
       revokeExistingGrants: false,
     });
-    await audit(db, input.email, "oauth.grant", approved.request.clientId.slice(0, 300), { scopes: approved.request.scope, client: metadata });
+    await audit(db, input.email, "oauth.grant", await clientAuditTarget(approved.request.clientId), { scopes: approved.request.scope, client: metadata });
     return { kind: "redirect", location: redirectTo, headers: approved.headers };
   } catch (err) {
     if (err instanceof AuthorizationError && !err.redirectTo) return { kind: "error", status: 400, reason: "expired" };

@@ -167,6 +167,31 @@ describe("discovery", () => {
 });
 
 describe("consent", () => {
+  it("audits approvals and denials without persisting client identifier URL data", async () => {
+    const clientId = `${CLIENT_ID}?token=private-client-value`;
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
+      const url = String(input instanceof Request ? input.url : input);
+      return url === clientId
+        ? new Response(JSON.stringify({ client_id: clientId, client_name: "ChatGPT", redirect_uris: [REDIRECT], token_endpoint_auth_method: "none", grant_types: ["authorization_code", "refresh_token"], response_types: ["code"] }), { headers: { "content-type": "application/json" } })
+        : new Response("not found", { status: 404 });
+    });
+    const api = oauthApi(env as never, new URL(ORIGIN))!;
+    for (const decision of ["deny", "approve"]) {
+      const url = authorizeUrl({ challenge: pkce().challenge });
+      url.searchParams.set("client_id", clientId);
+      const begun = await beginAuthorize(api, new Request(url));
+      if (begun.kind !== "consent") throw new Error("expected consent");
+      const request = new Request(`${ORIGIN}/oauth/authorize`, { method: "POST", headers: { cookie: cookieHeader(begun.headers) } });
+      expect((await finishAuthorize(api, env.DB as D1Database, request, { email: ADMIN, handle: begun.view.handle, decision, scopes: ["pages:read"] })).kind).toBe("redirect");
+    }
+    const { results } = await (env.DB as D1Database).prepare("SELECT action, target, detail FROM audit_log ORDER BY id").all<{ action: string; target: string; detail: string | null }>();
+    expect(results.map((row) => row.action)).toEqual(["oauth.deny", "oauth.grant"]);
+    expect(results[0].target).toMatch(/^chatgpt\.example \(sha256:[a-f0-9]{16}\)$/);
+    expect(results[1].target).toBe(results[0].target);
+    expect(JSON.stringify(results)).not.toContain("private-client-value");
+    expect(JSON.stringify(results)).not.toContain("client-metadata.json");
+  });
+
   it("the authority consumes a consent handle once across concurrent approvals", async () => {
     const authority = new OAuthAuthorityCore(env as never);
     const begun = await authority.begin(new Request(authorizeUrl({ challenge: pkce().challenge })));
