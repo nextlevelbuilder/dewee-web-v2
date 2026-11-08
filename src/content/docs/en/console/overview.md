@@ -64,7 +64,7 @@ The chip at the top of the console shows **Runtime ready**, **Runtime setting up
 
 When the setup assistant asks **Which AI services do you already pay for?**, the choices include OpenCode Go and OpenRouter.
 
-Scripts and agents can drive the same guided setup with `POST /v1/workspace-setup/next` or `dewee workspace-setup next`. Each response lists, in `intents`, the intents the next turn accepts. When the assistant asks to test or repair a provider stored with an API key, the intent `replace_key` (`--replace-key` in the CLI) replaces that question with the key card for the same provider record, so you can enter a new key. Add `step_id` (`--step <id>`) to name the step.
+Scripts and agents can drive the same guided setup with `POST /v1/workspace-setup/next` or `dewee workspace-setup next`. When the next turn accepts intents, the response lists them in `intents`; the field can be omitted when none are available. When the assistant asks to test or repair a provider stored with an API key, the intent `replace_key` (`--replace-key` in the CLI) replaces that question with the key card for the same provider record, so you can enter a new key. Add `step_id` (`--step <id>`) to name the step.
 
 If a temporary service lookup failure prevents a credential card from being checked, the card stays pending. Retry the same card when service recovers; a claim that was not attempted does not consume an attempt. A missing target or a policy or type mismatch still invalidates the card. Temporary unavailability alone does not require changing permissions or creating a new request.
 

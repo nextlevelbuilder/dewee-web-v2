@@ -64,7 +64,7 @@ Nhãn trạng thái ở đầu console hiển thị **Runtime đã sẵn sàng**
 
 Khi trợ lý thiết lập hỏi bạn đang trả phí cho những dịch vụ AI nào, các lựa chọn có cả OpenCode Go và OpenRouter.
 
-Script và agent có thể điều khiển cùng quy trình thiết lập có hướng dẫn này bằng `POST /v1/workspace-setup/next` hoặc `dewee workspace-setup next`. Mỗi phản hồi liệt kê trong `intents` những intent mà lượt tiếp theo chấp nhận. Khi trợ lý đề nghị kiểm tra kết nối hoặc sửa một provider đã lưu bằng API key, intent `replace_key` (`--replace-key` trong CLI) thay câu hỏi đó bằng thẻ nhập key cho chính bản ghi provider ấy, để bạn nhập key mới. Thêm `step_id` (`--step <id>`) để chỉ rõ bước.
+Script và agent có thể điều khiển cùng quy trình thiết lập có hướng dẫn này bằng `POST /v1/workspace-setup/next` hoặc `dewee workspace-setup next`. Khi lượt tiếp theo chấp nhận intent, phản hồi liệt kê chúng trong `intents`; trường này có thể bị bỏ qua khi không có intent nào. Khi trợ lý đề nghị kiểm tra kết nối hoặc sửa một provider đã lưu bằng API key, intent `replace_key` (`--replace-key` trong CLI) thay câu hỏi đó bằng thẻ nhập key cho chính bản ghi provider ấy, để bạn nhập key mới. Thêm `step_id` (`--step <id>`) để chỉ rõ bước.
 
 Nếu lỗi tra cứu dịch vụ tạm thời ngăn kiểm tra thẻ thông tin xác thực, thẻ vẫn ở trạng thái chờ. Hãy thử lại chính thẻ đó khi dịch vụ phục hồi; một lượt giữ thẻ chưa được thử không tiêu tốn lượt thử. Đích không tồn tại hoặc không khớp chính sách hay loại vẫn làm thẻ mất hiệu lực. Chỉ riêng lỗi tạm thời không đòi hỏi đổi quyền hay tạo yêu cầu mới.
 

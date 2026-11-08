@@ -75,6 +75,10 @@ The channel instance writer API lists groups at `GET /v1/channels/instances/{id}
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` and `POST /v1/vault/links/batch` accept at most 500 IDs per request, counting duplicate entries. Larger arrays receive a localized HTTP 400 validation error rather than partial processing. Split larger selections and track each result.
 
+### Guided workspace setup
+
+`POST /v1/workspace-setup/next` advances guided setup. When a connection test or repair question concerns a stored API-key provider, send `intent: "replace_key"` and, optionally, `step_id` to replace that question with the key card for the same provider. The response's `intents` lists the choices accepted on the next turn and may be omitted when empty. See [Overview](/docs/console/overview) for the user flow and CLI equivalent.
+
 ### Conditional workflow draft updates
 
 For `PUT /v1/workflows/{id}`, pass the draft's current `updated_at` as `expected_version` to reject a concurrent edit. A stale value returns HTTP 409 with `VERSION_CONFLICT`; reload and reconcile before retrying. Omit it for an unconditional update. The equivalent WebSocket method is `workflows.update` with `expectedVersion`. See [Workflows](/docs/concepts/workflows) for timestamp precision and CLI and Workspace MCP usage.
