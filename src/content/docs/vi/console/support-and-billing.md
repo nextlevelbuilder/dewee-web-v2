@@ -75,7 +75,7 @@ Trang có các thẻ sau:
 
 Khi môi trường hỗ trợ nhận quà bằng email đã xác minh, hãy đăng nhập tại [trang nhận quà](https://app.dewee.sh/claim) bằng địa chỉ đã xác minh và được gửi quà. Trong **Quà đang chờ bạn**, chọn **Áp dụng** và chọn workspace bạn sở hữu nếu được hỏi. Nếu không thấy quà, hãy kiểm tra email tài khoản đã được xác minh, khớp địa chỉ nhận và thời hạn nhận chưa hết. Nếu tùy chọn này chưa có, hãy dùng liên kết hoặc mã do người gửi cung cấp.
 
-Bạn cũng có thể mở liên kết nhận quà, nhập mã trên trang nhận quà hoặc dùng thẻ Thanh toán của workspace. Mở liên kết chưa kích hoạt quà: hãy chọn **Áp dụng** để xác nhận. Trong lúc đăng nhập hoặc tạo workspace, mã được giữ trong 30 phút, kể cả khi magic link mở ở tab khác. Đăng xuất xóa mã được giữ; trang nhận quà thông thường không dùng lại mã của tài khoản trước. Khi hết thời gian lưu, hãy mở lại liên kết hoặc dán lại mã. Người dùng Self-install nhận quà trên trang được lưu trữ rồi làm theo các bước kích hoạt thông thường.
+Bạn cũng có thể mở liên kết nhận quà, nhập mã trên trang nhận quà hoặc dùng thẻ Thanh toán của workspace. Mở liên kết chưa kích hoạt quà: hãy chọn **Áp dụng** để xác nhận. Trong lúc đăng nhập hoặc tạo workspace, mã được giữ trong 30 phút, kể cả khi magic link mở ở tab khác hoặc phiên đăng nhập hết hạn trong lúc thiết lập. Hãy đăng nhập lại để tiếp tục. Đăng xuất xóa mã được giữ; trang nhận quà thông thường không dùng lại mã của tài khoản trước. Khi hết thời gian lưu, hãy mở lại liên kết hoặc dán lại mã. Người dùng Self-install nhận quà trên trang được lưu trữ rồi làm theo các bước kích hoạt thông thường.
 
 ### Đăng ký gói
 
