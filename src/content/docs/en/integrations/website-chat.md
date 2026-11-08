@@ -3,7 +3,7 @@ title: Embed an agent on your website
 description: "Put a dewee agent on any website with dewee-webchat, the open-source chat widget: a script tag or a React, Vue or Astro component, plus a small backend handler."
 section: integrations
 order: 3
-updated: 2026-11-08
+updated: 2026-11-09
 ---
 
 [dewee-webchat](https://github.com/nextlevelbuilder/dewee-webchat) is an open-source (MIT) chat widget that puts one of your agents on your own website. Visitors chat with it in a floating bubble or an inline panel, and they see the agent work: its reasoning, the tools it calls and their results, and the answer in Markdown. The package is on npm as `dewee-webchat`.
