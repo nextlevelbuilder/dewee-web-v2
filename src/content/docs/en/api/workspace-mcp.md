@@ -134,6 +134,20 @@ When workflow configuration writes are enabled, `workflows_update` can replace a
 
 `cron_status`, `cron_runs` and `hooks_list` are not available.
 
+### Connected browsers
+
+The following tools require a gateway and control plane that include the connected-browser MCP update; check `tools/list` for availability. The connection receives `customer.browser.manage` for these operations without raising its general role. Only your own browsers and their grants are visible, even to a workspace owner or admin; another person's ID returns `NOT_FOUND`.
+
+| Tool | Use |
+|---|---|
+| `browser_devices_list` | List your connected browsers and their online and control state |
+| `browser_grants_list` | List active grants for one browser, including a shared tab when present |
+| `browser_devices_rename` | Rename your browser; `validate_only` previews the trimmed name |
+| `browser_devices_revoke` | Revoke your browser, its grants and live connection |
+| `browser_grants_revoke` | Revoke one grant and cancel commands running under it |
+
+Rename is a configuration operation; the two revocations are destructive operations. The first revoke call opens a human approval; another workspace owner or admin must approve it, then the caller repeats the same request with `approval_id`. If there is no second owner or admin, revoke in the extension or with `dewee browser devices revoke` or `dewee browser grants revoke` instead. Expired or already-revoked grants and revoked browsers return `NOT_FOUND` on the MCP revoke precheck; the CLI treats those inactive records as already revoked. Enrollment, connection and grant creation remain in the extension.
+
 ## Change a schedule
 
 `cron_toggle` switches one of your schedules on or off. It needs both the `config_write` switch on the gateway and the `workspace.configure` consent on your connection.

@@ -128,6 +128,8 @@ Both features are off until you turn them on, and Chrome asks for website access
 
 In the gateway dashboard's built-in tools, an administrator can open **Settings** for Browser and configure connected browsing using the existing form, even when its defaults are empty or only a workspace override exists. This does not change the authorization required to save settings.
 
+Where the connected-browser Workspace MCP tools are available, you can also [list your browsers and grants or revoke them](/docs/api/workspace-mcp#connected-browsers). MCP revocation requires approval from another workspace owner or admin; the extension and `dewee browser` CLI remain alternatives.
+
 ## Troubleshooting
 
 | What you see | What to do |

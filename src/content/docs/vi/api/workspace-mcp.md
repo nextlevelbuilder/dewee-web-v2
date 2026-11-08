@@ -134,6 +134,20 @@ Khi thao tác ghi cấu hình workflow được bật, `workflows_update` có th
 
 `cron_status`, `cron_runs` và `hooks_list` không có.
 
+### Trình duyệt đã kết nối
+
+Các tool sau cần gateway và control plane có bản cập nhật MCP cho trình duyệt kết nối; hãy kiểm tra `tools/list` để biết có dùng được hay không. Kết nối nhận scope `customer.browser.manage` cho các thao tác này mà không nâng vai trò chung. Bạn chỉ thấy trình duyệt và quyền cấp của chính mình, kể cả khi là owner hoặc admin workspace; ID của người khác trả `NOT_FOUND`.
+
+| Tool | Công dụng |
+|---|---|
+| `browser_devices_list` | Liệt kê trình duyệt của bạn cùng trạng thái trực tuyến và điều khiển |
+| `browser_grants_list` | Liệt kê quyền đang có hiệu lực của một trình duyệt, gồm tab được chia sẻ nếu có |
+| `browser_devices_rename` | Đổi tên trình duyệt; `validate_only` xem trước tên đã bỏ khoảng trắng thừa |
+| `browser_devices_revoke` | Thu hồi trình duyệt, các quyền của nó và kết nối đang mở |
+| `browser_grants_revoke` | Thu hồi một quyền và hủy các lệnh đang chạy theo quyền đó |
+
+Đổi tên là thao tác cấu hình; hai thao tác thu hồi là thao tác phá hủy. Lần gọi thu hồi đầu tiên mở yêu cầu phê duyệt; một owner hoặc admin khác phải duyệt, sau đó người gọi lặp lại cùng yêu cầu với `approval_id`. Nếu không có owner hoặc admin thứ hai, hãy thu hồi trong extension hoặc dùng `dewee browser devices revoke` hay `dewee browser grants revoke`. Khi kiểm tra trước thu hồi qua MCP, quyền đã hết hạn hoặc đã thu hồi và trình duyệt đã thu hồi trả `NOT_FOUND`; CLI coi các bản ghi không còn hiệu lực đó là đã thu hồi. Việc đăng ký, kết nối và tạo quyền vẫn thực hiện trong extension.
+
 ## Thay đổi một lịch chạy
 
 `cron_toggle` bật hoặc tắt một lịch chạy của bạn. Nó cần cả công tắc `config_write` trên gateway lẫn sự đồng ý `workspace.configure` trên kết nối của bạn.
