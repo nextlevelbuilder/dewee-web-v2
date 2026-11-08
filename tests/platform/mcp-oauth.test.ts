@@ -390,6 +390,27 @@ describe("tokens on /mcp", () => {
     await expect(auth(result.body.access_token)).resolves.toMatchObject({ kind: "oauth", scopes: ["pages:read"] });
   });
 
+  it("accepts an RS256 assertion using a client's remote JWKS", async () => {
+    const keys = await crypto.subtle.generateKey({ name: "RSASSA-PKCS1-v1_5", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" }, true, ["sign", "verify"]);
+    const jwk = await crypto.subtle.exportKey("jwk", keys.publicKey);
+    Object.assign(jwk, { kid: "test-rsa", alg: "RS256", use: "sig" });
+    const jwksUri = "https://chatgpt.example/oauth/jwks.json";
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : String(input);
+      if (url === CLIENT_ID) return Response.json({ client_id: CLIENT_ID, client_name: "Client", redirect_uris: [REDIRECT], token_endpoint_auth_method: "private_key_jwt", token_endpoint_auth_signing_alg: "RS256", jwks_uri: jwksUri, grant_types: ["authorization_code", "refresh_token"], response_types: ["code"] });
+      if (url === jwksUri) return Response.json({ keys: [jwk] });
+      return new Response("not found", { status: 404 });
+    });
+    const { location, verifier } = await signIn({ scopesTicked: ["pages:read"] });
+    const encode = (value: unknown) => b64url(new TextEncoder().encode(JSON.stringify(value)));
+    const now = Math.floor(Date.now() / 1000);
+    const unsigned = `${encode({ alg: "RS256", kid: "test-rsa", typ: "JWT" })}.${encode({ iss: CLIENT_ID, sub: CLIENT_ID, aud: `${ORIGIN}/oauth/token`, iat: now, exp: now + 60, jti: crypto.randomUUID() })}`;
+    const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", keys.privateKey, new TextEncoder().encode(unsigned));
+    const result = await token({ grant_type: "authorization_code", code: location.searchParams.get("code")!, redirect_uri: REDIRECT, code_verifier: verifier, resource: RESOURCE, client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer", client_assertion: `${unsigned}.${b64url(new Uint8Array(signature))}` });
+    expect(result.status).toBe(200);
+    await expect(auth(result.body.access_token)).resolves.toMatchObject({ kind: "oauth", scopes: ["pages:read"] });
+  });
+
   it("reauthorization and refresh cannot leave a token from the old grant valid", async () => {
     const authority = new OAuthAuthorityCore(env as never);
     const tokens = await connect(["pages:read"]);
