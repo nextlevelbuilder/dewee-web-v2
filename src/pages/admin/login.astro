@@ -24,8 +24,15 @@ const env = platformEnv();
 const ip = clientIp(Astro);
 let next = safeNext(Astro.url.searchParams.get("next"));
 
+function loginRedirect(path: string): Response {
+  const response = Astro.redirect(path, 303);
+  response.headers.set("cache-control", "no-store");
+  response.headers.set("referrer-policy", "no-referrer");
+  return response;
+}
+
 const existing = await adminSession({ request: Astro.request, cookies: Astro.cookies, locals: Astro.locals, clientAddress: ip });
-if (existing) return Astro.redirect(next, 303);
+if (existing) return loginRedirect(next);
 
 const emailAvailable = emailLoginAvailable(env);
 const accessAvailable = cfAccessConfigured();
@@ -62,7 +69,7 @@ if (Astro.request.method === "POST") {
           const { token, expiresAt } = await createSession(env.DB, result.email, "email");
           setSessionCookie(Astro.cookies, token, expiresAt);
           await audit(env.DB, result.email, "auth.sign_in", null, { method: "email", ip });
-          return Astro.redirect(next, 303);
+          return loginRedirect(next);
         }
         message = { kind: "error", text: result.reason === "rate_limited" ? ADMIN.login.rateLimited : ADMIN.login.invalid };
       }
