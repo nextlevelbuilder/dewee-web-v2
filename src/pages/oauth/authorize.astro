@@ -142,14 +142,16 @@ if (!authority) {
 <script>
   // Allow with nothing ticked would only reach a dead end on the server; say so before submitting.
   for (const form of document.querySelectorAll<HTMLFormElement>("[data-oauth-consent]")) {
+    const box = form.querySelector<HTMLInputElement>("input[name=scope]");
+    form.addEventListener("change", () => {
+      if (form.querySelector("input[name=scope]:checked")) box?.setCustomValidity("");
+    });
     form.addEventListener("submit", (event) => {
       const submitter = (event as SubmitEvent).submitter as HTMLButtonElement | null;
       if (submitter?.value !== "approve" || form.querySelector("input[name=scope]:checked")) return;
       event.preventDefault();
-      const box = form.querySelector<HTMLInputElement>("input[name=scope]");
       box?.setCustomValidity(form.dataset.noScope ?? "");
       box?.reportValidity();
-      box?.addEventListener("change", () => box.setCustomValidity(""), { once: true });
     });
   }
 </script>
