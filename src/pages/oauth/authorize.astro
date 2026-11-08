@@ -41,6 +41,7 @@ function redirect(outcome: Extract<AuthorizeOutcome, { kind: "redirect" }>): Res
 
 let errorText: string | null = null;
 let view: ConsentView | null = null;
+let retryConsent = false;
 let csrf = "";
 const session = await adminSession({ request: Astro.request, cookies: Astro.cookies, locals: Astro.locals, clientAddress: ip });
 
@@ -80,7 +81,8 @@ if (!authority) {
     }));
     if (outcome.kind === "redirect") return redirect(outcome);
     Astro.response.status = outcome.kind === "error" ? outcome.status : 400;
-    errorText = outcome.kind === "error" && outcome.reason === "no_scope" ? `${C.noScope} ${OAUTH_UI.errors.expired}` : OAUTH_UI.errors.expired;
+    retryConsent = outcome.kind === "error" && outcome.reason === "no_scope";
+    errorText = retryConsent ? C.noScope : OAUTH_UI.errors.expired;
   }
 } else {
   const outcome = fromWireOutcome(await authority.begin(Astro.request));
@@ -103,6 +105,7 @@ if (!authority) {
         <>
           <h1 class="oauth__title">{C.title}</h1>
           <p class="adm-alert" data-kind="error" role="alert">{errorText}</p>
+          {retryConsent && <a class="btn" href={`${Astro.url.pathname}${Astro.url.search}`}>{C.reviewPermissions}</a>}
         </>
       )}
       {view && session && (

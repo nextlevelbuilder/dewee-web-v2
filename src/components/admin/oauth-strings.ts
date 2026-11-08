@@ -18,6 +18,7 @@ export const OAUTH_UI = {
     allow: "Allow",
     deny: "Deny",
     noScope: "Tick at least one permission, or choose Deny.",
+    reviewPermissions: "Review permissions",
   },
   scopeLabels: {
     "pages:read": "Read landing pages",

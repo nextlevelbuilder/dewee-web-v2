@@ -242,6 +242,7 @@ describe("consent", () => {
 
     const withCookie = () => new Request(`${ORIGIN}/oauth/authorize`, { method: "POST", headers: { cookie: cookieHeader(begun.headers) } });
     expect(await finishAuthorize(api, env.DB as D1Database, withCookie(), { email: ADMIN, handle: begun.view.handle, decision: "approve", scopes: ["admin:all"] })).toMatchObject({ kind: "error", reason: "no_scope" });
+    expect(await finishAuthorize(api, env.DB as D1Database, withCookie(), { email: ADMIN, handle: begun.view.handle, decision: "approve", scopes: ["pages:read"] })).toMatchObject({ kind: "redirect" });
   });
 
   it("Deny redirects with access_denied and is audited", async () => {
