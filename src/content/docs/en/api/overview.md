@@ -58,6 +58,8 @@ The WebSocket at `/ws` is what the console uses for live chat. The first frame m
 
 The reply tells you your role and tenant. Sending `connect` again on the same socket replaces the earlier login entirely, and a rejected `connect` logs the socket out. After that, each request is a `req` frame with a `method` and `params`, answered by a `res` frame with the same `id`. The server pushes `event` frames for streamed replies, tool calls, team tasks, approvals and trace updates. The protocol version is 3; `/health` reports it too.
 
+When using `dewee agent chat` as the WebSocket client, its caller-context flag and environment precedence are described in the [CLI guide](/docs/runtime/cli). That context is not proof of identity or authorization; the gateway still enforces the credential's owner, role, tenant and membership.
+
 ## Errors and limits
 
 - Errors come back as JSON with an `error` field and the usual status codes: `400`, `401`, `403`, `404`, `409`, `429` and `500`.

@@ -58,6 +58,8 @@ WebSocket tại `/ws` là thứ console dùng cho chat trực tiếp. Frame đ�
 
 Phản hồi cho biết vai trò và tenant của bạn. Gửi `connect` lần nữa trên cùng socket sẽ thay hoàn toàn phiên đăng nhập trước, còn một `connect` bị từ chối sẽ đăng xuất socket. Sau đó, mỗi request là một frame `req` có `method` và `params`, được trả lời bằng frame `res` có cùng `id`. Máy chủ đẩy các frame `event` cho câu trả lời dạng stream, lời gọi tool, task của nhóm agent, yêu cầu phê duyệt và cập nhật trace. Phiên bản protocol là 3; `/health` cũng báo con số này.
 
+Khi dùng `dewee agent chat` làm client WebSocket, xem thứ tự ưu tiên của cờ và biến môi trường cho ngữ cảnh người gọi trong [hướng dẫn CLI](/vi/docs/runtime/cli). Ngữ cảnh đó không chứng minh danh tính hay quyền; gateway vẫn kiểm tra chủ sở hữu credential, vai trò, tenant và tư cách thành viên.
+
 ## Lỗi và giới hạn
 
 - Lỗi trả về dạng JSON có trường `error` cùng các mã trạng thái quen thuộc: `400`, `401`, `403`, `404`, `409`, `429` và `500`.
