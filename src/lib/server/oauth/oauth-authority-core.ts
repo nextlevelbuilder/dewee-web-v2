@@ -76,8 +76,9 @@ export class OAuthAuthorityCore {
     if (!ok) return new Response(JSON.stringify({ error: "slow_down" }), {
       status: 429, headers: { "content-type": "application/json", "cache-control": "no-store", "retry-after": "60" },
     });
-    // Only requests naming a real grant and its client may enter that owner's
-    // queue. Unrecognized traffic is rejected by the provider outside the queue.
+    // Only requests naming a real grant may enter that owner's queue. A client
+    // id supplied in the form must match; the provider also supports deriving
+    // it from HTTP Basic credentials or a signed client assertion.
     let form: URLSearchParams | null;
     try {
       form = await readTokenForm(request);
@@ -89,7 +90,7 @@ export class OAuthAuthorityCore {
     const credential = type === "authorization_code" ? form.get("code")
       : type === "refresh_token" ? form.get("refresh_token") : null;
     const client = form.get("client_id");
-    if (typeof credential !== "string" || credential.length > 1024 || typeof client !== "string") {
+    if (typeof credential !== "string" || credential.length > 1024) {
       return invalid();
     }
     const parts = credential.split(":");
@@ -99,7 +100,7 @@ export class OAuthAuthorityCore {
       return invalid();
     }
     const grant = await this.env.OAUTH_KV.get<{ clientId?: string }>(`grant:${owner}:${grantId}`, "json");
-    if (!grant || grant.clientId !== client) return invalid();
+    if (!grant || (client !== null && grant.clientId !== client)) return invalid();
     return this.queue.run(`owner:${owner}`, () => handleOAuthRoute(request, this.env, ctx, { skipTokenRateLimit: true }));
   }
 
