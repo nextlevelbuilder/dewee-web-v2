@@ -4,8 +4,7 @@
  * set only when the chat opens), `__Host-dewee_voter` (blog polls, quizzes and surveys; set only when
  * a reader answers, stored server-side only as a per-post HMAC) and the admin sign-in session cookie. The admin cookie's name and
  * lifetime, and whether Cloudflare's bot cookies are switched on, are open questions (see report).
- * Google Tag Manager (GoogleTagManager.astro) runs in Consent Mode and PostHog (PosthogAnalytics.astro)
- * keeps its id in memory: analytics cookies are set only after the visitor presses "Accept".
+ * Google Tag Manager and PostHog load only after the visitor presses "Accept".
  * The "app" section covers the dewee app's own consent cookie `dewee_analytics` (set by
  * app.dewee.sh, not by this site), which can reuse the PostHog id from this site.
  */
@@ -33,7 +32,7 @@ export const COOKIES: Bi<LegalDoc> = {
         title: "What we use",
         short: "Essential storage always; Google analytics cookies only after you press “Accept”.",
         body: [
-          "This website stores a few small items in your browser that are strictly necessary for something you asked for, such as keeping your theme or reconnecting you to a chat. We also use Google Tag Manager and PostHog to understand which pages help people. Until you press “Accept”, neither sets analytics or advertising cookies: Google Tag Manager runs in Google’s Consent Mode, and PostHog keeps its ID in memory only. The fonts are served from our own domain.",
+          "This website stores a few small items in your browser that are strictly necessary for something you asked for, such as keeping your theme or reconnecting you to a chat. We also use Google Tag Manager and PostHog to understand which pages help people. Neither loads or measures your visit until you press “Accept”. The fonts are served from our own domain.",
           "Most items live in your browser’s local storage rather than in cookies. Local storage stays on your device and is not sent with every request; the chat ID is sent only when the chat connects.",
         ],
       },
@@ -128,7 +127,7 @@ export const COOKIES: Bi<LegalDoc> = {
         title: "Chúng tôi dùng những gì",
         short: "Lưu trữ thiết yếu luôn bật; cookie phân tích của Google chỉ bật khi bạn bấm “Đồng ý”.",
         body: [
-          "Website này lưu vài mục nhỏ trên trình duyệt của bạn, đều thật sự cần thiết cho một việc bạn yêu cầu, như ghi nhớ giao diện sáng tối hay nối lại cuộc chat. Chúng tôi cũng dùng Google Tag Manager và PostHog để biết trang nào hữu ích. Trước khi bạn bấm “Đồng ý”, cả hai đều không đặt cookie phân tích hay quảng cáo nào: Google Tag Manager chạy ở chế độ Consent Mode của Google, còn PostHog chỉ giữ mã định danh trong bộ nhớ tạm. Phông chữ được tải từ chính tên miền của chúng tôi.",
+          "Website này lưu vài mục nhỏ trên trình duyệt của bạn, đều thật sự cần thiết cho một việc bạn yêu cầu, như ghi nhớ giao diện sáng tối hay nối lại cuộc chat. Chúng tôi cũng dùng Google Tag Manager và PostHog để biết trang nào hữu ích. Cả hai chỉ được tải và đo lường lượt truy cập sau khi bạn bấm “Đồng ý”. Phông chữ được tải từ chính tên miền của chúng tôi.",
           "Phần lớn các mục nằm trong local storage của trình duyệt, không phải cookie. Local storage nằm trên thiết bị của bạn và không bị gửi kèm mỗi lần tải trang; riêng mã chat chỉ được gửi khi khung chat kết nối.",
         ],
       },
