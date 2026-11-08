@@ -4,7 +4,7 @@ description: See how much your agents run and what it costs, review who changed 
 section: console
 order: 11
 screens: [usage, activity, traces, monitoring]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Once agents are running, four areas show you what they do. **Usage** counts requests, tokens and estimated cost. **Activity** is the history of changes in the workspace. **Traces** records every agent run in detail. **Runtime health** tells you whether your runtime is reachable and working. All four only show data from your own workspace.

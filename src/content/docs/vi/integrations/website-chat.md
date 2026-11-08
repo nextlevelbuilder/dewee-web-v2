@@ -3,7 +3,7 @@ title: Gắn agent lên website của bạn
 description: "Đưa agent dewee lên bất kỳ website nào với dewee-webchat, widget chat mã nguồn mở: một thẻ script hoặc component React, Vue, Astro, kèm một backend handler nhỏ."
 section: integrations
 order: 3
-updated: 2026-10-10
+updated: 2026-11-08
 ---
 
 [dewee-webchat](https://github.com/nextlevelbuilder/dewee-webchat) là widget chat mã nguồn mở (MIT) giúp bạn đặt một agent lên chính website của mình. Khách truy cập trò chuyện với agent qua bong bóng chat nổi hoặc khung chat gắn trong trang, và thấy được agent làm việc: phần suy luận, các tool nó gọi cùng kết quả, và câu trả lời dạng Markdown. Gói này có trên npm với tên `dewee-webchat`.

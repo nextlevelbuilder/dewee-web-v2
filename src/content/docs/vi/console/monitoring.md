@@ -4,7 +4,7 @@ description: Xem mức sử dụng và chi phí, ai đã thay đổi điều gì
 section: console
 order: 11
 screens: [usage, activity, traces, monitoring]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Khi agent đã chạy, bốn khu vực cho bạn thấy chúng làm gì. **Mức sử dụng** đếm số yêu cầu, số token và chi phí ước tính. **Hoạt động** là lịch sử các thay đổi trong workspace. **Trace** ghi lại chi tiết mọi lần chạy của agent. **Tình trạng runtime** cho biết runtime của bạn có kết nối được và đang hoạt động tốt hay không. Cả bốn khu vực chỉ hiển thị dữ liệu của chính workspace bạn.
