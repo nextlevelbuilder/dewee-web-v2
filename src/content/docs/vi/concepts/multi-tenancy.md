@@ -93,7 +93,7 @@ Khôi phục có ba chế độ: `upsert` (mặc định, chỉ thêm các dòng
 
 Bản sao lưu được hỗ trợ giữ lại dữ liệu riêng tư. Khôi phục bản có dữ liệu riêng tư đòi hỏi đúng tenant ban đầu và khóa mã hóa đã cấu hình; sao chép dữ liệu đó sang tenant mới bị từ chối. Đích đã có private instance sẽ từ chối cả bản lưu riêng tư lẫn bản lưu cũ trước khi thay đổi dữ liệu. Private instance đang hoạt động sau khôi phục vẫn bị cách ly; danh tính và ràng buộc trong bản lưu không tự cấp lại quyền hay sự đồng ý. Khả năng lưu giữ này chưa bật kích hoạt tài nguyên riêng tư hoặc khôi phục chủ sở hữu ban đầu.
 
-Hãy đọc cảnh báo khôi phục: bước xử lý file có thể thất bại sau khi nhập database. Nếu kết quả database chưa được xác nhận, hãy xem hoạt động của người vận hành bằng `dewee activity list` trước khi thử lại. Chạy `dewee tenant-restore --help` hoặc xem [tham chiếu CLI được tạo từ mã nguồn](https://github.com/nextlevelbuilder/dewee/blob/main/apps/dewee-docs/src/content/docs/products/cli.mdx#dewee-tenant-restore) để biết hợp đồng hiện tại, và đọc [hướng dẫn bảo mật gateway](https://github.com/nextlevelbuilder/dewee/blob/main/docs/09-security.md) để biết giới hạn. Tính năng này chưa cung cấp quy trình khôi phục thảm họa đầy đủ.
+Hãy đọc cảnh báo khôi phục: bước xử lý file có thể thất bại sau khi nhập database. Nếu kết quả database chưa được xác nhận, hãy xem hoạt động của người vận hành bằng `dewee activity list` trước khi thử lại. Chạy `dewee tenant-restore --help` hoặc xem [tham chiếu CLI được tạo từ mã nguồn](https://docs.dewee.sh/products/cli/#dewee-tenant-restore) để biết hợp đồng hiện tại, và đọc [hướng dẫn bảo mật](/vi/docs/security/overview). Tính năng này chưa cung cấp quy trình khôi phục thảm họa đầy đủ.
 
 ### Chuyển dữ liệu giữa các tenant
 

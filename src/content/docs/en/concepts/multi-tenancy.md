@@ -93,7 +93,7 @@ Restore has three modes: `upsert` (the default, adds missing rows and changes no
 
 Supported backups preserve private data. Restoring an archive with private data requires the original tenant and the configured encryption key; cloning it into a new tenant is refused. A target with current private instances refuses both private and older archives before mutation. Restored active private instances remain quarantined, and archived identities and bindings do not renew access or consent. Private-resource activation and original-owner recovery are not enabled by this preservation capability.
 
-Read restore warnings: a filesystem step can fail after database import. If the database outcome is unconfirmed, inspect operator activity with `dewee activity list` before retrying. Run `dewee tenant-restore --help` or see the [generated CLI reference](https://github.com/nextlevelbuilder/dewee/blob/main/apps/dewee-docs/src/content/docs/products/cli.mdx#dewee-tenant-restore) for the current contract, and consult the [gateway security guide](https://github.com/nextlevelbuilder/dewee/blob/main/docs/09-security.md) for restrictions. This does not provide a complete disaster-recovery journey.
+Read restore warnings: a filesystem step can fail after database import. If the database outcome is unconfirmed, inspect operator activity with `dewee activity list` before retrying. Run `dewee tenant-restore --help` or see the [generated CLI reference](https://docs.dewee.sh/products/cli/#dewee-tenant-restore) for the current contract, and consult the [security guide](/docs/security/overview). This does not provide a complete disaster-recovery journey.
 
 ### Transfer between tenants
 

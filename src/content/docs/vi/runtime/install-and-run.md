@@ -125,7 +125,7 @@ Với customer control plane tự vận hành, hãy nâng cấp gateway trước
 
 ### Metadata phát hành có chữ ký
 
-Danh mục phát hành được lưu trữ xác minh metadata có chữ ký theo các khóa công khai đang được tin cậy. Bản không ký hoặc không đáng tin cậy không được đề xuất để cập nhật; gỡ một khóa ký sẽ rút các mục danh mục không còn xác minh được. Khi xoay vòng khóa, triển khai sự tin cậy cho khóa công khai mới trước khi ngừng dùng khóa cũ; giữ khóa ký riêng trong kho secret phát hành và làm theo [script ký bản phát hành](https://github.com/nextlevelbuilder/dewee/blob/dev/scripts/ci/release-manifest-signing.mjs) cùng quy trình vận hành của bản triển khai. Thông báo bản mới cho Self-install không cấp quyền điều khiển từ xa bản cài đặt. Các chức năng lập kế hoạch, áp dụng và khôi phục có cổng triển khai riêng; đừng coi chúng đã khả dụng khi người vận hành chưa xác nhận.
+Danh mục phát hành được lưu trữ xác minh metadata có chữ ký theo các khóa công khai đang được tin cậy. Bản không ký hoặc không đáng tin cậy không được đề xuất để cập nhật; gỡ một khóa ký sẽ rút các mục danh mục không còn xác minh được. Khi xoay vòng khóa, triển khai sự tin cậy cho khóa công khai mới trước khi ngừng dùng khóa cũ; giữ khóa ký riêng trong kho secret phát hành và làm theo quy trình ký của người vận hành bản triển khai. Thông báo bản mới cho Self-install không cấp quyền điều khiển từ xa bản cài đặt. Các chức năng lập kế hoạch, áp dụng và khôi phục có cổng triển khai riêng; đừng coi chúng đã khả dụng khi người vận hành chưa xác nhận.
 
 ## Sao lưu và khôi phục
 

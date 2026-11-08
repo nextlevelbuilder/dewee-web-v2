@@ -125,7 +125,7 @@ For a self-hosted customer control plane, upgrade the gateway before enabling ve
 
 ### Signed release metadata
 
-The hosted release catalog verifies signed release metadata against the currently trusted public keys. Unsigned or untrusted releases must not be offered for update, and removing a signing key withdraws catalog entries that can no longer be verified. During key rotation, deploy trust for the new public key before retiring the old one; keep the signing private key in the release secret store and follow the [release signing script](https://github.com/nextlevelbuilder/dewee/blob/dev/scripts/ci/release-manifest-signing.mjs) and deployed operator procedures. A self-install release notice does not grant remote control of the installation. Reviewed plan, apply and rollback controls have separate rollout gates; do not assume they are available until your operator confirms them.
+The hosted release catalog verifies signed release metadata against the currently trusted public keys. Unsigned or untrusted releases must not be offered for update, and removing a signing key withdraws catalog entries that can no longer be verified. During key rotation, deploy trust for the new public key before retiring the old one; keep the signing private key in the release secret store and follow the deployment operator's signing procedure. A self-install release notice does not grant remote control of the installation. Reviewed plan, apply and rollback controls have separate rollout gates; do not assume they are available until your operator confirms them.
 
 ## Backups and restores
 
