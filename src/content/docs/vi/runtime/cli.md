@@ -147,6 +147,8 @@ dewee workflows apply -f workflow.json
 | `dewee import-export` | `preview`, `import` |
 | `dewee workstations` | `list`, `create`, `delete` |
 
+Khi đọc hoặc xuất trace, lỗi lưu trữ tạm thời không chứng minh trace đã bị xóa; hãy thử lại sau khi dịch vụ phục hồi. Nếu tải xuống bị gián đoạn, hãy thử lại. Xem [Tracing](/docs/concepts/tracing) về trace con bị thiếu hoặc đã dọn và các giới hạn khi xuất.
+
 ## Bảo trì máy chủ
 
 Người vận hành nền tảng có thể dùng `dewee tenant members list|add|remove` với gateway token và owner ID nền tảng đã cấu hình. Credential khác nhận `PERMISSION_DENIED` (mã thoát 4). `list` hỗ trợ `--role`, `--limit` (1–500), `--offset`, `-o json` và trả `{users, total, limit, offset}`. `add` thêm thành viên hoặc đổi vai trò (mặc định `member`), hỗ trợ `--dry-run`. `remove` cần `--yes` hoặc `--dry-run`; thành viên không tồn tại trả `NOT_FOUND` (mã 5). Tenant ngoài tenant nền tảng phải giữ ít nhất một owner: hãy thêm owner khác trước khi gỡ hoặc hạ vai trò owner cuối, nếu không lệnh trả `CONFLICT` (mã 6). Workspace khách hàng tự quản lý lời mời và vai trò trong ứng dụng; workspace MCP không cung cấp các lệnh vận hành này.

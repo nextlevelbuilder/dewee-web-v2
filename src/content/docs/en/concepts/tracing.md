@@ -58,7 +58,7 @@ At five minutes past every hour (UTC), a background worker rolls the previous ho
 
 ## Reading traces
 
-In the console, the **Traces** screen searches runs and opens each one as a redacted span tree with timing and token use. The same data is available over HTTP:
+In the console, the **Traces** screen searches runs and opens each one as a redacted span tree with timing and token use. Credential values are replaced while readable keys and structured output are retained, including valid JSON nested in strings; see [Tools and permissions](/docs/concepts/tools-and-permissions). The same data is available over HTTP:
 
 | Endpoint | Returns |
 |---|---|

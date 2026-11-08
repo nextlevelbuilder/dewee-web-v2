@@ -58,7 +58,7 @@ Vào phút thứ năm của mỗi giờ (UTC), một worker chạy nền tổng 
 
 ## Đọc trace
 
-Trong console, màn hình **Trace** tìm kiếm các lượt chạy và mở từng lượt thành một cây span đã che thông tin nhạy cảm, kèm thời gian và lượng token. Dữ liệu này cũng có qua HTTP:
+Trong console, màn hình **Trace** tìm kiếm các lượt chạy và mở từng lượt thành một cây span đã che thông tin nhạy cảm, kèm thời gian và lượng token. Giá trị credential được thay thế, còn tên trường và cấu trúc đầu ra được giữ lại, kể cả JSON hợp lệ nằm trong chuỗi; xem [Tool và quyền](/docs/concepts/tools-and-permissions). Dữ liệu này cũng có qua HTTP:
 
 | Endpoint | Trả về |
 |---|---|

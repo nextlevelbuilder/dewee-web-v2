@@ -66,6 +66,8 @@ Chọn một trace để xem nhanh, hoặc **Mở trang đầy đủ** để xem
 
 Các giá trị trong trace có thể được ẩn trước khi tới trình duyệt của bạn; span có giá trị bị ẩn sẽ được đánh dấu. Khi cần hỗ trợ về một lần chạy, hãy sao chép **Gói hỗ trợ đã ẩn danh** và gửi cho bộ phận hỗ trợ: prompt gốc, tham số tool, header và secret đều bị loại bỏ hoặc ẩn đi.
 
+Nếu không tìm thấy trace, trace đó có thể không còn tồn tại. Lỗi lưu trữ tạm thời là trường hợp khác: hãy thử lại sau khi dịch vụ phục hồi thay vì cho rằng trace đã bị xóa. Nếu thu thập dữ liệu xuất thất bại, hệ thống không gửi bản tải xuống thành công; hãy tải lại nếu quá trình truyền bị gián đoạn. Các trace con đã được dọn trước đó có thể vắng mặt. Xem [Tracing](/docs/concepts/tracing) để biết giới hạn độ sâu và vòng lặp khi xuất.
+
 ## Tình trạng runtime
 
 **Tình trạng runtime** kiểm tra runtime của workspace mà không để lộ các máy chủ phía sau. Các chỉ số cho biết **Kết nối được runtime**, **Tỷ lệ lỗi gần đây** trên các trace gần nhất và **Tín hiệu gần nhất**, tức trace hoặc hoạt động mới nhất.

@@ -66,6 +66,8 @@ Mọi tin nhắn đến được kiểm tra với sáu mẫu prompt injection, n
 
 Đầu ra của tool được làm sạch trước khi model hay người dùng nhìn thấy. API key của provider, token GitHub và AWS, giá trị bearer, chuỗi kết nối cơ sở dữ liệu, chuỗi hex dài và giá trị thật của các secret của chính gateway được thay bằng `[REDACTED]`, còn IP máy chủ thành `[SERVER_IP]`. Nội dung lấy từ web được bọc trong dấu đánh dấu là không đáng tin cậy.
 
+Việc ẩn credential giữ lại tên trường và cấu trúc xung quanh trong khi thay thế giá trị. JSON hợp lệ, kể cả JSON được tuần tự hóa trong chuỗi, vẫn đọc và phân tích được; các cách đặt tên trường credential phổ biến được xử lý mà không ẩn các mã định danh metadata thông thường. Áp dụng lại cho đầu ra đã an toàn không làm thay đổi kết quả. Xem [Tool và quyền](/docs/concepts/tools-and-permissions) để biết hành vi với đầu ra của tool.
+
 ### Cách ly
 
 Mỗi agent làm việc trong workspace riêng, với thư mục con cho từng người dùng. Khi bật sandbox, lệnh chạy trong container Docker có root filesystem chỉ đọc, bỏ mọi capability, không có mạng, và giới hạn 512 MB bộ nhớ, một CPU, 256 tiến trình và 300 giây. Bản thân container gateway chạy dưới người dùng không phải root.

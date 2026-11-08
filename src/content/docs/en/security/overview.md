@@ -66,6 +66,8 @@ Every incoming message is checked for six prompt-injection patterns, such as att
 
 Tool output is scrubbed before the model or the user sees it. Provider keys, GitHub and AWS tokens, bearer values, database connection strings, long hex secrets and the live values of the gateway's own secrets are replaced with `[REDACTED]`, and server IPs with `[SERVER_IP]`. Content fetched from the web is wrapped in markers that label it as untrusted.
 
+Credential redaction keeps readable assignment keys and surrounding structure while replacing values. Valid JSON, including serialized JSON inside a string, remains parseable; common credential-field names are handled without hiding ordinary metadata identifiers. Redacting already-safe output again is stable. See [Tools and permissions](/docs/concepts/tools-and-permissions) for tool-output behavior.
+
 ### Isolation
 
 Each agent works in its own workspace, with a sub-directory per user. With the sandbox on, commands run in a Docker container with a read-only root filesystem, all capabilities dropped, no network, and limits of 512 MB memory, one CPU, 256 processes and 300 seconds. The gateway container itself runs as a non-root user.

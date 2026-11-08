@@ -66,6 +66,8 @@ Select a trace to preview it, or **Open full page** for the full detail. The hea
 
 Values in a trace can be redacted before they reach your browser; redacted spans are marked. To get help with a run, copy the **Redacted support bundle** and send it to support: raw prompts, tool arguments, headers and secrets are excluded or redacted.
 
+If a trace is not found, it may no longer exist. A temporary storage error is different: retry when the service recovers rather than assuming the trace was deleted. If export collection fails, no successful download is sent; retry an interrupted download. Previously pruned child traces can be absent. See [Tracing](/docs/concepts/tracing) for export depth and cycle limits.
+
 ## Runtime health
 
 **Runtime health** checks your workspace runtime without exposing the machines behind it. The stats show **Runtime reachable**, the **Recent error rate** over the last traces and the **Last heartbeat**, the latest trace or activity.

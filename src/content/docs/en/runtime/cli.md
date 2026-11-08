@@ -147,6 +147,8 @@ For a paged schedule list, use `dewee cron list --limit 20 --json`; pass the ret
 | `dewee import-export` | `preview`, `import` |
 | `dewee workstations` | `list`, `create`, `delete` |
 
+For trace reads and exports, a temporary storage error is not evidence that the trace was deleted; retry after recovery. If a download is interrupted, retry it. See [Tracing](/docs/concepts/tracing) for missing or pruned child traces and export limits.
+
 ## Host maintenance
 
 Platform operators can use `dewee tenant members list|add|remove` with the gateway token and a configured platform owner ID. Other credentials receive `PERMISSION_DENIED` (exit 4). `list` supports `--role`, `--limit` (1–500), `--offset` and `-o json`, returning `{users, total, limit, offset}`. `add` adds or changes a role (default `member`) and supports `--dry-run`. `remove` requires `--yes` or `--dry-run`; an absent member returns `NOT_FOUND` (exit 5). A non-platform tenant must retain an owner: add another before removing or demoting its last owner, otherwise the command returns `CONFLICT` (exit 6). Customer workspaces manage their own invitations and roles in the app; workspace MCP does not expose these operator commands.
