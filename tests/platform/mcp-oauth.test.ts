@@ -25,6 +25,7 @@ const { MCP_SERVER } = await import("../../src/lib/server/mcp/mcp-tools");
 const { OAuthOperationQueue } = await import("../../src/lib/server/oauth/oauth-operation-queue");
 const { OAuthAuthorityCore } = await import("../../src/lib/server/oauth/oauth-authority-core");
 const { withSecurityHeaders } = await import("../../src/lib/server/edge-routes");
+const { superAdminEmails } = await import("../../src/lib/server/auth/allowlist");
 
 const ORIGIN = "https://dewee.sh";
 const RESOURCE = `${ORIGIN}/mcp`;
@@ -409,6 +410,34 @@ describe("tokens on /mcp", () => {
     const result = await token({ grant_type: "authorization_code", code: location.searchParams.get("code")!, redirect_uri: REDIRECT, code_verifier: verifier, resource: RESOURCE, client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer", client_assertion: `${unsigned}.${b64url(new Uint8Array(signature))}` });
     expect(result.status).toBe(200);
     await expect(auth(result.body.access_token)).resolves.toMatchObject({ kind: "oauth", scopes: ["pages:read"] });
+  });
+
+  it("rejects concurrent reuse of a client assertion across grant owners", async () => {
+    const storage = env.OAUTH_KV as KVNamespace;
+    const get = storage.get.bind(storage);
+    vi.spyOn(storage, "get").mockImplementation((async (...args: Parameters<KVNamespace["get"]>) => {
+      const result = await get(...args);
+      if (String(args[0]).startsWith("client-assertion-jti:")) await new Promise((resolve) => setTimeout(resolve, 25));
+      return result;
+    }) as KVNamespace["get"]);
+    const keys = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+    const jwk = await crypto.subtle.exportKey("jwk", keys.publicKey);
+    Object.assign(jwk, { kid: "race-key", alg: "ES256", use: "sig" });
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : String(input);
+      return url === CLIENT_ID ? Response.json({ client_id: CLIENT_ID, client_name: "Client", redirect_uris: [REDIRECT], token_endpoint_auth_method: "private_key_jwt", jwks: { keys: [jwk] }, grant_types: ["authorization_code", "refresh_token"], response_types: ["code"] }) : new Response("not found", { status: 404 });
+    });
+    const first = await signIn({ scopesTicked: ["pages:read"], email: superAdminEmails()[0] });
+    const second = await signIn({ scopesTicked: ["pages:read"], email: superAdminEmails()[1] });
+    const encode = (value: unknown) => b64url(new TextEncoder().encode(JSON.stringify(value)));
+    const now = Math.floor(Date.now() / 1000);
+    const unsigned = `${encode({ alg: "ES256", kid: "race-key", typ: "JWT" })}.${encode({ iss: CLIENT_ID, sub: CLIENT_ID, aud: `${ORIGIN}/oauth/token`, iat: now, exp: now + 60, jti: crypto.randomUUID() })}`;
+    const signature = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, keys.privateKey, new TextEncoder().encode(unsigned));
+    const assertion = `${unsigned}.${b64url(new Uint8Array(signature))}`;
+    const exchange = ({ location, verifier }: typeof first) => token({ grant_type: "authorization_code", code: location.searchParams.get("code")!, redirect_uri: REDIRECT, code_verifier: verifier, resource: RESOURCE, client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer", client_assertion: assertion });
+    const results = await Promise.all([exchange(first), exchange(second)]);
+    expect(results.filter((result) => result.status === 200)).toHaveLength(1);
+    expect(results.filter((result) => result.status === 401 && result.body.error === "invalid_client")).toHaveLength(1);
   });
 
   it("reauthorization and refresh cannot leave a token from the old grant valid", async () => {

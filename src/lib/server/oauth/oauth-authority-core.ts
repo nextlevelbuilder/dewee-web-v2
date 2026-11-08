@@ -100,8 +100,12 @@ export class OAuthAuthorityCore {
       return invalid();
     }
     const grant = await this.env.OAUTH_KV.get<{ clientId?: string }>(`grant:${owner}:${grantId}`, "json");
-    if (!grant || (client !== null && grant.clientId !== client)) return invalid();
-    return this.queue.run(`owner:${owner}`, () => handleOAuthRoute(request, this.env, ctx, { skipTokenRateLimit: true }));
+    if (!grant || typeof grant.clientId !== "string" || (client !== null && grant.clientId !== client)) return invalid();
+    // Assertion replay markers are scoped to a client, not an owner. Serialize
+    // exchanges for that client across owners as well as each owner's grants.
+    return this.queue.run(`owner:${owner}`, () =>
+      this.queue.run(`client:${grant.clientId}`, () => handleOAuthRoute(request, this.env, ctx, { skipTokenRateLimit: true })),
+    );
   }
 
   async validate(url: string, token: string) {
