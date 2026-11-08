@@ -110,7 +110,11 @@ export async function finishAuthorize(
       props,
       revokeExistingGrants: false,
     });
-    await audit(db, input.email, "oauth.grant", await clientAuditTarget(approved.request.clientId), { scopes: approved.request.scope, client: metadata });
+    // Client display names are untrusted and may themselves contain URL query secrets.
+    await audit(db, input.email, "oauth.grant", await clientAuditTarget(approved.request.clientId), {
+      scopes: approved.request.scope,
+      client: { clientDomain: metadata.clientDomain, redirectHost: metadata.redirectHost },
+    });
     return { kind: "redirect", location: redirectTo, headers: approved.headers };
   } catch (err) {
     if (err instanceof AuthorizationError && !err.redirectTo) return { kind: "error", status: 400, reason: "expired" };

@@ -172,7 +172,7 @@ describe("consent", () => {
     vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
       const url = String(input instanceof Request ? input.url : input);
       return url === clientId
-        ? new Response(JSON.stringify({ client_id: clientId, client_name: "ChatGPT", redirect_uris: [REDIRECT], token_endpoint_auth_method: "none", grant_types: ["authorization_code", "refresh_token"], response_types: ["code"] }), { headers: { "content-type": "application/json" } })
+        ? new Response(JSON.stringify({ client_id: clientId, client_name: clientId, redirect_uris: [REDIRECT], token_endpoint_auth_method: "none", grant_types: ["authorization_code", "refresh_token"], response_types: ["code"] }), { headers: { "content-type": "application/json" } })
         : new Response("not found", { status: 404 });
     });
     const api = oauthApi(env as never, new URL(ORIGIN))!;
