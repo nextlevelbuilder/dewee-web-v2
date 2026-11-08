@@ -38,6 +38,8 @@ Quản trị viên hoặc chủ sở hữu tenant có thể xuất bản trực 
 
 CLI có điều kiện kiểm tra contract phiên bản 2 trên kết nối cập nhật và từ chối gateway cũ hoặc không rõ phiên bản trước khi thay đổi. Các yêu cầu phân quyền và phê duyệt MCP vẫn giữ nguyên.
 
+Quá trình nâng cấp SQLite chuẩn hóa metadata workflow lịch sử thành timestamp UTC có độ rộng cố định để bộ lọc ngày và thứ tự phần lẻ giây hoạt động tin cậy. Việc này không bật workflow engine của Lite hay thay đổi cấu trúc phản hồi API. Hãy sao lưu trước khi nâng cấp; rollback dùng bản sao cơ sở dữ liệu trước nâng cấp và binary tương thích, như hướng dẫn trong [Cài đặt và vận hành](/docs/runtime/install-and-run#sao-lưu-và-khôi-phục).
+
 ## Lượt chạy và trigger
 
 | Trạng thái | Ý nghĩa |

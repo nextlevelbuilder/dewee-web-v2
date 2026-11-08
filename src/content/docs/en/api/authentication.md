@@ -85,6 +85,8 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 - Open WebSocket sessions are re-checked before each operation. If the key is revoked or expires, or the tenant is suspended, the session receives `TENANT_ACCESS_REVOKED`. Scope changes update the session's role.
 - Revoke a key in the console, with `dewee api-keys revoke`, or with `POST /v1/api-keys/{id}/revoke`. Revocation cannot be undone.
 
+For SQLite installations, the upgrade preserves the instant of legacy key expiry and previous-secret grace times created on non-UTC hosts. It does not change key scopes. Back up before upgrading and use the documented backup procedure for rollback; see [Install and run](/docs/runtime/install-and-run#backups-and-restores).
+
 > [!TIP]
 > Give each integration its own key with the narrowest scopes it needs and an expiry. When something goes wrong, you can revoke one key without breaking the others.
 

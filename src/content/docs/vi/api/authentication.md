@@ -85,6 +85,8 @@ DEWEE_SERVER=https://dewee.example.com DEWEE_API_KEY=<api-key> dewee agent list 
 - Các session WebSocket đang mở được kiểm tra lại trước mỗi thao tác. Nếu key bị thu hồi hoặc hết hạn, hay tenant bị tạm ngưng, session nhận `TENANT_ACCESS_REVOKED`. Thay đổi scope sẽ cập nhật vai trò của session.
 - Thu hồi key trong console, bằng `dewee api-keys revoke`, hoặc bằng `POST /v1/api-keys/{id}/revoke`. Thu hồi không thể hoàn tác.
 
+Với bản cài SQLite, quá trình nâng cấp giữ nguyên thời điểm hết hạn key cũ và thời gian gia hạn của secret trước đó được tạo trên máy không dùng UTC. Scope của key không thay đổi. Hãy sao lưu trước khi nâng cấp và dùng quy trình sao lưu đã hướng dẫn để rollback; xem [Cài đặt và vận hành](/docs/runtime/install-and-run#sao-lưu-và-khôi-phục).
+
 > [!TIP]
 > Cấp cho mỗi tích hợp một key riêng, với scope hẹp nhất đủ dùng và có thời hạn. Khi có sự cố, bạn thu hồi một key mà không làm hỏng các key khác.
 

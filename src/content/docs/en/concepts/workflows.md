@@ -38,6 +38,8 @@ To avoid overwriting a concurrent edit, read the workflow's `updated_at` and pas
 
 The conditional CLI checks contract version 2 on its update connection and refuses an older or unknown gateway before mutation. Existing authorization and MCP approval requirements remain in force.
 
+SQLite upgrades normalize historical workflow metadata to fixed-width UTC timestamps so date filters and fractional-second ordering remain reliable. This does not enable the Lite workflow engine or change API response shapes. Back up before upgrading; rollback uses the pre-upgrade database backup and a compatible binary, as described in [Install and run](/docs/runtime/install-and-run#backups-and-restores).
+
 ## Runs and triggers
 
 | Status | Meaning |
