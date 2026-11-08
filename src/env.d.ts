@@ -6,6 +6,8 @@ interface Env {
   DB: D1Database;
   KV: KVNamespace;
   SESSION: KVNamespace;
+  /** Strongly consistent authority for the content MCP OAuth issuer. */
+  OAUTH_AUTHORITY?: DurableObjectNamespace<import("./lib/server/oauth/oauth-authority").OAuthAuthority>;
   MEDIA: R2Bucket;
   CHAT_ROOM: DurableObjectNamespace<import("./lib/server/chat-room").ChatRoom>;
   SITE_URL: string;

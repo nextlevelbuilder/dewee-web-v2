@@ -1,0 +1,161 @@
+---
+/**
+ * OAuth authorization endpoint for the content MCP. An MCP client (ChatGPT, Claude, …) sends the
+ * admin here; the admin signs in to /admin if needed, sees which app is asking, where the access
+ * goes and which permissions it gets, then allows or denies. Logic: src/lib/server/oauth/oauth-consent.ts.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { OAUTH_UI } from "~/components/admin/oauth-strings";
+import { adminForm, clientIp, field, privateHeaders } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { adminSession } from "~/lib/server/auth/request-auth";
+import { csrfTokenFor } from "~/lib/server/auth/session-store";
+import { rateLimit } from "~/lib/server/auth/rate-limit";
+import type { AuthorizeOutcome, ConsentView } from "~/lib/server/oauth/oauth-consent";
+import { fromWireOutcome, oauthAuthority } from "~/lib/server/oauth/oauth-authority-client";
+
+export const prerender = false;
+
+privateHeaders(Astro);
+const env = platformEnv();
+const ip = clientIp(Astro);
+const C = OAUTH_UI.consent;
+const authority = oauthAuthority(env);
+
+/** Copies the library's headers (binding cookies, anti-framing) onto a response. */
+function copyHeaders(from: Headers | undefined, to: Headers): void {
+  if (!from) return;
+  for (const cookie of from.getSetCookie()) to.append("set-cookie", cookie);
+  from.forEach((value, name) => {
+    if (name !== "set-cookie") to.set(name, value);
+  });
+}
+
+function redirect(outcome: Extract<AuthorizeOutcome, { kind: "redirect" }>): Response {
+  const headers = new Headers({ "cache-control": "no-store", "referrer-policy": "no-referrer" });
+  copyHeaders(outcome.headers, headers);
+  headers.set("location", outcome.location);
+  return new Response(null, { status: 302, headers });
+}
+
+let errorText: string | null = null;
+let view: ConsentView | null = null;
+let csrf = "";
+const session = await adminSession({ request: Astro.request, cookies: Astro.cookies, locals: Astro.locals, clientAddress: ip });
+
+if (!authority) {
+  Astro.response.status = 503;
+  errorText = OAUTH_UI.errors.notConfigured;
+} else if (!session) {
+  if (Astro.request.method !== "GET") {
+    Astro.response.status = 401;
+    errorText = OAUTH_UI.errors.expired;
+  } else {
+    return Astro.redirect(`/admin/login?next=${encodeURIComponent(Astro.url.pathname + Astro.url.search)}`, 303);
+  }
+} else if (Astro.request.method === "POST") {
+  const limited = !(await rateLimit(env.KV, `oauth-authorize-ip:${ip}`, 30, 600)).ok;
+  const form = limited ? null : await adminForm(Astro, session);
+  if (limited || !form) {
+    Astro.response.status = limited ? 429 : 403;
+    errorText = limited ? OAUTH_UI.errors.rateLimited : OAUTH_UI.errors.expired;
+  } else {
+    // The form body was consumed by adminForm; the provider only needs the
+    // original URL and headers to verify its browser-bound consent cookie.
+    const request = new Request(Astro.url, { method: "POST", headers: Astro.request.headers });
+    const outcome = fromWireOutcome(await authority.finish(request, {
+      email: session.email,
+      handle: field(form, "handle"),
+      decision: field(form, "decision"),
+      scopes: form.getAll("scope").filter((value): value is string => typeof value === "string"),
+    }));
+    if (outcome.kind === "redirect") return redirect(outcome);
+    Astro.response.status = outcome.kind === "error" ? outcome.status : 400;
+    errorText = outcome.kind === "error" && outcome.reason === "no_scope" ? `${C.noScope} ${OAUTH_UI.errors.expired}` : OAUTH_UI.errors.expired;
+  }
+} else {
+  const outcome = fromWireOutcome(await authority.begin(Astro.request));
+  if (outcome.kind === "redirect") return redirect(outcome);
+  if (outcome.kind === "consent") {
+    view = outcome.view;
+    csrf = await csrfTokenFor(session.token);
+    copyHeaders(outcome.headers, Astro.response.headers);
+  } else {
+    Astro.response.status = outcome.status;
+    errorText = outcome.reason === "client_unverified" ? OAUTH_UI.errors.clientUnverified : OAUTH_UI.errors.badRequest;
+  }
+}
+---
+
+<AdminLayout title={C.title} current="connections">
+  <section class="oauth">
+    <div class="adm-panel oauth__card">
+      {errorText && (
+        <>
+          <h1 class="oauth__title">{C.title}</h1>
+          <p class="adm-alert" data-kind="error" role="alert">{errorText}</p>
+        </>
+      )}
+      {view && session && (
+        <form method="post" class="oauth__form" data-oauth-consent data-no-scope={C.noScope}>
+          <h1 class="oauth__title">{C.ask(view.clientName)}</h1>
+          <p>
+            {view.clientDomain ? <>{C.publishedBy} <strong>{view.clientDomain}</strong>. </> : <>{C.unverified} </>}
+            {C.sendsTo} <strong>{view.redirectHost}</strong>.
+          </p>
+          {view.redirectIsLoopback && <p class="adm-alert" data-kind="error" role="alert">{C.loopback}</p>}
+          <p class="oauth__muted">{C.signedInAs} <strong>{session.email}</strong></p>
+          <input type="hidden" name="csrf" value={csrf} />
+          <input type="hidden" name="handle" value={view.handle} />
+          <fieldset class="oauth__scopes">
+            <legend class="label">{C.scopes}</legend>
+            {view.scopes.map((s) => (
+              <label class="oauth__scope">
+                <input type="checkbox" name="scope" value={s.scope} checked={s.checked} />
+                <span>
+                  {OAUTH_UI.scopeLabels[s.scope] ?? s.scope}
+                  <span class="oauth__muted"> · <code>{s.scope}</code> · {s.requested ? C.requested : C.notRequested}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+          <p class="oauth__muted">{C.writeNote}</p>
+          <div class="oauth__actions">
+            <button class="btn btn--primary" type="submit" name="decision" value="approve"><Icon name="shield-check" />{C.allow}</button>
+            <button class="btn" type="submit" name="decision" value="deny" formnovalidate>{C.deny}</button>
+          </div>
+        </form>
+      )}
+    </div>
+  </section>
+</AdminLayout>
+
+<script>
+  // Allow with nothing ticked would only reach a dead end on the server; say so before submitting.
+  for (const form of document.querySelectorAll<HTMLFormElement>("[data-oauth-consent]")) {
+    form.addEventListener("submit", (event) => {
+      const submitter = (event as SubmitEvent).submitter as HTMLButtonElement | null;
+      if (submitter?.value !== "approve" || form.querySelector("input[name=scope]:checked")) return;
+      event.preventDefault();
+      const box = form.querySelector<HTMLInputElement>("input[name=scope]");
+      box?.setCustomValidity(form.dataset.noScope ?? "");
+      box?.reportValidity();
+      box?.addEventListener("change", () => box.setCustomValidity(""), { once: true });
+    });
+  }
+</script>
+
+<style>
+  .oauth { display: grid; place-items: center; min-block-size: 60vh; }
+  .oauth__card { inline-size: min(100%, 36rem); gap: var(--space-5); }
+  .oauth__form { display: grid; gap: var(--space-4); }
+  .oauth__title { font-size: var(--step-2); overflow-wrap: anywhere; }
+  .oauth__form p, .oauth__form strong { overflow-wrap: anywhere; }
+  .oauth__muted { color: var(--ink-3); font-size: var(--step--1); }
+  .oauth__scopes { border: 0; padding: 0; margin: 0; display: grid; gap: var(--space-1); }
+  .oauth__scopes legend { margin-block-end: var(--space-2); }
+  .oauth__scope { display: flex; align-items: flex-start; gap: var(--space-2); min-block-size: 2.75rem; padding-block: var(--space-1); }
+  .oauth__scope input { margin-block-start: 0.3em; flex: none; }
+  .oauth__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+</style>

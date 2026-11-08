@@ -10,6 +10,7 @@
     "preview": "wrangler dev --port 4389",
     "check": "astro check",
     "test": "vitest run",
+    "test:workers": "vitest run --config vitest.workers.config.ts",
     "deploy:staging": "pnpm build:staging && wrangler d1 migrations apply DB --remote && wrangler deploy",
     "deploy:production": "pnpm build && wrangler d1 migrations apply DB --remote && wrangler deploy",
     "build:staging": "CLOUDFLARE_ENV=staging SITE_URL=https://staging.dewee.sh astro build",
@@ -22,6 +23,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.3",
+    "@cloudflare/workers-oauth-provider": "1.2.3",
     "astro": "^7.3.5",
     "marked": "^18.0.14",
     "mermaid": "12.2.0",
@@ -30,7 +32,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@cloudflare/workers-types": "^5.20260923.1",
+    "@cloudflare/vitest-plugin": "^1.6.0",
+    "@cloudflare/workers-types": "^5.20261107.1",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.13.6",
     "lucide-static": "^1.47.0",

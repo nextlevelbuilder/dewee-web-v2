@@ -9,6 +9,7 @@ export const ADMIN = {
     pages: "Pages",
     posts: "Posts",
     keys: "API keys",
+    connections: "Connected apps",
     leads: "Leads",
     widgets: "Answers",
     audit: "Audit log",
