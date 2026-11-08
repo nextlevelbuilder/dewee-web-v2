@@ -110,6 +110,8 @@ Gateway coi ngữ cảnh là dữ liệu bên ngoài không đáng tin cậy ch�
 
 Khi gateway và widget hỗ trợ, agent có thể dùng một thẻ trong cuộc trò chuyện trên website để yêu cầu thông tin xác thực từ khách có danh tính chat đã được xác minh. Tính năng này mặc định tắt: người vận hành self-hosted phải bật trên gateway, agent phải được bật quyền yêu cầu thông tin xác thực và widget phải hỗ trợ tính năng này. Khách ẩn danh không dùng được thẻ; danh tính chat đã xác minh cũng không cấp quyền quản trị thông tin xác thực.
 
+Trên gateway tự host có hỗ trợ, đặt `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` và cấu hình `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Bật `credential_requests` cho agent và dùng widget công bố hỗ trợ yêu cầu thông tin xác thực. Hãy kiểm tra phiên bản gateway và widget đã triển khai trước khi bật.
+
 Thẻ không bao giờ hiển thị secret. Chọn **Mở biểu mẫu bảo mật** để mở biểu mẫu do chính Dewee cung cấp ở tab mới. Quản trị viên workspace có quyền phê duyệt phải đăng nhập và nhập secret tại đó, không nhập vào chat. Yêu cầu hết hạn sau một giờ và có thể hủy ngay trên thẻ. Sau khi lưu thông tin xác thực, cuộc trò chuyện ban đầu tiếp tục một lần từ chỗ đã dừng. Tải lại trang sẽ khôi phục trạng thái hiện tại: đang chờ, hoàn tất, hết hạn hoặc đã hủy. Việc mở biểu mẫu bảo mật được giới hạn theo từng khách.
 
 Chat website dùng luồng riêng với danh tính đã xác minh. Với liên kết nhập thông tin xác thực được gửi qua kênh nhắn tin, xem [Secret, vai trò và audit](/vi/docs/security/secrets-roles-and-audit).
