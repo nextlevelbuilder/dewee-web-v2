@@ -69,7 +69,7 @@ If a stopped chat turn is still being saved, `chat.send` can return `FAILED_PREC
 
 ### Channel group writers and batch selections
 
-The channel instance writer API lists groups at `GET /v1/channels/instances/{id}/writers/groups`, lists writers at `GET /v1/channels/instances/{id}/writers`, and tests a user at `POST /v1/channels/instances/{id}/writers/test`. Add with `POST /v1/channels/instances/{id}/writers` and remove with `DELETE /v1/channels/instances/{id}/writers/{userId}`; writes require an admin. Successful writes return `status`, `group_id` and `user_id`. Removing a missing writer returns 404; removing the last writer returns 409. Consult the running gateway's OpenAPI reference for request fields.
+The channel instance writer API lists groups at `GET /v1/channels/instances/{id}/writers/groups`, lists writers at `GET /v1/channels/instances/{id}/writers`, and tests a user at `POST /v1/channels/instances/{id}/writers/test`. Add with `POST /v1/channels/instances/{id}/writers` and remove with `DELETE /v1/channels/instances/{id}/writers/{userId}`; writes require an admin. Successful writes return `status` (`added` or `removed`), `group_id` and `user_id`. Removing a missing writer returns 404; removing the last writer returns 409. Consult the running gateway's OpenAPI reference for request fields.
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` and `POST /v1/vault/links/batch` accept at most 500 IDs per request, counting duplicate entries. Larger arrays receive a localized HTTP 400 validation error rather than partial processing. Split larger selections and track each result.
 

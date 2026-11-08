@@ -69,7 +69,7 @@ Nếu lượt chat đã dừng vẫn đang được lưu, `chat.send` có thể 
 
 ### Writer nhóm kênh và lựa chọn theo lô
 
-API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status`, `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.
+API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status` (`added` hoặc `removed`), `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.
 
 `POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` và `POST /v1/vault/links/batch` nhận tối đa 500 ID mỗi yêu cầu, tính cả mục trùng. Mảng lớn hơn nhận lỗi kiểm tra HTTP 400 theo ngôn ngữ, thay vì xử lý một phần. Hãy chia lựa chọn lớn và theo dõi từng kết quả.
 
