@@ -61,6 +61,10 @@ For Telegram group writer access, an authorized manager can grant access from **
 
 Operators can also list and test group writers or add and remove them through [the channel writers CLI](/docs/runtime/cli#channel-group-writers). The same operations are available through the [channel writer API](/docs/api/overview#channel-group-writers-and-batch-selections) and, with per-call approval, [workspace MCP](/docs/api/workspace-mcp#what-the-client-can-see).
 
+With `dewee channels writers`, use `groups <instance-id>` for groups and writer counts, `list <instance-id> --group <scope>` for writers, or `test <instance-id> --group <scope> --user <id>` to check a person. Add with `add <instance-id> --group <scope> --user <id>` (optionally `--display-name`, `--username` or `--dry-run`); remove with the same group and user flags plus `--yes` or `--dry-run`. Removal never prompts. The scope is `group:<channel>:<chatId>`, or `guild:<guildId>:*` for Discord. Every command supports `-o json`; an empty writer list is `[]`, and a test returns `allowed` and `reason`.
+
+Adding or removing requires an admin. Exit code 2 means invalid input, 4 means permission denied, 5 means the instance or writer was not found, and 6 means a removal would remove the group's last writer. See the linked API reference for the write response fields and HTTP errors.
+
 > [!WARNING]
 > Zalo Personal uses an unofficial protocol, and the Zalo account it signs in with may be locked or banned. Prefer Zalo OA or Zalo Bot where you can.
 

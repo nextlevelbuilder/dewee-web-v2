@@ -64,6 +64,10 @@ Với quyền writer trong nhóm Telegram, người quản lý có thẩm quyề
 
 Người vận hành cũng có thể liệt kê, kiểm tra, thêm hoặc xóa writer nhóm qua [CLI channel writers](/docs/runtime/cli). Các thao tác này còn có qua [API channel writer](/docs/api/overview) và [workspace MCP](/docs/api/workspace-mcp), với phê duyệt cho từng lần gọi MCP.
 
+Với `dewee channels writers`, dùng `groups <instance-id>` để xem nhóm và số writer, `list <instance-id> --group <scope>` để xem writer, hoặc `test <instance-id> --group <scope> --user <id>` để kiểm tra một người. Thêm bằng `add <instance-id> --group <scope> --user <id>` (có thể thêm `--display-name`, `--username` hoặc `--dry-run`); xóa với cùng cờ nhóm và người dùng cùng `--yes` hoặc `--dry-run`. Lệnh xóa không hỏi lại. Phạm vi là `group:<channel>:<chatId>`, hoặc `guild:<guildId>:*` cho Discord. Mọi lệnh hỗ trợ `-o json`; danh sách writer trống trả `[]`, còn kết quả kiểm tra có `allowed` và `reason`.
+
+Thêm hoặc xóa cần quyền admin. Mã thoát 2 nghĩa là dữ liệu không hợp lệ, 4 là không đủ quyền, 5 là không tìm thấy instance hoặc writer, và 6 là lệnh xóa sẽ xóa writer cuối cùng của nhóm. Xem liên kết API ở trên để biết các trường phản hồi khi thay đổi và lỗi HTTP.
+
 ## Hộp ghép nối
 
 Khi bật ghép nối, một người gửi lạ nhắn trực tiếp cho agent sẽ nhận một mã ngắn thay vì câu trả lời. Yêu cầu nằm trong hộp cho tới khi bạn quyết định hoặc khi nó hết hạn.
