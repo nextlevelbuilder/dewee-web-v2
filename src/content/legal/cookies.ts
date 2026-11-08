@@ -70,7 +70,7 @@ export const COOKIES: Bi<LegalDoc> = {
               rows: [
                 ["`dewee_analytics`", "Cookie, set by app.dewee.sh", "Remembers your answer: `granted.` followed by a random anonymous ID, or `denied`. Clear it and the app asks again", "About 6 months (182 days)"],
                 ["`dewee_pending_signup`", "Cookie, set by app.dewee.sh", "Before you answer, temporarily holds the sign-in method and account creation time so a signup can be sent if you later allow analytics. Cleared when you answer", "Up to 1 day"],
-                ["PostHog, `ph_<project key>_posthog`", "Cookie, set by this website", "If you already accepted cookies here, the app reads this ID when you choose “Allow analytics” and reuses it, so this website and the app share one anonymous ID", "1 year"],
+                ["PostHog, `ph_<project key>_posthog`", "Cookie, set by this website", "If you accepted cookies here, the app may reuse a valid anonymous ID from this cookie when you choose “Allow analytics”; otherwise it creates a new one", "1 year"],
               ],
             },
           },
@@ -166,7 +166,7 @@ export const COOKIES: Bi<LegalDoc> = {
               rows: [
                 ["`dewee_analytics`", "Cookie, do app.dewee.sh đặt", "Ghi nhớ lựa chọn của bạn: `granted.` kèm một mã ẩn danh ngẫu nhiên, hoặc `denied`. Xoá cookie này thì ứng dụng sẽ hỏi lại", "Khoảng 6 tháng (182 ngày)"],
                 ["`dewee_pending_signup`", "Cookie, do app.dewee.sh đặt", "Trước khi bạn trả lời, tạm giữ cách đăng nhập và thời điểm tạo tài khoản để gửi lượt đăng ký nếu sau đó bạn cho phép phân tích. Cookie được xóa khi bạn trả lời", "Tối đa 1 ngày"],
-                ["PostHog, `ph_<project key>_posthog`", "Cookie, do website này đặt", "Nếu bạn đã đồng ý cookie trên website này, ứng dụng đọc mã này khi bạn chọn “Cho phép phân tích” và dùng lại nó, nên website và ứng dụng dùng chung một mã ẩn danh", "1 năm"],
+                ["PostHog, `ph_<project key>_posthog`", "Cookie, do website này đặt", "Nếu bạn đã đồng ý cookie ở đây, ứng dụng có thể dùng lại mã ẩn danh hợp lệ trong cookie khi bạn chọn “Cho phép phân tích”; nếu không, ứng dụng tạo mã mới", "1 năm"],
               ],
             },
           },
