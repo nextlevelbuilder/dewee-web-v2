@@ -154,7 +154,7 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
       },
       {
         title: { en: "Vercel AI Gateway", vi: "Vercel AI Gateway" },
-        body: { en: "One more gateway, plus all 27 Workers AI text models.", vi: "Thêm một cổng nữa, cùng đủ 27 model text của Workers AI." },
+        body: { en: "One more gateway, plus the current Workers AI text models.", vi: "Thêm một cổng nữa, cùng các model text hiện hành của Workers AI." },
         since: "3.31",
       },
       {
