@@ -1,0 +1,11 @@
+{
+  "name": "oauth-authority-test",
+  "main": "oauth-test-worker.ts",
+  "compatibility_date": "2026-09-20",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "vars": { "SITE_URL": "https://dewee.sh", "ENVIRONMENT": "production" },
+  "durable_objects": { "bindings": [{ "name": "OAUTH_AUTHORITY", "class_name": "OAuthAuthority" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["OAuthAuthority"] }],
+  "kv_namespaces": [{ "binding": "KV", "id": "test" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "test", "database_id": "test" }]
+}

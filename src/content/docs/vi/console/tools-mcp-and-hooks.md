@@ -4,7 +4,7 @@ description: Bật hoặc tắt tool tích hợp cho workspace, kết nối MCP 
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tool là cách agent hành động: tìm kiếm trên web, đọc file, gọi một API. dewee mặc định từ chối mọi thứ, nên agent chỉ dùng được một tool sau khi bạn cho phép. Trang này nói về ba khu vực quyết định agent được gọi những gì và điều gì chạy quanh các lần gọi đó, cùng hai khu vực **Gói runtime** và **Giọng nói**.
@@ -23,6 +23,8 @@ Chủ workspace và vai trò Admin có sẵn giữ tất cả các khoá này. C
 ## Tool tích hợp
 
 Trang **Công cụ tích hợp** (trong menu là **Công cụ có sẵn**) liệt kê các tool đi kèm runtime, nhóm theo danh mục có thể thu gọn. Bạn tìm được theo tên hoặc danh mục. Mỗi dòng cho biết mức rủi ro (**Rủi ro cao**, **Rủi ro trung bình** hoặc **Rủi ro thấp**), thiết lập đang là **Mặc định** hay **Ghi đè** riêng của workspace, và một công tắc để bật tool. Agent chỉ gọi được các tool đang bật ở đây.
+
+Trong dashboard gateway, Browser có nút **Settings** ngay cả khi thiết lập mặc định trống hoặc chỉ có ghi đè của workspace. Dùng biểu mẫu và quyền hiện có để cấu hình [Trình duyệt kết nối](/docs/integrations/chrome-extension).
 
 ::shot{id="tools"}
 
@@ -112,6 +114,8 @@ Trang **Gói runtime** có bốn tab:
 - **CLI**: **Thông tin xác thực CLI** ghép nối terminal của lập trình viên với runtime của workspace. Chạy lệnh ghép nối hiển thị trên trang, rồi phê duyệt yêu cầu qua **Mở hộp thư ghép nối**.
 
 Chọn một gói đã cài để mở trang của gói, với các tab **Tổng quan**, **Quyền truy cập**, **Lệnh được phép**, **Thông tin xác thực & biến môi trường**, **Phiên bản** và **Hoạt động**. Ở tab **Quyền truy cập**, quản trị viên workspace dùng công tắc **Giới hạn truy cập** để chuyển gói giữa **Mở**, khi mọi agent đều dùng được, và **Giới hạn**, khi chỉ agent được cấp quyền **Dùng** mới chạy được các lệnh của gói; mã nhập gói như một thư viện thì không bị chặn. Gói phát hành trên GitHub hiện thông báo thay vào đó, vì quyền truy cập của chúng được đặt trong runtime. Tab **Lệnh được phép** và **Thông tin xác thực & biến môi trường** cho biết runtime chưa báo các thông tin này cho ứng dụng.
+
+Với agent có quyền truy cập package bị giới hạn, lệnh quá lớn hoặc phức tạp có thể bị từ chối khi runtime không kiểm tra an toàn được. Hãy chia thành các lệnh nhỏ, rõ ràng; xem [Tool và quyền hạn](/vi/docs/concepts/tools-and-permissions) để biết quy tắc thực thi. Việc bị từ chối không khiến lệnh được chạy qua đường khác.
 
 ## Giọng nói (TTS & STT)
 

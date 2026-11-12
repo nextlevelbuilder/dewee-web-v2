@@ -3,7 +3,7 @@ title: Tổng quan API
 description: "REST API, WebSocket RPC, chat tương thích OpenAI, MCP server công khai và webhook của runtime: mỗi phần để làm gì, tài liệu ở đâu, lỗi trông ra sao."
 section: api
 order: 1
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 API của runtime bao quát những gì agent làm và cách cấu hình chúng: agent, session, provider, channel, tool, bộ nhớ và nhiều thứ khác, nên các việc này tự động hoá được chứ không chỉ bấm tay. Những phần riêng của console như thành viên, thanh toán và hỗ trợ thì vẫn nằm trong console. Gateway phục vụ tất cả trên cùng một cổng: REST API dưới `/v1`, một WebSocket cho các phiên trực tiếp, và vài endpoint dành cho phần mềm khác gọi vào. Trang này vẽ bản đồ tổng thể; [Xác thực](/docs/api/authentication) giải thích về key, còn [Webhook và MCP](/docs/api/webhooks-and-mcp) nói về hai endpoint tích hợp.
@@ -58,12 +58,36 @@ WebSocket tại `/ws` là thứ console dùng cho chat trực tiếp. Frame đ�
 
 Phản hồi cho biết vai trò và tenant của bạn. Gửi `connect` lần nữa trên cùng socket sẽ thay hoàn toàn phiên đăng nhập trước, còn một `connect` bị từ chối sẽ đăng xuất socket. Sau đó, mỗi request là một frame `req` có `method` và `params`, được trả lời bằng frame `res` có cùng `id`. Máy chủ đẩy các frame `event` cho câu trả lời dạng stream, lời gọi tool, task của nhóm agent, yêu cầu phê duyệt và cập nhật trace. Phiên bản protocol là 3; `/health` cũng báo con số này.
 
+Khi dùng `dewee agent chat` làm client WebSocket, xem thứ tự ưu tiên của cờ và biến môi trường cho ngữ cảnh người gọi trong [hướng dẫn CLI](/vi/docs/runtime/cli). Ngữ cảnh đó không chứng minh danh tính hay quyền; gateway vẫn kiểm tra chủ sở hữu credential, vai trò, tenant và tư cách thành viên.
+
 ## Lỗi và giới hạn
 
 - Lỗi trả về dạng JSON có trường `error` cùng các mã trạng thái quen thuộc: `400`, `401`, `403`, `404`, `409`, `429` và `500`.
 - Trên WebSocket, request thất bại trả về `ok: false` kèm `code`, `message` của lỗi và gợi ý `retryable`.
 - Chat bị giới hạn tần suất theo người dùng hoặc IP, mặc định 20 request mỗi phút; vượt ngưỡng sẽ nhận `429` kèm `Retry-After`.
 - Body HTTP giới hạn 1 MB và frame WebSocket giới hạn 512 KB.
+
+Nếu lượt chat đã dừng vẫn đang được lưu, `chat.send` có thể trả `FAILED_PRECONDITION` với `retryable: true` và `details.reason: "run_in_progress"`. Các endpoint HTTP chat completions và responses trả cùng lý do với HTTP 409 trước khi bắt đầu stream. Hãy giữ nội dung và thử lại trong cùng cuộc trò chuyện sau khi lượt trước hoàn tất. Kênh kết nối nhận thông báo thử lại nếu hết thời gian chờ; tin nhắn không được tự động gửi lại.
+
+### Writer nhóm kênh và lựa chọn theo lô
+
+Channel webhook Feishu đang bật không thể dùng target đã được channel đang bật khác hoặc cấu hình file đang hoạt động sử dụng. API channel trả HTTP 409 / `ALREADY_EXISTS`: hãy chuyển sang chế độ WebSocket hoặc nhờ người vận hành cấp target còn trống. Channel đã tắt không giữ target. Kiểm tra khi lưu chỉ điều phối trong một tiến trình Gateway; vẫn cần kiểm tra lúc khởi động giữa các replica.
+
+API writer của channel instance liệt kê nhóm tại `GET /v1/channels/instances/{id}/writers/groups`, liệt kê writer tại `GET /v1/channels/instances/{id}/writers` và kiểm tra người dùng tại `POST /v1/channels/instances/{id}/writers/test`. Thêm bằng `POST /v1/channels/instances/{id}/writers` và xóa bằng `DELETE /v1/channels/instances/{id}/writers/{userId}`; thao tác ghi yêu cầu quyền admin. Khi thành công, phản hồi có `status` (`added` hoặc `removed`), `group_id` và `user_id`. Xóa writer không tồn tại trả 404; xóa writer cuối cùng trả 409. Xem OpenAPI của gateway đang chạy để biết các trường yêu cầu.
+
+`POST /v1/contacts/merge`, `POST /v1/contacts/unmerge` và `POST /v1/vault/links/batch` nhận tối đa 500 ID mỗi yêu cầu, tính cả mục trùng. Mảng lớn hơn nhận lỗi kiểm tra HTTP 400 theo ngôn ngữ, thay vì xử lý một phần. Hãy chia lựa chọn lớn và theo dõi từng kết quả.
+
+### Thiết lập workspace có hướng dẫn
+
+`POST /v1/workspace-setup/next` chuyển sang lượt tiếp theo của quy trình thiết lập. Khi câu hỏi kiểm tra kết nối hoặc sửa lỗi liên quan tới một provider API key đã lưu, gửi `intent: "replace_key"` và tùy chọn `step_id` để thay câu hỏi bằng thẻ nhập key cho chính provider đó. Trường `intents` trong phản hồi liệt kê các lựa chọn được chấp nhận ở lượt tiếp theo và có thể bị bỏ qua khi rỗng. Xem [Tổng quan](/docs/console/overview) về thao tác người dùng và lệnh CLI tương ứng.
+
+### Cập nhật bản nháp workflow có điều kiện
+
+Với `PUT /v1/workflows/{id}`, truyền `updated_at` hiện tại của bản nháp vào `expected_version` để từ chối khi có chỉnh sửa đồng thời. Giá trị cũ trả HTTP 409 với `VERSION_CONFLICT`; hãy tải lại và đối chiếu trước khi thử lại. Bỏ trường này để cập nhật không điều kiện. Phương thức WebSocket tương ứng là `workflows.update` với `expectedVersion`. Xem [Workflow](/docs/concepts/workflows) để biết độ chính xác timestamp và cách dùng qua CLI và Workspace MCP.
+
+### Lỗi xuất trace
+
+`GET /v1/traces/{id}/export` trả HTTP 422 với `trace_export_too_deep` và `max_depth: 10` nếu trace vượt quá mười cấp trace con, hoặc `trace_export_cycle` nếu liên kết cha tạo thành vòng lặp. Hãy xuất trace con sâu hơn bằng ID riêng; vòng lặp nằm ngoài giới hạn độ sâu có thể được báo là quá sâu. Kết quả xuất thành công vẫn có định dạng JSON gzip. Xem [Tracing](/docs/concepts/tracing) để biết cách khôi phục và việc dọn trace.
 
 ## Các nhóm route
 

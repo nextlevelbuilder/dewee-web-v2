@@ -3,7 +3,7 @@ title: Multi-tenant isolation
 description: How dewee keeps each tenant's agents, sessions, memory and credentials apart, how a request finds its tenant, and how tenant data is backed up or moved.
 section: concepts
 order: 2
-updated: 2026-10-13
+updated: 2026-11-08
 ---
 
 A tenant is the isolation boundary in dewee. Agents, conversations, memory, providers and tools all belong to exactly one tenant, and the runtime refuses to answer a query that does not name one. In the console the same boundary is called a workspace: each workspace is bound to one tenant on its runtime.
@@ -66,7 +66,7 @@ API keys get their role from their scopes instead: `operator.admin` is admin, `o
 
 A suspended tenant, or a workspace whose entitlement is suspended, cannot run agents, chat, create API keys or change channels. System owners can still inspect the tenant and change its status.
 
-Access changes take effect on the next request. When a key is revoked or its scopes change, or a membership is removed, open WebSocket sessions receive `TENANT_ACCESS_REVOKED` on their next call.
+Once applied to the runtime, access changes take effect on the next request. When a key is revoked or its scopes change, or a membership is removed, open WebSocket sessions receive `TENANT_ACCESS_REVOKED` on their next call. A customer workspace removal can remain pending while runtime synchronization retries; see [Members](/docs/console/members-roles-and-api-keys#members) before treating revocation as complete.
 
 ## Per-tenant overrides
 
@@ -91,9 +91,15 @@ dewee tenant-restore ./acme-backup.tar.gz --mode new --new-tenant-slug acme-copy
 
 Restore has three modes: `upsert` (the default, adds missing rows and changes nothing else), `replace` (wipes the tenant's data first and needs `--force`), and `new` (creates a new tenant from the archive). Tenant backup and restore need PostgreSQL; the Lite edition has a single tenant and uses the full-system `dewee backup` instead.
 
+Supported backups preserve private data. Restoring an archive with private data requires the original tenant and the configured encryption key; cloning it into a new tenant is refused. A target with current private instances refuses both private and older archives before mutation. Restored active private instances remain quarantined, and archived identities and bindings do not renew access or consent. Private-resource activation and original-owner recovery are not enabled by this preservation capability.
+
+Read restore warnings: a filesystem step can fail after database import. If the database outcome is unconfirmed, inspect operator activity with `dewee activity list` before retrying. Run `dewee tenant-restore --help` or see the [generated CLI reference](https://docs.dewee.sh/products/cli/#dewee-tenant-restore) for the current contract, and consult the [security guide](/docs/security/overview). This does not provide a complete disaster-recovery journey.
+
 ### Transfer between tenants
 
 Newer runtimes can copy or move selected resources between two tenants on the same runtime: agents, teams, MCP servers, custom skills, hooks, channels, cron jobs, providers, tasks and tenant storage. A copy gets new identities; a move keeps them. Agent memories and knowledge are included only when you ask. The caller must be an administrator of both tenants, every transfer starts from a saved preview, and it is available on PostgreSQL only. Use `dewee tenant-transfer` or the `/v1/tenant/resource-transfers` endpoints. A transferred custom skill takes every version of its files into the destination tenant. If the destination already has one of those versions on disk, the transfer stops before anything is copied.
+
+If a transfer is interrupted before acquiring a runtime lease, recovery marks it failed rather than leaving it indefinitely in progress. Check status first: a retry with the same key reports that recovered outcome. After reviewing it, start a new operation if needed. Active and committed transfers retain their existing safeguards.
 
 ## Related
 

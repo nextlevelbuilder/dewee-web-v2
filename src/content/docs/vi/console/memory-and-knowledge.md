@@ -4,7 +4,7 @@ description: Xem lại và chọn lọc những gì agent ghi nhớ, xây kho tr
 section: console
 order: 10
 screens: [memory, knowledge-base, storage]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Agent trả lời tốt hơn khi nhớ được những gì đã học và tra cứu được thông tin. Nhóm **Dữ liệu** trên menu có các khu vực phục vụ việc này: **Bộ nhớ**, những gì agent giữ lại qua các phiên, **Kho tri thức** và **Đồ thị tri thức**, gồm tài liệu và thực thể mà agent tìm kiếm được, và **Lưu trữ**, nơi chứa file dùng chung cho cả workspace. Mọi dữ liệu ở đây chỉ nằm trong workspace của bạn.
@@ -73,6 +73,8 @@ Tab **Tóm tắt cuộc trò chuyện** hiển thị những bản tóm tắt ng
 Đường dẫn và phạm vi không đổi được sau khi tạo tài liệu. Muốn nạp file, chọn **Nhập** và thêm file Markdown, văn bản, JSON hoặc CSV, tối đa 2 MB mỗi file. Mỗi file trở thành một tài liệu dùng chung tìm kiếm được.
 
 Chọn một tài liệu để xem trước, xem tóm tắt và quản lý **Liên kết** tới tài liệu khác bằng **Thêm liên kết**. Tài liệu mới phải chờ làm giàu, tức bước viết tóm tắt, tạo embedding cho tìm kiếm ngữ nghĩa và gợi ý liên kết; trước đó, tìm kiếm ngữ nghĩa có thể bỏ sót chúng. Khi có tài liệu đang chờ, **Quét lại** đưa chúng vào hàng đợi. **Xoá tài liệu** xoá một tài liệu khỏi kho tri thức sau một bước xác nhận.
+
+Xóa tài liệu Vault chỉ xóa bản ghi được chọn, kể cả khi phạm vi khác có tài liệu cùng đường dẫn. Xóa lại bản ghi đã mất trả về không tìm thấy. Thao tác này không xóa file nguồn: lần quét sau có thể đăng ký lại file đó.
 
 ### Đồ thị
 

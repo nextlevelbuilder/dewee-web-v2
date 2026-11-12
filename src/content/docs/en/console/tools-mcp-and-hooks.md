@@ -4,7 +4,7 @@ description: Turn built-in tools on or off for the workspace, connect MCP server
 section: console
 order: 7
 screens: [tools, mcp-servers, hooks]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tools are how agents act: search the web, read files, call an API. dewee starts from default-deny, so an agent can only use a tool once you allow it. This page covers the three areas that decide what agents can call and what runs around those calls, plus the **Runtime packages** and **Voice** areas.
@@ -23,6 +23,8 @@ The workspace owner and the built-in Admin role hold all of them. Speech-to-text
 ## Built-in tools
 
 **Built-in Tools** lists the tools that ship with the runtime, grouped in collapsible categories. Search by name or category. Each row shows the tool's risk (**High risk**, **Medium risk** or **Low risk**), whether its setting is the **Default** or an **Override** for this workspace, and a switch to enable it. Agents can only call tools that are enabled here.
+
+In the gateway dashboard, Browser also has a **Settings** action when its defaults are empty or only a workspace override exists. Use its existing settings form and permissions to configure [Connected browser](/docs/integrations/chrome-extension#ask-dewee-and-connected-browser).
 
 ::shot{id="tools"}
 
@@ -112,6 +114,8 @@ Built-in, instance-wide and command hooks set up by the runtime operator are rea
 - **CLI**: **CLI credentials** pairs a developer terminal with the workspace runtime. Run the pairing command it shows, then approve the request through **Open pairing inbox**.
 
 Select an installed package to open its page, with the tabs **Overview**, **Access**, **Allowed commands**, **Credentials & env**, **Versions** and **Activities**. On **Access**, a workspace admin uses the **Restricted access** switch to move the package between **Open**, where every agent can use it, and **Restricted**, where only agents granted **Use** can run its commands; code that imports the package as a library is not blocked. GitHub release packages show a notice instead, because their access is set in the runtime. **Allowed commands** and **Credentials & env** show that the runtime does not report this information to the app yet.
+
+For an agent with restricted package access, an oversized or overly complex command can be refused when the runtime cannot check it safely. Split it into smaller, explicit commands; see [Tools and permissions](/docs/concepts/tools-and-permissions) for the execution rules. A refusal does not cause the command to run by another route.
 
 ## Voice (TTS & STT)
 

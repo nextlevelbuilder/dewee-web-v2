@@ -3,7 +3,7 @@ title: Workspace MCP
 description: Connect Claude Code, Cursor, VS Code, ChatGPT or Gemini CLI to /mcp/workspace with Dewee sign-in, read agents, workflows and schedules, and toggle a schedule.
 section: api
 order: 4
-updated: 2026-11-01
+updated: 2026-11-08
 ---
 
 The workspace MCP endpoint, `/mcp/workspace`, lets an AI client manage a workspace **as you**: list agents, workflows and schedules, check usage and health, and switch a schedule on or off. It is a different endpoint from the [public MCP server](/docs/api/webhooks-and-mcp#the-public-mcp-server) at `/mcp/server`, where a client acts as one agent with an MCP API key. Here there is no agent and no API key: you sign in with your Dewee account and approve the client on a consent page.
@@ -13,18 +13,18 @@ The workspace MCP endpoint, `/mcp/workspace`, lets an AI client manage a workspa
 
 ## Before you start
 
-An operator turns the endpoint on per gateway and per workspace. Every switch defaults to off:
+An operator enables the endpoint, OAuth and reads for the environment. Eligible existing and newly provisioned workspaces can then connect; users still sign in and grant consent. A configured workspace list restricts availability, and an explicitly empty list denies all workspaces. Configure and elevated operations remain separately controlled:
 
 | Setting | Env variable | Effect |
 |---|---|---|
 | `tools.mcp.workspace.enabled` | `GOCLAW_MCP_WORKSPACE_ENABLED` | Master switch. Off: the route does not exist and answers `404` |
 | `tools.mcp.workspace.read` | `GOCLAW_MCP_WORKSPACE_READ` | Serves the read tools |
-| `tools.mcp.workspace.config_write` | `GOCLAW_MCP_WORKSPACE_CONFIG_WRITE` | Serves the configuration writes (today only `cron_toggle`) |
+| `tools.mcp.workspace.config_write` | `GOCLAW_MCP_WORKSPACE_CONFIG_WRITE` | Controls configuration writes |
 | `tools.mcp.workspace.oauth` | `GOCLAW_MCP_WORKSPACE_OAUTH` | Accepts Dewee sign-in tokens. Off: the route stays but refuses every credential with `401` |
 | `tools.mcp.workspace.resource_origin` | `GOCLAW_MCP_WORKSPACE_RESOURCE_ORIGIN` | The gateway's public origin, set explicitly. Required when the endpoint is on; it is never guessed from request headers |
-| `tools.mcp.workspace.tenants` | `GOCLAW_MCP_WORKSPACE_TENANTS` | The workspace ids the endpoint serves. Empty serves none |
+| `tools.mcp.workspace.tenants` | `GOCLAW_MCP_WORKSPACE_TENANTS` | Optional workspace allowlist. An omitted list admits eligible workspaces for reads; an explicitly empty list admits none |
 
-There is also `privileged_write`, for actions that run or govern things. No such tool exists yet, so leave it off.
+The `privileged_write` switch separately controls privileged actions. Enabling read access does not enable configuration writes or privileged actions; each keeps its own admission and approval requirements.
 
 With `oauth` on, the gateway refuses to start unless the Dewee sign-in issuer and its keys (`GOCLAW_MCP_PUBLIC_OAUTH_ISSUER`, `GOCLAW_MCP_PUBLIC_OAUTH_JWKS_URI`), a gateway token and the PostgreSQL grant registry (migration `000178` or later) are in place. The Lite edition has no grant registry, so it cannot serve this endpoint.
 
@@ -118,16 +118,37 @@ The token lasts 5 minutes and the client refreshes it on its own. It carries the
 | `workflows_get` | One workflow by `id` or `slug`, including its draft | `customer.tasks.manage` |
 | `workflows_node_types` | The workflow node types the gateway supports, with their settings | `customer.tasks.manage` |
 | `channels_list` | The names and types of the workspace's channels | `customer.integrations.manage` |
+| `channels_writers_read`, `channels_writers_write` | List, test, add or remove group writers; each call requires approval, and writes require an owner or admin | `customer.integrations.manage` |
 | `quota_usage` | Today's requests, tokens and cost for the workspace, with the busiest users' counts | `customer.observability.read` |
 | `workspace_setup_readiness_read` | Workspace health: a verified model provider, the Super Agent, running channels, pending approvals, and how to fix each failed check | `customer.observability.read` |
 
 Each tool runs through the same checks as the console, as you. Objects of other workspaces are never returned; another workspace's workflow id is `NOT_FOUND`.
 
-The client never acts as a workspace admin. If you are an owner or admin, `cron_list` still shows only your own schedules and `agents_list` only the agents you own or were shared, not the whole workspace.
+Each operation enforces the signed-in user's current workspace role and permissions. Elevated tools can require an owner or admin and separate approval; read access alone does not grant those operations.
 
 Arguments are checked against each tool's schema. An argument the tool does not list, such as `cron_list`'s admin-only `createdVia`, is refused with `invalid_arguments` before anything runs.
 
+`cron_list` returns up to 20 jobs by default; the maximum requested limit is 100. Its result contains `jobs`, `hasMore` and `nextCursor`. Continue with that cursor and the same filters, or omit it to restart. Empty or invalid cursors are errors. Cursors mark a position, not a snapshot: start a fresh traversal to see newly inserted newer jobs.
+
+When workflow configuration writes are enabled, `workflows_update` can replace a draft. Read `updated_at` with `workflows_get` and pass its full value as `expected_version` to prevent overwriting a concurrent edit. A stale version returns `VERSION_CONFLICT`; read the workflow again and reconcile the changes. Updating requires a workspace owner or admin and approval from another owner or admin; repeat the identical call with the approved `approval_id`. See [Workflows](/docs/concepts/workflows) for timestamp precision and the CLI, HTTP and WebSocket equivalents.
+
 `cron_status`, `cron_runs` and `hooks_list` are not available.
+
+### Connected browsers
+
+The following tools require a gateway and control plane that include the connected-browser MCP update; check `tools/list` for availability. The connection receives `customer.browser.manage` for these operations without raising its general role. Only your own browsers and their grants are visible, even to a workspace owner or admin; another person's ID returns `NOT_FOUND`.
+
+| Tool | Use |
+|---|---|
+| `browser_devices_list` | List your connected browsers and their online and control state |
+| `browser_grants_list` | List active grants for one browser, including a shared tab when present |
+| `browser_devices_rename` | Rename your browser; `validate_only` previews the trimmed name |
+| `browser_devices_revoke` | Revoke your browser, its grants and live connection |
+| `browser_grants_revoke` | Revoke one grant and cancel commands running under it |
+
+These tools map to `dewee browser devices list`, `rename` and `revoke`, and `dewee browser grants list` and `revoke`; their results match the corresponding CLI `--json` output. Managing an existing personal browser or grant does not itself grant an agent access to a tab.
+
+Rename is a configuration operation; the two revocations are destructive operations. The first revoke call opens a hosted confirmation for you, the requesting member. After confirming, repeat the same request with `approval_id`; a second owner or admin is not required for these two operations. Revoking your own inactive browser or grant is idempotent. An unknown or another person's ID still returns `NOT_FOUND` after confirmation. Enrollment, connection and grant creation remain in the extension.
 
 ## Change a schedule
 
@@ -173,9 +194,9 @@ To cut off every client at once, an operator removes the workspace from `tools.m
 | `401` | `workspace_membership_revoked` | You are no longer a member of the workspace |
 | `401` | `workspace_tenant_inactive` | The workspace is inactive or gone |
 | `403` | `workspace_tenant_not_enabled` | The workspace is not on the endpoint's allowlist |
-| `429` | `rate_limited`, `too_many_concurrent_calls` | Over the limits below; wait for `Retry-After` |
+| `429` | `rate_limited`, `too_many_concurrent_calls`, `tenant_rate_limited`, `tenant_too_many_concurrent_calls` | Over the limits below; the `tenant_` codes mean the whole workspace is over its budget. Wait for `Retry-After` |
 | `503` | `workspace_oauth_verifier_unavailable` | The gateway cannot check tokens right now; retry later |
 
-The endpoint uses the same limit settings as `/mcp/server` (requests per minute, concurrent tool calls, call timeout and body size) but keeps its own budget for each connection, so traffic on one endpoint never spends the other's. Neither endpoint accepts the other's tokens.
+The endpoint uses the same limit settings as `/mcp/server` (requests per minute, concurrent tool calls, call timeout and body size) but keeps its own budget for each connection, so traffic on one endpoint never spends the other's. The [workspace budget](/docs/api/webhooks-and-mcp#limits-quota-and-revocation) that all connections of a workspace share applies here too, counted separately from `/mcp/server`. Neither endpoint accepts the other's tokens.
 
 The gateway logs every call with the operation, outcome, workspace, user, client id and token id, never the arguments, the results or the token.

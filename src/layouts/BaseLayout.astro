@@ -77,7 +77,6 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     <slot name="head" />
   </head>
   <body class={bodyClass}>
-    <GoogleTagManager part="body" />
     <a class="skip-link" href="#main">{t(locale, "skip")}</a>
     <SiteHeader locale={locale} path={path} altHref={altHref} />
     <main id="main" tabindex="-1">

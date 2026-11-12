@@ -4,7 +4,7 @@ description: Tìm hướng dẫn, mở và theo dõi phiếu hỗ trợ, yêu c�
 section: console
 order: 14
 screens: [support, billing]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 **Hỗ trợ** là nơi bạn nhờ trợ giúp cho workspace của mình: tìm hướng dẫn, mở phiếu hỗ trợ, hoặc yêu cầu cài một gói runtime. **Thanh toán** là nơi workspace dewee AaaS quản lý gói đăng ký, phương thức thanh toán, hoá đơn và hoàn tiền. Trên Dedicated và On-Premises, quyền sử dụng đến từ license thường niên, nên bạn không mua gói nào ở đây.
@@ -70,6 +70,12 @@ Trang có các thẻ sau:
 - **Phương thức thanh toán**: chọn **Cập nhật trong cổng bảo mật** để thay đổi. Trước khi bạn đăng ký, thẻ này hiện **Chưa có phương thức thanh toán**.
 - **Các gói**: so sánh gói miễn phí và **Gói hàng năm**. Gói bạn đang dùng được đánh dấu **Hiện tại**, còn gói hàng năm được đánh dấu **Mở khoá kênh**.
 - **Hoá đơn & biên nhận**: chọn **Mở hoá đơn & biên nhận** để tải hoá đơn và biên nhận thanh toán.
+
+### Nhận quyền sử dụng được tặng
+
+Khi môi trường hỗ trợ nhận quà bằng email đã xác minh, hãy đăng nhập tại [trang nhận quà](https://app.dewee.sh/claim) bằng địa chỉ đã xác minh và được gửi quà. Trong **Quà đang chờ bạn**, chọn **Áp dụng** và chọn workspace bạn sở hữu nếu được hỏi. Nếu không thấy quà, hãy kiểm tra email tài khoản đã được xác minh, khớp địa chỉ nhận và thời hạn nhận chưa hết. Nếu tùy chọn này chưa có, hãy dùng liên kết hoặc mã do người gửi cung cấp.
+
+Bạn cũng có thể mở liên kết nhận quà, nhập mã trên trang nhận quà hoặc dùng thẻ Thanh toán của workspace. Mở liên kết chưa kích hoạt quà: hãy chọn **Áp dụng** để xác nhận. Trong lúc đăng nhập hoặc tạo workspace, mã được giữ trong 30 phút, kể cả khi magic link mở ở tab khác hoặc phiên đăng nhập hết hạn trong lúc thiết lập. Hãy đăng nhập lại để tiếp tục. Đăng xuất xóa mã được giữ; trang nhận quà thông thường không dùng lại mã của tài khoản trước. Khi hết thời gian lưu, hãy mở lại liên kết hoặc dán lại mã. Người dùng Self-install nhận quà trên trang được lưu trữ rồi làm theo các bước kích hoạt thông thường.
 
 ### Đăng ký gói
 

@@ -3,7 +3,7 @@ title: Chrome extension
 description: "Chat with your dewee agents in Chrome's side panel and answer credential requests without pasting secrets into chat, on Dewee Cloud or a self-hosted gateway."
 section: integrations
 order: 4
-updated: 2026-10-31
+updated: 2026-11-08
 ---
 
 The [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) opens a side panel on the right of Chrome where you chat with your dewee agents. Super Agent is always pinned first. When an agent needs an API key or an OAuth connection, the panel shows a credential card, so you never paste a secret into the chat.
@@ -125,6 +125,10 @@ Both features are off until you turn them on, and Chrome asks for website access
 
 - **Ask Dewee.** Select text on a web page and select **Ask Dewee**. The side panel opens with the quote, the page title and its address in the message box; nothing is sent until you press Send. It applies to pages opened after you turn it on. Turning it off removes the button; to remove site access too, use Chrome's extension settings.
 - **Connected browser** (self-hosted gateway only, not yet Dewee Cloud). Register this browser, then allow chosen agents on chosen sites for a limited time, even when you ask them from Telegram or another channel. Agents open, read and act only in tabs they open themselves, never in your other tabs. Risky clicks wait for your approval, password and payment fields are never read or typed, and pausing, stopping or revoking access is always one click away. Agent tabs carry an "AI" badge, and using one yourself pauses the agents. A workspace admin must also turn the feature on for the workspace.
+
+In the gateway dashboard's built-in tools, an administrator can open **Settings** for Browser and configure connected browsing using the existing form, even when its defaults are empty or only a workspace override exists. This does not change the authorization required to save settings.
+
+Where the connected-browser Workspace MCP tools are available, you can also [list your browsers and grants or revoke them](/docs/api/workspace-mcp#connected-browsers). MCP revocation requires your own hosted confirmation; the extension and `dewee browser` CLI remain alternatives.
 
 ## Troubleshooting
 

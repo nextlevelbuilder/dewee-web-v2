@@ -3,14 +3,14 @@ title: Security overview
 description: What dewee locks down by default, which agent capabilities stay open until you tighten them, and the five layers of checks between a message and your systems.
 section: security
 order: 1
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 This page is written for the person who has to sign off on dewee: what is protected out of the box, what you are expected to configure, and where each check lives. It describes what the runtime does today, including the defaults that are permissive. The product-level summary is on the [Security](/security) page.
 
 ## The short version
 
-- **The edge is closed by default.** Nobody reaches the gateway without a token, strangers cannot message your agents without approval, and the public MCP endpoint is off.
+- **The edge is closed by default.** Nobody reaches the gateway from another machine without a token, strangers cannot message your agents without approval, and the public MCP endpoint is off.
 - **Agent capabilities start permissive.** A new gateway gives agents the full tool set, runs commands without asking, and has the Docker sandbox off. You narrow this with policy, per gateway and per agent.
 - **Secrets are encrypted when the encryption key is set.** Onboarding and the Docker setup generate the key. API keys are stored only as hashes.
 - **Tenants are isolated in every query.** A request without a tenant context fails.
@@ -19,7 +19,7 @@ This page is written for the person who has to sign off on dewee: what is protec
 
 | Area | Default |
 |---|---|
-| Gateway access | A token is required on any non-loopback address; the gateway will not start without one |
+| Gateway access | A token is required on any non-loopback address; the gateway will not start without one. On loopback too with `GOCLAW_REQUIRE_AUTH=1`, which a reverse proxy on the same host needs |
 | WebSocket | The first frame must be an authenticated `connect`; anything else is rejected |
 | RPC methods | Methods that have no permission class are denied |
 | Chat-app direct messages | Unknown senders get a pairing code and wait for approval |
@@ -66,6 +66,8 @@ Every incoming message is checked for six prompt-injection patterns, such as att
 
 Tool output is scrubbed before the model or the user sees it. Provider keys, GitHub and AWS tokens, bearer values, database connection strings, long hex secrets and the live values of the gateway's own secrets are replaced with `[REDACTED]`, and server IPs with `[SERVER_IP]`. Content fetched from the web is wrapped in markers that label it as untrusted.
 
+Credential redaction keeps readable assignment keys and surrounding structure while replacing values. Valid JSON, including serialized JSON inside a string, remains parseable; common credential-field names are handled without hiding ordinary metadata identifiers. Redacting already-safe output again is stable. See [Tools and permissions](/docs/concepts/tools-and-permissions) for tool-output behavior.
+
 ### Isolation
 
 Each agent works in its own workspace, with a sub-directory per user. With the sandbox on, commands run in a Docker container with a read-only root filesystem, all capabilities dropped, no network, and limits of 512 MB memory, one CPU, 256 processes and 300 seconds. The gateway container itself runs as a non-root user.
@@ -81,7 +83,7 @@ Every tenant-owned table carries a tenant ID, and every query filters on it. Eve
 ## Before you go live
 
 1. Keep `GOCLAW_ENCRYPTION_KEY` set, and store it with your backups.
-2. Set a strong gateway token and put TLS in front of the gateway.
+2. Set a strong gateway token and put TLS in front of the gateway. If a reverse proxy on the same host publishes it, set `GOCLAW_REQUIRE_AUTH=1`; see [Install and run the gateway](/docs/runtime/install-and-run#behind-a-reverse-proxy-on-the-same-host).
 3. Narrow the tool profile and turn on command approval for agents that can run commands.
 4. Turn the sandbox on for agents that execute code.
 5. Set `gateway.injection_action` to `block` if your agents talk to the public.

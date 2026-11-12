@@ -6,6 +6,8 @@
  * dewee product (AES-256-GCM secrets at rest, SHA-256 hashed API keys). Retention periods are not
  * decided yet, so only the criteria are stated. The VI version is On-Premises only, apart from the
  * Chrome extension section, which mirrors docs/privacy-policy.md in nextlevelbuilder/dewee-chrome-ext.
+ * The "app-analytics" section describes the dewee app's opt-in activation events, as specified by
+ * the dewee product; this site's own PostHog setup is in PosthogAnalytics.astro.
  */
 import type { Bi } from "~/i18n/config";
 import type { LegalDoc } from "./types";
@@ -23,7 +25,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Legal · Privacy",
       title: "Your data, *explained*.",
-      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, analytics only with your consent, and we would rather collect too little than too much.",
+      lede: "What we collect, why we need it, where it lives and how you stay in control. No ads, analytics events are sent only with your consent, and we would rather collect too little than too much.",
     },
     sections: [
       {
@@ -50,6 +52,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Workspace content", "Prompts, files, agent settings and conversations, plus AI provider keys (stored encrypted)", "You and your team, inside dewee"],
                 ["Licence check-ins", "An activation ID, a runtime token and the time of each check-in; never the raw key and never your content", "Dedicated and On-Premises runtimes"],
                 ["Technical data", "IP address, browser type and request logs", "Your browser, via our hosting provider Cloudflare"],
+                ["App analytics", "Which setup milestones a new account reached, the sign-in method, the kind of first team action and a random anonymous ID", "The dewee app at app.dewee.sh; events are sent to PostHog only after you choose “Allow analytics”"],
               ],
             },
           },
@@ -70,6 +73,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Check that licences are valid", "Licence check-ins", "Performance of our contract"],
                 ["Alert our team to new messages", "Your first chat message; your email and the latest chat lines when you leave an email", "Legitimate interest in replying quickly"],
                 ["Keep the site and product secure and prevent abuse", "Technical data, chat ID, rate-limit counters", "Legitimate interest in security"],
+                ["Learn how new accounts get started, so we can improve setup", "App analytics", "Your consent, which you can withdraw at any time"],
                 ["Keep accounting and legal records", "Order and billing records", "Legal obligation"],
               ],
             },
@@ -86,6 +90,7 @@ export const PRIVACY: Bi<LegalDoc> = {
             defs: [
               ["Cloudflare", "Hosts this website. Enquiries, chat summaries and admin sign-in sessions are stored in Cloudflare’s databases (D1 and KV), and each chat transcript in its own Cloudflare Durable Object."],
               ["Google", "If you accept analytics cookies, Google Analytics (loaded through Google Tag Manager) receives anonymous page views and basic device data. See our [Cookie Policy](/cookies)."],
+              ["PostHog", "Our product analytics service, one project for this website and the dewee app. On this website it stores its random ID in a cookie only after you press “Accept”; from the app it receives only the events described in [Analytics in the dewee app](/privacy#app-analytics), and only after you choose “Allow analytics”."],
               ["Discord", "When you start a chat, our team receives your first message in a private Discord channel. If you leave your email, we also receive it with the latest lines of the conversation."],
               ["dewee support agent", "Your chat messages, with the recent conversation, may be passed to dewee’s own support agent or to a person on our team so they can reply."],
               ["Your AI providers", "When your agents call a model, your content goes to the provider you configured, with your own API key."],
@@ -93,6 +98,32 @@ export const PRIVACY: Bi<LegalDoc> = {
             ],
           },
           "The full list of the companies that process personal data for us is on our [GDPR page](/gdpr#sub-processors).",
+        ],
+      },
+      {
+        id: "app-analytics",
+        title: "Analytics in the dewee app",
+        short: "Only with your consent, the app sends anonymous setup milestones and claim outcomes. No email, names or content.",
+        body: [
+          "The dewee app at app.dewee.sh asks once, with “Essential only” or “Allow analytics”, whether it may measure how new accounts get from signup to their first team action. It sends no analytics events to PostHog before you allow them. After consent, it can send four setup milestones: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` and `activation_first_team_action`. A complimentary-access claim can also send `claim_succeeded` or `claim_failed` under the same consent rules.",
+          "Before you answer, the app may hold the sign-in method and account creation time in a short-lived cookie and record workspace milestones on its server. If you allow analytics later, it may send the pending signup within one day and unsettled milestones from the previous 14 days for workspaces you own, using their original times. A milestone reached by a request that already carried a decline is not sent later. See our [Cookie Policy](/cookies#app) for the cookies.",
+          { sub: "What the events carry" },
+          {
+            list: [
+              "A random anonymous ID, kept in the app’s `dewee_analytics` cookie.",
+              "The event time, which can be the original time of a milestone sent after you opt in.",
+              "The sign-in method: `github`, `google` or `magic_link`.",
+              "The kind of first team action: `task`, `invite` or `approval`.",
+              "For a claim outcome, the access mode or a limited failure-reason code, never the claim code.",
+              "`site`, which names the app as the source of the event.",
+            ],
+          },
+          { sub: "What these events do not collect" },
+          "Your email, your name, your workspace’s name, the content of messages or tasks, a location worked out from your IP address, or any tokens. PostHog person profiles and GeoIP enrichment are turned off for these events. Self-hosted installs of dewee never send them.",
+          { sub: "One ID for this website and the app" },
+          "If you already accepted cookies on this website, choosing “Allow analytics” in the app reuses its PostHog ID when the website cookie contains a valid anonymous ID. Otherwise the app creates a new random ID. When reused, the ID links the two, never through your name or email.",
+          { sub: "How to withdraw" },
+          "In the app, open “Account → Product analytics” and turn off “Share setup analytics”. The choice applies to this browser. You can also clear the `dewee_analytics` cookie for app.dewee.sh; the app then asks again, and you can choose “Essential only”. Our [Cookie Policy](/cookies#app) lists the cookies involved.",
         ],
       },
       {
@@ -195,7 +226,7 @@ export const PRIVACY: Bi<LegalDoc> = {
     hero: {
       eyebrow: "Pháp lý · Quyền riêng tư",
       title: "Dữ liệu của bạn, *nói rõ*.",
-      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, chỉ phân tích khi bạn đồng ý, và thà thu thập ít còn hơn thu thập thừa.",
+      lede: "Chúng tôi thu thập gì, vì sao cần, lưu ở đâu và bạn kiểm soát nó như thế nào. Không quảng cáo, chỉ gửi sự kiện phân tích khi bạn đồng ý, và thà thu thập ít còn hơn thu thập thừa.",
     },
     sections: [
       {
@@ -221,6 +252,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Thông tin khách hàng", "Email liên hệ, thành viên và vai trò, đơn hàng và chứng từ thanh toán", "Bạn cung cấp khi mua và sử dụng dewee"],
                 ["Kiểm tra license", "Mã kích hoạt, runtime token và thời điểm mỗi lần kiểm tra; không bao giờ có license key gốc hay nội dung của bạn", "Runtime On-Premises"],
                 ["Dữ liệu kỹ thuật", "Địa chỉ IP, loại trình duyệt và nhật ký truy cập", "Trình duyệt của bạn, qua nhà cung cấp hạ tầng Cloudflare"],
+                ["Phân tích trong ứng dụng", "Những mốc thiết lập mà tài khoản mới đã đạt, cách đăng nhập, loại thao tác nhóm đầu tiên và một mã ẩn danh ngẫu nhiên", "Ứng dụng dewee tại app.dewee.sh; sự kiện chỉ được gửi tới PostHog sau khi bạn chọn “Cho phép phân tích”"],
               ],
             },
           },
@@ -241,6 +273,7 @@ export const PRIVACY: Bi<LegalDoc> = {
                 ["Kiểm tra license còn hiệu lực", "Dữ liệu kiểm tra license", "Để thực hiện hợp đồng"],
                 ["Báo cho đội ngũ khi có tin nhắn mới", "Tin nhắn chat đầu tiên; email và các dòng chat gần nhất khi bạn để lại email", "Để trả lời kịp thời khi bạn chủ động nhắn tin"],
                 ["Bảo vệ website và ngăn lạm dụng", "Dữ liệu kỹ thuật, mã chat, bộ đếm giới hạn tin nhắn", "Để bảo vệ hệ thống và người dùng"],
+                ["Tìm hiểu cách tài khoản mới bắt đầu, để cải thiện bước thiết lập", "Phân tích trong ứng dụng", "Bạn đồng ý, và có thể rút lại bất cứ lúc nào"],
                 ["Lưu chứng từ kế toán và pháp lý", "Đơn hàng và chứng từ thanh toán", "Pháp luật yêu cầu"],
               ],
             },
@@ -257,6 +290,7 @@ export const PRIVACY: Bi<LegalDoc> = {
             defs: [
               ["Cloudflare", "Vận hành website này. Yêu cầu tư vấn, tóm tắt các cuộc chat và phiên đăng nhập quản trị được lưu trong cơ sở dữ liệu của Cloudflare (D1 và KV); nội dung từng cuộc chat lưu trong một Cloudflare Durable Object riêng."],
               ["Google", "Nếu bạn đồng ý cookie phân tích, Google Analytics (tải qua Google Tag Manager) nhận lượt xem trang ẩn danh và thông tin thiết bị cơ bản. Xem [Chính sách cookie](/vi/cookies)."],
+              ["PostHog", "Dịch vụ phân tích sản phẩm của chúng tôi, dùng chung một dự án cho website này và ứng dụng dewee. Trên website này, PostHog chỉ lưu mã ngẫu nhiên vào cookie sau khi bạn bấm “Đồng ý”; từ ứng dụng, PostHog chỉ nhận các sự kiện mô tả ở mục [Phân tích trong ứng dụng dewee](/vi/privacy#app-analytics), và chỉ sau khi bạn chọn “Cho phép phân tích”."],
               ["Discord", "Khi bạn bắt đầu chat, đội ngũ nhận tin nhắn đầu tiên trong một kênh Discord nội bộ. Nếu bạn để lại email, chúng tôi nhận email đó kèm các dòng chat gần nhất."],
               ["Trợ lý hỗ trợ dewee", "Tin nhắn của bạn, kèm phần hội thoại gần đây, có thể được chuyển tới trợ lý hỗ trợ của chính dewee hoặc một thành viên trong đội để trả lời."],
               ["Nhà cung cấp AI của bạn", "Khi agent gọi mô hình, nội dung được gửi tới nhà cung cấp bạn đã cấu hình, bằng API key của chính bạn."],
@@ -264,6 +298,32 @@ export const PRIVACY: Bi<LegalDoc> = {
             ],
           },
           "Danh sách đầy đủ các đơn vị xử lý dữ liệu cá nhân cho chúng tôi có trên [trang GDPR](/vi/gdpr#sub-processors).",
+        ],
+      },
+      {
+        id: "app-analytics",
+        title: "Phân tích trong ứng dụng dewee",
+        short: "Chỉ khi bạn đồng ý, ứng dụng mới gửi các mốc thiết lập và kết quả nhận quyền ẩn danh. Không email, tên hay nội dung.",
+        body: [
+          "Ứng dụng dewee tại app.dewee.sh hỏi bạn một lần, với hai lựa chọn “Chỉ thiết yếu” hoặc “Cho phép phân tích”, xem có được đo lường cách tài khoản mới đi từ lúc đăng ký tới thao tác nhóm đầu tiên hay không. Ứng dụng không gửi sự kiện phân tích tới PostHog trước khi bạn cho phép. Sau khi đồng ý, ứng dụng có thể gửi bốn mốc thiết lập: `activation_signed_up`, `activation_workspace_onboarded`, `activation_first_agent_response` và `activation_first_team_action`. Việc nhận quyền sử dụng được tặng cũng có thể gửi `claim_succeeded` hoặc `claim_failed` theo cùng lựa chọn đồng ý.",
+          "Trước khi bạn trả lời, ứng dụng có thể giữ cách đăng nhập và thời điểm tạo tài khoản trong một cookie ngắn hạn và ghi nhận các mốc workspace trên máy chủ. Nếu sau đó bạn cho phép phân tích, ứng dụng có thể gửi lượt đăng ký đang chờ trong vòng một ngày và các mốc chưa xử lý trong 14 ngày trước đó của workspace bạn sở hữu, kèm thời điểm ban đầu. Mốc được ghi nhận bởi yêu cầu đã mang lựa chọn từ chối sẽ không được gửi về sau. Xem [Chính sách cookie](/vi/cookies#app) để biết các cookie liên quan.",
+          { sub: "Sự kiện mang theo những gì" },
+          {
+            list: [
+              "Một mã ẩn danh ngẫu nhiên, lưu trong cookie `dewee_analytics` của ứng dụng.",
+              "Thời điểm sự kiện, có thể là thời điểm ban đầu của mốc được gửi sau khi bạn đồng ý.",
+              "Cách đăng nhập: `github`, `google` hoặc `magic_link`.",
+              "Loại thao tác nhóm đầu tiên: `task`, `invite` hoặc `approval`.",
+              "Với kết quả nhận quyền được tặng, chế độ truy cập hoặc mã lý do lỗi thuộc danh sách giới hạn, không bao giờ là mã nhận quà.",
+              "`site`, cho biết sự kiện đến từ ứng dụng.",
+            ],
+          },
+          { sub: "Những gì các sự kiện này không thu thập" },
+          "Email, họ tên, tên workspace, nội dung tin nhắn hay công việc, vị trí suy ra từ địa chỉ IP, hay bất kỳ token nào. Hồ sơ người dùng (person profile) và tính năng bổ sung vị trí theo IP (GeoIP) của PostHog đều tắt cho các sự kiện này. Bản dewee tự cài đặt không bao giờ gửi chúng.",
+          { sub: "Một mã chung cho website và ứng dụng" },
+          "Nếu bạn đã đồng ý cookie trên website này, khi bạn chọn “Cho phép phân tích” trong ứng dụng, ứng dụng dùng lại mã PostHog nếu cookie của website chứa một mã ẩn danh hợp lệ. Nếu không, ứng dụng tạo mã ngẫu nhiên mới. Khi được dùng lại, mã đó liên kết hai bên, không bao giờ thông qua họ tên hay email của bạn.",
+          { sub: "Cách rút lại sự đồng ý" },
+          "Trong ứng dụng, mở “Tài khoản → Phân tích sản phẩm” và tắt “Chia sẻ phân tích thiết lập”. Lựa chọn áp dụng cho trình duyệt này. Bạn cũng có thể xoá cookie `dewee_analytics` của app.dewee.sh; ứng dụng sẽ hỏi lại và bạn có thể chọn “Chỉ thiết yếu”. [Chính sách cookie](/vi/cookies#app) liệt kê các cookie liên quan.",
         ],
       },
       {

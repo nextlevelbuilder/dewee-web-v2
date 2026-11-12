@@ -3,7 +3,7 @@ title: Embed an agent on your website
 description: "Put a dewee agent on any website with dewee-webchat, the open-source chat widget: a script tag or a React, Vue or Astro component, plus a small backend handler."
 section: integrations
 order: 3
-updated: 2026-10-10
+updated: 2026-11-09
 ---
 
 [dewee-webchat](https://github.com/nextlevelbuilder/dewee-webchat) is an open-source (MIT) chat widget that puts one of your agents on your own website. Visitors chat with it in a floating bubble or an inline panel, and they see the agent work: its reasoning, the tools it calls and their results, and the answer in Markdown. The package is on npm as `dewee-webchat`.
@@ -94,6 +94,47 @@ Options are attributes on `<dewee-chat>` in kebab-case, `data-*` attributes on t
 | `persist` | Keep the conversation across page loads |
 
 From your own scripts you can call `open()`, `close()`, `toggle()`, `send(text)`, `stop()` and `newConversation()`, and listen for the `dewee:ready`, `dewee:open`, `dewee:close`, `dewee:send`, `dewee:reply` and `dewee:error` events.
+
+## Page context for a single message
+
+For integrations that capture the current page, the gateway has a versioned page-context contract. Availability depends on the deployed gateway and website-chat ingress: check support before attaching anything. Do not assume that an existing widget or backend captures or forwards page context automatically.
+
+- For a Gateway WebSocket client, inspect `page_context_versions` in the `connect` response. If it includes `1`, send the attachment as `pageContext` in `chat.send`.
+- For a custom client of the customer control plane website-chat ingress, inspect `page_context.versions` in `GET config`. If it includes `1`, send the attachment as `page_context` in the `POST chat` body. If the list is missing or does not include `1`, send the message without an attachment.
+
+Version 1 requires `version` and an absolute HTTP(S) `url`. It optionally accepts `title`, `description`, `captured_at`, `selection`, and `content` with `format` (`text` or `markdown`), `text`, and `truncated`. The encoded JSON envelope is limited to 64 KiB; unknown fields are rejected. A host can include `source` and `trust_level`, but the runtime ignores their supplied values and assigns its own. The gateway also enforces field limits and removes URL fragments, redacts secret-looking query values and credentials, and rejects URLs with userinfo.
+
+The gateway treats the attachment as untrusted external data for the current run, not as instructions. It does not store page text in chat history, summaries, memory, logs or trace text, and the attachment changes neither tools nor permissions. A refused attachment rejects the whole send with `page_context_invalid` or `page_context_unsupported`; retry without it only if the person still wants the message sent. Never append the page text to the person's message as a fallback. The CLI and MCP have no page to attach, so this contract does not apply to them.
+
+## Credential requests in website chat
+
+Where the gateway and widget support it, an agent can ask a signed-in workspace member for a credential with a card in the website conversation. This capability is off by default. It requires the gateway to verify both the visitor's chat identity and current workspace membership on the server; a verified chat identity alone is not enough. Keep it disabled on gateway versions that do not enforce this membership check. Anonymous visitors cannot use the card, and membership does not grant credential administration.
+
+On a supporting self-hosted gateway, set `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` and configure `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Enable `credential_requests` for the agent, and use a widget that advertises credential-request support. To allow members to link their website chat identity, also set `GOCLAW_IDENTITY_EXCHANGE_ENABLED=true` and `GOCLAW_WEBCHAT_MEMBER_LINK_PROOF_ENABLED=true`. Check the deployed gateway and widget versions before enabling these settings.
+
+In **My linked accounts** in the workspace, start linking and copy the one-time code. In the signed-in website chat, choose **Link workspace account**, enter the code in the separate form, then return to the workspace to review and confirm the account. Do not put the code in a chat message or shared page content.
+
+The card never displays the secret. Select **Open secure form** to open a first-party hosted form in a new tab. A signed-in workspace approval admin must enter the secret there, not in chat. The request expires after one hour and can be cancelled from the card. Once the credential is saved, the original conversation continues once from where it stopped. Reloading the page restores the current pending, completed, expired or cancelled state. Opening the secure form is rate limited per visitor.
+
+Website chat uses its own member-only flow. For credential links delivered through a messaging channel, see [Secrets, roles and audit](/docs/security/secrets-roles-and-audit).
+
+## Public images on Cloudflare Workers
+
+Where the deployed webchat package supports public image service bindings, a Worker can load images from an approved directory on a sibling hostname in the same Cloudflare zone. Configure both the image source and the service binding in the server handler, and allow the external origin in the widget:
+
+```ts
+createDeweeHandler({
+  // Other backend options, including the integration credentials
+  imageSources: ["https://images.example.com/products/"],
+  cloudflarePublicImageServices: [
+    { id: "catalog-v1", binding: env.PUBLIC_IMAGES, prefixes: ["https://images.example.com/products/"] },
+  ],
+});
+```
+
+Configure `PUBLIC_IMAGES` as a Worker service binding and include `https://images.example.com` in the widget's `imageOrigins`. Both source and service prefixes must allow the image. Service IDs must be unique and prefixes must not overlap; change the ID whenever a binding points to a different service, so existing tickets cannot reach it.
+
+The binding calls the target Worker directly and bypasses the source hostname's Cloudflare security rules. Every configured directory must be public to all chat visitors; do not bind private services or paths. The target receives a GET for the approved path without the original query, cookies or authorization headers. Invalid responses fail closed without a network fallback. See the [package image configuration](https://github.com/nextlevelbuilder/dewee-webchat#markdown-images) for the full requirements.
 
 ## Security
 

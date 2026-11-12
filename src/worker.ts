@@ -1,20 +1,29 @@
 /**
  * Worker entry. Edge concerns (host canonicalisation, brand links, Markdown twins, R2 media,
- * the chat WebSocket) are answered here; everything else is rendered by Astro. The hourly cron syncs
- * the changelog and posts the daily website-chat digest.
+ * the chat WebSocket, OAuth discovery and token endpoints) are answered here; everything else is
+ * rendered by Astro. The hourly cron syncs the changelog, posts the daily website-chat digest and
+ * sweeps expired OAuth records.
  */
 import astro from "@astrojs/cloudflare/entrypoints/server";
 import { handleEdge, withSecurityHeaders } from "./lib/server/edge-routes";
 import { syncChangelog } from "./lib/server/changelog-sync";
 import { runDailyDigest } from "./lib/server/chat-digest-run";
+import { handleOAuthRoute } from "./lib/server/oauth/oauth-server";
+import { isOAuthRoute, oauthAuthority } from "./lib/server/oauth/oauth-authority-client";
 
 export { ChatRoom } from "./lib/server/chat-room";
 export { ChatLimiter } from "./lib/server/chat-limiter";
+export { OAuthAuthority } from "./lib/server/oauth/oauth-authority";
 
 export default {
   async fetch(request, env, ctx) {
     const edge = await handleEdge(request, env, ctx, (req) => astro.fetch(req, env, ctx));
     if (edge) return edge;
+    if (isOAuthRoute(new URL(request.url).pathname)) {
+      const authority = oauthAuthority(env);
+      const oauth = authority ? await authority.route(request) : await handleOAuthRoute(request, { ...env, OAUTH_KV: undefined }, ctx);
+      if (oauth) return withSecurityHeaders(oauth, env);
+    }
     const response = await astro.fetch(request, env, ctx);
     return withSecurityHeaders(response, env);
   },
@@ -24,5 +33,7 @@ export default {
     // Hourly cron; the digest itself decides whether today's post is due (once a day from 01:00 UTC).
     ctx.waitUntil(runDailyDigest(env).then((run) => { if (run !== "not-due" && run !== "already-sent") console.log("chat digest", run); })
       .catch((err) => console.error("chat digest failed", err)));
+    const authority = oauthAuthority(env);
+    if (authority) ctx.waitUntil(authority.purge().catch((err) => console.error("oauth purge failed", err instanceof Error ? err.message : err)));
   },
 } satisfies ExportedHandler<Env>;

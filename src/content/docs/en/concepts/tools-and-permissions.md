@@ -3,7 +3,7 @@ title: Tools and permissions
 description: How dewee decides which tools an agent can call, how shell commands are filtered and approved, and which permissive defaults to tighten before production use.
 section: concepts
 order: 4
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Tools are how an agent acts. Before every model call, dewee filters the tool list through a policy pipeline, and each shell command passes further checks when it runs. The defaults are permissive; the last section lists what to tighten.
@@ -60,6 +60,8 @@ Every command is checked against 16 deny groups, all on by default: `destructive
 
 A command that matches `package_install` is not rejected outright. It becomes an approval request.
 
+For agents with restricted package access, a command that is too large or complex to check safely can be refused. Split it into smaller, explicit invocations. Ordinary literal content and supported command forms remain usable; a permission refusal does not select another execution route.
+
 ### Exec approval
 
 | Setting | Values | Default |
@@ -84,6 +86,8 @@ With `tools.execApproval.scopedPackageGrantsEnabled` (off by default), an always
 - **Scrubbing.** Tool output is scanned for key, token and connection-string patterns, and for the live values of the runtime's own secrets. Matches become `[REDACTED]` before the model or the user sees them.
 - **Credentialed CLIs.** Presets for `gh`, `gcloud`, `gws`, `aws`, `kubectl` and `terraform` let an agent run those tools with a stored credential that it never sees. They run without a shell, and variables starting with `GOCLAW_` or `DEWEE_` or ending in `_TOKEN`, `_SECRET`, `_KEY` or `_PASSWORD` are removed first.
 
+Redaction preserves readable assignment keys and surrounding object and array structure while replacing credential values. Valid JSON, including JSON serialized inside string fields, remains parseable; common credential field names are handled without hiding ordinary metadata identifiers. Redacting already-safe output again is stable.
+
 ## MCP servers
 
 dewee connects to MCP servers over `stdio`, `sse` or `streamable-http`, checks their health every 30 seconds, and reconnects with backoff from 2 to 60 seconds for up to 10 attempts. Access is granted per agent and per user, each grant with its own `tool_allow` and `tool_deny` lists; deny wins. Users can also request access for an admin to approve.
@@ -102,6 +106,10 @@ Commands can run in a Docker container instead of on the host. It is off by defa
 | Limits | 512 MB memory, 1 CPU, 256 processes, 1 MB output, 300 seconds |
 
 When the sandbox is on and Docker is not available, `exec` fails instead of falling back to the host.
+
+Accessible skills can be in the workspace or approved read-only tenant and system skill mounts, using their existing paths inside the sandbox. Other tenants' and master custom skill directories are excluded; writes remain workspace-only. An own-tenant read-only mount is not per-file revocation within an already running authorized script.
+
+During gateway shutdown, a command that needs a new sandbox reports it stopped or unavailable; it does not retry container creation or run outside the sandbox. Existing cached sandboxes last only until normal shutdown cleanup. Retry after the gateway restarts and accepts work.
 
 ## Defaults to review
 

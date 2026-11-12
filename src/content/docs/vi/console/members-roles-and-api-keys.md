@@ -4,7 +4,7 @@ description: Mời người khác vào workspace, quyết định mỗi người
 section: console
 order: 12
 screens: [members, roles, api-keys]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Một workspace được nhiều người dùng chung và được các chương trình gọi tới. **Thành viên** quyết định ai thuộc workspace, **Vai trò** quyết định mỗi người được làm gì, còn **API key & tài liệu** cho phép CLI, mã của bạn và các AI client bên ngoài gọi vào workspace mà không cần ai đăng nhập.
@@ -39,6 +39,8 @@ Mỗi lời mời có hiệu lực trong 7 ngày. Tab **Lời mời** liệt kê
 Để thay đổi quyền của một thành viên, chọn **Đổi vai trò tuỳ chỉnh** trong menu của dòng đó. Trong hộp thoại **Vai trò tuỳ chỉnh của {email}**, đánh dấu các vai trò rồi chọn **Lưu vai trò**. Thay đổi có hiệu lực ngay.
 
 **Xoá khỏi không gian làm việc** đưa một thành viên ra khỏi workspace. Xác nhận bằng **Gỡ thành viên**: quyền truy cập app bị gỡ trước, sau đó quyền truy cập runtime bị thu hồi. Cho tới khi phía runtime xử lý xong, dòng đó hiện nhãn **Đang gỡ quyền**.
+
+Thành viên mới có thể mở các trang runtime được phép mà không cần gửi tin nhắn chat trước. Việc làm mới phiên runtime áp dụng tư cách thành viên và quyền hiện tại. Nếu runtime tạm thời không khả dụng khi gỡ, trạng thái đang chờ chưa xác nhận quyền runtime đã bị thu hồi: hệ thống tự thử đồng bộ lại, và owner có thẩm quyền có thể thử lại từ trang này. Mời lại người đó bắt đầu một trạng thái thành viên mới. Tư cách thành viên do nền tảng quản lý vẫn thuộc người vận hành nền tảng.
 
 Workspace luôn phải còn ít nhất một owner. Chỉ owner mới đổi được vai trò của owner hoặc admin, gỡ owner hoặc admin, hay đổi vai trò tuỳ chỉnh của chính mình.
 
