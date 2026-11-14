@@ -55,9 +55,9 @@ When dewee is running, open `http://localhost:4321` in your browser. This is the
 The first visit walks you through onboarding:
 
 1. **Create the owner account.** This is the account that manages the workspace, its members and its licence.
-2. **Configure the workspace.** Give it a name and set the basics for your team.
-3. **Add an LLM provider.** Paste an API key from a provider such as Anthropic, OpenAI, Google Gemini or OpenRouter. dewee does not include model credit; it calls the provider you connect. See [LLM providers](/docs/integrations/llm-providers).
-4. **Create your first agent.** Give it a name, pick a model and send it a message to check that it answers.
+2. **Say what you want help with.** Pick a goal and approve the setup plan dewee proposes.
+3. **Connect an LLM provider.** Paste an API key from a provider such as Anthropic, OpenAI, Google Gemini or OpenRouter. dewee checks that the model answers before it continues. dewee does not include model credit; it calls the provider you connect. See [LLM providers](/docs/integrations/llm-providers).
+4. **Start chatting.** Once the model is verified and your assistant is ready, setup ends and a fresh chat opens with suggested first tasks. Channels, skills and other connections are optional; add them whenever you want. The setup history stays available from that chat.
 
 ## Add a licence to connect channels
 

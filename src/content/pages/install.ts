@@ -86,7 +86,7 @@ export const INSTALL: Bi<InstallPage> = {
       items: [
         { title: "Install", body: "Run the command for your platform above." },
         { title: "Open the dashboard", body: "Go to {url} in your browser. This is your dewee dashboard, running on your machine." },
-        { title: "Onboard", body: "Create the owner account, set up your workspace, add an LLM provider with your own API key and create your first agent. The dashboard guides you through each step." },
+        { title: "Onboard", body: "Create the owner account and say what you want help with. Guided setup connects an LLM provider with your own API key, checks that the model answers and gets your assistant ready. Then a fresh chat opens with suggested first tasks. Channels and other connections are optional and can wait." },
         { title: "Get a licence key", body: "Agents, providers and skills work without one. To connect Zalo, Telegram, Discord, Slack and other channels, buy a licence for {price} a year for each workspace. With Early Access, the first year is {discounted} for the first {total} licences, until 23:59 on {date}, Vietnam time (GMT+7)." },
         { title: "Paste the key", body: "Paste the licence key into the dashboard to activate it, then connect your first channel." },
       ],
@@ -167,7 +167,7 @@ export const INSTALL: Bi<InstallPage> = {
       items: [
         { title: "Cài đặt", body: "Chạy lệnh dành cho nền tảng của bạn ở phía trên." },
         { title: "Mở bảng điều khiển", body: "Truy cập {url} trên trình duyệt. Đây là bảng điều khiển dewee, chạy ngay trên máy của bạn." },
-        { title: "Thiết lập ban đầu", body: "Tạo tài khoản chủ sở hữu, thiết lập workspace, thêm nhà cung cấp LLM bằng API key của bạn và tạo agent đầu tiên. Bảng điều khiển hướng dẫn bạn từng bước." },
+        { title: "Thiết lập ban đầu", body: "Tạo tài khoản chủ sở hữu và cho biết bạn cần hỗ trợ việc gì. Phần thiết lập có hướng dẫn sẽ kết nối nhà cung cấp LLM bằng API key của bạn, kiểm tra model trả lời được và chuẩn bị sẵn trợ lý. Sau đó một cuộc chat mới mở ra với vài việc gợi ý để bắt đầu. Kênh chat và các kết nối khác là tùy chọn, có thể làm sau." },
         { title: "Mua license key", body: "Agent, nhà cung cấp và skill đều dùng được khi chưa có license. Để kết nối Zalo, Telegram, Discord, Slack và các kênh khác, bạn cần license {price} mỗi năm cho mỗi workspace. Với Early Access, năm đầu chỉ {discounted} cho {total} license đầu tiên, đến 23:59 ngày {date} (giờ Việt Nam)." },
         { title: "Dán key", body: "Dán license key vào bảng điều khiển để kích hoạt, rồi kết nối kênh chat đầu tiên." },
       ],
