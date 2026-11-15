@@ -55,9 +55,9 @@ Khi dewee đã chạy, mở `http://localhost:4321` trên trình duyệt. Đây 
 Lần mở đầu tiên sẽ dẫn bạn qua các bước onboarding:
 
 1. **Tạo tài khoản chủ sở hữu.** Đây là tài khoản quản lý workspace, thành viên và license.
-2. **Cấu hình workspace.** Đặt tên và thiết lập những điều cơ bản cho đội ngũ của bạn.
-3. **Thêm LLM provider.** Dán API key từ một provider như Anthropic, OpenAI, Google Gemini hoặc OpenRouter. dewee không kèm sẵn credit cho model; nó gọi tới provider mà bạn kết nối. Xem [LLM provider](/docs/integrations/llm-providers).
-4. **Tạo agent đầu tiên.** Đặt tên, chọn model rồi gửi một tin nhắn để kiểm tra agent đã trả lời.
+2. **Cho biết bạn cần hỗ trợ việc gì.** Chọn mục tiêu và duyệt kế hoạch thiết lập mà dewee đề xuất.
+3. **Kết nối LLM provider.** Dán API key từ một provider như Anthropic, OpenAI, Google Gemini hoặc OpenRouter. dewee kiểm tra model trả lời được rồi mới đi tiếp. dewee không kèm sẵn credit cho model; nó gọi tới provider mà bạn kết nối. Xem [LLM provider](/docs/integrations/llm-providers).
+4. **Bắt đầu chat.** Khi model đã được xác minh và trợ lý đã sẵn sàng, phần thiết lập kết thúc và một cuộc chat mới mở ra với vài việc gợi ý để bắt đầu. Kênh chat, skill và các kết nối khác là tùy chọn, thêm lúc nào cũng được. Lịch sử thiết lập vẫn mở lại được từ cuộc chat đó.
 
 ## Thêm license để kết nối kênh
 
