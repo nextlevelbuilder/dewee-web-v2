@@ -120,9 +120,9 @@ Owner và admin của tenant so sánh các lựa chọn bằng `GET /v1/usage/ru
 dewee usage route-choices --agent-id <agent-uuid> -o json
 ```
 
-Lệnh nhận cùng bộ lọc với `dewee usage runs`, trừ `--group-by` và `--include-runs`, và báo cáo số lượt chạy, tỉ lệ thành công ước lượng (proxy), chi phí và thời gian chạy p50/p95 cho từng lựa chọn. Khi gateway chạy thêm với `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, báo cáo có thêm các nhánh fork experiment, gom theo loại (`sticky`, `checkpoint`, `switch`). Các nhánh là bản chạy lại và không bao giờ được cộng vào lượt chạy thật.
+Lệnh nhận cùng bộ lọc với `dewee usage runs`, trừ `--group-by` và `--include-runs`, và báo cáo số lượt chạy, tỉ lệ thành công ước lượng (proxy), tổng chi phí, chi phí cho mỗi tác vụ thành công và thời gian chạy p50/p95 cho từng lựa chọn. Khi gateway chạy thêm với `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, báo cáo có thêm các nhánh fork experiment, gom theo loại (`sticky`, `checkpoint`, `switch`). Các nhánh là bản chạy lại và không bao giờ được cộng vào lượt chạy thật.
 
-Khi model quyết định chỉ đề xuất một tuyến mà không áp dụng (chế độ shadow), `summary.shadow` trong `GET /v1/usage/runs` ước tính chi phí của những lượt chạy mà đề xuất khác tuyến thực tế nếu chạy trên model được đề xuất: `diverged_estimated_cost_usd`, `diverged_estimated_runs`, `diverged_unestimated_runs`, `estimate_coverage` và `estimated_cost_delta_pct` (âm khi đề xuất rẻ hơn). Ước tính giả định số token không đổi, nêu cơ sở tính trong `estimate_basis`, và là `null` chứ không phải 0 khi không tính được giá của model.
+Khi model quyết định chỉ đề xuất một tuyến mà không áp dụng (chế độ shadow), `summary.shadow` trong `GET /v1/usage/runs` ước tính chi phí của những lượt chạy mà đề xuất khác tuyến thực tế nếu chạy trên model được đề xuất: `diverged_estimated_cost_usd`, `diverged_estimated_runs`, `diverged_unestimated_runs`, `estimate_coverage` và `estimated_cost_delta_pct` (âm khi đề xuất rẻ hơn). Ước tính giả định số token không đổi và nêu cơ sở tính trong `estimate_basis`. Lượt chạy có model được đề xuất không tính được giá được đếm vào `diverged_unestimated_runs` chứ không làm hỏng ước tính, nên `diverged_estimated_cost_usd` chỉ là `null` khi không lượt lệch nào tính được giá. `estimated_cost_delta_pct` là `null` khi không lượt nào được ước tính, khi một lượt được ước tính có lệnh gọi chưa có giá, hoặc khi chi phí thực của chúng bằng 0.
 
 ### Checkpoint và fork experiment
 
@@ -137,7 +137,7 @@ Khi bật `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, [endpoint MCP của workspac
 | `routing_fork_experiments_get` | Đọc trạng thái của một experiment và, khi đã xong, kết quả của từng nhánh |
 | `routing_fork_experiment_start` | Chạy lại lượt người dùng mới nhất của phiên trên các bản sao trong bộ nhớ với 1 đến 3 nhánh (`sticky`, `checkpoint`, `switch`). Bản thân phiên không bị thay đổi |
 
-Ba thao tác ghi cần `idempotency_key` và sự phê duyệt của owner hoặc admin workspace trước khi chạy. Mỗi nhánh experiment là một lệnh gọi model thật, có tốn chi phí, và nhánh `switch` gửi lịch sử phiên sang provider khác, nên workspace cũng phải đồng ý cho việc đó. Thành công trong experiment là chỉ số ước lượng, không phải kết quả chắc chắn.
+Ba thao tác ghi cần `idempotency_key`. Bắt đầu experiment và xoá checkpoint luôn cần owner hoặc admin workspace phê duyệt; tạo checkpoint chỉ cần phê duyệt khi chế độ chạy trực tiếp đang tắt, là mặc định. Mỗi nhánh experiment là một lệnh gọi model thật, có tốn chi phí, và nhánh `switch` gửi lịch sử phiên sang provider khác, nên workspace cũng phải đồng ý cho việc đó. Thành công trong experiment là chỉ số ước lượng, không phải kết quả chắc chắn.
 
 ## Suy luận
 

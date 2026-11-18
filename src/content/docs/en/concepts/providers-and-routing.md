@@ -120,9 +120,9 @@ Tenant owners and admins compare the choices with `GET /v1/usage/runs/route-choi
 dewee usage route-choices --agent-id <agent-uuid> -o json
 ```
 
-It takes the same filters as `dewee usage runs` except `--group-by` and `--include-runs`, and reports runs, proxy success rate, cost and run duration p50/p95 per choice. When the gateway also runs with `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, it adds fork experiment arms grouped by kind (`sticky`, `checkpoint`, `switch`). Arms are replays and are never added to live runs.
+It takes the same filters as `dewee usage runs` except `--group-by` and `--include-runs`, and reports runs, proxy success rate, total cost, cost per successful task and run duration p50/p95 per choice. When the gateway also runs with `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, it adds fork experiment arms grouped by kind (`sticky`, `checkpoint`, `switch`). Arms are replays and are never added to live runs.
 
-When a decision only recommends a route without applying it (shadow mode), `summary.shadow` in `GET /v1/usage/runs` estimates what the runs where the recommendation differed would have cost on the recommended model: `diverged_estimated_cost_usd`, `diverged_estimated_runs`, `diverged_unestimated_runs`, `estimate_coverage` and `estimated_cost_delta_pct` (negative when the recommendation would have been cheaper). The estimate assumes the same token counts, states its basis in `estimate_basis`, and is `null` rather than zero when a model cannot be priced.
+When a decision only recommends a route without applying it (shadow mode), `summary.shadow` in `GET /v1/usage/runs` estimates what the runs where the recommendation differed would have cost on the recommended model: `diverged_estimated_cost_usd`, `diverged_estimated_runs`, `diverged_unestimated_runs`, `estimate_coverage` and `estimated_cost_delta_pct` (negative when the recommendation would have been cheaper). The estimate assumes the same token counts and states its basis in `estimate_basis`. A run whose recommended model cannot be priced is counted in `diverged_unestimated_runs` instead of voiding the estimate, so `diverged_estimated_cost_usd` is `null` only when no diverged run could be priced. `estimated_cost_delta_pct` is `null` when no run is estimated, when an estimated run had an unpriced call, or when their actual cost is zero.
 
 ### Checkpoints and fork experiments
 
@@ -137,7 +137,7 @@ With `DEWEE_ROUTING_EXPERIMENTS_ENABLED=true`, the [workspace MCP endpoint](/doc
 | `routing_fork_experiments_get` | Reads one experiment's status and, once it is done, each arm's result |
 | `routing_fork_experiment_start` | Replays the session's latest user turn on in-memory copies under 1 to 3 arms (`sticky`, `checkpoint`, `switch`). The session itself is not changed |
 
-The three writes need an `idempotency_key` and the approval of a workspace owner or admin before they run. Every experiment arm is a real model call that spends budget, and a `switch` arm sends the session history to another provider, so the workspace must also have consented to that. Success in an experiment is an outcome proxy, not ground truth.
+The three writes need an `idempotency_key`. Starting an experiment and deleting a checkpoint always need the approval of a workspace owner or admin; creating a checkpoint needs it only while direct execution is off, which is the default. Every experiment arm is a real model call that spends budget, and a `switch` arm sends the session history to another provider, so the workspace must also have consented to that. Success in an experiment is an outcome proxy, not ground truth.
 
 ## Reasoning
 
