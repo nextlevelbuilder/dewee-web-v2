@@ -125,7 +125,7 @@ dewee workflows apply -f workflow.json
 | Lệnh | Subcommand |
 |---|---|
 | `dewee traces` | `list`, `get`, `follow`, `timeline`, `export` |
-| `dewee usage` | `summary`, `list`, `timeseries`, `events` |
+| `dewee usage` | `summary`, `list`, `timeseries`, `events`, `runs`, `route-choices`, `snapshots` |
 | `dewee activity` | `list` |
 | `dewee api-keys` | `list`, `create`, `revoke` |
 | `dewee settings`, `dewee system-config` | `list`, `get`, `set` (và `reset` cho settings) |
