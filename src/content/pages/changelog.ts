@@ -79,7 +79,7 @@ export const CHANGELOG: Bi<ChangelogPage> = {
       secondary: "Chat with dewee",
       note: "or write to hi@nextlevelbuilder.io",
     },
-    feed: { title: "dewee stable releases", subtitle: "Stable releases of dewee, the enterprise AI agent platform, newest first." },
+    feed: { title: "dewee stable releases", subtitle: "Stable releases of dewee, the multiplayer agent platform, newest first." },
   },
   vi: {
     meta: {
@@ -128,7 +128,7 @@ export const CHANGELOG: Bi<ChangelogPage> = {
       secondary: "Trò chuyện với dewee",
       note: "hoặc viết thư tới hi@nextlevelbuilder.io",
     },
-    feed: { title: "Các bản stable của dewee", subtitle: "Các bản stable của dewee, nền tảng AI agent cho doanh nghiệp, mới nhất trước." },
+    feed: { title: "Các bản stable của dewee", subtitle: "Các bản stable của dewee, nền tảng cộng tác giữa con người và AI agent, mới nhất trước." },
   },
 };
 

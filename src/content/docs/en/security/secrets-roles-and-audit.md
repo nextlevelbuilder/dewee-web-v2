@@ -21,6 +21,12 @@ Without the encryption key, the gateway logs a warning at startup and stores the
 
 The HTTP API never returns a stored provider key; it shows `***` instead. API keys and webhook secrets are shown once, when you create them. If you lose one, create a new one and revoke the old one.
 
+### When an agent asks you for a credential
+
+An agent you allowed to request credentials never asks you to paste a key into the chat. In the console chat it shows a form; on a chat app it sends a single-use link to a form in the console, which works for 24 hours and only for the person who asked. The value goes straight to encrypted storage, and the agent only learns whether it was saved.
+
+If you ask from a group or a thread, the link is sent to you in a direct message, never to the group; the group only hears that a private message was sent. This works on Telegram, Discord and Slack. If the bot cannot message you privately (for example, you never started a chat with it, or the channel has no direct messages), the request is cancelled and the link revoked, and the agent asks you to continue in a direct chat or in the console. Scheduled and other automatic runs never send a credential link on a chat app.
+
 ## Workspace roles in the console
 
 The console has three built-in roles and any number of custom ones.
@@ -52,13 +58,13 @@ Keys can expire or be revoked at any time. A revoked key is refused from the nex
 
 ## Admitting chat-app senders
 
-On chat apps, direct messages default to pairing. When someone new writes to an agent, they get an 8-character code that is valid for 60 minutes, and nothing reaches the agent until an admin approves the code, in the console's **Pairing inbox** or with `dewee pairing approve`. Each account can have at most three codes waiting. You can switch a channel to an allowlist, open it, or disable direct messages, and in groups only designated writers can change files or reset the conversation. See [Channels, pairing and contacts](/docs/console/channels-and-contacts).
+On chat apps, direct messages default to pairing. When someone new writes to an agent, they get an 8-character code that is valid for 60 minutes, and nothing reaches the agent until an admin approves the code, in the console's **Pairing inbox** or with `dewee pairing approve`. A workspace admin can only approve or deny codes from their own workspace; the gateway owner can decide codes from any workspace. Each account can have at most three codes waiting. You can switch a channel to an allowlist, open it, or disable direct messages, and in groups only designated writers can change files or reset the conversation. See [Channels, pairing and contacts](/docs/console/channels-and-contacts).
 
 ## Audit trail
 
 - **Activity log.** Changes are recorded with the actor, the entity and the action. Read them on the console's **Activity** page, with `dewee activity list`, or through `GET /v1/activity`.
-- **Resource activity.** Each skill, MCP server, package, provider, hook and agent has a feed of grant changes, run-time denials and use. See [Access grants](/docs/security/access-grants#activity).
-- **API key audit.** The console's **API keys** page includes an audit view for your keys.
+- **Access activity.** Each skill, MCP server, package, provider, hook and agent has a feed of grant changes, run-time denials and use. See [Access grants](/docs/security/access-grants#activity).
+- **API key audit.** The console's **API keys & docs** page has an **Audit** tab for your keys.
 - **Security events.** Detected or blocked prompt injections and truncated messages are logged as `security.injection_detected`, `security.injection_blocked` and `security.message_truncated`.
 - **Traces.** Every agent run records its model calls and tool calls, so you can see what an agent did and why. See [Tracing](/docs/concepts/tracing).
 

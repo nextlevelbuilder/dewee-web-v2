@@ -6,7 +6,7 @@ order: 1
 updated: 2026-09-25
 ---
 
-Channel kết nối agent với một ứng dụng chat, để mọi người trò chuyện với agent ngay nơi họ vẫn làm việc. Mỗi kết nối thuộc về một tenant và trỏ tới một agent, và một workspace có thể kết nối nhiều tài khoản của cùng một ứng dụng. Trang này là danh mục; cách kết nối từng bước nằm ở [Kênh, ghép cặp và danh bạ](/docs/console/channels-and-contacts).
+Channel kết nối agent với một ứng dụng chat, để mọi người trò chuyện với agent ngay nơi họ vẫn làm việc. Mỗi kết nối thuộc về một tenant và trỏ tới một agent, và một workspace có thể kết nối nhiều tài khoản của cùng một ứng dụng. Trang này là danh mục; cách kết nối từng bước nằm ở [Kênh, ghép nối và danh bạ](/docs/console/channels-and-contacts).
 
 ## Các channel được hỗ trợ
 
@@ -15,7 +15,7 @@ Channel kết nối agent với một ứng dụng chat, để mọi người tr
 | Telegram | Bot token, long polling | Reaction báo trạng thái, forum topic với cài đặt và danh sách tool riêng, tin nhắn thoại, tối đa 3 lượt chạy đồng thời mỗi nhóm |
 | Slack | Socket Mode, không cần URL công khai | Bot token và app token; câu trả lời được sửa tại chỗ, reaction báo trạng thái, tiếp tục trả lời trong thread đã tham gia mà không cần mention lại |
 | Discord | Kết nối gateway của bot | Tin nhắn chờ được sửa thành câu trả lời; khi được mention trong thread, bot đọc các tin trước đó trong thread làm ngữ cảnh |
-| WhatsApp | Kết nối trực tiếp, ghép cặp bằng mã QR | Chuyển tin nhắn thoại thành văn bản mặc định tắt vì việc này phá vỡ mã hoá đầu cuối |
+| WhatsApp | Kết nối trực tiếp, ghép nối bằng mã QR | Chuyển tin nhắn thoại thành văn bản mặc định tắt vì việc này phá vỡ mã hoá đầu cuối |
 | Feishu / Lark | WebSocket hoặc webhook | Câu trả lời stream dưới dạng message card; tuỳ chọn tách session riêng cho mỗi thread |
 | Zalo OA | API Official Account, webhook | Áp dụng giới hạn upload của Zalo: ảnh 1 MB, file 5 MB; ảnh lớn hơn được nén lại |
 | Zalo Bot | Zalo Bot API, polling hoặc webhook | Chỉ tin nhắn trực tiếp, 2.000 ký tự mỗi tin, ảnh tối đa 5 MB |
@@ -38,14 +38,14 @@ Mỗi channel có một policy cho tin nhắn trực tiếp và một policy cho
 
 | Policy | Tin nhắn trực tiếp | Nhóm |
 |---|---|---|
-| `pairing` | Người gửi mới nhận mã và chờ duyệt | Nhóm cũng chờ duyệt theo cách tương tự |
+| `pairing` | Người gửi mới nhận mã và chờ phê duyệt | Nhóm cũng chờ phê duyệt theo cách tương tự |
 | `allowlist` | Chỉ người gửi có trong danh sách | Chỉ nhóm có trong danh sách |
 | `open` | Bất kỳ ai | Bất kỳ nhóm nào có bot |
 | `disabled` | Không nhận tin nhắn trực tiếp | Không nhận tin nhắn nhóm |
 
 Form channel trong console đặt mọi channel ở `pairing`, trừ Zalo Personal bắt đầu với `allowlist`.
 
-Mã ghép cặp có 8 ký tự, hiệu lực 60 phút, và mỗi tài khoản có tối đa ba mã đang chờ. Admin duyệt mã trong **Hộp ghép cặp** hoặc bằng `dewee pairing approve`. Một lần ghép cặp đã duyệt mặc định có hiệu lực 30 ngày; workspace có thể chọn thời hạn khác hoặc không hết hạn, và từng channel có thể đặt riêng.
+Mã ghép cặp có 8 ký tự, hiệu lực 60 phút, và mỗi tài khoản có tối đa ba mã đang chờ. Admin phê duyệt mã trong **Hộp ghép nối** hoặc bằng `dewee pairing approve`. Một lần ghép cặp đã được phê duyệt mặc định có hiệu lực 30 ngày; workspace có thể chọn thời hạn khác hoặc không hết hạn, và từng channel có thể đặt riêng.
 
 Trong nhóm, agent chỉ trả lời khi được mention, trừ khi bạn tắt chế độ này. Những tin nhắn không mention agent vẫn được giữ làm ngữ cảnh cho lần được mention tiếp theo. Trên Telegram, Feishu và Discord, chỉ các writer được chỉ định mới có thể yêu cầu agent thay đổi file, và trên Telegram chỉ họ mới reset được cuộc trò chuyện.
 
@@ -54,6 +54,7 @@ Trong nhóm, agent chỉ trả lời khi được mention, trừ khi bạn tắt
 - **Câu trả lời dài** được chia nhỏ cho vừa từng ứng dụng: 4.096 ký tự trên Telegram, 4.000 trên Slack và Feishu, 2.000 trên Discord và Zalo.
 - **Media**: ảnh và file đi được cả hai chiều trong giới hạn của từng ứng dụng. Telegram gom nhiều ảnh hoặc file thành album tối đa 10 mục.
 - **Tin nhắn thoại** trên Telegram, Discord và Feishu được chuyển thành văn bản trước khi agent đọc, bằng các provider speech-to-text bạn cấu hình. Trên WhatsApp, việc này tắt cho tới khi admin bật lên. Telegram có thể chuyển tin nhắn thoại cho một agent riêng.
+- **Xem trước link**: trên Telegram, tắt mục **Xem trước liên kết** của channel để ứng dụng không hiện thẻ xem trước cho các link trong câu trả lời của agent. Tin nhắn chứa link dùng một lần, như link kết nối tài khoản hoặc link nhập thông tin đăng nhập, luôn được gửi với chế độ xem trước tắt trên Telegram, Slack, Discord và Bitrix24, để trình lấy bản xem trước của ứng dụng không mở link trước người nhận.
 - **Trả lời bằng giọng nói**: agent có thể trả lời bằng giọng tổng hợp khi đã cấu hình provider giọng nói. Xem [Provider LLM và giọng nói](/docs/integrations/llm-providers).
 
 ## Lệnh trong chat
@@ -62,4 +63,4 @@ Trên Telegram, mọi người điều khiển cuộc trò chuyện bằng các 
 
 ## Gửi tin nhắn từ hệ thống khác
 
-Để phần mềm của bạn đăng tin nhắn lên một channel, hãy dùng webhook `message`: nó nhận tên channel, chat ID và nội dung, kèm media tuỳ chọn. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp). Tin nhắn channel đang được đệm và chờ agent xử lý hiện trong **Tin nhắn chờ**.
+Để phần mềm của bạn đăng tin nhắn lên một channel, hãy dùng webhook `message`: nó nhận tên channel, chat ID và nội dung, kèm media tuỳ chọn. Xem [Webhook và MCP](/docs/api/webhooks-and-mcp). Tin nhắn channel đang được đệm và chờ agent xử lý hiện trong **Tin nhắn đang chờ**.

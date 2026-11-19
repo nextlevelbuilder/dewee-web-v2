@@ -3,6 +3,7 @@
  * update, delete, publish/unpublish/archive and revision history with restore.
  */
 import { z } from "zod";
+import { POST_WIDGETS_HELP } from "../../blocks/post-widgets/widget-directives";
 import { findRow, getPage, listPages, listQuerySchema } from "../pages/page-queries";
 import { getRevision, listRevisions, restoreRevision } from "../pages/page-revisions";
 import { createPageInput, localeSchema, updatePageInput, type PageKind, type PageRecord } from "../pages/page-schema";
@@ -87,7 +88,7 @@ export function contentRoutes(kind: PageKind): RouteDef[] {
       operationId: `create${Name}`,
       tag,
       summary: `Create a ${kind}`,
-      description: `Blocks are validated against the block registry (see /blocks). The slug defaults to a kebab-case form of the title.${kind === "post" ? " Posts are written in `body_md` (Markdown); blocks render after the body." : ""}`,
+      description: `Blocks are validated against the block registry (see /blocks). The slug defaults to a kebab-case form of the title.${kind === "post" ? ` ${POST_WIDGETS_HELP} Example: { "title": "Launch notes", "body_md": "Intro.\\n\\n::widget{id=\\"demo\\"}\\n\\nMore text.", "blocks": [{ "id": "demo", "type": "VideoEmbed", "props": { "url": "https://www.youtube.com/watch?v=M7lc1UVf-VE", "title": "Demo" } }] }` : ""}`,
       auth: write,
       body: createPageInput,
       bodyRequired: true,

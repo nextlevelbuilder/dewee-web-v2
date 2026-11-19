@@ -76,7 +76,7 @@ export const ARCHITECTURE_PAGE: Bi<{
     meta: {
       title: "Architecture: one Go binary, an 8-stage agent loop",
       description:
-        "How dewee works inside: one Go gateway, an 8-stage agent loop, three-tier memory, agent teams, tenant isolation, traces, provider fallback and deployment.",
+        "How dewee, the multiplayer agent platform, works inside: one Go gateway, an 8-stage agent loop, memory, agent teams, tenant isolation, traces and deployment.",
       crumb: "Architecture",
     },
     hero: {
@@ -227,7 +227,7 @@ export const ARCHITECTURE_PAGE: Bi<{
     meta: {
       title: "Kiến trúc: một file Go, vòng lặp agent 8 bước",
       description:
-        "Bên trong dewee: một gateway Go, vòng lặp agent 8 bước, bộ nhớ ba tầng, đội agent, cô lập tenant, trace, dự phòng nhà cung cấp và cách triển khai on-premises.",
+        "Bên trong dewee, nền tảng cộng tác giữa người và AI agent: gateway Go, vòng lặp agent 8 bước, bộ nhớ, đội agent, cô lập tenant, trace và cách triển khai.",
       crumb: "Kiến trúc",
     },
     hero: {

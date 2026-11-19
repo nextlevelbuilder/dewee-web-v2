@@ -19,7 +19,7 @@ Có hai cách để bắt đầu. Phần lớn đội ngũ đi theo **con đư�
 
 ### 1. Đăng nhập
 
-Mở `app.dewee.sh` và chọn **Continue with GitHub**, **Continue with Google**, hoặc nhập email để nhận đường link đăng nhập dùng một lần. Bạn không phải quản lý mật khẩu nào cả.
+Mở `app.dewee.sh` và chọn **Tiếp tục với GitHub**, **Tiếp tục với Google**, hoặc nhập email để nhận đường link đăng nhập dùng một lần. Bạn không phải quản lý mật khẩu nào cả.
 
 ::shot{id="sign-in"}
 
@@ -29,7 +29,7 @@ Workspace mới cần có runtime trước. Với On-Premises, runtime kết n�
 
 ### 3. Kết nối model provider
 
-Vào **Providers & models**, chọn provider trong danh mục, dán API key rồi lưu. Console kiểm tra key với provider trước khi cho bạn đi tiếp. Key được lưu ở dạng mã hoá và console không bao giờ hiển thị lại.
+Vào **Nhà cung cấp & mô hình**, chọn provider trong danh mục, dán API key rồi lưu. Console kiểm tra key với provider trước khi cho bạn đi tiếp. Key được lưu ở dạng mã hoá và console không bao giờ hiển thị lại.
 
 ::shot{id="providers"}
 
@@ -42,14 +42,14 @@ Ngay khi một provider được xác minh, dewee tạo agent đầu tiên của
 
 ### 5. Gửi tin nhắn đầu tiên
 
-Mở **Chat**, chọn `super-agent` và hỏi thử, ví dụ "Bạn làm được gì trong workspace này?". Câu trả lời thành công đầu tiên đánh dấu workspace đã sẵn sàng.
+Mở **Trò chuyện**, chọn `super-agent` và hỏi thử, ví dụ "Bạn làm được gì trong workspace này?". Câu trả lời thành công đầu tiên đánh dấu workspace đã sẵn sàng.
 
 ::shot{id="chat"}
 
 ### Làm gì tiếp theo
 
 - Tạo thêm agent với hướng dẫn và tool riêng: [Agent](/docs/console/agents).
-- Đưa agent lên Telegram, Slack, Zalo hoặc ứng dụng chat khác: [Kênh, ghép cặp và danh bạ](/docs/console/channels-and-contacts).
+- Đưa agent lên Telegram, Slack, Zalo hoặc ứng dụng chat khác: [Kênh, ghép nối và danh bạ](/docs/console/channels-and-contacts).
 - Mời đồng đội và gán vai trò: [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
 
 ## Con đường tự vận hành
@@ -92,6 +92,6 @@ Bỏ `--message` để trò chuyện tương tác. Danh sách lệnh đầy đ�
 
 ## Khi có trục trặc
 
-- **Console báo runtime offline.** Mở [Sức khoẻ runtime](/docs/console/monitoring) để xem bước kiểm tra nào thất bại.
+- **Console báo runtime offline.** Mở [Tình trạng runtime](/docs/console/monitoring) để xem bước kiểm tra nào thất bại.
 - **Xác minh provider thất bại.** Kiểm tra key còn hiệu lực và tài khoản provider còn credit, rồi thử lại.
 - **`curl /health` không phản hồi.** Chạy `./dewee doctor` để in ra đường dẫn cấu hình, trạng thái cơ sở dữ liệu và phiên bản.

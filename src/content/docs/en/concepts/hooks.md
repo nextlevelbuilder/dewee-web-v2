@@ -93,7 +93,7 @@ Every hook run is written to an execution log with the session, event, decision,
 
 Each run also adds an `event` span to the trace, named `hook.<handler>.<event>` (for example `hook.http.pre_tool_use`), with the decision in its metadata.
 
-The **Hooks** page in the console is in beta. There you create tenant and agent hooks with `http`, `prompt` or `script` handlers, set their priority, and read their history. A dry run tests a hook against a sample event without writing to the log, and it redacts values that look like secrets. Global, built-in and `command` hooks are shown read-only. The CLI has no hooks command.
+The **Hooks** page on the gateway dashboard is in beta. In the console, the **Hooks** page lets you create tenant and agent hooks with `http`, `prompt` or `script` handlers, set their priority, and read their history. A dry run tests a hook against a sample event without writing to the log, and it redacts values that look like secrets. Global, built-in and `command` hooks are shown read-only. The CLI cannot create or edit hooks. `dewee hooks access` (`list`, `grant`, `set-level`, `revoke`, `activity`) manages who can edit or manage a hook that runs for specific agents; workspace-wide hooks stay with workspace admins. See [Access grants](/docs/security/access-grants).
 
 ## Related
 

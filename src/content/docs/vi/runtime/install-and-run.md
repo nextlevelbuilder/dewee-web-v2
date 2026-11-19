@@ -76,6 +76,10 @@ API key của model provider thường được thêm trong dashboard hoặc con
 
 Gateway từ chối khởi động trên một địa chỉ không phải loopback nếu không có gateway token. Chỉ khi phát triển trên máy cá nhân bạn mới nên bỏ qua kiểm tra này bằng `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. Khi gateway có thể được truy cập từ máy khác, hãy đặt nó sau TLS terminator hoặc reverse proxy của bạn.
 
+Đặt `GOCLAW_PUBLIC_URL` là địa chỉ công khai của gateway (ví dụ `https://dewee.example.com`). Gateway đưa địa chỉ này cho các dịch vụ bên ngoài, chẳng hạn URL callback và webhook của kênh hay link tải file. Khi đã đặt, không request nào thay đổi được nó. Nếu không đặt, gateway chỉ học địa chỉ từ request của system owner hoặc admin của master tenant. Các workspace khác không bao giờ thay đổi được nó.
+
+Gateway chỉ đọc `X-Forwarded-Host` và `X-Forwarded-Proto` từ các proxy có trong `GOCLAW_TRUSTED_PROXIES`, một danh sách địa chỉ IP, dải CIDR hoặc tên máy cách nhau bằng dấu phẩy (ví dụ `127.0.0.1,::1` khi nginx chạy cùng máy, hoặc tên service Docker Compose của container proxy). Với mọi client khác, các header này bị bỏ qua. Trình cài đặt self-hosted và các file Compose đã tự đặt giá trị này cho proxy đi kèm; ở nơi khác danh sách mặc định rỗng. Một mục không hợp lệ sẽ khiến gateway không khởi động.
+
 Truy cập MCP công khai vào gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) mặc định tắt. Đọc [Webhook và MCP](/docs/api/webhooks-and-mcp) trước khi bật.
 
 ## Edition
@@ -101,7 +105,7 @@ Chạy `./dewee doctor` trên máy chủ để in ra phiên bản, đường d�
 
 ## Nâng cấp
 
-`dewee upgrade` đưa schema cơ sở dữ liệu lên bản mới nhất và chạy các migration dữ liệu. Lệnh an toàn khi chạy nhiều lần, và image Docker tự chạy nó mỗi lần khởi động. Kiểm tra trước bằng `dewee upgrade --status` hoặc `dewee upgrade --dry-run`. Lệnh cấp thấp hơn `dewee migrate` (`up`, `down`, `version`, `force`, `goto`) dành cho việc khắc phục sự cố.
+`dewee upgrade` đưa schema cơ sở dữ liệu lên bản mới nhất và chạy các migration dữ liệu. Lệnh an toàn khi chạy nhiều lần, và image Docker tự chạy nó mỗi lần khởi động. Kiểm tra trước bằng `dewee upgrade --status` hoặc `dewee upgrade --dry-run`. Lệnh cấp thấp hơn `dewee migrate` (`up`, `down`, `version`, `force`, `goto`) dành cho việc khắc phục sự cố. Một binary sẽ từ chối khởi động khi schema cơ sở dữ liệu mới hơn phiên bản nó hỗ trợ, trên PostgreSQL cũng như bản Lite (SQLite), và thông báo lỗi nêu rõ cả hai phiên bản. Để quay về bản cũ trên PostgreSQL, chạy `dewee migrate down` bằng binary mới trước; bản Lite không có migration down, nên hãy khôi phục bản sao lưu tạo trước khi nâng cấp.
 
 ## Sao lưu và khôi phục
 

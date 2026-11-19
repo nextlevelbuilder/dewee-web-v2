@@ -6,7 +6,7 @@ order: 7
 updated: 2026-09-25
 ---
 
-Workflow là một đồ thị các bước cố định mà dewee chạy theo cùng một cách mỗi lần. Hãy dùng workflow khi một quy trình không được phép bỏ sót bước nào, chẳng hạn kiểm tra đơn hàng trước khi trả lời, hoặc duyệt bài trước khi đăng. Model chỉ làm việc bên trong các node có giới hạn rõ ràng, còn đồ thị quyết định bước tiếp theo. Workflow đang ở giai đoạn beta.
+Workflow là một đồ thị các bước cố định mà dewee chạy theo cùng một cách mỗi lần. Hãy dùng workflow khi một quy trình không được phép bỏ sót bước nào, chẳng hạn kiểm tra đơn hàng trước khi trả lời, hoặc xét duyệt bài trước khi đăng. Model chỉ làm việc bên trong các node có giới hạn rõ ràng, còn đồ thị quyết định bước tiếp theo. Workflow đang ở giai đoạn beta.
 
 ## Cấu trúc của một workflow
 
@@ -14,8 +14,8 @@ Workflow là một đồ thị có hướng không chu trình (DAG) gồm các n
 
 | Nhóm | Node | Tác dụng |
 |---|---|---|
-| Điều khiển | `start`, `end`, `condition`, `transform`, `compare`, `approval` | Nhận đầu vào, trả đầu ra, rẽ nhánh, định dạng lại dữ liệu, so sánh giá trị và tạm dừng chờ người duyệt |
-| Năng lực | `agent`, `task_create` | Chạy một lượt model có giới hạn, hoặc tạo công việc |
+| Điều khiển | `start`, `end`, `condition`, `transform`, `compare`, `approval` | Nhận đầu vào, trả đầu ra, rẽ nhánh, định dạng lại dữ liệu, so sánh giá trị và tạm dừng chờ người phê duyệt |
+| Năng lực | `agent`, `task_create` | Chạy một lượt model có giới hạn, hoặc tạo task |
 | Tri thức và dữ liệu | `vault_search`, `kg_query`, `storage_read`, `storage_write` | Truy vấn kho tri thức và knowledge graph, đọc và ghi vào kho lưu trữ của tenant |
 | Gửi đi và tool | `deliver`, `deliver_multi`, `mcp_tool` | Gửi tới một hoặc nhiều kênh, gọi một tool MCP |
 
@@ -32,7 +32,7 @@ Bạn chỉnh sửa bản nháp, kiểm tra hợp lệ rồi chạy thử. Lần
 
 Lúc xuất bản, dewee lưu kèm quyền dùng tool của agent tạo ra workflow. Những thay đổi sau đó trên agent này không thể mở rộng những gì phiên bản đã xuất bản được phép làm.
 
-Quản trị viên hoặc chủ sở hữu tenant có thể xuất bản trực tiếp. Những người khác, kể cả agent, sẽ tạo một yêu cầu xuất bản. Chỉ một quản trị viên là người thật, khác với người gửi yêu cầu, mới được duyệt, và chỉ khi bản nháp vẫn khớp với bản đã gửi. Nếu bản nháp đã thay đổi trong lúc chờ, yêu cầu duyệt bị từ chối.
+Quản trị viên hoặc chủ sở hữu tenant có thể xuất bản trực tiếp. Những người khác, kể cả agent, sẽ tạo một yêu cầu xuất bản. Chỉ một quản trị viên là người thật, khác với người gửi yêu cầu, mới được phê duyệt, và chỉ khi bản nháp vẫn khớp với bản đã gửi. Nếu bản nháp đã thay đổi trong lúc chờ, yêu cầu phê duyệt bị từ chối.
 
 ## Lượt chạy và trigger
 
@@ -62,7 +62,7 @@ Mọi trigger, trừ manual, đều cần workflow đang bật.
 | Số trigger mỗi workflow | 3 |
 | Workflow được khởi chạy bởi workflow khác | Tối đa 3 cấp; workflow không thể tự khởi chạy chính nó |
 
-Một node thất bại có mặc định 3 lần thử (`settings.max_attempts_default`, hoặc `max_attempts` trên từng node). Thời gian chờ bắt đầu từ 1 giây và tăng gấp đôi tới tối đa 60 giây. Chỉ lỗi hết thời gian chờ, lỗi provider và lỗi tạm thời mới được thử lại. Trước khi một node gửi tin nhắn, ghi vào kho lưu trữ hay tạo công việc, dewee lưu một khoá idempotency, nên việc thử lại hay khởi động lại không lặp lại tác động đó. Một lượt chạy thất bại cũng có thể được chạy lại từ một node bạn chọn.
+Một node thất bại có mặc định 3 lần thử (`settings.max_attempts_default`, hoặc `max_attempts` trên từng node). Thời gian chờ bắt đầu từ 1 giây và tăng gấp đôi tới tối đa 60 giây. Chỉ lỗi hết thời gian chờ, lỗi provider và lỗi tạm thời mới được thử lại. Trước khi một node gửi tin nhắn, ghi vào kho lưu trữ hay tạo task, dewee lưu một khoá idempotency, nên việc thử lại hay khởi động lại không lặp lại tác động đó. Một lượt chạy thất bại cũng có thể được chạy lại từ một node bạn chọn.
 
 ## Những gì workflow không làm
 
@@ -73,7 +73,7 @@ Một node thất bại có mặc định 3 lần thử (`settings.max_attempts_
 
 ## Agent, tracing và CLI
 
-Agent làm việc với workflow qua tool `workflow`. Các thao tác của tool gồm `list`, `get`, `draft`, `update_draft`, `validate`, `dry_run`, `request_publish`, `run`, `runs` và `run_status`. Tool không có thao tác xuất bản: agent có thể soạn workflow từ một yêu cầu bằng ngôn ngữ tự nhiên, nhưng người thật mới là người duyệt.
+Agent làm việc với workflow qua tool `workflow`. Các thao tác của tool gồm `list`, `get`, `draft`, `update_draft`, `validate`, `dry_run`, `request_publish`, `run`, `runs` và `run_status`. Tool không có thao tác xuất bản: agent có thể soạn workflow từ một yêu cầu bằng ngôn ngữ tự nhiên, nhưng người thật mới là người phê duyệt.
 
 Mỗi lượt chạy tạo một trace gắn thẻ `workflow`, với một span `workflow_node` cho mỗi lần thử của từng node, và các lệnh gọi model của node `agent` nằm bên dưới. Đầu vào và đầu ra của node chỉ được lưu dưới dạng bản xem trước đã che thông tin nhạy cảm.
 

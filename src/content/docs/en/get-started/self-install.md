@@ -3,7 +3,7 @@ title: Install dewee yourself
 description: Install dewee on your machine with one script, as a standalone binary or with Docker, then set it up in the local dashboard and add a licence for channels.
 section: get-started
 order: 4
-updated: 2026-09-25
+updated: 2026-10-28
 ---
 
 Self-install puts dewee on a computer or server you control, and you do the setup yourself. Installing it and using agents, providers and skills is free. You need a licence only when you want to connect channels. The public [install page](/install) has the same commands in one place.
@@ -55,9 +55,9 @@ When dewee is running, open `http://localhost:4321` in your browser. This is the
 The first visit walks you through onboarding:
 
 1. **Create the owner account.** This is the account that manages the workspace, its members and its licence.
-2. **Configure the workspace.** Give it a name and set the basics for your team.
-3. **Add an LLM provider.** Paste an API key from a provider such as Anthropic, OpenAI, Google Gemini or OpenRouter. dewee does not include model credit; it calls the provider you connect. See [LLM providers](/docs/integrations/llm-providers).
-4. **Create your first agent.** Give it a name, pick a model and send it a message to check that it answers.
+2. **Say what you want help with.** Pick a goal and approve the setup plan dewee proposes.
+3. **Connect an LLM provider.** Paste an API key from a provider such as Anthropic, OpenAI, Google Gemini or OpenRouter. dewee checks that the model answers before it continues. dewee does not include model credit; it calls the provider you connect. See [LLM providers](/docs/integrations/llm-providers).
+4. **Start chatting.** Once the model is verified and your assistant is ready, setup ends and a fresh chat opens with suggested first tasks. Channels, skills and other connections are optional; add them whenever you want. The setup history stays available from that chat.
 
 ## Add a licence to connect channels
 
@@ -65,6 +65,12 @@ Agents, providers and skills work without a licence. To connect channels such as
 
 > [!TIP]
 > Early Access: the first 50 licences get 50% off the first year, $250 instead of $500, until 23:59 on 15 October 2026, Vietnam time (GMT+7). See [pricing](/pricing).
+
+## Behind a reverse proxy
+
+If you put the dashboard behind a reverse proxy, such as nginx on another machine, a proxy container, a Kubernetes ingress or a cloud load balancer, tell dewee which addresses that proxy uses. Set `DEWEE_TRUSTED_PROXY_CIDRS` to a comma-separated list of IP addresses and CIDR ranges, for example `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. With Docker, set it in the shell or an `.env` file next to `docker-compose.yml`. With the standalone binary, add it to `dewee.env` in the install folder. Then restart dewee.
+
+dewee then takes each visitor's address, and whether they connected over https, from the `X-Forwarded-For` and `X-Forwarded-Proto` headers that proxy sends. It reads those headers from no other client. A proxy on the same machine (`127.0.0.1`) is always trusted. Without the setting, every visitor behind the proxy shares the proxy's address, so one busy visitor can use up sign-in and website chat limits for everyone. List only your proxies, as narrowly as you can, never the networks your visitors come from: a visitor inside a listed range can choose their own address. An invalid entry, or a range that covers every address, stops the dashboard from starting.
 
 ## Minimum requirements
 

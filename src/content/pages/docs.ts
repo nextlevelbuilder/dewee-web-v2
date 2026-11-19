@@ -46,7 +46,7 @@ export const DOC_SECTIONS: DocSection[] = [
     id: "integrations",
     icon: "plug",
     title: { en: "Integrations", vi: "Tích hợp" },
-    blurb: { en: "The chat channels and model providers dewee connects to, and a chat widget for your own website.", vi: "Các kênh chat và nhà cung cấp model mà dewee kết nối, cùng widget chat cho chính website của bạn." },
+    blurb: { en: "The chat channels and model providers dewee connects to, a chat widget for your own website and a Chrome extension.", vi: "Các kênh chat và nhà cung cấp model mà dewee kết nối, widget chat cho chính website của bạn và extension cho Chrome." },
   },
   {
     id: "api",

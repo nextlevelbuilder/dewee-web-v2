@@ -10,7 +10,7 @@ The runtime's API covers what agents do and how they are configured: agents, ses
 
 ## Base URL and reference
 
-On a runtime you operate, the base URL is the address of your gateway, for example `https://dewee.example.com`. For a workspace in the console, the **API keys** page shows the base URL together with ready-to-copy examples in cURL, JavaScript, Python and WebSocket.
+On a runtime you operate, the base URL is the address of your gateway, for example `https://dewee.example.com`. For a workspace in the console, the **Docs** tab of the **API keys & docs** page shows the base URL together with ready-to-copy examples in cURL, JavaScript, Python and WebSocket.
 
 Every gateway also publishes its own reference:
 

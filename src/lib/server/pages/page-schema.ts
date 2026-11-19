@@ -29,8 +29,11 @@ const editable = {
   title: z.string().trim().min(1).max(160),
   description: z.string().trim().max(300),
   layout: layoutSchema,
-  blocks: z.array(z.unknown()).max(60),
-  body_md: z.string().max(100_000).nullable(),
+  blocks: z
+    .array(z.unknown())
+    .max(60)
+    .describe('Pages: ordered sections { type, props, section? }. Posts: inline widgets { id?, type, props }, placed in body_md with a line ::widget{id="…"}.'),
+  body_md: z.string().max(100_000).nullable().describe('Posts: the article in Markdown (no HTML). A line ::widget{id="…"} places the post block with that id.'),
   seo: seoSchema,
   cover: imageSrc.nullable(),
   tags: z.array(tag).max(10),

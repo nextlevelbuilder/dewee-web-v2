@@ -93,10 +93,13 @@ function contentTools(kind: Kind): WebMcpTool[] {
 const common: WebMcpTool[] = [
   {
     name: "list_blocks",
-    description: "Lists the page-builder block types with a description and a valid example each.",
-    inputSchema: obj({}),
+    description: 'Lists block types with where they fit (contexts), a description and a valid example each. Pass context "post" for the widgets a blog post can place inline.',
+    inputSchema: obj({ context: { type: "string", enum: ["page", "post"] } }),
     annotations: { readOnlyHint: true },
-    execute: async () => call("GET", "/blocks"),
+    execute: async (args) => {
+      const context = args.context === "page" || args.context === "post" ? args.context : null;
+      return call("GET", context ? `/blocks?context=${context}` : "/blocks");
+    },
   },
   {
     name: "get_block_schema",
@@ -110,10 +113,15 @@ const common: WebMcpTool[] = [
   },
   {
     name: "validate_blocks",
-    description: "Validates a blocks array without saving it.",
-    inputSchema: obj({ blocks: { type: "array" } }, ["blocks"]),
+    description: 'Validates a blocks array without saving it. For a post pass context "post" and its body_md, so ::widget{id} lines are checked against the blocks too.',
+    inputSchema: obj({ blocks: { type: "array" }, context: { type: "string", enum: ["page", "post"] }, body_md: { type: "string" } }, ["blocks"]),
     annotations: { readOnlyHint: true },
-    execute: async (args) => (Array.isArray(args.blocks) ? call("POST", "/blocks/validate", { blocks: args.blocks }) : failure("blocks must be an array.")),
+    execute: async (args) => {
+      if (!Array.isArray(args.blocks)) return failure("blocks must be an array.");
+      const context = args.context === "post" ? "post" : "page";
+      const body = context === "post" && typeof args.body_md === "string" ? { blocks: args.blocks, context, body_md: args.body_md } : { blocks: args.blocks, context };
+      return call("POST", "/blocks/validate", body);
+    },
   },
 ];
 

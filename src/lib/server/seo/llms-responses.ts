@@ -11,18 +11,11 @@ import { loadDiscovery } from "./discovery-sources";
 import { discoveryResponse, siteOrigin, TEXT } from "./discovery-response";
 import { listPostMarkdown } from "./dynamic-pages";
 import { fullTextSection, joinWithinBudget, LLMS_FULL_MAX_BYTES } from "./llms-full-text";
+import { LLMS_INTRO } from "./llms-intro";
 import { llmsTxt, type LlmsLink } from "./llms-txt";
 import { LLMS_GROUPS } from "./page-sections";
 import { LLMS_FULL_ASSET } from "./seo-manifest";
 import { OPENAPI_PATH } from "./seo-paths";
-
-const INTRO = {
-  summary: SITE.description,
-  note: {
-    en: "Every page on {site} has a Markdown twin: add `.md` to its URL ({site}/index.md for the home page). The English pages in one file: {site}/llms-full.txt. Vietnamese pages: {site}/vi/llms.txt. Questions: {email}.",
-    vi: "Mọi trang trên {site} đều có bản Markdown: thêm `.md` vào cuối URL (trang chủ tiếng Việt là {site}/vi.md). Danh sách trang tiếng Anh: {site}/llms.txt, toàn văn tiếng Anh: {site}/llms-full.txt. Liên hệ: {email}.",
-  },
-};
 
 /** The API description is open to anyone (see /developers), so agents get it next to the pages. */
 const resources = (locale: Locale): LlmsLink[] => [
@@ -39,7 +32,7 @@ export async function llmsTxtResponse(env: Env, url: URL, locale: Locale): Promi
     .map((p): LlmsLink => ({ title: p.title, href: p.twin, description: p.description, section: p.section }))
     .concat(resources(locale))
     .sort((a, b) => rank(a) - rank(b) || a.href.split("/").length - b.href.split("/").length || a.href.localeCompare(b.href));
-  const body = llmsTxt({ locale, siteUrl: siteOrigin(env, url), name: "dewee", intro: INTRO, email: SITE.email, links });
+  const body = llmsTxt({ locale, siteUrl: siteOrigin(env, url), name: "dewee", intro: LLMS_INTRO, email: SITE.email, links });
   return discoveryResponse(body, TEXT);
 }
 

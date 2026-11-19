@@ -25,7 +25,7 @@ import { adsPerformanceWatch } from "./ads-performance-watch";
 export type { ChannelId, TranscriptLine, UseCase, UseCaseArea, UseCaseDetail } from "./types";
 
 /** Date the use-case copy was last reviewed against the dewee docs (Article JSON-LD dates). */
-export const USE_CASES_REVIEWED = "2026-09-25";
+export const USE_CASES_REVIEWED = "2026-10-19";
 
 export const USE_CASES: UseCase[] = [
   softwareDelivery,

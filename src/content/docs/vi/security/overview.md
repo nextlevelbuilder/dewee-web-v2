@@ -10,7 +10,7 @@ Trang này viết cho người phải ký duyệt việc dùng dewee: cái gì �
 
 ## Tóm tắt nhanh
 
-- **Vòng ngoài đóng theo mặc định.** Không ai gọi được gateway nếu không có token, người lạ không nhắn được cho agent khi chưa được duyệt, và endpoint MCP công khai đang tắt.
+- **Vòng ngoài đóng theo mặc định.** Không ai gọi được gateway nếu không có token, người lạ không nhắn được cho agent khi chưa được phê duyệt, và endpoint MCP công khai đang tắt.
 - **Năng lực của agent bắt đầu ở mức thoáng.** Gateway mới cho agent dùng toàn bộ tool, chạy lệnh mà không hỏi, và sandbox Docker đang tắt. Bạn thu hẹp lại bằng chính sách, cho cả gateway và từng agent.
 - **Secret được mã hoá khi đã đặt khoá mã hoá.** Onboarding và bộ cài Docker tự sinh khoá này. API key chỉ được lưu dưới dạng hash.
 - **Các tenant được tách biệt trong mọi truy vấn.** Request không có ngữ cảnh tenant sẽ thất bại.
@@ -22,7 +22,7 @@ Trang này viết cho người phải ký duyệt việc dùng dewee: cái gì �
 | Truy cập gateway | Bắt buộc có token trên mọi địa chỉ không phải loopback; thiếu token thì gateway không khởi động |
 | WebSocket | Frame đầu tiên phải là `connect` đã xác thực; mọi thứ khác bị từ chối |
 | Phương thức RPC | Phương thức chưa được phân loại quyền sẽ bị từ chối |
-| Tin nhắn riêng trên ứng dụng chat | Người gửi lạ nhận mã ghép cặp và chờ được duyệt |
+| Tin nhắn riêng trên ứng dụng chat | Người gửi lạ nhận mã ghép nối và chờ được phê duyệt |
 | Endpoint MCP công khai | Tắt cho tới khi người vận hành bật |
 | Ngữ cảnh tenant | Bắt buộc; thiếu tenant là lỗi, không có giá trị dự phòng |
 | Cấp quyền cho CLI có credential | Nếu bước kiểm tra quyền không trả lời trong 2 giây, lệnh bị từ chối |
@@ -34,7 +34,7 @@ Các mặc định này ưu tiên việc bắt đầu nhanh. Hãy rà lại trư
 | Thiết lập | Mặc định | Lựa chọn chặt hơn |
 |---|---|---|
 | Tool profile (`tools.profile`) | `full` | `minimal`, `coding`, `messaging`, cùng danh sách allow và deny |
-| Duyệt lệnh (`tools.execApproval`) | Chạy không cần hỏi | `ask`: `on-miss` hoặc `always`; `security`: `allowlist` hoặc `deny` |
+| Phê duyệt lệnh (`tools.execApproval`) | Chạy không cần hỏi | `ask`: `on-miss` hoặc `always`; `security`: `allowlist` hoặc `deny` |
 | Sandbox Docker (`agents.defaults.sandbox.mode`) | `off` | `non-main` hoặc `all` |
 | Xử lý prompt injection (`gateway.injection_action`) | `warn` | `block` |
 | Web fetch (`tools.web_fetch.policy`) | `allow_all` | `allowlist` |
@@ -59,8 +59,8 @@ Mọi tin nhắn đến được kiểm tra với sáu mẫu prompt injection, n
 
 - **Nhóm lệnh shell bị chặn** gồm bảy loại: thao tác phá huỷ file và ổ đĩa, lệnh hệ thống, fork bomb, thực thi mã từ xa như `curl | sh`, reverse shell và eval injection.
 - **Bảo vệ đường dẫn** không cho tool ra khỏi workspace của agent.
-- **Chống SSRF** chặn địa chỉ nội bộ, loopback, link-local và metadata, cố định kết quả DNS và kiểm tra lại mọi lần chuyển hướng.
-- **Duyệt lệnh** có thể giữ lệnh lại cho tới khi một người phê duyệt.
+- **Chống SSRF** chặn địa chỉ nội bộ, loopback, link-local, metadata và các dải dành riêng, kể cả địa chỉ IPv4 nằm bên trong địa chỉ IPv6 NAT64 hoặc 6to4. Cơ chế này cũng cố định kết quả DNS và kiểm tra lại mọi lần chuyển hướng.
+- **Phê duyệt lệnh** có thể giữ lệnh lại cho tới khi một người phê duyệt.
 
 ### Output
 
@@ -82,7 +82,7 @@ Mọi bảng thuộc về tenant đều có tenant ID, và mọi truy vấn đ�
 
 1. Luôn đặt `GOCLAW_ENCRYPTION_KEY`, và cất khoá cùng bản sao lưu.
 2. Đặt gateway token đủ mạnh và đặt TLS phía trước gateway.
-3. Thu hẹp tool profile và bật duyệt lệnh cho agent có thể chạy lệnh.
+3. Thu hẹp tool profile và bật phê duyệt lệnh cho agent có thể chạy lệnh.
 4. Bật sandbox cho agent thực thi mã.
 5. Đặt `gateway.injection_action` thành `block` nếu agent của bạn trò chuyện với người ngoài.
 6. Liệt kê origin của bạn trong `gateway.allowed_origins`, và đặt danh sách IP cùng chữ ký HMAC cho webhook.

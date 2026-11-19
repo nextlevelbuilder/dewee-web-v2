@@ -47,6 +47,11 @@ const groups = CAPABILITY_GROUPS.map((g) => ({
   })),
 }));
 
+// The calendar shows the newest release's month, so its caption follows RELEASES[0] instead of
+// being retyped each month ("October 2026" / "Tháng 10 năm 2026").
+const releaseMonth = formatDate(`${RELEASES[0].date}T12:00:00+07:00`, locale, { month: "long", year: "numeric" });
+const monthLabel = releaseMonth.charAt(0).toLocaleUpperCase(locale) + releaseMonth.slice(1);
+
 const jsonLd = [
   {
     ...productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/features")}` }),
@@ -81,9 +86,9 @@ const jsonLd = [
       <SectionHead eyebrow={t.releases.eyebrow} title={t.releases.title} lede={t.releases.lede} />
       <ReleaseMonth
         month={RELEASES[0].date.slice(0, 7)}
-        monthLabel={t.releases.monthLabel}
+        monthLabel={monthLabel}
         weekdays={t.releases.weekdays}
-        calendarLabel={t.releases.calendarLabel}
+        calendarLabel={t.releases.calendarLabel(releaseMonth)}
         releases={releases}
         releasedOn={t.releases.releasedOn}
         changelog={{ label: t.releases.changelog, href: href("/changelog") }}

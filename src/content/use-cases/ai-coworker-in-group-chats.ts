@@ -13,8 +13,8 @@ export const aiCoworkerInGroupChats: UseCase = {
   team: { en: "Every team", vi: "Mọi phòng ban" },
   title: { en: "A co-worker in your group chats", vi: "Đồng nghiệp AI trong nhóm chat" },
   summary: {
-    en: "An agent that listens, remembers the thread, chips in when @mentioned and keeps decisions from getting lost.",
-    vi: "Agent lắng nghe, nhớ mạch trao đổi, góp ý khi được @nhắc tên và giữ cho các quyết định không bị trôi.",
+    en: "An agent that sits in your group chat like a colleague, speaks when @mentioned and turns decisions into tasks with a named owner.",
+    vi: "Một agent ngồi trong nhóm chat như đồng nghiệp, chỉ lên tiếng khi được nhắc tên và biến quyết định thành đầu việc có người phụ trách.",
   },
   channels: ["telegram", "zalo", "lark", "slack"],
   detail: {

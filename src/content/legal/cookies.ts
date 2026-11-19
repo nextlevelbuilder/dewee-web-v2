@@ -1,7 +1,8 @@
 /**
  * /cookies: Cookie Policy. The storage list mirrors the code: `dewee.theme` (ThemeToggle and the
  * no-flash script in BaseLayout), `dewee.cookies` (CookieBadge), `dewee.chat.sid` (chat widget,
- * set only when the chat opens) and the admin sign-in session cookie. The admin cookie's name and
+ * set only when the chat opens), `__Host-dewee_voter` (blog polls, quizzes and surveys; set only when
+ * a reader answers, stored server-side only as a per-post HMAC) and the admin sign-in session cookie. The admin cookie's name and
  * lifetime, and whether Cloudflare's bot cookies are switched on, are open questions (see report).
  * Google Tag Manager (GoogleTagManager.astro) runs in Consent Mode: analytics cookies are set only
  * after the visitor presses "Accept".
@@ -46,6 +47,7 @@ export const COOKIES: Bi<LegalDoc> = {
                 ["`dewee.theme`", "Local storage", "Remembers the theme you picked (light, dark or system). Set only when you change it", "Until you clear it"],
                 ["`dewee.cookies`", "Local storage", "Remembers your answer on the cookie notice (“Accept” or “Essential only”)", "Until you clear it"],
                 ["`dewee.chat.sid`", "Local storage", "A random ID that reconnects you to your chat conversation. Set only when you open the chat", "Until you clear it"],
+                ["`__Host-dewee_voter`", "Cookie", "A random ID that stops the same browser answering a blog poll, quiz or survey twice. Set only when you answer; we store only a one-way hash of it, never your IP address", "1 year"],
                 ["Admin session", "Cookie", "Keeps a signed-in administrator signed in. Set only for our own team, never for visitors", "Until sign-out or the session expires"],
                 ["Cloudflare security cookies, such as `__cf_bm`", "Cookie", "May be set by Cloudflare, which serves this site, to tell people from bots and protect the site from attacks", "Short-lived, set by Cloudflare"],
                 ["Google Analytics, such as `_ga` and `_ga_*`", "Cookie", "Counts visits and pages anonymously so we know what to improve. Set only after you press “Accept”", "Up to 2 years"],
@@ -122,6 +124,7 @@ export const COOKIES: Bi<LegalDoc> = {
                 ["`dewee.theme`", "Local storage", "Ghi nhớ giao diện bạn chọn (sáng, tối hay theo máy). Chỉ lưu khi bạn đổi giao diện", "Đến khi bạn xoá"],
                 ["`dewee.cookies`", "Local storage", "Ghi nhớ lựa chọn của bạn trên thông báo cookie (“Đồng ý” hoặc “Chỉ thiết yếu”)", "Đến khi bạn xoá"],
                 ["`dewee.chat.sid`", "Local storage", "Một mã ngẫu nhiên để nối lại cuộc chat của bạn. Chỉ tạo khi bạn mở khung chat", "Đến khi bạn xoá"],
+                ["`__Host-dewee_voter`", "Cookie", "Một mã ngẫu nhiên để cùng một trình duyệt không trả lời một bình chọn, câu đố hay khảo sát trên blog hai lần. Chỉ đặt khi bạn trả lời; chúng tôi chỉ lưu bản băm một chiều của mã này, không bao giờ lưu địa chỉ IP của bạn", "1 năm"],
                 ["Phiên quản trị", "Cookie", "Giữ trạng thái đăng nhập cho quản trị viên. Chỉ dành cho đội ngũ của chúng tôi, không bao giờ đặt cho khách truy cập", "Đến khi đăng xuất hoặc phiên hết hạn"],
                 ["Cookie bảo mật của Cloudflare, ví dụ `__cf_bm`", "Cookie", "Có thể do Cloudflare, đơn vị vận hành website, đặt ra để phân biệt người thật với bot và chống tấn công", "Ngắn hạn, do Cloudflare quy định"],
                 ["Google Analytics, ví dụ `_ga` và `_ga_*`", "Cookie", "Đếm lượt truy cập và trang xem ẩn danh để chúng tôi biết cần cải thiện gì. Chỉ đặt sau khi bạn bấm “Đồng ý”", "Tối đa 2 năm"],

@@ -1,13 +1,16 @@
 /**
  * RSS 2.0 feeds of the latest published posts: /blog/rss.xml (English) and /vi/blog/rss.xml.
- * Each item carries the description and the full post as safe HTML (the same renderer as the
- * post page), so readers show the whole article without loading the site.
+ * Each item carries the description and the full post as safe HTML, so readers show the whole
+ * article without loading the site. Inline widgets become their Markdown stand-ins first (links,
+ * images, quotes, code): feed readers drop scripts, iframes and most styling.
  */
 import type { APIRoute } from "astro";
 import { localePath, pick } from "~/i18n/config";
 import { BLOG } from "~/content/pages/blog";
 import { SITE } from "~/content/site";
 import { renderMarkdown } from "~/lib/blocks/safe-markdown";
+import { postBodyMarkdown } from "~/lib/blocks/post-widgets/post-body";
+import { widgetLabels } from "~/lib/blocks/post-widgets/widget-labels";
 import { platformEnv } from "~/lib/server/api/platform-env";
 import { listPublishedPosts } from "~/lib/server/pages/page-queries";
 
@@ -45,6 +48,7 @@ export const GET: APIRoute = async ({ params }) => {
 
   const abs = (p: string) => new URL(localePath(locale, p), SITE.url).href;
   const feedUrl = abs("/blog/rss.xml");
+  const labels = widgetLabels(locale);
   const newest = posts[0]?.published_at ?? posts[0]?.created_at;
   const items = posts.map((post) => {
     const link = abs(`/blog/${post.slug}`);
@@ -56,7 +60,7 @@ export const GET: APIRoute = async ({ params }) => {
       `      <guid isPermaLink="false">${xml(post.id)}</guid>`,
       `      <pubDate>${date}</pubDate>`,
       post.description ? `      <description>${xml(post.description)}</description>` : "",
-      `      <content:encoded>${cdata(absoluteLinks(renderMarkdown(post.body_md ?? "")))}</content:encoded>`,
+      `      <content:encoded>${cdata(absoluteLinks(renderMarkdown(postBodyMarkdown(post, labels))))}</content:encoded>`,
       ...post.tags.map((tag) => `      <category>${xml(tag)}</category>`),
       "    </item>",
     ]

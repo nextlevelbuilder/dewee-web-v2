@@ -3,7 +3,7 @@ title: CLI reference
 description: "The dewee command line: global flags, how it finds the gateway and your key, output formats, and every command group for agents, skills, workflows and more."
 section: runtime
 order: 2
-updated: 2026-10-14
+updated: 2026-10-16
 ---
 
 The same `dewee` binary that runs the gateway is also its command-line client. Most commands talk to a running gateway over HTTP or WebSocket, locally or remotely, so an operator can script almost everything the console does. A few maintenance commands work on the database directly and are meant for the host.
@@ -102,7 +102,7 @@ Every `access` group has `list`, `grant`, `set-level`, `revoke` and `activity`, 
 | `dewee cron` | `list`, `get`, `create`, `update`, `toggle`, `run`, `runs`, `status`, `delete` |
 | `dewee workflows` | `list`, `show`, `create`, `validate`, `apply`, `export`, `publish`, `rollback`, `enable`, `disable`, `trigger`, `delete`, `node-types`; `runs` to list, show, tail, cancel or retry runs |
 | `dewee heartbeat` | `get`, `set`, `toggle`, `test`, `logs`, `targets` |
-| `dewee reflex` | `status`, `config`, `test`, `eval` |
+| `dewee reflex` | `status`, `config` (`set`, `set-key`, `reset`), `settings`, `overrides` (`set`, `reset`), `decisions`, `test`, `eval`; see [Decision layer](/docs/concepts/decision-layer) |
 
 Workflows can be kept as files and applied from CI:
 
@@ -125,7 +125,7 @@ dewee workflows apply -f workflow.json
 | Command | Subcommands |
 |---|---|
 | `dewee traces` | `list`, `get`, `follow`, `timeline`, `export` |
-| `dewee usage` | `summary`, `list`, `timeseries`, `events` |
+| `dewee usage` | `summary`, `list`, `timeseries`, `events`, `runs`, `route-choices`, `snapshots` |
 | `dewee activity` | `list` |
 | `dewee api-keys` | `list`, `create`, `revoke` |
 | `dewee settings`, `dewee system-config` | `list`, `get`, `set` (and `reset` for settings) |

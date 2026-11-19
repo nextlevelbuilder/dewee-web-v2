@@ -3,7 +3,7 @@ title: Tách biệt đa tenant
 description: Cách dewee tách riêng agent, session, bộ nhớ và thông tin xác thực của từng tenant, cách request xác định tenant, và cách sao lưu hay chuyển dữ liệu tenant.
 section: concepts
 order: 2
-updated: 2026-09-25
+updated: 2026-10-13
 ---
 
 Tenant là ranh giới tách biệt dữ liệu trong dewee. Agent, cuộc hội thoại, bộ nhớ, provider và tool đều thuộc về đúng một tenant, và runtime từ chối mọi truy vấn không chỉ rõ tenant. Trong console, ranh giới này được gọi là workspace: mỗi workspace gắn với một tenant trên runtime của nó.
@@ -36,7 +36,7 @@ Một gợi ý tenant không khớp với tenant thật sẽ bị từ chối, c
 
 Mỗi tenant có riêng:
 
-- agent, liên kết giữa các agent, nhóm agent và công việc của nhóm;
+- agent, liên kết giữa các agent, nhóm agent và task của nhóm;
 - session và lịch sử tin nhắn;
 - bộ nhớ, bản tóm tắt các phiên, knowledge graph và kho tri thức;
 - LLM provider cùng key của chúng, MCP server và skill;
@@ -93,7 +93,7 @@ Khôi phục có ba chế độ: `upsert` (mặc định, chỉ thêm các dòng
 
 ### Chuyển dữ liệu giữa các tenant
 
-Các runtime đời mới có thể sao chép hoặc chuyển những tài nguyên được chọn giữa hai tenant trên cùng runtime: agent, nhóm agent, MCP server, skill tuỳ chỉnh, hook, kênh, cron job, provider, công việc và dữ liệu lưu trữ của tenant. Bản sao nhận định danh mới; khi chuyển thì định danh được giữ nguyên. Bộ nhớ và tri thức của agent chỉ được đưa theo khi bạn yêu cầu. Người thực hiện phải là quản trị viên của cả hai tenant, mọi lần chuyển đều bắt đầu từ một bản xem trước đã lưu, và tính năng này chỉ có trên PostgreSQL. Dùng `dewee tenant-transfer` hoặc các endpoint `/v1/tenant/resource-transfers`.
+Các runtime đời mới có thể sao chép hoặc chuyển những tài nguyên được chọn giữa hai tenant trên cùng runtime: agent, nhóm agent, MCP server, skill tuỳ chỉnh, hook, kênh, cron job, provider, task và dữ liệu lưu trữ của tenant. Bản sao nhận định danh mới; khi chuyển thì định danh được giữ nguyên. Bộ nhớ và tri thức của agent chỉ được đưa theo khi bạn yêu cầu. Người thực hiện phải là quản trị viên của cả hai tenant, mọi lần chuyển đều bắt đầu từ một bản xem trước đã lưu, và tính năng này chỉ có trên PostgreSQL. Dùng `dewee tenant-transfer` hoặc các endpoint `/v1/tenant/resource-transfers`. Skill tuỳ chỉnh được chuyển sẽ mang theo mọi phiên bản tệp sang tenant đích. Nếu tenant đích đã có sẵn một trong các phiên bản đó trên đĩa, lần chuyển sẽ dừng trước khi sao chép bất cứ thứ gì.
 
 ## Liên quan
 

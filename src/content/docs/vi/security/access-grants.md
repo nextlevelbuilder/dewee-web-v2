@@ -12,7 +12,7 @@ Workspace không cấp quyền gì thì không có gì thay đổi. Provider và
 
 ## Các mức quyền
 
-Có bốn mức: `use`, `edit`, `manage` và `admin`, mức cao bao gồm mọi mức thấp hơn. Không phải tài nguyên nào cũng có đủ bốn mức:
+Có bốn mức: `use`, `edit`, `manage` và `admin` (trên console là **Dùng**, **Chỉnh sửa**, **Quản lý** và **Quản trị**), mức cao bao gồm mọi mức thấp hơn. Không phải tài nguyên nào cũng có đủ bốn mức:
 
 | Tài nguyên | Agent có thể giữ | Người có thể giữ |
 |---|---|---|
@@ -25,13 +25,13 @@ Có bốn mức: `use`, `edit`, `manage` và `admin`, mức cao bao gồm mọi 
 
 Mỗi mức mở ra điều gì tuỳ vào loại tài nguyên:
 
-- **Skill.** Agent có `use` thấy skill và được nạp nó. Agent có `manage` còn được cập nhật hoặc xoá skill. Với người dùng, `use` cho phép dùng skill trong các cuộc chat của họ, `edit` hiện có tác dụng như `use`, còn `manage` cho phép cấp và thu hồi quyền tới đúng mức của chính họ và xem hoạt động của skill.
-- **MCP server.** Agent có `use` được gọi tool của server; danh sách cho phép và chặn theo từng tool vẫn áp dụng. Với người dùng, `use` giữ nguyên ý nghĩa cũ: những người chat mà agent được gọi server thay cho họ. `edit` hiện có tác dụng như `use`, còn `manage` cho phép cấp quyền, thu hồi và xem hoạt động, giống như với skill.
-- **Package và provider.** Khi tài nguyên đã bị giới hạn, agent có `use` mới được chạy lệnh của package hoặc chạy trên provider đó. Khi tài nguyên còn mở, quyền này không thay đổi gì.
+- **Skill.** Agent có `use` thấy skill và được nạp nó. Agent có `manage` còn được cập nhật hoặc xoá skill. Với người dùng, `use` cho phép dùng skill trong các cuộc chat của họ. `edit` cho phép thêm việc đổi tên, mô tả và thẻ của skill. `manage` cho phép thêm việc đổi ai được thấy skill, xoá skill, cấp và thu hồi quyền tới đúng mức của chính họ, và xem hoạt động của skill. Việc tải lên phiên bản mới vẫn do admin của workspace nắm, vì một lần tải lên có thể cài các thư viện phụ thuộc của skill lên máy chủ.
+- **MCP server.** Agent có `use` được gọi tool của server; danh sách cho phép và chặn theo từng tool vẫn áp dụng. Với người dùng, `use` giữ nguyên ý nghĩa cũ: những người chat mà agent được gọi server thay cho họ. `edit` cho phép thêm việc đổi tên hiển thị của server và thời gian tối đa của một lời gọi tool (từ 1 đến 600 giây). `manage` cho phép thêm việc bật hoặc tắt server, xoá server, cấp quyền, thu hồi và xem hoạt động. Địa chỉ hoặc lệnh chạy của server, thông tin xác thực, tên và tiền tố tool vẫn do admin của workspace nắm, vì chúng quyết định cái gì được chạy và secret của bạn được gửi đi đâu.
+- **Package và provider.** Khi tài nguyên đã bị giới hạn, agent có `use` mới được chạy lệnh của package hoặc chạy trên provider đó. Khi tài nguyên còn mở, quyền này không thay đổi gì. Người dùng không được cấp quyền trên package hay provider: việc cài package và đổi thiết lập provider vẫn do admin của workspace nắm.
 - **Hook.** `edit` cho phép một người sửa hook chạy cho các agent cụ thể. `manage` cho phép thêm việc đổi danh sách agent mà hook chạy cho, bật hoặc tắt hook, xoá hook và quản lý quyền của nó. Muốn sửa hook hoặc đổi danh sách agent của nó thì còn cần quyền chia sẻ mức `edit` trên từng agent liên quan, vì hook thấy mọi sự kiện của agent đó và có thể chặn các lời gọi tool của nó. Hook chạy cho cả workspace vẫn chỉ admin của workspace mới đụng tới được.
-- **Agent.** Đây chính là quyền chia sẻ agent được mô tả ở [Secret, vai trò và nhật ký kiểm toán](/docs/security/secrets-roles-and-audit#vai-trò-trong-runtime). `use` cho phép chat. `edit` cho phép đổi tên, mô tả, model và các thiết lập prompt của agent, và tạo lại agent. `manage` cho phép thêm việc nâng giới hạn chi phí và quản lý quyền chia sẻ. `admin` cho phép thêm việc xoá agent, trừ agent mặc định của workspace. Key, trạng thái, workspace, sandbox, chính sách tool và ngân sách của agent vẫn do admin của workspace nắm.
+- **Agent.** Đây chính là quyền chia sẻ agent được mô tả ở [Secret, vai trò và nhật ký kiểm toán](/docs/security/secrets-roles-and-audit#vai-trò-trong-runtime). `use` cho phép chat. `edit` cho phép đổi tên, mô tả, model và các thiết lập prompt của agent, và tạo lại agent. `manage` cho phép thêm việc nâng giới hạn chi phí và quản lý quyền chia sẻ. `admin` cho phép thêm việc xoá agent, trừ agent mặc định của workspace. Key, trạng thái, workspace, sandbox, chính sách tool và ngân sách của agent vẫn do admin của workspace nắm. Các quyền này áp dụng qua gateway. Trên console, muốn sửa hay xoá agent vẫn cần quản trị viên workspace dù có quyền chia sẻ nào, nên console không đề xuất `edit` hay `admin` cho agent (xem [Quản lý quyền ở đâu](#quản-lý-quyền-ở-đâu)).
 
-Owner, admin của workspace và chủ sở hữu agent giữ đúng những quyền họ đã có; quyền theo tài nguyên chỉ cộng thêm quyền cho người được cấp. Muốn dùng quyền chia sẻ mức `edit`, `manage` hay `admin` từ script, người đó cần một API key gắn với chính họ và có quyền ghi (operator trở lên).
+Owner, admin của workspace và chủ sở hữu agent giữ đúng những quyền họ đã có; quyền theo tài nguyên chỉ cộng thêm quyền cho người được cấp. Muốn dùng quyền mức `edit`, `manage` hay `admin` trên agent, hook, skill hay MCP server từ script hoặc CLI (`dewee skills update`, `dewee mcp update`), người đó cần một API key gắn với chính họ và có quyền ghi (operator trở lên).
 
 ## Ai được cấp quyền
 
@@ -41,7 +41,7 @@ Skill dựng sẵn, provider dùng chung cho cả instance và hook toàn cục 
 
 ## Mở và giới hạn
 
-Provider và package có chế độ truy cập. **Mở** (open), chế độ mặc định, cho mọi agent của workspace dùng. **Giới hạn** (restricted) chỉ cho các agent có quyền `use`. Chỉ admin của workspace đổi được chế độ này.
+Provider và package có chế độ truy cập, trên console là công tắc **Giới hạn truy cập**. **Mở** (open), chế độ mặc định, cho mọi agent của workspace dùng. **Giới hạn** (restricted) chỉ cho các agent có quyền `use`. Chỉ admin của workspace đổi được chế độ này.
 
 Giới hạn một provider có thể làm các agent đang chạy trên nó ngừng hoạt động, nên dewee cho xem trước ảnh hưởng. Nó liệt kê các agent sẽ mất quyền truy cập: những agent dùng provider này làm provider chính, làm fallback đang bật, hoặc qua nhóm tài khoản ChatGPT OAuth, mà chưa được cấp quyền. Dashboard hỏi xác nhận kèm danh sách đó, rồi đề nghị cấp `use` cho tất cả trong một bước. Trên CLI, `--dry-run` in ra cùng danh sách mà không thay đổi gì. Package không có agent nào bị ảnh hưởng để liệt kê.
 
@@ -65,7 +65,7 @@ Thay đổi về quyền và chế độ có hiệu lực từ lượt chạy k�
 - **Thư viện trong package.** Quyền trên package chặn các lệnh mà package cài vào, theo tên lệnh. Nó không chặn code import package như một thư viện, bản sao đã đổi tên của một lệnh, hay script bên trong package được chạy qua trình thông dịch. Khi cần cô lập thật sự, hãy dùng [sandbox Docker](/docs/security/overview#cách-ly).
 - **File của skill ngoài `read_file`.** Lệnh shell, `search_files` và `list_files` vẫn chạm được tới file của skill.
 - **MCP server khai báo trong file cấu hình gateway.** Chúng không có quyền theo tài nguyên và vẫn mở cho bất kỳ ai gọi được chúng.
-- **Tác vụ nền.** Bộ nhớ, embedding, giọng nói và tóm tắt dùng provider của workspace bên ngoài lượt chạy của agent chưa được kiểm tra theo quyền trên provider.
+- **Công việc nền.** Bộ nhớ, embedding, giọng nói và tóm tắt dùng provider của workspace bên ngoài lượt chạy của agent chưa được kiểm tra theo quyền trên provider.
 - **Bản Lite.** Lite không có kho lưu quyền: panel và lệnh `access` không hoạt động ở đó, provider và package không giới hạn được, còn skill, MCP server, agent và hook giữ quy tắc cũ.
 
 ## Hoạt động
@@ -73,8 +73,8 @@ Thay đổi về quyền và chế độ có hiệu lực từ lượt chạy k�
 Mỗi tài nguyên có một luồng hoạt động gồm ba loại sự kiện:
 
 - **Thay đổi quyền.** Cấp quyền, đổi mức, thu hồi và đổi chế độ, kèm người thực hiện. Bản ghi được lưu cùng lúc với thay đổi.
-- **Từ chối.** Mỗi lần bị từ chối khi chạy, gộp lại tối đa một mục cho mỗi agent, tài nguyên và hành động trong một phút. Gateway cũng ghi log `security.resource_grant_denied`. Lời gọi tool MCP bị từ chối trong lúc chat được gateway ghi log nhưng không xuất hiện trong luồng hoạt động.
-- **Sử dụng.** Các lần chạy skill, lần thực thi hook và lời gọi model trên một provider trong 7 ngày gần nhất. MCP server, package và agent chưa có sự kiện sử dụng.
+- **Bị từ chối.** Mỗi lần bị từ chối khi chạy, gộp lại tối đa một mục cho mỗi agent, tài nguyên và hành động trong một phút. Gateway cũng ghi log `security.resource_grant_denied`. Lời gọi tool MCP bị từ chối trong lúc chat được gateway ghi log nhưng không xuất hiện trong luồng hoạt động.
+- **Lượt dùng.** Các lần chạy skill, lần thực thi hook và lời gọi model trên một provider trong 7 ngày gần nhất. MCP server, package và agent chưa có sự kiện sử dụng.
 
 Admin của workspace và người có `manage` trên tài nguyên xem được luồng này.
 
@@ -83,7 +83,7 @@ Admin của workspace và người có `manage` trên tài nguyên xem được 
 - **Dashboard tích hợp sẵn của gateway.** Panel **Access** trên skill (một tab trong hộp thoại skill), provider (trang provider), package (một thao tác trên từng dòng của danh sách pip, npm, system và GitHub), hook và agent (một tab trên trang của chúng). Panel liệt kê quyền, thêm agent hoặc người ở các mức tài nguyên cho phép, đổi mức và thu hồi quyền, hiện luồng hoạt động, và có công tắc mở/giới hạn cho provider và package.
 - **CLI.** `dewee skills`, `mcp`, `providers`, `packages`, `agent` và `hooks` đều có nhóm `access` với `list`, `grant`, `set-level`, `revoke` và `activity`; provider và package có thêm `mode get` và `mode set`. Xem [Tham chiếu CLI](/docs/runtime/cli).
 - **HTTP API.** `/v1/resource-grants/{type}/{id}`, theo cùng quy tắc với dashboard.
-- **Console.** Trên app.dewee.sh, skill, MCP server, provider và package có tab **Access** và một tab hoạt động, agent có tab **Permissions**, còn hook chạy cho các agent được chọn có tab **Access**. Khi cấp mới, console chỉ đề xuất các mức nó thực thi: một người nhận **Use** hoặc **Manage** trên skill, MCP server hay agent, và **Edit** hoặc **Manage** trên hook, còn các agent của hook nằm trong mục **Runs for**. Quản trị viên workspace còn có công tắc mở/giới hạn cho provider và package, kèm bản xem trước các agent sẽ mất quyền. Package phát hành trên GitHub và hook áp dụng cho cả workspace hiện thông báo thay cho các nút điều khiển, còn thành viên mà gateway sẽ từ chối chỉ xem được danh sách quyền. Xem [Agent](/docs/console/agents), [Skill](/docs/console/skills), [Provider và model](/docs/console/providers-and-models) và [Tool tích hợp, MCP server và hook](/docs/console/tools-mcp-and-hooks).
+- **Console.** Trên app.dewee.sh, skill, MCP server, provider và package có tab **Quyền truy cập** và tab **Hoạt động**, agent có tab **Phân quyền**, còn mọi hook đều có tab **Quyền truy cập**. Khi cấp mới, console chỉ đề xuất các mức nó thực thi: một người nhận **Dùng**, **Chỉnh sửa** hoặc **Quản lý** trên skill hay MCP server, **Dùng** hoặc **Quản lý** trên agent, và **Chỉnh sửa** hoặc **Quản lý** trên hook, còn các agent của hook nằm trong mục **Chạy cho**. Trên agent, **Chỉnh sửa** có tác dụng như **Dùng** và **Quản trị** như **Quản lý**, nên cả hai không được đề xuất; quyền đã giữ một trong hai mức này vẫn hiện và vẫn đổi được. Quản trị viên workspace còn có công tắc **Giới hạn truy cập** cho provider và package. Giới hạn một provider mở hộp thoại xác nhận, trước tiên liệt kê các agent sẽ mất truy cập. Sau khi bạn xác nhận, nó đề nghị **Cấp quyền dùng cho họ** cho các agent đã mất truy cập. Giới hạn một package chỉ hỏi xác nhận, không có bản xem trước. Gói phát hành GitHub, hook áp dụng toàn workspace và hook có sẵn hoặc được chia sẻ cho cả hệ thống hiện thông báo thay cho các nút điều khiển, còn thành viên mà gateway sẽ từ chối chỉ xem được danh sách quyền. Xem [Agent](/docs/console/agents), [Skill](/docs/console/skills), [Provider và model](/docs/console/providers-and-models) và [Tool tích hợp, MCP server và hook](/docs/console/tools-mcp-and-hooks).
 
 ```bash
 dewee skills access grant git-helper --agent support-bot --level use

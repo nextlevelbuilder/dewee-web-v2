@@ -12,8 +12,8 @@ export const salesKnowledgeAssistant: UseCase = {
   team: { en: "Sales", vi: "Kinh doanh" },
   title: { en: "Every salesperson, fully briefed", vi: "Trợ lý sales với tri thức nội bộ" },
   summary: {
-    en: "Instant answers on pricing, specs and policies from your internal knowledge, plus quotes and follow-ups drafted for approval.",
-    vi: "Trả lời tức thì về giá, thông số, chính sách từ tri thức nội bộ; soạn sẵn báo giá và lịch chăm sóc để duyệt.",
+    en: "A sales assistant answers from your knowledge base, drafts quotes and follow-ups, and sends discounts outside policy to the sales manager to approve.",
+    vi: "Trợ lý bán hàng trả lời từ tri thức nội bộ, soạn báo giá và lịch chăm sóc, và chuyển mức giảm giá ngoài chính sách cho quản lý duyệt.",
   },
   channels: ["zalo", "lark", "telegram"],
   detail: {

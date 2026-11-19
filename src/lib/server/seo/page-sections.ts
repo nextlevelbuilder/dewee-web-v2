@@ -29,7 +29,7 @@ export function sectionOf(path: string): SectionId {
 
 /** Eyebrow shown on the page's social card. */
 export const SECTION_LABEL: Record<SectionId, Bi> = {
-  home: { en: "Enterprise AI agents", vi: "AI agent cho doanh nghiệp" },
+  home: { en: "The multiplayer agent platform", vi: "Con người và AI agent cùng làm việc" },
   product: { en: "Product", vi: "Sản phẩm" },
   changelog: { en: "Changelog", vi: "Nhật ký thay đổi" },
   "use-cases": { en: "Use cases", vi: "Ứng dụng" },

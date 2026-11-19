@@ -3,7 +3,7 @@ title: Lịch chạy và heartbeat
 description: Cách dewee chạy agent theo lịch, từ cron job có cơ chế thử lại và lịch sử chạy tới checklist heartbeat, cùng cách tin nhắn xếp hàng dùng chung bộ lập lịch.
 section: concepts
 order: 9
-updated: 2026-09-25
+updated: 2026-10-20
 ---
 
 Agent trong dewee không nhất thiết phải chờ có người nhắn tin. Một cron job chạy một lượt agent hoặc một workflow vào thời điểm định sẵn hoặc theo chu kỳ. Heartbeat đánh thức agent theo một khoảng thời gian cố định để nó tự rà soát checklist của mình. Cả hai đều đi qua cùng bộ lập lịch xếp hàng tin nhắn chat, nên việc chạy theo lịch không va chạm với các cuộc hội thoại đang diễn ra.
@@ -11,6 +11,10 @@ Agent trong dewee không nhất thiết phải chờ có người nhắn tin. M�
 ## Cron job và các loại lịch
 
 Mỗi cron job thuộc về một agent, gồm một lịch và một payload. Bộ lập lịch kiểm tra job đến hạn mỗi giây.
+
+Bạn chỉ có thể đặt lịch trên agent mà bạn được dùng: agent mặc định, agent do bạn sở hữu và agent được chia sẻ với bạn. Admin và chủ sở hữu gateway có thể đặt lịch trên mọi agent. Chỉ định một agent khác sẽ bị từ chối với lỗi `UNAUTHORIZED` và không có gì được lưu. Kiểm tra này cũng áp dụng khi bạn sửa, chạy hoặc bật lại job, nên một job nằm trên agent bạn không còn quyền dùng chỉ có thể bị tắt, xoá hoặc chuyển sang agent bạn được dùng. Bỏ trống agent để job chạy trên agent mặc định.
+
+Chỉ chủ sở hữu job (thành viên đã tạo job) hoặc owner/admin của workspace mới có thể sửa, chạy, tạm dừng, tiếp tục hoặc xoá job. Người khác sẽ nhận lỗi `403` và job giữ nguyên; trang Schedules ẩn các thao tác này trên những job bạn không được thay đổi. Mọi thành viên vẫn xem được danh sách job và lịch sử chạy. Job tạo từ chat hoặc dashboard được lưu dưới một user id khác, nên trên workspace console chỉ owner hoặc admin mới thay đổi được.
 
 | Loại | Chạy | Giá trị `--schedule` |
 |---|---|---|
@@ -56,6 +60,8 @@ dewee cron toggle <job-id> false
 
 `--force` chạy job ngay cả khi chưa đến hạn.
 
+Mỗi job chỉ chạy một lượt tại một thời điểm. **Run now** hoặc `dewee cron run` trên một job đang chạy sẽ bị từ chối với thông báo "schedule is already running", và một mốc lịch đến trong lúc job đang chạy sẽ bị bỏ qua chứ không xếp hàng. Nếu gateway bị sập hoặc khởi động lại giữa chừng, lượt chạy được đánh dấu `interrupted` và job được lên lịch lại: trên PostgreSQL là khoảng hai phút sau khi lượt chạy ngừng báo còn sống, trên Lite là khi gateway khởi động lại. Một lượt đang chạy trên instance gateway khác vẫn tiếp tục khi bộ lập lịch chuyển sang instance khác.
+
 ## Hàng đợi session và các lane
 
 Mọi lượt chạy của agent đều đi qua bộ lập lịch, và tin nhắn gửi tới một session sẽ chờ trong hàng đợi của session đó. Session DM chạy từng lượt một, còn session nhóm chạy từ ba lượt trở lên cùng lúc. Khi lịch sử của session vượt quá 60% cửa sổ ngữ cảnh của model, số lượt chạy đồng thời giảm về một.
@@ -86,7 +92,7 @@ Heartbeat là một lần kiểm tra định kỳ. Mỗi agent có thể có m�
 
 Gateway kiểm tra heartbeat đến hạn mỗi 30 giây. Một lượt bị bỏ qua khi nằm ngoài giờ hoạt động, khi agent đang bận việc khác, hoặc khi `HEARTBEAT.md` trống hay không tồn tại. Agent đang bận sẽ được thử lại ở lần kiểm tra kế tiếp. Khi heartbeat được bật lần đầu, thời điểm bắt đầu được lùi thêm tối đa 10% chu kỳ, để các agent có cùng chu kỳ không chạy đồng loạt.
 
-Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Test** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
+Nếu câu trả lời chứa `HEARTBEAT_OK`, lượt chạy được ghi là đã chặn gửi và không có gì được gửi đi. Ngược lại, câu trả lời được gửi tới cuộc chat đã cấu hình. Heartbeat cũng có thể được đánh thức sớm bằng nút **Chạy thử** trong console, khi agent gọi tool `heartbeat` với thao tác `test`, hoặc bởi một cron job có `wakeHeartbeat`.
 
 ```bash
 dewee heartbeat get <agent-id>
@@ -101,7 +107,7 @@ dewee heartbeat toggle <agent-id> --enabled=false
 
 | | Heartbeat | Cron job |
 |---|---|---|
-| Phù hợp cho | Kiểm tra định kỳ mà phần lớn thời gian không có gì để báo | Mọi tác vụ hay workflow chạy theo lịch |
+| Phù hợp cho | Kiểm tra định kỳ mà phần lớn thời gian không có gì để báo | Mọi task hay workflow chạy theo lịch |
 | Mỗi agent | Một | Nhiều |
 | Lịch | Chu kỳ cố định, tối thiểu 5 phút | `at`, `every` hoặc biểu thức cron |
 | Hướng dẫn | `HEARTBEAT.md` | Tin nhắn lưu trong job |

@@ -16,6 +16,7 @@ export type ApiErrorCode =
   | "payload_too_large"
   | "unsupported_media_type"
   | "rate_limited"
+  | "upstream_error"
   | "internal";
 
 export class ApiError extends Error {

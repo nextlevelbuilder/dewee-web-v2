@@ -1,0 +1,29 @@
+---
+/**
+ * A blog post body with its inline widgets. The public page and the admin preview both render
+ * through this component (and renderPostBody underneath), so they produce the same HTML; the
+ * preview only adds notices where the page hides a broken widget.
+ */
+import "~/styles/post-widgets.css";
+import type { Locale } from "~/i18n/config";
+import { renderPostBody, type PostContent } from "~/lib/blocks/post-widgets/post-body";
+import { widgetLabels } from "~/lib/blocks/post-widgets/widget-labels";
+import type { RenderMode } from "~/lib/blocks/post-widgets/widget-html";
+
+interface Props {
+  post: PostContent;
+  locale: Locale;
+  mode: RenderMode;
+  class?: string;
+}
+const { post, locale, mode, class: className } = Astro.props;
+const labels = widgetLabels(locale);
+const html = renderPostBody(post, { mode, labels });
+const clientLabels = JSON.stringify({ copy: labels.copy, copied: labels.copied, failed: labels.copyFailed, slideOf: labels.slideOf });
+---
+
+<article class:list={["prose", "post-body", className]} data-post-widgets={clientLabels} set:html={html} />
+
+<script>
+  import "./post-widgets-client";
+</script>

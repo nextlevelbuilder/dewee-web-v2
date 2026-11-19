@@ -76,6 +76,10 @@ Model provider keys are usually added in the dashboard or the console, where the
 
 The gateway refuses to start on a non-loopback address without a gateway token. Only for local development can you bypass this with `GOCLAW_ALLOW_INSECURE_NO_AUTH=1`. Put the gateway behind your own TLS terminator or reverse proxy when it is reachable from other machines.
 
+Set `GOCLAW_PUBLIC_URL` to the gateway's public address (for example `https://dewee.example.com`). The gateway hands this address to outside services, such as channel callback and webhook URLs and download links. When it is set, no request can change it. Without it, the gateway learns the address from requests by the system owner or admins of the master tenant only. Other workspaces never change it.
+
+The gateway reads `X-Forwarded-Host` and `X-Forwarded-Proto` only from the proxies listed in `GOCLAW_TRUSTED_PROXIES`, a comma-separated list of IP addresses, CIDR ranges or hostnames (for example `127.0.0.1,::1` when nginx runs on the same machine, or the proxy container's Docker Compose service name). From any other client those headers are ignored. The self-hosted installer and Compose files already set it for the proxy they ship; elsewhere the list is empty by default. An invalid entry stops the gateway from starting.
+
 Public MCP access to the gateway (`GOCLAW_MCP_PUBLIC_ENABLED`) is off by default. See [Webhooks and MCP](/docs/api/webhooks-and-mcp) before you turn it on.
 
 ## Editions
@@ -101,7 +105,7 @@ Run `./dewee doctor` on the host to print the version, the config path and wheth
 
 ## Upgrades
 
-`dewee upgrade` brings the database schema up to date and runs data migrations. It is safe to run more than once, and the Docker image runs it on every start. Check first with `dewee upgrade --status` or `dewee upgrade --dry-run`. The lower-level `dewee migrate` command (`up`, `down`, `version`, `force`, `goto`) exists for recovery work.
+`dewee upgrade` brings the database schema up to date and runs data migrations. It is safe to run more than once, and the Docker image runs it on every start. Check first with `dewee upgrade --status` or `dewee upgrade --dry-run`. The lower-level `dewee migrate` command (`up`, `down`, `version`, `force`, `goto`) exists for recovery work. A binary refuses to start on a database whose schema is newer than it supports, on PostgreSQL and on the Lite (SQLite) edition alike, and the error names both versions. To roll back, run the newer binary's `dewee migrate down` first on PostgreSQL; Lite has no down migrations, so restore the backup taken before the upgrade.
 
 ## Backups and restores
 

@@ -3,7 +3,7 @@ title: Schedules and heartbeat
 description: How dewee runs agents on a timer, from cron jobs with retries and run history to the heartbeat checklist, and how queued messages share the scheduler.
 section: concepts
 order: 9
-updated: 2026-09-25
+updated: 2026-10-20
 ---
 
 A dewee agent does not have to wait for someone to message it. A cron job runs an agent turn or a workflow at a set time or interval. A heartbeat wakes an agent on a fixed interval to work through its own checklist. Both go through the same scheduler that queues chat messages, so timed work and live conversations do not collide.
@@ -11,6 +11,10 @@ A dewee agent does not have to wait for someone to message it. A cron job runs a
 ## Cron jobs and schedule types
 
 A cron job belongs to one agent and pairs a schedule with a payload. The scheduler checks for due jobs every second.
+
+You can schedule a job only on an agent you can use: the default agent, agents you own, and agents shared with you. Admins and gateway owners can schedule on any agent. Naming any other agent is refused with `UNAUTHORIZED` and nothing is saved. The same check applies when you edit, run or re-enable a job, so a job left on an agent you can no longer use can only be disabled, deleted or moved to an agent you can use. Leave the agent out to run the job on the default agent.
+
+Only a job's owner (the member who created it) or a workspace owner or admin can edit, run, pause, resume or delete it. Anyone else gets `403` and the job is left unchanged; the Schedules page hides those actions on jobs you cannot change. Listing jobs and reading run history stay open to every member. A job created from chat or the dashboard is stored under a different user id, so from the workspace console only an owner or admin can change it.
 
 | Kind | Runs | `--schedule` value |
 |---|---|---|
@@ -56,6 +60,8 @@ dewee cron toggle <job-id> false
 
 `--force` runs a job now even if it is not due.
 
+A job runs at most once at a time. **Run now** or `dewee cron run` on a job that is still running is refused with "schedule is already running", and a scheduled time that comes up during a run is skipped, not queued. If a gateway crashes or restarts during a run, the run is marked `interrupted` and the job is scheduled again: on PostgreSQL about two minutes after the run stops reporting that it is alive, on Lite when the gateway starts again. A run still executing on another gateway instance keeps going when the scheduler moves between instances.
+
 ## The session queue and lanes
 
 Every agent run goes through the scheduler, and messages to a session wait in that session's queue. A DM session runs one turn at a time, and a group session runs three or more. When a session's history passes 60% of the model's context window, it drops back to one.
@@ -86,7 +92,7 @@ A heartbeat is a periodic check-in. Each agent can have one, driven by a `HEARTB
 
 The gateway checks for due heartbeats every 30 seconds. A run is skipped when it falls outside active hours, when the agent is busy with other work, or when `HEARTBEAT.md` is empty or missing. A busy agent is tried again on the next check. When a heartbeat is first enabled, its start is offset by up to 10% of the interval, so agents with the same interval do not all run together.
 
-If the reply contains `HEARTBEAT_OK`, the run is logged as suppressed and nothing is sent. Otherwise the reply goes to the delivery chat. A heartbeat can also be woken early by **Test** in the console, by the agent calling its `heartbeat` tool with `test`, or by a cron job with `wakeHeartbeat`.
+If the reply contains `HEARTBEAT_OK`, the run is logged as suppressed and nothing is sent. Otherwise the reply goes to the delivery chat. A heartbeat can also be woken early by **Run test** in the console, by the agent calling its `heartbeat` tool with `test`, or by a cron job with `wakeHeartbeat`.
 
 ```bash
 dewee heartbeat get <agent-id>

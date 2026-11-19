@@ -54,6 +54,7 @@ In groups, the agent answers only when it is mentioned, unless you turn mention 
 - **Long answers** are split to fit each app: 4,096 characters on Telegram, 4,000 on Slack and Feishu, 2,000 on Discord and Zalo.
 - **Media**: images and files go both ways within each app's limits. Telegram groups several images or files into albums of up to 10.
 - **Voice notes** on Telegram, Discord and Feishu are transcribed before the agent reads them, using the speech-to-text providers you configure. WhatsApp transcription stays off until an admin turns it on. Telegram can route voice messages to a separate agent.
+- **Link previews**: on Telegram, turn a channel's **Link Preview** setting off to stop the app showing a preview card for links in the agent's answers. A message that carries a single-use link, such as a link to connect an account or to enter a credential, is always sent with previews off on Telegram, Slack, Discord and Bitrix24, so the app's preview fetcher never opens the link before the person does.
 - **Replies out loud**: agents can answer with synthesised speech when a voice provider is set up. See [LLM and voice providers](/docs/integrations/llm-providers).
 
 ## Commands in chat

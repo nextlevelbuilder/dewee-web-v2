@@ -9,7 +9,7 @@ import "~/styles/global.css";
 import Icon from "~/components/ui/Icon.astro";
 import { ADMIN } from "./admin-strings";
 
-type Section = "dashboard" | "pages" | "posts" | "keys" | "leads" | "audit" | "login";
+type Section = "dashboard" | "pages" | "posts" | "keys" | "leads" | "widgets" | "audit" | "login";
 interface Props {
   title: string;
   current: Section;
@@ -23,6 +23,7 @@ const links: { id: Section; href: string; label: string }[] = [
   { id: "posts", href: "/admin/posts", label: ADMIN.nav.posts },
   { id: "keys", href: "/admin/keys", label: ADMIN.nav.keys },
   { id: "leads", href: "/admin/leads", label: ADMIN.nav.leads },
+  { id: "widgets", href: "/admin/widgets", label: ADMIN.nav.widgets },
   { id: "audit", href: "/admin/audit", label: ADMIN.nav.audit },
 ];
 ---

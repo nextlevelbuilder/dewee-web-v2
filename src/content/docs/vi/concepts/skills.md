@@ -56,7 +56,7 @@ Lệnh slash được bật sẵn và có thể tắt theo tenant bằng `skills
 
 ## Quyền truy cập và cấp quyền
 
-Mỗi skill có một chế độ truy cập, hiển thị trong console ở mục **Hiển thị**:
+Mỗi skill có một chế độ truy cập, hiển thị trong console ở mục **Phạm vi hiển thị**:
 
 | Chế độ | Ai được dùng |
 |---|---|
@@ -66,6 +66,8 @@ Mỗi skill có một chế độ truy cập, hiển thị trong console ở m�
 
 "Public" nghĩa là toàn bộ tenant, không phải công khai trên internet. Ngoài ra, danh sách skill được phép của agent có thể thu hẹp thêm: để trống (không đặt) nghĩa là mọi skill truy cập được, còn danh sách rỗng nghĩa là không có skill nào. Kênh có thể thu hẹp tiếp theo từng request, ví dụ theo từng forum topic trên Telegram.
 
+Quyền được áp dụng ngay khi agent chạy, không chỉ ở danh sách skill agent nhìn thấy. Agent không được dùng một skill thì không kích hoạt được skill đó, và các công cụ đọc, ghi và sửa file, file đính kèm agent gửi vào cuộc trò chuyện cũng như lệnh shell của agent bị từ chối khi trỏ vào file của skill đó, kể cả các phiên bản đã lưu trước, nên agent không đọc được và cũng không sửa được skill mà nó không được cấp; kết quả liệt kê thư mục và tìm kiếm file sẽ bỏ qua skill này. Mỗi lần từ chối đều được ghi vào trace của lượt chạy, và nhật ký hoạt động cũng ghi nhận (các lần lặp lại được gộp chung).
+
 ```bash
 dewee skills access set <skill-id> --mode internal
 dewee skills grant agent <skill-id> <agent-id>
@@ -74,10 +76,11 @@ dewee skills access effective <skill-id> --agent <agent-id>
 
 ## Thêm và xuất bản skill
 
-- **Tải lên.** `dewee skills upload <dir-or-zip>` đóng gói một thư mục hoặc gửi file ZIP có sẵn, và skill xuất hiện trong mục skill tuỳ chỉnh của console. Giới hạn kích thước mặc định là 20 MB, có thể chỉnh từ 1 đến 500 MB. `dewee skills promote <slug>` tải lên một skill cá nhân từ `~/.agents`.
+- **Tải lên.** `dewee skills upload <dir-or-zip>` đóng gói một thư mục hoặc gửi file ZIP có sẵn, và skill xuất hiện trong mục skill tuỳ chỉnh của console. Giới hạn kích thước mặc định là 20 MB, có thể chỉnh từ 1 đến 500 MB. `dewee skills promote <slug>` tải lên một skill cá nhân từ `~/.agents`. `dewee skills update <skill-id>` đổi tên, mô tả, thẻ hoặc chế độ hiển thị của skill, còn `dewee skills delete <skill-id> --yes` xoá skill; người có quyền `edit` hoặc `manage` trên skill có thể chạy các lệnh này bằng API key của chính họ (xem [Cấp quyền theo tài nguyên](/docs/security/access-grants)).
 - **Bộ lọc nội dung.** Trước khi ghi bất cứ thứ gì, `SKILL.md` được quét theo 25 quy tắc về lệnh phá huỷ, chèn mã, truy cập thông tin xác thực, duyệt thư mục trái phép, lệnh xoá bảng SQL và leo thang đặc quyền. Chỉ cần khớp một quy tắc là skill bị từ chối. `SKILL.md` tối đa 100 KB, mỗi file văn bản đi kèm tối đa 2 MB.
 - **Agent tự xuất bản.** Agent có thể xuất bản một thư mục trong workspace bằng `publish_skill`. Skill mới thuộc riêng người dùng và được cấp cho agent đó, nên chuyển thành `internal`. Xuất bản lại cùng slug sẽ tạo phiên bản mới. Slug của skill tích hợp được giữ riêng.
-- **Agent tự chỉnh sửa.** Với `skill_manage`, chỉ có khi tính năng học skill đang bật, agent có thể tạo, sửa hoặc xoá các skill mà nó sở hữu. Skill bị xoá được chuyển vào thư mục thùng rác chứ không bị xoá hẳn.
+- **Agent tự chỉnh sửa.** Với `skill_manage`, chỉ có khi tính năng học skill đang bật, agent có thể tạo, sửa hoặc xoá các skill mà nó sở hữu. Skill bị xoá được chuyển vào thư mục thùng rác và bị xoá hẳn sau 7 ngày.
+- **Giữ phiên bản.** Mỗi phiên bản là một thư mục riêng trên đĩa. Gateway giữ phiên bản hiện tại, 5 phiên bản ngay trước nó (`skills.versions.retain_previous`, giá trị âm thì giữ mọi phiên bản), mọi phiên bản đang được grant của agent ghim, và mọi phiên bản vừa bị thay trong 24 giờ qua để tác vụ đang chạy hoàn tất. File của skill đã xoá bị dọn sau 7 ngày kể từ lúc xoá. Lịch sử phiên bản vẫn được liệt kê, nhưng file của phiên bản đã dọn không còn đọc được. Phiên bản được ghim không chiếm 5 suất giữ lại. Nếu gateway dừng giữa lúc upload, phiên bản ghi dở được chuyển vào thư mục thùng rác sau 24 giờ, nên lần upload tiếp theo của skill đó không còn bị từ chối vì xung đột. Skill đã xoá không thể bật lại; hãy upload lại. Sửa skill qua API chỉ đổi được tên, mô tả, tag, phạm vi hiển thị và trạng thái (active hoặc archived); muốn xoá skill thì dùng thao tác xoá.
 
 ## Cải thiện skill theo thời gian
 
@@ -85,7 +88,7 @@ Hai tính năng riêng biệt giúp skill tốt dần lên, và không tính nă
 
 **Học skill** (`skill_evolve` trong `other_config` của agent, mặc định tắt, chỉ dành cho agent predefined) dạy agent nhận ra khi nào một việc đáng lưu lại. Tính năng này thêm hướng dẫn vào prompt, nhắc nhở khi dùng tới 70% và 90% số vòng lặp cho phép, và sau một việc có ít nhất 15 lệnh gọi tool (`skill_nudge_interval`) sẽ hỏi người dùng "save as skill" hay "skip". Không có gì được lưu nếu người dùng chưa trả lời.
 
-**Tự cải tiến skill** theo dõi hiệu quả của từng skill. Các lần chạy `use_skill` và lệnh slash được ghi lại, agent có thể đọc các trace gần đây của chính mình làm bằng chứng, và các đề xuất cải tiến được xếp vào hàng chờ. Chế độ là `suggest_only` (mặc định) hoặc `auto_analyze`, và ở cả hai chế độ, skill đều không bị tự động sửa. Quản trị viên duyệt và áp dụng đề xuất, việc này tạo ra phiên bản mới; skill tích hợp không bao giờ bị thay đổi.
+**Tự cải tiến skill** theo dõi hiệu quả của từng skill. Các lần chạy `use_skill` và lệnh slash được ghi lại, agent có thể đọc các trace gần đây của chính mình làm bằng chứng, và các đề xuất cải tiến được xếp vào hàng chờ. Chế độ là `suggest_only` (mặc định) hoặc `auto_analyze`, và ở cả hai chế độ, skill đều không bị tự động sửa. Quản trị viên phê duyệt và áp dụng đề xuất, việc này tạo ra phiên bản mới; skill tích hợp không bao giờ bị thay đổi.
 
 ```bash
 dewee skills evolve status <skill>

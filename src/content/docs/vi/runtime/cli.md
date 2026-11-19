@@ -3,7 +3,7 @@ title: Tham chiếu CLI
 description: "Dòng lệnh dewee: global flag, cách CLI tìm gateway và key của bạn, định dạng đầu ra, và mọi nhóm lệnh cho agent, skill, workflow, bộ nhớ và quản trị."
 section: runtime
 order: 2
-updated: 2026-10-14
+updated: 2026-10-16
 ---
 
 Chính binary `dewee` dùng để chạy gateway cũng là client dòng lệnh của nó. Phần lớn lệnh nói chuyện với một gateway đang chạy qua HTTP hoặc WebSocket, trên máy hay từ xa, nên người vận hành có thể viết script cho gần như mọi việc làm được trong console. Một vài lệnh bảo trì làm việc trực tiếp với cơ sở dữ liệu và chỉ dùng trên máy chủ.
@@ -44,7 +44,7 @@ CLI xác định từng giá trị theo thứ tự sau:
 > [!NOTE]
 > Để an toàn, CLI không gửi `DEWEE_API_KEY` trong biến môi trường tới một `--server` khác với `DEWEE_SERVER`. Hãy truyền `--token` rõ ràng khi bạn cố ý trỏ tới một gateway khác.
 
-Tạo API key ở trang **API key** trong console, hoặc bằng `dewee api-keys create`. Xem [Xác thực](/docs/api/authentication) để biết về phạm vi quyền.
+Tạo API key ở trang **API key & tài liệu** trong console, hoặc bằng `dewee api-keys create`. Xem [Xác thực](/docs/api/authentication) để biết về phạm vi quyền.
 
 ## Định dạng đầu ra
 
@@ -88,7 +88,7 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 | `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; cùng `access`, `grant`, `revoke`, `deps`, `evolve` và `suggestions` |
 | `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` cho server đăng nhập bằng OAuth |
-| `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` để duyệt hoặc từ chối yêu cầu cài đặt; `access` cho quyền và chế độ mở/giới hạn |
+| `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` để phê duyệt hoặc từ chối yêu cầu cài đặt; `access` cho quyền và chế độ mở/giới hạn |
 | `dewee hooks` | Chỉ có `access`: hook chạy cho những agent nào và ai được sửa nó |
 | `dewee channels` | `list`, `add`, `delete` |
 | `dewee tts`, `dewee stt` | Provider giọng nói và `config` của chúng |
@@ -102,7 +102,7 @@ Mỗi nhóm `access` có `list`, `grant`, `set-level`, `revoke` và `activity`; 
 | `dewee cron` | `list`, `get`, `create`, `update`, `toggle`, `run`, `runs`, `status`, `delete` |
 | `dewee workflows` | `list`, `show`, `create`, `validate`, `apply`, `export`, `publish`, `rollback`, `enable`, `disable`, `trigger`, `delete`, `node-types`; `runs` để liệt kê, xem, theo dõi, huỷ hoặc chạy lại |
 | `dewee heartbeat` | `get`, `set`, `toggle`, `test`, `logs`, `targets` |
-| `dewee reflex` | `status`, `config`, `test`, `eval` |
+| `dewee reflex` | `status`, `config` (`set`, `set-key`, `reset`), `settings`, `overrides` (`set`, `reset`), `decisions`, `test`, `eval`; xem [Lớp quyết định](/docs/concepts/decision-layer) |
 
 Workflow có thể được giữ dưới dạng file và áp dụng từ CI:
 
@@ -125,7 +125,7 @@ dewee workflows apply -f workflow.json
 | Lệnh | Subcommand |
 |---|---|
 | `dewee traces` | `list`, `get`, `follow`, `timeline`, `export` |
-| `dewee usage` | `summary`, `list`, `timeseries`, `events` |
+| `dewee usage` | `summary`, `list`, `timeseries`, `events`, `runs`, `route-choices`, `snapshots` |
 | `dewee activity` | `list` |
 | `dewee api-keys` | `list`, `create`, `revoke` |
 | `dewee settings`, `dewee system-config` | `list`, `get`, `set` (và `reset` cho settings) |

@@ -12,8 +12,8 @@ export const socialMediaCare: UseCase = {
   team: { en: "Marketing", vi: "Marketing" },
   title: { en: "Look after every social account", vi: "Chăm sóc tài khoản mạng xã hội" },
   summary: {
-    en: "Plan the calendar, draft posts in your voice, answer comments and DMs, and flag anything that needs a human.",
-    vi: "Lên lịch nội dung, viết bài đúng giọng thương hiệu, trả lời bình luận và tin nhắn, báo lại khi cần người xử lý.",
+    en: "A content agent drafts the plan for a marketer to approve, while a community agent answers comments and DMs and hands sensitive cases to a person.",
+    vi: "Agent nội dung soạn kế hoạch để marketer duyệt, còn agent cộng đồng trả lời bình luận và tin nhắn, rồi chuyển các vụ nhạy cảm cho người thật.",
   },
   channels: ["facebook", "pancake", "zalo"],
   detail: {

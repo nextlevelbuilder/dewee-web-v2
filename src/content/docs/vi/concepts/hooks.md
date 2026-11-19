@@ -93,7 +93,7 @@ Mỗi lần hook chạy được ghi vào nhật ký thực thi, kèm session, s
 
 Mỗi lần chạy cũng thêm một span `event` vào trace, có tên `hook.<handler>.<event>` (ví dụ `hook.http.pre_tool_use`), với quyết định nằm trong metadata.
 
-Trang **Hook** trong console đang ở giai đoạn beta. Tại đây bạn tạo hook cấp tenant và cấp agent với handler `http`, `prompt` hoặc `script`, đặt độ ưu tiên và xem lịch sử chạy. Chạy thử kiểm tra hook với một sự kiện mẫu mà không ghi vào nhật ký, đồng thời che các giá trị trông giống secret. Hook global, hook dựng sẵn và hook `command` chỉ hiển thị ở chế độ chỉ đọc. CLI không có lệnh quản lý hook.
+Trang **Hooks** trên dashboard của gateway đang ở giai đoạn beta. Trong console, trang **Hook** cho phép bạn tạo hook cấp tenant và cấp agent với handler `http`, `prompt` hoặc `script`, đặt độ ưu tiên và xem lịch sử chạy. Chạy thử kiểm tra hook với một sự kiện mẫu mà không ghi vào nhật ký, đồng thời che các giá trị trông giống secret. Hook global, hook dựng sẵn và hook `command` chỉ hiển thị ở chế độ chỉ đọc. CLI không tạo hay sửa được hook. `dewee hooks access` (`list`, `grant`, `set-level`, `revoke`, `activity`) quản lý ai được sửa hoặc quản lý một hook chạy cho các agent cụ thể; hook áp dụng toàn workspace vẫn chỉ do quản trị viên workspace nắm. Xem [Cấp quyền theo tài nguyên](/docs/security/access-grants).
 
 ## Liên quan
 

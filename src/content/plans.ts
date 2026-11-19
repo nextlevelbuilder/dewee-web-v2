@@ -94,8 +94,8 @@ export const PLANS: Plan[] = [
     period: { en: "custom quote · includes the $500/year licence", vi: "báo giá theo nhu cầu · đã gồm license $500/năm" },
     tagline: { en: "Everything on your hardware. We do the setup.", vi: "Mọi thứ trên hạ tầng của bạn. Chúng tôi lo cài đặt." },
     includes: {
-      en: ["Runtime on your VPS or Mac mini", "5 custom workflows built with your team", "1 year of maintenance and updates", "Licence-key guard, billing switched off", "Data never leaves your network"],
-      vi: ["Runtime trên VPS hoặc Mac mini của bạn", "5 quy trình tuỳ chỉnh dựng cùng đội ngũ bạn", "1 năm bảo trì và cập nhật", "Bảo vệ bằng license key, không tính phí theo lượt", "Dữ liệu không rời khỏi hạ tầng của bạn"],
+      en: ["Runtime on your VPS or Mac mini", "5 custom workflows built with your team", "1 year of maintenance and updates", "Licence-key guard, billing switched off", "Runs inside your network"],
+      vi: ["Runtime trên VPS hoặc Mac mini của bạn", "5 quy trình tuỳ chỉnh dựng cùng đội ngũ bạn", "1 năm bảo trì và cập nhật", "Bảo vệ bằng license key, không tính phí theo lượt", "Vận hành trong hạ tầng của bạn"],
     },
     tradeoffs: {
       en: ["Longer setup (1–3 weeks)", "You own the hardware"],
@@ -181,7 +181,7 @@ export const PLAN_COMPARISON: PlanComparisonRow[] = [
       "self-hosted": { en: "On your machine", vi: "Trên máy của bạn" },
       saas: { en: "On our shared servers", vi: "Trên máy chủ dùng chung của chúng tôi" },
       dedicated: { en: "In your runtime on TOSE.sh", vi: "Trong runtime riêng trên TOSE.sh" },
-      "on-premises": { en: "Inside your company. It never leaves.", vi: "Trong công ty bạn, không đi đâu cả" },
+      "on-premises": { en: "Inside your company, on your hardware.", vi: "Trong công ty bạn, trên hạ tầng của bạn" },
     },
   },
   {

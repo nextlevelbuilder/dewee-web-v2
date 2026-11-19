@@ -4,7 +4,7 @@ description: See how much your agents run and what it costs, review who changed 
 section: console
 order: 11
 screens: [usage, activity, traces, monitoring]
-updated: 2026-09-25
+updated: 2026-10-14
 ---
 
 Once agents are running, four areas show you what they do. **Usage** counts requests, tokens and estimated cost. **Activity** is the history of changes in the workspace. **Traces** records every agent run in detail. **Runtime health** tells you whether your runtime is reachable and working. All four only show data from your own workspace.
@@ -15,71 +15,75 @@ All four areas require `observability.read`. The workspace owner and the built-i
 
 ## Usage
 
-**Usage** starts with four totals for the selected period: requests, input and output tokens, estimated cost and error rate. A chart shows requests per day, and a table breaks the totals down.
+**Usage** starts with totals for the selected range: **Requests**, **Tokens**, **Estimated cost** and **Error rate**. A **Requests over time** chart follows, and a table breaks the totals down.
 
 ::shot{id="usage"}
 
-1. Set **From UTC** and **To UTC**. The page opens on the last 30 days, and a query can cover up to 366 days.
-2. Choose a **Breakdown**: by agent (the default), provider, model or channel.
-3. Optionally narrow to one agent.
-4. Read the table: requests, LLM calls, tool calls, errors, tokens, cache, average duration and **Est. cost** for each row.
+1. Pick a date range. The page opens on the last 30 days, and a range can cover up to 366 days. Buckets are in UTC.
+2. Choose **Group by**: **Agent**, **Provider**, **Model** or **Channel**.
+3. Optionally narrow to one agent with **All agents**, or open **Filters** to match an exact agent ID, provider, model or channel.
+4. Read the table: **Requests**, **LLM calls**, **Tool calls**, **Errors**, **Tokens**, **Cache**, **Avg duration** and **Est. cost** for each row.
 5. Select **Export CSV** to download the same data.
 
-Usage is aggregated hourly from the last complete hour, so the newest figures lag by about one to two hours. The page shows the hour the data runs to, and a **Usage is delayed** banner when it falls further behind. Usage holds totals only, never prompts, responses or secrets.
+Usage comes from hourly rollups, so the newest figures can lag by one to two hours. The page shows when the data was last updated, and a **Usage is delayed** banner when the latest rollup has not arrived. Usage holds aggregates only, never prompts or responses.
 
 > [!NOTE]
-> **Est. cost** is an estimate for planning. It is not an invoice, and your provider's own billing is the authority on what you pay.
+> **Estimated cost** is an estimate, not an invoice. Your provider's own billing is the authority on what you pay.
 
 ## Activity
 
-**Activity** lists what people and agents changed in the workspace, newest first, with links to the resources involved. Each entry shows when it happened, the actor, the resource and a status: **Ok**, **Changed**, **Attention** or **Recorded**. When an entry comes from an agent run, it links to the trace, run or session.
+**Activity** lists what people and agents changed in the workspace, newest first. Each entry shows when it happened, the actor, the resource and a status: **Ok**, **Changed**, **Attention** or **Recorded**.
 
 ::shot{id="activity"}
 
-1. Search by action, actor, resource or trace ID.
-2. Filter by actor, resource, action, status or severity (**Success**, **Info**, **Warning** or **Error**).
-3. Pick a date range: **Today**, **7 days**, **30 days** or **Custom** with your own dates.
-4. Select **Apply filters**.
-5. Switch **View** from **List** to **Breakdown** to count entries by action instead of listing them.
+1. Search with **Search actions, actors, resources or trace ids…**.
+2. Filter by **When** (**Today**, **Last 7 days**, **Last 30 days** or **Custom range**), **Actor**, **Resource**, **Action**, **Status** or **Severity** (**Success**, **Info**, **Warning** or **Error**).
+3. Switch **View** from **List** to **Breakdown** to count entries instead of listing them.
+4. Select **Show older activity** to load further back.
+
+Select an entry to open the **Activity event** detail, with its **Identifiers**, **Metadata** and **Related** links to the trace, run or session behind it.
 
 ## Traces
 
-A trace is the full record of one agent run: every model call, tool call, hook and event, with timing and tokens. **Traces** lists them with the number of matching traces and, for the current page, errors, tokens and cost.
+A trace is the full record of one agent run: every model call, tool call, hook and event, with timing and tokens. **Traces** lists them with the number of matching traces and, for the current page, errors, tokens and cost. Columns are **Trace**, **Name**, **Agent**, **Channel**, **Started**, **Duration**, **Status**, **Spans**, **Tokens** and **Cost**.
 
 ::shot{id="traces"}
 
 To find a run:
 
-1. Search, or filter by status (**Running**, **Completed**, **Error** or **Cancelled**), agent, session, channel, tool and time range.
-2. Tick **Errors only** or **Tool calls** to narrow further.
-3. Sort by start time, duration, tokens or cost, and set the page size (25 by default).
-4. Turn on **Auto refresh** to keep the list current while you watch.
+1. Search by name, trace ID or session, or filter by status (**Completed**, **Error**, **Running** or **Cancelled**), **Agent**, **Session**, **Channel**, **Tool** and **Time range**.
+2. Use **Errors only** or **Has tool calls** to narrow further.
+3. Sort the columns and set **Rows per page** (25 by default, up to 200).
+4. Turn on **Live tail** to check for new traces every 30 seconds.
 
-Select a trace to open its detail, or **Open full page** for more room. The detail shows the run's status, duration, tokens and estimated cost, and links to its run and session. Below that:
+Background traces, such as channel memory and knowledge graph work, are hidden by default; turn on **Show background traces** to include them. Use **Views** to save the current filters on this device and reuse them later.
 
-- **Span tree** and **Timeline**: each step in order, typed as LLM, Tool, Agent, Hook or Event, with its provider, model, tokens and finish reason.
-- **Hook executions**: the hooks that ran during the trace.
-- **Tool summaries**: a short summary of each tool call.
-- **Permitted previews**: short input and output previews, where allowed.
+Select a trace to preview it, or **Open full page** for the full detail. The header shows the run's status, duration, tokens and cost, with **Copy trace ID**, **Share link**, **Export JSON** and **Open session**. If the run failed, the root cause is shown first. Below that are three tabs:
 
-Everything in a trace is redacted before it reaches your browser. To get help with a run, copy the **Redacted support bundle** and send it to support: raw prompts, tool arguments, headers and secrets are left out.
+- **Overview**: the conversation, the **Timeline** of spans typed as LLM, Tool, Agent, Hook or Event, and **Tool summaries** with calls, errors and average duration per tool.
+- **Events & logs**: decision and delivery events, and **Hook executions**, the hooks that ran during the trace.
+- **Raw JSON**: the trace data, with the **Redacted support bundle**.
+
+Values in a trace can be redacted before they reach your browser; redacted spans are marked. To get help with a run, copy the **Redacted support bundle** and send it to support: raw prompts, tool arguments, headers and secrets are excluded or redacted.
 
 ## Runtime health
 
-**Runtime health** checks your workspace runtime without exposing the machines behind it. The summary shows whether the runtime is reachable, the tenant binding, the recent trace error rate and the last heartbeat.
+**Runtime health** checks your workspace runtime without exposing the machines behind it. The stats show **Runtime reachable**, the **Recent error rate** over the last traces and the **Last heartbeat**, the latest trace or activity.
 
 ::shot{id="monitoring"}
 
-The overall status is **Healthy**, **Needs attention** or **Offline**. It combines whether the console can reach the runtime, whether the workspace is claimed and how recent traces turned out. Below it:
+The **Runtime status** card shows **Health**, which is **Healthy**, **Needs attention** or **Offline**, with the region, version, uptime, setup status and **Support reference**. Health combines whether the console can reach the runtime, whether the workspace is connected and how recent traces turned out. Below it:
 
-- **Claim / pairing** shows whether the workspace is claimed, with a link to the **Pairing Inbox**.
-- **Capacity signal** is the average run duration across recent traces. It is a stand-in for load, not CPU or memory figures.
-- **Activity signal** and a preview of recent activity.
+- **Connection & pairing**: the **Workspace connection**, **Paired identities** and **Pending pairing**, with a link to the **Pairing inbox**.
+- **Capacity**: average run duration over the last 24 hours. Hourly rollups can lag by one to two hours.
+- **Activity signal**: requests per hour over the last 24 hours.
+- **What leaves this runtime**: which redacted, workspace-scoped signals this page uses.
+- **Recent activity**, with **View all** to open Activity.
 
-This page never shows hostnames, IP addresses or raw logs.
+A **Runtime needs attention** banner appears when at least 10% of recent traces failed, and **Runtime is offline** when the runtime did not answer.
 
 > [!WARNING]
-> If the status says **Awaiting claim**, runtime pages cannot show live data yet. Finish onboarding, or approve the pending pairing request, first.
+> If the workspace is not connected to its runtime yet, runtime pages cannot show live data. Finish onboarding, or approve the pending pairing request, first.
 
 ## Related
 

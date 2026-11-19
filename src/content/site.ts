@@ -16,9 +16,13 @@ export const SITE = {
     en: "The hard part is ours. The future is yours.",
     vi: "Phần khó để chúng tôi lo. Tương lai là của bạn.",
   } satisfies Bi,
+  /**
+   * The product positioning, used where the site describes itself (default OG card, llms.txt).
+   * The tagline above is the secondary brand line (footer, default OG title).
+   */
   description: {
-    en: "dewee is the enterprise AI-agent platform from the team behind GoClaw: closed-by-default security, multi-tenant isolation, 20+ LLM providers and the chat channels your team already uses.",
-    vi: "dewee là nền tảng AI agent cho doanh nghiệp từ đội ngũ làm ra GoClaw: bảo mật đóng-mặc-định, cô lập đa người thuê, 20+ nhà cung cấp LLM và có mặt ngay trong các kênh chat đội ngũ bạn đang dùng.",
+    en: "dewee is the multiplayer agent platform: people and AI agents work as one team, with lead agents that delegate, a shared task board, human approval and the chat channels your team already uses.",
+    vi: "dewee là nền tảng cộng tác giữa con người và AI agent: agent trưởng nhóm giao việc cho các agent khác, bảng công việc chung, con người phê duyệt, và tất cả diễn ra ngay trong các kênh chat đội ngũ đang dùng.",
   } satisfies Bi,
 } as const;
 

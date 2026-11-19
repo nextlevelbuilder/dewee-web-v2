@@ -48,6 +48,8 @@ Danh sách tool mà model nhìn thấy được dựng theo thứ tự sau:
 
 MCP server được đăng ký thành các nhóm `mcp` và `mcp:<server>`.
 
+Pipeline chính sách cũng áp dụng cho agent Claude CLI. Tool của các agent này chạy qua MCP bridge của runtime, và ở mọi lượt, bridge chỉ cung cấp các tool mà pipeline để lại cho agent, nên tool bị chính sách của agent từ chối không thể dùng qua bridge. Danh sách cho phép theo request của một cuộc trò chuyện (bước 3) và giới hạn tool của một lượt chạy, ví dụ của khách truy cập website, còn ngắt kết nối các MCP server khác của agent trong lượt đó. Lượt chạy không được phép dùng tool nào thì không có tool nào. Một lượt chạy được tiếp tục sau khi có phê duyệt, câu trả lời hoặc yêu cầu thông tin xác thực vẫn giữ giới hạn của lượt chạy đã đưa ra yêu cầu đó.
+
 ## Lệnh shell
 
 `exec` chạy với thời gian chờ mặc định 60 giây, có thể chỉnh trong khoảng 1 đến 3.600 giây.
@@ -65,7 +67,7 @@ Lệnh khớp với `package_install` không bị từ chối ngay mà trở th�
 | `tools.execApproval.security` | `deny` (không cho chạy lệnh nào), `allowlist` (chỉ lệnh khớp danh sách), `full` (mọi lệnh vượt qua các nhóm chặn) | `full` |
 | `tools.execApproval.ask` | `off`, `on-miss` (hỏi khi lệnh không có trong allowlist), `always` | `off` |
 
-Mỗi yêu cầu phê duyệt là một bản ghi bền vững, gắn với tenant, chỉ chứa bản tóm tắt đã che thông tin nhạy cảm và mã hash của lệnh, không bao giờ lưu lệnh gốc hay output. Sau khi được duyệt, agent chạy lại đúng lệnh đó kèm một `approval_token` chỉ dùng được một lần. Yêu cầu được xem xét trên trang phê duyệt trên web hoặc qua CLI; nút bấm trong kênh chat không thể phê duyệt lệnh.
+Mỗi yêu cầu phê duyệt là một bản ghi bền vững, gắn với tenant, chứa bản tóm tắt ngắn, mã hash và toàn bộ lệnh đã che thông tin nhạy cảm, không bao giờ lưu output của lệnh. Người duyệt luôn thấy toàn bộ lệnh, kể cả các dòng xuống dòng, trước khi phê duyệt, nên không phần nào bị giấu sau một đoạn mở đầu trông vô hại. Yêu cầu được ghi trước khi hệ thống lưu lệnh đầy đủ chỉ có thể bị từ chối. Lệnh mà gateway không thể hiển thị chính xác, vì dài hơn 64 KiB, chứa ký tự ẩn hoặc ký tự đảo chiều văn bản, hoặc giấu cú pháp shell sau một giá trị bí mật đã bị che, sẽ bị từ chối ngay trước khi tạo yêu cầu phê duyệt, và agent được yêu cầu tách lệnh ra. Chỉ chủ sở hữu, quản trị viên workspace và người gửi yêu cầu mới thấy toàn bộ lệnh. Sau khi được phê duyệt, agent chạy lại đúng lệnh đó kèm một `approval_token` chỉ dùng được một lần. Yêu cầu được xem xét trên trang phê duyệt trên web hoặc qua CLI; nút bấm trong kênh chat không thể phê duyệt lệnh.
 
 ```bash
 dewee packages approvals list --all
@@ -84,7 +86,7 @@ Khi bật `tools.execApproval.scopedPackageGrantsEnabled` (mặc định tắt),
 
 ## MCP server
 
-dewee kết nối tới MCP server qua `stdio`, `sse` hoặc `streamable-http`, kiểm tra tình trạng mỗi 30 giây, và kết nối lại với thời gian chờ tăng dần từ 2 đến 60 giây, tối đa 10 lần. Quyền truy cập được cấp theo agent và theo người dùng, mỗi lần cấp có danh sách `tool_allow` và `tool_deny` riêng; danh sách chặn luôn thắng. Người dùng cũng có thể gửi yêu cầu truy cập để quản trị viên duyệt.
+dewee kết nối tới MCP server qua `stdio`, `sse` hoặc `streamable-http`, kiểm tra tình trạng mỗi 30 giây, và kết nối lại với thời gian chờ tăng dần từ 2 đến 60 giây, tối đa 10 lần. Quyền truy cập được cấp theo agent và theo người dùng, mỗi lần cấp có danh sách `tool_allow` và `tool_deny` riêng; danh sách chặn luôn thắng. Người dùng cũng có thể gửi yêu cầu truy cập để quản trị viên phê duyệt.
 
 Khi agent có hơn 40 tool MCP, các tool này không còn được liệt kê từng cái. Thay vào đó, agent tìm chúng bằng `mcp_tool_search`. OAuth 2.1 với PKCE cho server từ xa đang ở giai đoạn beta.
 

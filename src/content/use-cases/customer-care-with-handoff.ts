@@ -13,8 +13,8 @@ export const customerCareWithHandoff: UseCase = {
   team: { en: "Customer care", vi: "Chăm sóc khách hàng" },
   title: { en: "Customer care that knows when to hand off", vi: "Chăm sóc khách hàng, chuyển người thật khi cần" },
   summary: {
-    en: "Answer customers around the clock from your knowledge base and pass the conversation to a human, with context, when it matters.",
-    vi: "Trả lời khách 24/7 từ kho tri thức và chuyển cuộc trò chuyện cho nhân viên, kèm đủ ngữ cảnh, khi cần thiết.",
+    en: "A care agent answers from your knowledge base in the chats customers already use, and hands over to a person, with a case summary, when it matters.",
+    vi: "Agent chăm sóc trả lời từ tri thức của bạn ngay trong các kênh khách đang dùng, và chuyển cho người thật, kèm bản tóm tắt vụ việc, khi cần.",
   },
   channels: ["zalo", "facebook", "whatsapp", "pancake"],
   detail: {

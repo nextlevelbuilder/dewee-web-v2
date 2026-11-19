@@ -59,12 +59,14 @@ export async function apiRequest(config, method, path, opts = {}) {
 }
 
 /**
- * `{id}` path segment plus the `?locale=` needed when addressing by slug.
+ * `{id}` path segment, optional action segment, and `?locale=` when addressing by slug.
  * @param {string} ref
  * @param {string | undefined} locale
+ * @param {string} [action]
  */
-export function itemPath(ref, locale) {
-  return `${encodeURIComponent(ref)}${locale ? `?locale=${encodeURIComponent(locale)}` : ""}`;
+export function itemPath(ref, locale, action) {
+  const path = `${encodeURIComponent(ref)}${action ? `/${encodeURIComponent(action)}` : ""}`;
+  return `${path}${locale ? `?locale=${encodeURIComponent(locale)}` : ""}`;
 }
 
 /** @param {ApiError} err */

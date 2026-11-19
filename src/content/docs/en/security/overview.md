@@ -59,7 +59,7 @@ Every incoming message is checked for six prompt-injection patterns, such as att
 
 - **Shell deny groups** block seven categories of commands: destructive file and disk operations, system commands, fork bombs, remote code execution such as `curl | sh`, reverse shells and eval injection.
 - **Path protection** stops tools from leaving the agent's workspace.
-- **SSRF protection** blocks private, loopback, link-local and metadata addresses, pins DNS and re-checks every redirect.
+- **SSRF protection** blocks private, loopback, link-local, metadata and reserved addresses, including an IPv4 address carried inside a NAT64 or 6to4 IPv6 address. It also pins DNS and re-checks every redirect.
 - **Command approval** can hold commands until a person approves them.
 
 ### Output

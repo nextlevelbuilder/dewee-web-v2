@@ -141,7 +141,8 @@ builder can render the same component from stored JSON.
 | Block | Purpose | Key props |
 |---|---|---|
 | `PageHero` | inner-page intro | eyebrow, title, lede, note, actions[{label, href, variant?, chat?}], back, mascot{mood, accessory} \| false, `aside` slot |
-| `HomeHero` | homepage promise + live chat card | eyebrow, title, lede, primary, secondary, note, chat{channel, label, lines} |
+| `HomeHero` | homepage promise + live chat card | eyebrow, title, lede, primary, secondary, microcopy (one line under the buttons, read by everyone), note, chat{channel, label (screen readers), caption (visible "illustrative" note), lines} |
+| `MultiplayerWorkflow` | one piece of work as a swimlane: people, agents and the shared task board, joined by numbered handoffs | id, eyebrow, title, lede, label (must say the story is illustrative), kinds{human, agent, board}, boardLabel, steps[{kind, actor, role, text, status?{label, tone}, tasks?[{title, owner, status}]}], outcome{title, body}, band |
 | `SectionHead` | section heading | eyebrow, title, lede, note, align, level, size (xl/l/m) |
 | `ProofStrip` | ruler of verified numbers | items[{value, label}], label |
 | `HomeworkChecklist` | sheet of ticks under a drum edge, sealed "10" | eyebrow, title, lede, items[{text, detail?}], grade, gradeLabel, signature |

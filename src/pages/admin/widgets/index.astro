@@ -1,0 +1,114 @@
+---
+/**
+ * Reader answers to post widgets. Without a query: every widget that has answers. With
+ * `?post=<id>&widget=<id>`: aggregates for that widget, survey free text and a CSV export.
+ * Survey results are visible only here (super admins), never on the public results endpoint.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { WIDGET_ID_RE } from "~/lib/blocks/registry";
+import { listWidgetSummaries, REPORT_ROW_LIMIT, widgetReport } from "~/lib/server/post-widget-votes/admin-report";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const L = ADMIN.widgets;
+const db = platformEnv().DB;
+const postId = Astro.url.searchParams.get("post") ?? "";
+const widgetId = Astro.url.searchParams.get("widget") ?? "";
+const detail = Boolean(postId || widgetId);
+if (detail && !WIDGET_ID_RE.test(widgetId)) return Astro.redirect("/admin/widgets", 303);
+const report = detail ? await widgetReport(db, postId, widgetId) : null;
+const summaries = detail ? [] : await listWidgetSummaries(db);
+const when = (iso: string) => iso.replace("T", " ").slice(0, 16);
+const detailHref = (p: string, w: string) => `/admin/widgets?post=${encodeURIComponent(p)}&widget=${encodeURIComponent(w)}`;
+---
+
+<AdminLayout title={L.title} current="widgets" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{L.title}</h1>
+      <p>{L.lede}</p>
+    </div>
+    {detail && <a class="btn" href="/admin/widgets"><Icon name="arrow-left" />{L.back}</a>}
+  </div>
+
+  {!detail && (summaries.length === 0 ? (
+    <p class="adm-empty">{L.empty}</p>
+  ) : (
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr><th scope="col">{L.post}</th><th scope="col">{L.widget}</th><th scope="col">{L.type}</th><th scope="col" class="num">{L.responses}</th><th scope="col">{L.last}</th></tr>
+        </thead>
+        <tbody>
+          {summaries.map((s) => (
+            <tr>
+              <td><strong>{s.title ?? s.post_id}</strong>{s.locale && <div class="adm-w__meta">{[s.locale, s.status, s.slug].filter(Boolean).join(" · ")}</div>}</td>
+              <td><a href={detailHref(s.post_id, s.widget_id)}><code>{s.widget_id}</code></a></td>
+              <td><span class="chip">{s.widget_type}</span></td>
+              <td class="num">{s.responses}</td>
+              <td class="adm-mono"><time datetime={s.last_at}>{when(s.last_at)}</time></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ))}
+
+  {detail && !report && <p class="adm-empty">{L.notFound}</p>}
+
+  {report && (
+    <section class="adm-w">
+      <p class="adm-w__meta">{report.post.title} · {report.post.locale} · <code>{report.widgetId}</code> · <span class="chip">{report.type}</span> · {report.responses} {L.responses.toLowerCase()}</p>
+      {report.options && (
+        <div class="adm-w__card">
+          <h2>{report.question}</h2>
+          <ul class="adm-w__bars" role="list">
+            {report.options.map((o) => <li><span>{o.label}</span><span class="num">{o.count} · {o.percent}%</span><meter min="0" max="100" value={o.percent} /></li>)}
+          </ul>
+          {report.correctRate !== undefined && <p class="adm-w__meta">{report.correctRate}% {L.correctRate}</p>}
+        </div>
+      )}
+      {report.questions?.map((q) => (
+        <div class="adm-w__card">
+          <h2>{q.prompt}</h2>
+          <p class="adm-w__meta">{q.kind} · {q.answered} {L.answered}</p>
+          {q.options && (
+            <ul class="adm-w__bars" role="list">
+              {q.options.map((o) => <li><span>{o.label}</span><span class="num">{o.count} · {o.percent}%</span><meter min="0" max="100" value={o.percent} /></li>)}
+            </ul>
+          )}
+          {q.texts && (q.texts.length === 0 ? <p class="adm-w__meta">{L.noText}</p> : (
+            <ul class="adm-w__texts" role="list" aria-label={L.freeText}>
+              {q.texts.map((t) => <li><p>{t.text}</p><time class="adm-mono" datetime={t.at}>{when(t.at)}</time></li>)}
+            </ul>
+          ))}
+        </div>
+      ))}
+      {report.type === "Survey" && (
+        <p>
+          <a class="btn" href={`/admin/widgets/export.csv?post=${encodeURIComponent(report.post.id)}&widget=${encodeURIComponent(report.widgetId)}`} download><Icon name="download" />{L.export}</a>
+          {report.responses > REPORT_ROW_LIMIT && <span class="adm-w__meta"> {L.truncated}</span>}
+        </p>
+      )}
+    </section>
+  )}
+</AdminLayout>
+
+<style>
+  .adm-w { display: grid; gap: var(--space-4); }
+  .adm-w__meta { color: var(--ink-3); font-size: var(--step--1); }
+  .adm-w__card { display: grid; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); }
+  .adm-w__card h2 { font-size: var(--step-1); }
+  .adm-w__bars, .adm-w__texts { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+  .adm-w__bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); }
+  .adm-w__bars meter { grid-column: 1 / -1; inline-size: 100%; }
+  .adm-w__bars .num { font-variant-numeric: tabular-nums; }
+  .adm-w__texts li { display: grid; gap: var(--space-1); padding-block-end: var(--space-3); border-block-end: 1px solid var(--rule); overflow-wrap: anywhere; }
+  .adm-w__texts time { color: var(--ink-3); font-size: var(--step--2); }
+</style>
