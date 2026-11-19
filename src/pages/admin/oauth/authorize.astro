@@ -1,0 +1,74 @@
+---
+/**
+ * OAuth consent for the remote MCP server. A signed-in super admin (requireAdmin sends anyone
+ * else through /admin/login and back here) sees which client asks for which scopes, then approves
+ * or denies with a same-origin form carrying the session's CSRF token. Approval redirects to the
+ * client's registered redirect URI with a single-use code; nothing is granted on GET.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { adminForm, field, requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { siteOrigin } from "~/lib/server/seo/discovery-response";
+import { audit } from "~/lib/server/auth/audit-log";
+import { issueCode, parseAuthorizeRequest, redirectWith } from "~/lib/server/auth/oauth-store";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const db = platformEnv().DB;
+const issuer = siteOrigin(platformEnv(), Astro.url);
+const parsed = await parseAuthorizeRequest(db, Astro.url.searchParams);
+let message: string | null = null;
+
+if (!parsed.ok) {
+  if (parsed.redirect && parsed.redirectUri) {
+    return Astro.redirect(redirectWith(parsed.redirectUri, { error: parsed.error, error_description: parsed.description, state: parsed.state }), 303);
+  }
+  Astro.response.status = 400;
+  message = parsed.description;
+} else if (Astro.request.method === "POST") {
+  const form = await adminForm(Astro, auth.session);
+  if (!form) {
+    Astro.response.status = 403;
+    message = "This form expired or did not come from this page. Reload and try again.";
+  } else {
+    const { request } = parsed;
+    if (field(form, "decision") === "approve") {
+      const code = await issueCode(db, request, auth.session.email);
+      await audit(db, auth.session.email, "oauth.authorize", request.client.id, { client: request.client.name, scopes: request.scopes });
+      return Astro.redirect(redirectWith(request.redirectUri, { code, state: request.state, iss: issuer }), 303);
+    }
+    return Astro.redirect(redirectWith(request.redirectUri, { error: "access_denied", state: request.state, iss: issuer }), 303);
+  }
+}
+const req = parsed.ok ? parsed.request : null;
+const redirectHost = req ? new URL(req.redirectUri).host : "";
+---
+
+<AdminLayout title="Authorize MCP client" current="keys" email={auth.session.email} csrf={auth.csrf}>
+  <section class="adm-login">
+    <div class="adm-panel adm-login__card">
+      <h1 class="adm-login__title">Authorize MCP client</h1>
+      {message && <p class="adm-alert" data-kind="error" role="alert">{message}</p>}
+      {req && (
+        <>
+          <p class="adm-login__lede">
+            <strong>{req.client.name}</strong> wants to use the dewee.sh MCP server as <strong>{auth.session.email}</strong>.
+            After you approve, it is sent back to <code>{redirectHost}</code>.
+          </p>
+          <ul>
+            {req.scopes.map((s) => <li><code>{s}</code></li>)}
+          </ul>
+          <form method="post" class="adm-login__form">
+            <input type="hidden" name="csrf" value={auth.csrf} />
+            <button class="btn btn--primary" type="submit" name="decision" value="approve"><Icon name="check" />Approve</button>
+            <button class="btn" type="submit" name="decision" value="deny"><Icon name="x" />Deny</button>
+          </form>
+          <p class="hint">Access tokens last one hour and refresh for up to 30 days. Removing your address from the admin allowlist cuts the client off.</p>
+        </>
+      )}
+    </div>
+  </section>
+</AdminLayout>

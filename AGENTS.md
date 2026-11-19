@@ -45,7 +45,7 @@ blocks. Everything else is code. `/developers` is the public guide.
 | Page service | `src/lib/server/pages/` | validation, slugs, versions (stale writes get 409), revisions |
 | Docs proposals | `src/lib/server/docs/` | `/docs` Markdown stays in Git: reads come from `DOCS_GITHUB_BASE` (default `dev`) and writes open a branch plus a pull request, never a direct push; checks shared with the build (`src/lib/docs-schema.ts`); stale `expected_sha` gets 409 |
 | REST | `/api/v1/*`, spec at `/api/v1/openapi.json` | one route table drives both dispatch and the spec (`src/lib/server/api/`) |
-| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key only; `tools/list` shows only what the key's scopes allow |
+| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key, or OAuth 2.1 for connector clients (Claude, ChatGPT): discovery at `/.well-known/oauth-*`, DCR `/oauth/register`, super-admin consent `/admin/oauth/authorize`, PKCE token `/oauth/token` (edge route); `tools/list` shows only what the scopes allow |
 | CLI | `cli/` (`dewee-web`) | REST client plus an MCP stdio bridge (`dewee-web mcp`) |
 | WebMCP | `src/components/webmcp/` | public tools on every page (read as Markdown, language, theme, chat); admin tools in `/admin` |
 | Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, pages, posts, leads, widget answers, audit log |
