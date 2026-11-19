@@ -22,6 +22,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.3",
     "astro": "^7.3.5",
+    "dewee-webchat": "0.4.2",
     "marked": "^18.0.14",
     "node-html-parser": "^9.0.4",
     "zod": "^4.6.5"

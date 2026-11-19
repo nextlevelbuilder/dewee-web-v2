@@ -2,7 +2,7 @@
 /**
  * Page shell shared by every public page: fonts, theme (no flash), SEO head,
  * header/footer chrome, reveal-on-scroll, cookie badge,
- * page actions (copy/share/ask AI) and the chat launcher.
+ * page actions (copy/share/ask AI) and the website chat widget.
  */
 import { Font } from "astro:assets";
 import "~/styles/global.css";
@@ -14,7 +14,7 @@ import SiteFooter from "~/components/layout/SiteFooter.astro";
 import CookieBadge from "~/components/layout/CookieBadge.astro";
 import GoogleTagManager from "~/components/layout/GoogleTagManager.astro";
 import PosthogAnalytics from "~/components/layout/PosthogAnalytics.astro";
-import ChatLauncher from "~/components/chat/ChatLauncher.astro";
+import WebChat from "~/components/webchat/WebChat.astro";
 
 interface Props {
   title: string;
@@ -85,7 +85,7 @@ const isStaging = (Astro.site?.hostname ?? "").startsWith("staging.");
     </main>
     <SiteFooter locale={locale} page={pageActions ? { path, title: seo.title } : undefined} />
     <CookieBadge locale={locale} />
-    {chat && <ChatLauncher locale={locale} />}
+    {chat && <WebChat locale={locale} />}
     <script>
       import { initReveal } from "~/scripts/reveal-on-scroll";
       initReveal();

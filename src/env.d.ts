@@ -40,6 +40,13 @@ interface Env {
   DEWEE_CHAT_AGENT_ID?: string;
   /** Runtime API key used only for the advisor chat (secret). */
   DEWEE_CHAT_AGENT_API_KEY?: string;
+  /** Website chat widget (dewee-webchat, CCP transport): ingress URL and integration id from the CCP "Website chat" page. */
+  DEWEE_CCP_CHAT_URL?: string;
+  DEWEE_WEBCHAT_INTEGRATION_ID?: string;
+  /** `dwc_…` integration secret (secret). */
+  DEWEE_WEBCHAT_INTEGRATION_SECRET?: string;
+  /** 32+ random chars that sign widget visitor tokens (secret). */
+  DEWEE_WEBCHAT_SECRET?: string;
   /** Cloudflare Turnstile site key (public) and secret key (secret); both unset skips the challenge. */
   TURNSTILE_SITE_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
