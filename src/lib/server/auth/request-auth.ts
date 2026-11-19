@@ -10,10 +10,11 @@ import { API_SCOPES, bearerToken, type ApiScope } from "./api-key-format";
 import { verifyApiKey } from "./api-key-store";
 import { audit } from "./audit-log";
 import { verifyAccessJwt } from "./cf-access";
+import { isOAuthAccessToken, verifyOAuthAccessToken } from "./oauth-store";
 import { createSession, csrfValid, getSession, purgeExpiredSessions, SESSION_COOKIE, setSessionCookie, type AdminSession } from "./session-store";
 
 export type Principal = {
-  kind: "api_key" | "session";
+  kind: "api_key" | "oauth" | "session";
   email: string;
   scopes: ApiScope[];
   /** Human-readable actor for audit rows and revisions. */
@@ -53,10 +54,16 @@ function waitUntilFrom(locals: App.Locals): ((p: Promise<unknown>) => void) | un
 /**
  * API/MCP caller. Bearer API keys carry their own scopes. An admin session (the admin UI and
  * WebMCP editor tools) has every scope, but its writes must pass the Origin + CSRF check.
+ * OAuth access tokens (`dwo_…`) are accepted only where the caller opts in (the MCP endpoint).
  */
-export async function authenticate(ctx: Ctx, opts: { allowSession?: boolean } = {}): Promise<Principal> {
+export async function authenticate(ctx: Ctx, opts: { allowSession?: boolean; allowOAuth?: boolean } = {}): Promise<Principal> {
   const env = platformEnv();
   const token = bearerToken(ctx.request.headers.get("authorization"));
+  if (token && opts.allowOAuth && isOAuthAccessToken(token)) {
+    const grant = await verifyOAuthAccessToken(env.DB, token);
+    if (!grant) throw unauthorized("The access token is invalid or expired.");
+    return { kind: "oauth", email: grant.email, scopes: grant.scopes, actor: `${grant.email} (oauth ${grant.clientId})` };
+  }
   if (token) {
     const key = await verifyApiKey(env.DB, token, waitUntilFrom(ctx.locals));
     if (!key) throw unauthorized("The API key is invalid, expired or revoked.");

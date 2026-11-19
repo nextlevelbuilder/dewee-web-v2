@@ -7,6 +7,7 @@
  *  - /ingest/* → PostHog (first-party analytics proxy), see posthog-proxy
  *  - /media/<key> → R2 bucket MEDIA
  *  - <any page>.md → the page's Markdown twin
+ *  - /oauth/token → MCP OAuth token endpoint, see auth/oauth-token-route
  *  - /_seo/* (build manifest for the discovery routes) → 404
  */
 import { BRAND_REDIRECTS } from "../../content/site";
@@ -14,6 +15,7 @@ import { WEBCHAT_PREFIX, webchatRoute } from "./webchat/webchat-backend";
 import { handleChatLead } from "./webchat/webchat-lead";
 import { markdownTwin } from "./markdown-twin";
 import { POSTHOG_PROXY_PREFIX, proxyPosthog } from "./posthog-proxy";
+import { handleOAuthToken, OAUTH_TOKEN_PATH } from "./auth/oauth-token-route";
 
 type Render = (req: Request) => Promise<Response>;
 
@@ -34,6 +36,8 @@ export async function handleEdge(request: Request, env: Env, ctx: ExecutionConte
   if (url.pathname.startsWith("/_seo/")) {
     return withSecurityHeaders(new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } }), env);
   }
+
+  if (url.pathname === OAUTH_TOKEN_PATH) return withSecurityHeaders(await handleOAuthToken(request, env.DB), env);
 
   if (url.pathname.startsWith(WEBCHAT_PREFIX)) return webchatRoute(request, env);
   if (url.pathname === "/api/chat/lead") return withSecurityHeaders(await handleChatLead(request, env, ctx), env);
