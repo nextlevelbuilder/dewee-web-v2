@@ -45,10 +45,11 @@ blocks. Everything else is code. `/developers` is the public guide.
 | Page service | `src/lib/server/pages/` | validation, slugs, versions (stale writes get 409), revisions |
 | Docs proposals | `src/lib/server/docs/` | `/docs` Markdown stays in Git: reads come from `DOCS_GITHUB_BASE` (default `dev`) and writes open a branch plus a pull request, never a direct push; checks shared with the build (`src/lib/docs-schema.ts`); stale `expected_sha` gets 409 |
 | REST | `/api/v1/*`, spec at `/api/v1/openapi.json` | one route table drives both dispatch and the spec (`src/lib/server/api/`) |
-| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key only; `tools/list` shows only what the key's scopes allow |
+| MCP | `POST /mcp` (JSON-RPC, streamable HTTP) | bearer API key or OAuth access token; `tools/list` shows only what the scopes allow |
+| OAuth | `src/lib/server/oauth/`, `/oauth/authorize`, `/oauth/token` | for ChatGPT-style clients: PKCE S256, client metadata documents (no dynamic registration), super-admins only, consent picks the scopes; grants live in `OAUTH_AUTHORITY` and are revoked at `/admin/connections` |
 | CLI | `cli/` (`dewee-web`) | REST client plus an MCP stdio bridge (`dewee-web mcp`) |
 | WebMCP | `src/components/webmcp/` | public tools on every page (read as Markdown, language, theme, chat); admin tools in `/admin` |
-| Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, pages, posts, leads, widget answers, audit log |
+| Admin | `/admin` (noindex, English) | email code or Cloudflare Access; API keys, connected apps, pages, posts, leads, widget answers, audit log |
 
 - **Scopes:** `pages:read`, `pages:write`, `posts:read`, `posts:write`, `media:write`,
   `leads:read`, `docs:read`, `docs:write`. Keys are shown once, stored hashed, and only super-admins can create them.
@@ -58,6 +59,12 @@ blocks. Everything else is code. `/developers` is the public guide.
   `DOCS_GITHUB_APP_INSTALLATION_ID`, `DOCS_GITHUB_APP_PRIVATE_KEY`; Contents and Pull requests
   read/write on this repo only) or a fine-grained `DOCS_GITHUB_TOKEN`. Without them the docs
   tools answer 503. `DOCS_GITHUB_REPO` / `DOCS_GITHUB_BASE` are plain vars in `wrangler.jsonc`.
+- **OAuth operations:** `OAUTH_AUTHORITY` is a SQLite-backed Durable Object, and needs no secret.
+  The worker must keep the `global_fetch_strictly_public` compatibility flag, or client metadata
+  documents are refused. Without `OAUTH_AUTHORITY` the metadata
+  answers 404, the token endpoint 503 and only API keys work. The issuer is `SITE_URL`; the hourly
+  cron purges expired grants. Revoke a grant at `/admin/connections`; every grant, deny and revoke
+  is in the audit log.
 - To operate content (not code) with an AI agent, use `docs/skills/dewee-web-content/SKILL.md`.
 - Local run: `pnpm build && pnpm exec wrangler d1 migrations apply DB --local && pnpm exec wrangler dev --port 4389 --var ENVIRONMENT:development`.
   Outside production the sign-in code is logged to the console when `RESEND_API_KEY` is unset.

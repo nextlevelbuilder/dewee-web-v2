@@ -4,7 +4,7 @@ description: Invite people to your workspace, decide what each person can do wit
 section: console
 order: 12
 screens: [members, roles, api-keys]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 A workspace is shared by people and reached by programs. **Members** controls who belongs to the workspace, **Roles** controls what each person may do, and **API keys & docs** lets the CLI, your own code and external AI clients call the workspace without a person signing in.
@@ -39,6 +39,8 @@ An invite is valid for 7 days. The **Invites** tab lists each invite's **Email**
 To change what a member can do, select **Change custom roles** in their row menu. In **Custom roles for {email}**, tick the roles and select **Save roles**. The change takes effect immediately.
 
 **Remove from workspace** takes a member out of the workspace. Confirm with **Remove member**: their app access is removed first, then their runtime access is revoked. Until the runtime side finishes, the row shows a **Removal** badge.
+
+New members can open authorized runtime pages without sending a chat message first. Runtime session refresh applies current membership and permissions. If the runtime is temporarily unavailable during removal, the pending state is not confirmation of runtime revocation: synchronization retries automatically, and an authorized owner can retry from this page. Reinviting the person starts a new membership state. Platform-managed membership remains under the platform operator.
 
 The workspace always keeps at least one owner. Only an owner can change an owner's or admin's roles, remove an owner or admin, or change their own custom roles.
 

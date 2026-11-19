@@ -3,7 +3,7 @@ title: Gắn agent lên website của bạn
 description: "Đưa agent dewee lên bất kỳ website nào với dewee-webchat, widget chat mã nguồn mở: một thẻ script hoặc component React, Vue, Astro, kèm một backend handler nhỏ."
 section: integrations
 order: 3
-updated: 2026-10-10
+updated: 2026-11-09
 ---
 
 [dewee-webchat](https://github.com/nextlevelbuilder/dewee-webchat) là widget chat mã nguồn mở (MIT) giúp bạn đặt một agent lên chính website của mình. Khách truy cập trò chuyện với agent qua bong bóng chat nổi hoặc khung chat gắn trong trang, và thấy được agent làm việc: phần suy luận, các tool nó gọi cùng kết quả, và câu trả lời dạng Markdown. Gói này có trên npm với tên `dewee-webchat`.
@@ -94,6 +94,47 @@ Tuỳ chọn là thuộc tính kebab-case trên `<dewee-chat>`, thuộc tính `d
 | `persist` | Giữ cuộc trò chuyện khi tải lại trang |
 
 Từ script của bạn, có thể gọi `open()`, `close()`, `toggle()`, `send(text)`, `stop()`, `newConversation()`, và lắng nghe các sự kiện `dewee:ready`, `dewee:open`, `dewee:close`, `dewee:send`, `dewee:reply`, `dewee:error`.
+
+## Ngữ cảnh trang cho một tin nhắn
+
+Với tích hợp có thu thập trang hiện tại, gateway có hợp đồng ngữ cảnh trang theo phiên bản. Tính năng phụ thuộc vào gateway và website-chat ingress đã triển khai: hãy kiểm tra hỗ trợ trước khi gửi. Không mặc định rằng widget hoặc backend hiện có tự thu thập hay chuyển tiếp ngữ cảnh trang.
+
+- Với client WebSocket của Gateway, kiểm tra `page_context_versions` trong phản hồi `connect`. Nếu danh sách có `1`, gửi ngữ cảnh qua `pageContext` trong `chat.send`.
+- Với client tự xây cho website-chat ingress của customer control plane, kiểm tra `page_context.versions` trong `GET config`. Nếu danh sách có `1`, gửi ngữ cảnh qua `page_context` trong body của `POST chat`. Nếu danh sách thiếu hoặc không có `1`, gửi tin nhắn không kèm ngữ cảnh.
+
+Phiên bản 1 bắt buộc có `version` và `url` HTTP(S) tuyệt đối. Các trường tuỳ chọn gồm `title`, `description`, `captured_at`, `selection`, và `content` với `format` (`text` hoặc `markdown`), `text`, `truncated`. Toàn bộ JSON sau mã hoá tối đa 64 KiB; trường không được nhận diện sẽ bị từ chối. Host có thể gửi `source` và `trust_level`, nhưng runtime bỏ qua giá trị được gửi và tự gán. Gateway còn giới hạn từng trường, bỏ fragment của URL, che giá trị query có vẻ là bí mật và thông tin xác thực, đồng thời từ chối URL chứa userinfo.
+
+Gateway coi ngữ cảnh là dữ liệu bên ngoài không đáng tin cậy chỉ cho lượt chạy hiện tại, không phải chỉ dẫn. Nội dung trang không được lưu vào lịch sử chat, bản tóm tắt, memory, log hay nội dung trace, và không thay đổi tool hoặc quyền. Nếu ngữ cảnh bị từ chối, toàn bộ lần gửi thất bại với `page_context_invalid` hoặc `page_context_unsupported`; chỉ gửi lại không kèm ngữ cảnh nếu người dùng vẫn muốn gửi tin nhắn. Không nối nội dung trang vào tin nhắn để thay thế. CLI và MCP không có trang để đính kèm nên hợp đồng này không áp dụng.
+
+## Yêu cầu thông tin xác thực trong chat website
+
+Khi gateway và widget hỗ trợ, agent có thể dùng một thẻ trong cuộc trò chuyện trên website để yêu cầu thông tin xác thực từ thành viên workspace đã đăng nhập. Tính năng này mặc định tắt. Gateway phải kiểm tra cả danh tính chat của khách lẫn tư cách thành viên workspace hiện tại ở phía server; chỉ xác minh danh tính chat là chưa đủ. Giữ tính năng tắt trên những phiên bản gateway chưa thực thi kiểm tra thành viên này. Khách ẩn danh không dùng được thẻ, và tư cách thành viên không cấp quyền quản trị thông tin xác thực.
+
+Trên gateway tự host có hỗ trợ, đặt `GOCLAW_WEBCHAT_CREDENTIAL_REQUESTS_ENABLED=true` và cấu hình `GOCLAW_CREDENTIAL_LINK_BASE_URL`. Bật `credential_requests` cho agent và dùng widget công bố hỗ trợ yêu cầu thông tin xác thực. Để thành viên liên kết danh tính chat website, đặt thêm `GOCLAW_IDENTITY_EXCHANGE_ENABLED=true` và `GOCLAW_WEBCHAT_MEMBER_LINK_PROOF_ENABLED=true`. Hãy kiểm tra phiên bản gateway và widget đã triển khai trước khi bật các thiết lập này.
+
+Trong **Tài khoản tôi đã liên kết** của workspace, bắt đầu liên kết và sao chép mã dùng một lần. Trong chat website đã đăng nhập, chọn **Liên kết tài khoản workspace**, nhập mã vào biểu mẫu riêng, rồi quay lại workspace để kiểm tra và xác nhận tài khoản. Không đưa mã vào tin nhắn hoặc nội dung trang được chia sẻ.
+
+Thẻ không bao giờ hiển thị secret. Chọn **Mở biểu mẫu bảo mật** để mở biểu mẫu do chính Dewee cung cấp ở tab mới. Quản trị viên workspace có quyền phê duyệt phải đăng nhập và nhập secret tại đó, không nhập vào chat. Yêu cầu hết hạn sau một giờ và có thể hủy ngay trên thẻ. Sau khi lưu thông tin xác thực, cuộc trò chuyện ban đầu tiếp tục một lần từ chỗ đã dừng. Tải lại trang sẽ khôi phục trạng thái hiện tại: đang chờ, hoàn tất, hết hạn hoặc đã hủy. Việc mở biểu mẫu bảo mật được giới hạn theo từng khách.
+
+Chat website dùng luồng riêng chỉ dành cho thành viên. Với liên kết nhập thông tin xác thực được gửi qua kênh nhắn tin, xem [Secret, vai trò và audit](/vi/docs/security/secrets-roles-and-audit).
+
+## Ảnh công khai trên Cloudflare Workers
+
+Khi phiên bản webchat đã triển khai hỗ trợ service binding cho ảnh công khai, Worker có thể tải ảnh từ thư mục được cho phép trên hostname cùng zone Cloudflare. Cấu hình cả nguồn ảnh và service binding trong handler phía server, đồng thời cho phép origin bên ngoài trong widget:
+
+```ts
+createDeweeHandler({
+  // Các tùy chọn backend khác, gồm thông tin xác thực của integration
+  imageSources: ["https://images.example.com/products/"],
+  cloudflarePublicImageServices: [
+    { id: "catalog-v1", binding: env.PUBLIC_IMAGES, prefixes: ["https://images.example.com/products/"] },
+  ],
+});
+```
+
+Cấu hình `PUBLIC_IMAGES` làm Worker service binding và thêm `https://images.example.com` vào `imageOrigins` của widget. Cả tiền tố nguồn và service đều phải cho phép ảnh. Mỗi service cần ID riêng và các tiền tố không được chồng lấn; đổi ID mỗi khi binding trỏ sang service khác để ticket cũ không truy cập service mới.
+
+Binding gọi trực tiếp Worker đích và bỏ qua các quy tắc bảo mật Cloudflare của hostname nguồn. Mọi thư mục được cấu hình phải công khai với tất cả khách chat; không liên kết service hoặc đường dẫn riêng tư. Worker đích nhận GET cho đường dẫn được phép, không có query gốc, cookie hay header xác thực. Phản hồi không hợp lệ bị từ chối, không gọi mạng dự phòng. Xem [cấu hình ảnh của package](https://github.com/nextlevelbuilder/dewee-webchat#markdown-images) để biết đầy đủ yêu cầu.
 
 ## Bảo mật
 

@@ -3,7 +3,7 @@ title: Tracing và quan sát hệ thống
 description: Những gì dewee ghi lại cho mỗi lượt chạy agent, trace giữ bao lâu, chi phí và mức sử dụng được tính ra sao, và cách đọc trace qua console, CLI, API hay OTel.
 section: concepts
 order: 10
-updated: 2026-10-16
+updated: 2026-11-08
 ---
 
 Mỗi lượt chạy agent trong dewee đều để lại một trace: bản ghi về yêu cầu agent nhận được, các model và tool nó đã gọi, thời gian của từng bước, chi phí và kết quả cuối cùng. Trace là nơi đầu tiên cần xem khi một câu trả lời sai, chậm hoặc tốn kém. Trace được ghi ở chế độ nền, nên việc ghi lại không làm chậm lượt chạy.
@@ -58,7 +58,7 @@ Vào phút thứ năm của mỗi giờ (UTC), một worker chạy nền tổng 
 
 ## Đọc trace
 
-Trong console, màn hình **Trace** tìm kiếm các lượt chạy và mở từng lượt thành một cây span đã che thông tin nhạy cảm, kèm thời gian và lượng token. Dữ liệu này cũng có qua HTTP:
+Trong console, màn hình **Trace** tìm kiếm các lượt chạy và mở từng lượt thành một cây span đã che thông tin nhạy cảm, kèm thời gian và lượng token. Giá trị credential được thay thế, còn tên trường và cấu trúc đầu ra được giữ lại, kể cả JSON hợp lệ nằm trong chuỗi; xem [Tool và quyền](/docs/concepts/tools-and-permissions). Dữ liệu này cũng có qua HTTP:
 
 | Endpoint | Trả về |
 |---|---|
@@ -81,11 +81,25 @@ dewee traces timeline <trace-id>
 
 `list` trả về tối đa 200 trace mỗi trang. Để đọc trace trên một gateway từ xa, hãy truyền `--server` và `--token`, hoặc đặt `DEWEE_SERVER` và `DEWEE_API_KEY`. Cờ truyền trực tiếp được ưu tiên.
 
+Bản xuất gồm trace được yêu cầu và tối đa 10 cấp trace con. Cây sâu hơn bị từ chối với HTTP 422 và mã `trace_export_too_deep`; hãy xuất trace con sâu hơn bằng ID riêng. Liên kết cha tạo vòng lặp bị từ chối với mã `trace_export_cycle` (vòng vượt quá giới hạn độ sâu có thể được báo là quá sâu). CLI không ghi file khi bị từ chối. Các trace con đã bị dọn trước đó vẫn có thể vắng mặt.
+
+Trace không tồn tại trả về lỗi không tìm thấy. Lỗi lưu trữ tạm thời là lỗi máy chủ, không chứng minh trace đã bị xoá; hãy thử lại khi dịch vụ phục hồi. Nếu thu thập bản xuất thất bại, không có lượt tải thành công. Hãy tải lại nếu kết nối bị ngắt giữa chừng.
+
 ```bash
 dewee --server https://dewee.example.com --token <token> traces get <trace-id> -o json
 ```
 
 **Đánh giá ngữ nghĩa** tắt mặc định. Khi người vận hành bật tính năng này và thêm API key của TypeSafe, các trace đã hoàn tất được gửi tới bộ phân loại bên ngoài đó, sau khi đã che thông tin xác thực và dữ liệu cá nhân, rồi được gắn các tín hiệu như task có thành công hay không. Các nhãn này trở thành bộ lọc bổ sung của `dewee traces list`, chẳng hạn `--semantic-decision`, và không bao giờ thay đổi cách agent chạy. `dewee traces semantic config get` cho biết tính năng có đang bật hay không và vì sao. Bộ phân loại này là Jev, cùng model mà [lớp quyết định](/docs/concepts/decision-layer) sử dụng.
+
+Chẩn đoán đánh giá ngữ nghĩa cung cấp lý do lỗi đã phân loại, gợi ý khôi phục, danh tính model đánh giá theo cấu hình, cùng xác suất và số đếm hợp lệ. Một số nội dung chẩn đoán cũ được ẩn khi không thể tin cậy nguồn gốc. Điều này không thay đổi kết quả chạy hay quyền truy cập; cấu trúc metadata trace của khách hàng được giữ nguyên.
+
+Ví dụ, kết quả API trace có thể chứa đoạn sau khi việc đánh giá thất bại (các trường khác được lược bỏ):
+
+```json
+{"status":"evaluation_failed","failure_reason":"rate_limited","attempts":1}
+```
+
+Đây là lỗi của lượt đánh giá, không nhất thiết là lỗi của lượt chạy agent. Hãy xem gợi ý cố định trong `failure_detail` nếu có; phản hồi không đưa ra nội dung lỗi gốc của provider. Thông tin phiên bản model cũ không đáng tin được ẩn, còn nhãn quyết định cũ không nhận diện được được gom vào nhóm đã che mà vẫn giữ tổng xác suất và số đếm.
 
 ## Xuất sang OpenTelemetry
 

@@ -4,7 +4,7 @@ description: Connect messaging platforms to your agents, decide who may talk to 
 section: console
 order: 9
 screens: [channels, connectivity, contacts, pending-messages]
-updated: 2026-10-27
+updated: 2026-11-08
 ---
 
 Channels put your agents where your customers and colleagues already talk: Telegram, Zalo, Slack and other messaging apps. This page covers four areas in the **Connect** group of the menu: **Channels**, where you connect platforms, **Pairing inbox**, where you approve new senders, **Contacts**, where you see who has written in, and **Pending messages**, where queued messages wait.
@@ -39,6 +39,8 @@ To connect one:
 
 Feishu/Lark in webhook mode receives events on the gateway's own address. Only the master workspace can set a custom **Webhook Path**, a separate **Webhook Port** or a custom **Domain**; other workspaces cannot set these fields and use `/feishu/events` on the main address with the built-in Lark or Feishu domain. Only one channel can receive events on a given path, so on a shared gateway prefer WebSocket mode (the default) for Feishu channels outside the master workspace.
 
+An enabled Feishu webhook cannot use a target already reserved by another enabled channel or an active file-configured channel. A conflict returns HTTP 409 / `ALREADY_EXISTS`: use WebSocket mode or ask an operator for a free target. Disabled channels do not reserve a target, and unrelated edits preserving an existing active target are allowed. This save check coordinates within one gateway process; startup checks are still needed across replicas.
+
 The **DM policy** offers **Pairing required**, **Open**, **Allowed list only** and **Disabled**. The **Group policy** offers **Pairing approval**, **Open**, **Allowed list only** and **Disabled**. On most platforms both default to pairing; Zalo Personal defaults to **Allowed list only**. **Require mention in groups** is on by default. **Task status updates** sets how task progress reaches the channel: **Inherit agent or workspace**, **Off**, **Progress**, **Completion** or **Both**.
 
 ### Channel tabs
@@ -54,6 +56,14 @@ Open a channel to see all its tabs. **Managers**, **Contexts** and **Passive Mem
 - **Activity**: the runtime does not report per-channel activity yet. Use [Traces](/docs/console/monitoring) to follow conversations.
 
 Select **Save changes** to save a channel. Turning **Enabled** off keeps its setup but stops it processing messages. **Delete channel** cannot be undone.
+
+For Telegram group writer access, reply to the person's message in the group with `/addwriter`. An existing writer in that group can add another; the first grant can be bootstrapped only when the group has no writer rules. An authorized manager can also grant access from **Managers**. Adding a writer checks current permissions, including after a group upgrade; anonymous or channel-authored messages cannot grant access, and an existing explicit denial remains in force. If a grant is refused, ask an authorized manager to review it. A storage error does not confirm a successful grant: check the result before trying again.
+
+Operators can also list and test group writers or add and remove them through [the channel writers CLI](/docs/runtime/cli#channel-group-writers). The same operations are available through the [channel writer API](/docs/api/overview#channel-group-writers-and-batch-selections) and, with per-call approval, [workspace MCP](/docs/api/workspace-mcp#what-the-client-can-see).
+
+With `dewee channels writers`, use `groups <instance-id>` for groups and writer counts, `list <instance-id> --group <scope>` for writers, or `test <instance-id> --group <scope> --user <id>` to check a person. Add with `add <instance-id> --group <scope> --user <id>` (optionally `--display-name`, `--username` or `--dry-run`); remove with the same group and user flags plus `--yes` or `--dry-run`. Removal never prompts. The scope is `group:<channel>:<chatId>`, or `guild:<guildId>:*` for Discord. Every command supports `-o json`; an empty writer list is `[]`, and a test returns `allowed` and `reason`.
+
+Adding or removing requires an admin. Exit code 2 means invalid input, 4 means permission denied, 5 means the instance or writer was not found, and 6 means a removal would remove the group's last writer. See the linked API reference for the write response fields and HTTP errors.
 
 > [!WARNING]
 > Zalo Personal uses an unofficial protocol, and the Zalo account it signs in with may be locked or banned. Prefer Zalo OA or Zalo Bot where you can.
@@ -85,6 +95,8 @@ The **Pairing policy** sets how long a new approval lasts. Under **Scope**, choo
 
 A new policy applies only to future approvals; existing paired senders keep their expiry.
 
+If a temporary service failure prevents checking an existing Telegram group approval, retry the same message after recovery; there is no need to pair again. A group that has never been paired or whose approval expired still follows the normal pairing flow. Forum topics use their group's approval.
+
 ## Contacts
 
 **Contacts** lists everyone your channels have heard from, with **Name**, **Platform**, **Sender ID**, **Channel**, **State** (**Linked** or **Unverified**), **Last seen** and **Type**. Search with **Search name or sender ID…**, filter by **Platform** or **Contact type**, and use **Refresh** to reload.
@@ -98,6 +110,8 @@ The same person often writes from several apps. To combine their identities:
 3. Select **Merge**. Message history stays intact.
 
 To split them again, tick the contacts and select **Unmerge selected**, or select **Unmerge** on one linked row.
+
+Merge and unmerge requests accept at most 500 IDs, counting duplicates. Larger selections must be sent as separate requests; track each result.
 
 ## Pending messages
 

@@ -24,3 +24,8 @@ export function isSuperAdmin(email: unknown): boolean {
 
 /** Count only; the list itself never leaves the server. */
 export const SUPER_ADMIN_COUNT = SUPER_ADMINS.length;
+
+/** Server-side only: the accounts whose OAuth grants the connected-apps page lists. */
+export function superAdminEmails(): readonly string[] {
+  return SUPER_ADMINS;
+}

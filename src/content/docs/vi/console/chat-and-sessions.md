@@ -4,7 +4,7 @@ description: Trò chuyện với agent, đính kèm tệp, theo dõi lệnh gọ
 section: console
 order: 2
 screens: [chat, sessions]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 **Trò chuyện** là cách nhanh nhất để làm việc với một agent: bạn gõ tin nhắn, agent trả lời, và bạn thấy được những công cụ mà agent dùng trong lúc xử lý. **Phiên** là nơi lưu mọi cuộc trò chuyện của các agent, cả từ console lẫn từ các kênh đã kết nối, để bạn kiểm tra ai đã nói gì và trace nào thuộc về cuộc trò chuyện đó.
@@ -32,6 +32,8 @@ Trang Trò chuyện có bộ chọn agent và danh sách cuộc trò chuyện c�
 4. Theo dõi câu trả lời hiện dần ra. Mở rộng một lệnh gọi công cụ để xem tham số và kết quả. Dùng **Dừng tạo câu trả lời** để dừng câu trả lời.
 
 Để tiếp tục cuộc trò chuyện cũ, hãy chọn nó trong danh sách. Dùng **Tải tin nhắn cũ hơn** để xem lại xa hơn. Chọn **Cuộc trò chuyện mới** để bắt đầu cuộc mới với cùng agent.
+
+Một lượt đã được chấp nhận sẽ được lưu trước khi model chạy. Sau khi bạn dừng một lượt, tin nhắn mới có thể chờ ngắn trong khi lượt vừa dừng hoàn tất việc lưu. Nếu thấy phản hồi có thể thử lại báo lượt chạy đang diễn ra, hãy đợi rồi gửi lại trong cùng cuộc trò chuyện. Bản nháp và tệp đính kèm được giữ lại cho lần từ chối này, kể cả tin nhắn đầu tiên của cuộc trò chuyện mới; tin nhắn không tự động được gửi lần hai.
 
 ### Đổi tên, đặt lại hoặc xoá cuộc trò chuyện
 

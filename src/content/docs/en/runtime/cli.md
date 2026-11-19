@@ -3,7 +3,7 @@ title: CLI reference
 description: "The dewee command line: global flags, how it finds the gateway and your key, output formats, and every command group for agents, skills, workflows and more."
 section: runtime
 order: 2
-updated: 2026-10-16
+updated: 2026-11-08
 ---
 
 The same `dewee` binary that runs the gateway is also its command-line client. Most commands talk to a running gateway over HTTP or WebSocket, locally or remotely, so an operator can script almost everything the console does. A few maintenance commands work on the database directly and are meant for the host.
@@ -61,6 +61,7 @@ dewee mcp list --json
 |---|---|
 | `dewee onboard` | First-time setup on the host: database, secrets, migrations, `.env.local` |
 | `dewee setup` | Interactive wizard for a provider, model, agent and channel. Needs a running gateway |
+| `dewee workspace-setup` | `next` takes the next turn of the console's guided workspace setup; `--replace-key`, optionally with `--step <id>`, asks for a new key for a stored provider. See [The Overview page](/docs/console/overview#the-overview-page) |
 | `dewee doctor` | Prints the version, config path and database status |
 | `dewee config` | `show` (secrets redacted), `path`, `validate` |
 | `dewee auth` | `status` and `logout` for a ChatGPT account connected through the gateway |
@@ -75,7 +76,11 @@ dewee mcp list --json
 | `dewee pairing` | `list`, `approve`, `revoke` for chat-app senders waiting for access |
 | `dewee tasks` | `comments list` and `comments add` on team tasks |
 
+Contact `merge` and `unmerge` accept at most 500 IDs per request, including duplicates. Larger selections return a validation error without partially changing contacts; split them into separate requests and check each result.
+
 `dewee agent chat` opens an interactive chat with the agent named by `--name` (default `default`). Add `--message` for a single question and answer, and `--session` to continue a session.
+
+For `dewee agent chat`, caller context resolves in order: explicit `--user-id`, `GOCLAW_GATEWAY_USER_ID`, legacy `GOCLAW_USER_ID`, then `system`. Empty environment values are unset; an explicitly empty flag, whitespace-only selected value or ASCII control characters are rejected before connecting. Surrounding spaces are trimmed. HTTP commands do not use the legacy fallback. This context is not proof of identity or authorization: credential binding, role, tenant and membership checks still apply.
 
 ```bash
 dewee agent chat --name support-bot --message "Summarise today's open tickets"
@@ -87,13 +92,19 @@ dewee agent chat --name support-bot --message "Summarise today's open tickets"
 |---|---|
 | `dewee providers` | `list`, `add`, `update`, `delete`, `verify`; `access` for grants and the open/restricted mode |
 | `dewee skills` | `list`, `show`, `upload`, `export`, `promote`, `metrics`, `activity`; plus `access`, `grant`, `revoke`, `deps`, `evolve` and `suggestions` |
-| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config`; `access`, `grant`, `revoke`; `oauth` for servers that sign in with OAuth |
+| `dewee mcp` | `list`, `get`, `tools`, `test`, `reload`, `connect-config` (`--auth oauth` for a client that signs in with Dewee instead of a key); `access`, `grant`, `revoke`; `oauth` for servers that sign in with OAuth; `authorizations` (`list`, `revoke`) for apps connected to the public MCP endpoint by signing in, see [Webhooks and MCP](/docs/api/webhooks-and-mcp#review-and-revoke-connected-apps) |
 | `dewee packages` | `list`, `get`, `runtimes`, `install`, `remove`, `verify`, `logs`; `approvals` to approve or deny install requests; `access` for grants and the open/restricted mode |
 | `dewee hooks` | `access` only: which agents a hook runs for and who may change it |
 | `dewee channels` | `list`, `add`, `delete` |
 | `dewee tts`, `dewee stt` | Voice providers and their `config` |
 
 Every `access` group has `list`, `grant`, `set-level`, `revoke` and `activity`, and on providers and packages also `mode get` and `mode set`. Levels, modes and what they enforce are explained in [Access grants](/docs/security/access-grants).
+
+### Channel group writers
+
+`dewee channels writers groups <instance-id>` lists groups and writer counts in sorted order. `list <instance-id> --group <scope>` lists writers (an empty group is `[]` with `-o json`), and `test <instance-id> --group <scope> --user <id>` reports `allowed` and `reason`. Use `add <instance-id> --group <scope> --user <id>`, optionally with `--display-name`, `--username` or `--dry-run`. Use `remove <instance-id> --group <scope> --user <id> --yes`, or `--dry-run` to preview; remove never prompts and requires one of those flags.
+
+Every command accepts `-o json`. Group scope is `group:<channel>:<chatId>`, or `guild:<guildId>:*` on Discord. Add and remove require an admin. Exit codes are 2 for validation, 4 for permission denial, 5 for an unknown instance or missing writer, and 6 when removing the last writer.
 
 ## Automation
 
@@ -110,6 +121,10 @@ Workflows can be kept as files and applied from CI:
 dewee workflows validate -f workflow.json
 dewee workflows apply -f workflow.json
 ```
+
+To protect a draft from concurrent edits, use `--expected-version <updated_at>` as described in [Workflows](/docs/concepts/workflows). Older CLI clients remain supported; the conditional update itself requires a compatible gateway.
+
+For a paged schedule list, use `dewee cron list --limit 20 --json`; pass the returned `nextCursor` with `--cursor` to continue, keeping `--all` if it was used. Without paging flags, JSON output remains a complete array. If an older gateway does not provide page metadata, the CLI reports a compatibility error instead of retrying an unbounded request.
 
 ## Memory, knowledge and files
 
@@ -132,7 +147,17 @@ dewee workflows apply -f workflow.json
 | `dewee import-export` | `preview`, `import` |
 | `dewee workstations` | `list`, `create`, `delete` |
 
+For trace reads and exports, a temporary storage error is not evidence that the trace was deleted; retry after recovery. If a download is interrupted, retry it. `dewee traces export <id>` writes no file when the tree exceeds ten child levels or contains a cycle; export a deeper sub-trace by its own ID. See [Tracing](/docs/concepts/tracing) for error codes and pruned child traces.
+
 ## Host maintenance
+
+Platform operators can use `dewee tenant members list|add|remove` with the gateway token and a configured platform owner ID. Other credentials receive `PERMISSION_DENIED` (exit 4). `list` supports `--role`, `--limit` (1–500), `--offset` and `-o json`, returning `{users, total, limit, offset}`. `add` adds or changes a role (default `member`) and supports `--dry-run`. `remove` requires `--yes` or `--dry-run`; an absent member returns `NOT_FOUND` (exit 5). A non-platform tenant must retain an owner: add another before removing or demoting its last owner, otherwise the command returns `CONFLICT` (exit 6). Customer workspaces manage their own invitations and roles in the app; workspace MCP does not expose these operator commands.
+
+### Complimentary access for operators
+
+Where enabled, super admins can issue a grant to an explicit email list with `dewee admin access-grants bulk-issue`. Preview first with `--dry-run`, review each recipient's outcome, then run the same request without `--dry-run` and confirm. Keep the same idempotency key after a timeout or partial failure: already issued recipients are replayed and remaining recipients can be retried. Claim emails are opt-in with `--notify`. The limit is 100 recipients per batch and 10 new bulk commits per operator per hour; a retry under the same key does not consume another batch.
+
+ACP Operations MCP offers `ops_access_grants_issue`, `ops_access_grants_bulk_issue`, `ops_access_grants_revoke` and `ops_access_grants_extend`. These write tools require super-admin `access_grants:admin` and the operator's rollout switches; a read-only connection cannot see or call them. For API or MCP issue calls, preview first and commit with the returned preview digest; REST uses `POST /api/access-grants/bulk`. These are ACP operations, separate from the workspace and website content MCPs. Run `dewee admin access-grants bulk-issue --help` for the current flags and follow the operator's recovery procedure.
 
 Most of these commands run on the gateway host and work on the database and data directory directly. `tenant-transfer` is the exception: it goes through the gateway and needs an owner or admin key.
 
@@ -142,7 +167,9 @@ Most of these commands run on the gateway host and work on the database and data
 | `dewee migrate` | `up`, `down`, `version`, `force`, `goto` for recovery |
 | `dewee backup` | Full backup of the database and files |
 | `dewee restore` | Restores a backup. `--dry-run` to preview, `--force` to apply, `smoke` to test in a scratch database |
-| `dewee tenant-backup`, `dewee tenant-restore` | The same for a single tenant |
+| `dewee tenant-backup`, `dewee tenant-restore` | The same for a single tenant; check [private-data restore restrictions](/docs/concepts/multi-tenancy) first |
 | `dewee tenant-transfer` | Previews, copies or moves resources between tenants. In beta; PostgreSQL only |
 
 How to use them safely is covered in [Install and run the gateway](/docs/runtime/install-and-run#backups-and-restores).
+
+For an interrupted `tenant-transfer`, check `dewee tenant-transfer status <operation-id> --json` before retrying if you have the operation ID. A retry with the same `--idempotency-key` reports the recovered failure if the transfer stopped before acquiring its runtime lease; after inspecting the outcome, start a new operation if needed. See [Transfer between tenants](/docs/concepts/multi-tenancy#transfer-between-tenants).

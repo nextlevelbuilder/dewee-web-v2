@@ -4,7 +4,7 @@
   "name": "dewee-web-v2",
   "main": "./src/worker.ts",
   "compatibility_date": "2026-09-20",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "observability": { "enabled": true },
   "assets": {
     "binding": "ASSETS",
@@ -42,11 +42,12 @@
   ],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn" }],
   "durable_objects": {
-    "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }, { "name": "CHAT_LIMITER", "class_name": "ChatLimiter" }]
+    "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }, { "name": "CHAT_LIMITER", "class_name": "ChatLimiter" }, { "name": "OAUTH_AUTHORITY", "class_name": "OAuthAuthority" }]
   },
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["ChatRoom"] },
-    { "tag": "v2", "new_sqlite_classes": ["ChatLimiter"] }
+    { "tag": "v2", "new_sqlite_classes": ["ChatLimiter"] },
+    { "tag": "v3", "new_sqlite_classes": ["OAuthAuthority"] }
   ],
   // Hourly: changelog sync, plus the daily chat digest once it is due (from 01:00 UTC).
   "triggers": { "crons": ["17 * * * *"] },
@@ -78,7 +79,7 @@
       ],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "dewee-cdn-staging" }],
       "durable_objects": {
-        "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }, { "name": "CHAT_LIMITER", "class_name": "ChatLimiter" }]
+        "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }, { "name": "CHAT_LIMITER", "class_name": "ChatLimiter" }, { "name": "OAUTH_AUTHORITY", "class_name": "OAuthAuthority" }]
       },
       "triggers": { "crons": ["23 * * * *"] }
     }

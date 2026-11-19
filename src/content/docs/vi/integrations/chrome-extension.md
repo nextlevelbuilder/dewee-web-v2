@@ -3,7 +3,7 @@ title: Extension cho Chrome
 description: "Trò chuyện với agent dewee trong side panel của Chrome và trả lời yêu cầu credential mà không dán secret vào chat, trên Dewee Cloud hoặc gateway tự host."
 section: integrations
 order: 4
-updated: 2026-10-31
+updated: 2026-11-08
 ---
 
 [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) mở một side panel bên phải Chrome để bạn trò chuyện với các agent dewee. Super Agent luôn được ghim lên đầu. Khi agent cần một API key hay một kết nối OAuth, panel hiện thẻ credential, nên bạn không bao giờ phải dán secret vào chat.
@@ -125,6 +125,10 @@ Cả hai tính năng đều tắt cho tới khi bạn bật, và chỉ lúc đó
 
 - **Hỏi Dewee.** Bôi đen văn bản trên trang web rồi chọn **Hỏi Dewee**. Side panel mở ra, đưa trích dẫn, tiêu đề và địa chỉ trang vào ô nhập; không gửi gì cho tới khi bạn bấm Gửi. Tính năng áp dụng cho các trang mở sau khi bật. Tắt sẽ gỡ nút; muốn thu hồi cả quyền truy cập website, dùng phần cài đặt extension của Chrome.
 - **Trình duyệt kết nối** (chỉ với gateway tự host, chưa hỗ trợ Dewee Cloud). Đăng ký trình duyệt này, rồi cho phép các agent bạn chọn trên các trang bạn chọn trong một khoảng thời gian giới hạn, kể cả khi bạn nhờ agent từ Telegram hay kênh khác. Agent chỉ mở, đọc và thao tác trong tab do chính nó mở, không bao giờ trong các tab khác của bạn. Thao tác rủi ro phải chờ bạn duyệt, trường mật khẩu và thanh toán không bao giờ bị đọc hay gõ, và việc tạm dừng, dừng hay thu hồi quyền luôn chỉ cách một cú bấm. Tab của agent có huy hiệu "AI", và khi bạn tự dùng tab đó thì agent tạm dừng. Quản trị viên workspace cũng phải bật tính năng này cho workspace.
+
+Trong danh sách tool tích hợp của dashboard gateway, quản trị viên có thể mở **Settings** của Browser và cấu hình trình duyệt kết nối bằng biểu mẫu hiện có, kể cả khi mặc định trống hoặc chỉ có ghi đè của workspace. Quyền cần để lưu thiết lập không thay đổi.
+
+Khi các tool Workspace MCP cho trình duyệt kết nối đã khả dụng, bạn cũng có thể [xem trình duyệt, quyền đã cấp hoặc thu hồi chúng](/vi/docs/api/workspace-mcp). Thu hồi qua MCP cần chính bạn xác nhận trên trang do Dewee cung cấp; bạn vẫn có thể dùng extension hoặc CLI `dewee browser`.
 
 ## Xử lý sự cố
 

@@ -25,6 +25,8 @@ export class ApiError extends Error {
     readonly code: ApiErrorCode,
     message: string,
     readonly details?: unknown,
+    /** A bearer token was presented and refused (RFC 6750 `error="invalid_token"`). */
+    readonly invalidToken = false,
   ) {
     super(message);
     this.name = "ApiError";
@@ -32,7 +34,8 @@ export class ApiError extends Error {
 }
 
 export const badRequest = (message: string, details?: unknown) => new ApiError(400, "bad_request", message, details);
-export const unauthorized = (message = "A valid API key or admin session is required.") => new ApiError(401, "unauthorized", message);
+export const unauthorized = (message = "A valid API key or admin session is required.", opts: { invalidToken?: boolean } = {}) =>
+  new ApiError(401, "unauthorized", message, undefined, opts.invalidToken ?? false);
 export const forbidden = (message = "This credential is not allowed to do that.") => new ApiError(403, "forbidden", message);
 export const notFound = (message = "Not found.") => new ApiError(404, "not_found", message);
 export const conflict = (message: string, details?: unknown) => new ApiError(409, "conflict", message, details);
@@ -57,11 +60,14 @@ export function errorBody(err: ApiError): { error: { code: ApiErrorCode; message
   return { error: { code: err.code, message: err.message, ...(err.details === undefined ? {} : { details: err.details }) } };
 }
 
-/** Converts anything thrown into a JSON error response; unknown errors are logged, never leaked. */
-export function errorResponse(err: unknown): Response {
+/**
+ * Converts anything thrown into a JSON error response; unknown errors are logged, never leaked.
+ * `challenge` replaces the default 401 `WWW-Authenticate` (the MCP route points it at OAuth discovery).
+ */
+export function errorResponse(err: unknown, opts: { challenge?: (invalidToken: boolean) => string } = {}): Response {
   if (err instanceof ApiError) {
     const headers: Record<string, string> = {};
-    if (err.status === 401) headers["www-authenticate"] = 'Bearer realm="dewee.sh"';
+    if (err.status === 401) headers["www-authenticate"] = opts.challenge ? opts.challenge(err.invalidToken) : 'Bearer realm="dewee.sh"';
     return json(errorBody(err), { status: err.status, headers });
   }
   console.error("api: unhandled error", err instanceof Error ? err.stack || err.message : err);

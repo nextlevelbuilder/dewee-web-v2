@@ -68,7 +68,7 @@ async function callTool<C>(server: McpServer<C>, params: unknown, ctx: C): Promi
   const tool = server.tools.find((t) => t.name === p.name);
   if (!tool) return { ok: false, error: { code: RPC_ERRORS.invalidParams, message: `Unknown tool: ${p.name}` } };
   if (tool.enabled && !tool.enabled(ctx)) {
-    return { ok: true, result: toolError(`forbidden: this API key lacks the scope needed for ${tool.name}.`, { error: { code: "forbidden" } }) };
+    return { ok: true, result: toolError(`forbidden: this API key or sign-in lacks the scope needed for ${tool.name}.`, { error: { code: "forbidden" } }) };
   }
   const parsed = tool.input.safeParse(p.arguments ?? {});
   if (!parsed.success) {

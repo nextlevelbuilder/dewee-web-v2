@@ -3,7 +3,7 @@ title: Workflows
 description: How dewee workflows run a fixed graph of steps the same way every time, how drafts are published and versioned, and which limits and retries apply to each run.
 section: concepts
 order: 7
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 A workflow is a fixed graph of steps that dewee runs the same way every time. Use one when a process must not skip a step, such as checking an order before replying or reviewing a post before it goes out. The model only works inside bounded nodes, and the graph decides what happens next. Workflows are in beta.
@@ -33,6 +33,12 @@ You edit a draft, validate it and dry-run it. A dry run mocks every node that wo
 At publish time, dewee saves the authoring agent's tool permissions with the version. Later changes to that agent cannot widen what a published version is allowed to do.
 
 A tenant admin or owner can publish directly. Anyone else, including an agent, creates a publish request instead. Only a human admin who is not the requester can approve it, and only while the draft still matches the one that was submitted. If the draft changed in between, the approval is rejected.
+
+To avoid overwriting a concurrent edit, read the workflow's `updated_at` and pass it to `dewee workflows apply -f workflow.json --expected-version <updated_at>`. Workspace MCP `workflows_update` uses `expected_version`, WebSocket `workflows.update` uses `expectedVersion`, and HTTP `PUT /v1/workflows/{id}` uses `expected_version`. Preserve the full timestamp precision; equivalent timezone offsets represent the same instant. PostgreSQL stores microsecond precision. A stale value returns `VERSION_CONFLICT` (HTTP 409): reload and reconcile edits before submitting again. Omitting the precondition preserves unconditional updates; a conditional CLI update does not create a missing workflow.
+
+The conditional CLI checks contract version 2 on its update connection and refuses an older or unknown gateway before mutation. Existing authorization and MCP approval requirements remain in force.
+
+SQLite upgrades normalize historical workflow metadata to fixed-width UTC timestamps so date filters and fractional-second ordering remain reliable. This does not enable the Lite workflow engine or change API response shapes. Back up before upgrading; rollback uses the pre-upgrade database backup and a compatible binary, as described in [Install and run](/docs/runtime/install-and-run#backups-and-restores).
 
 ## Runs and triggers
 

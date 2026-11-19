@@ -20,6 +20,11 @@ pages are out of scope.
      `DEWEE_WEB_URL=https://staging.dewee.sh` to try on staging first.
    - **MCP:** remote `https://dewee.sh/mcp` with `Authorization: Bearer <key>`, or the stdio
      bridge `npx -y dewee-web mcp`. `tools/list` shows only what your scopes allow.
+   - **MCP with OAuth (ChatGPT and other clients that cannot send a header):** add
+     `https://dewee.sh/mcp` with OAuth. An admin signs in and ticks the scopes on the consent
+     page (reads are pre-ticked; writes and `leads:read` are opt-in). Grants are listed and
+     revoked at `/admin/connections`. A `401` with `error="invalid_token"` means sign in again.
+     This is not the runtime MCP at `<gateway-origin>/mcp/workspace` or `/mcp/server`.
 3. Read `https://dewee.sh/developers` once. The API reference is `/api/v1/openapi.json`.
 
 ## Workflow

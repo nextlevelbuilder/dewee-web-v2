@@ -4,7 +4,7 @@ description: Từ lúc đăng nhập tới câu trả lời đầu tiên của a
 section: get-started
 order: 5
 screens: [sign-in, providers, chat]
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 Có hai cách để bắt đầu. Phần lớn đội ngũ đi theo **con đường console**: đăng nhập, kết nối một model provider và trò chuyện với agent mà dewee tạo sẵn cho bạn. Người vận hành muốn thử runtime ngay trên máy mình có thể đi theo **con đường tự vận hành** ở phía dưới. Cả hai đều kết thúc bằng việc một agent trả lời tin nhắn của bạn.
@@ -51,6 +51,7 @@ Mở **Trò chuyện**, chọn `super-agent` và hỏi thử, ví dụ "Bạn l�
 - Tạo thêm agent với hướng dẫn và tool riêng: [Agent](/docs/console/agents).
 - Đưa agent lên Telegram, Slack, Zalo hoặc ứng dụng chat khác: [Kênh, ghép nối và danh bạ](/docs/console/channels-and-contacts).
 - Mời đồng đội và gán vai trò: [Thành viên, vai trò và API key](/docs/console/members-roles-and-api-keys).
+- Kết nối AI client với [Workspace MCP](/docs/api/workspace-mcp) khi môi trường đã bật tính năng này. Workspace mới và hiện có đủ điều kiện có thể đăng nhập và đồng ý cấp quyền đọc; danh sách workspace do người vận hành cấu hình có thể giới hạn truy cập, còn thao tác nâng cao có kiểm soát riêng.
 
 ## Con đường tự vận hành
 

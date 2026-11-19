@@ -4,7 +4,7 @@ description: See how much your agents run and what it costs, review who changed 
 section: console
 order: 11
 screens: [usage, activity, traces, monitoring]
-updated: 2026-10-14
+updated: 2026-11-08
 ---
 
 Once agents are running, four areas show you what they do. **Usage** counts requests, tokens and estimated cost. **Activity** is the history of changes in the workspace. **Traces** records every agent run in detail. **Runtime health** tells you whether your runtime is reachable and working. All four only show data from your own workspace.
@@ -65,6 +65,8 @@ Select a trace to preview it, or **Open full page** for the full detail. The hea
 - **Raw JSON**: the trace data, with the **Redacted support bundle**.
 
 Values in a trace can be redacted before they reach your browser; redacted spans are marked. To get help with a run, copy the **Redacted support bundle** and send it to support: raw prompts, tool arguments, headers and secrets are excluded or redacted.
+
+If a trace is not found, it may no longer exist. A temporary storage error is different: retry when the service recovers rather than assuming the trace was deleted. If export collection fails, no successful download is sent; retry an interrupted download. Previously pruned child traces can be absent. See [Tracing](/docs/concepts/tracing) for export depth and cycle limits.
 
 ## Runtime health
 

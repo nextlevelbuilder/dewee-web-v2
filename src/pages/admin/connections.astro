@@ -1,0 +1,104 @@
+---
+/**
+ * Connected apps: every OAuth grant an admin approved for the content MCP (for example ChatGPT),
+ * with its permissions and a revoke button. Revoking deletes the grant and its tokens, so the app
+ * is signed out at once. Revoke is a same-origin form POST carrying the session's CSRF token.
+ */
+import AdminLayout from "~/components/admin/AdminLayout.astro";
+import Icon from "~/components/ui/Icon.astro";
+import { ADMIN } from "~/components/admin/admin-strings";
+import { OAUTH_UI } from "~/components/admin/oauth-strings";
+import { adminForm, field, requireAdmin } from "~/components/admin/admin-guard";
+import { platformEnv } from "~/lib/server/api/platform-env";
+import { superAdminEmails } from "~/lib/server/auth/allowlist";
+import { audit } from "~/lib/server/auth/audit-log";
+import { oauthAuthority } from "~/lib/server/oauth/oauth-authority-client";
+import type { ConnectedApp } from "~/lib/server/oauth/oauth-server";
+
+export const prerender = false;
+
+const auth = await requireAdmin(Astro);
+if (auth instanceof Response) return auth;
+const env = platformEnv();
+const authority = oauthAuthority(env);
+const T = OAUTH_UI.connections;
+let message: { kind: "error" | "success"; text: string } | null = null;
+
+if (Astro.request.method === "POST" && authority) {
+  const form = await adminForm(Astro, auth.session);
+  const grantId = form ? field(form, "grant") : "";
+  const owner = form ? field(form, "owner") : "";
+  if (!form || !grantId || !superAdminEmails().includes(owner)) {
+    Astro.response.status = 403;
+    message = { kind: "error", text: ADMIN.errors.csrf };
+  } else {
+    try {
+      await authority.revoke(owner, grantId);
+      await audit(env.DB, auth.session.email, "oauth.revoke", grantId, { owner });
+      message = { kind: "success", text: T.revoked };
+    } catch (err) {
+      console.error("oauth: revoke failed", err instanceof Error ? err.message : err);
+      message = { kind: "error", text: ADMIN.errors.generic };
+    }
+  }
+}
+
+const apps: ConnectedApp[] = authority ? await authority.list([...superAdminEmails()]) : [];
+const day = (seconds?: number) => (seconds ? new Date(seconds * 1000).toISOString().slice(0, 10) : "—");
+---
+
+<AdminLayout title={T.title} current="connections" email={auth.session.email} csrf={auth.csrf}>
+  <div class="adm-head">
+    <div>
+      <h1>{T.title}</h1>
+      <p>{T.lede}</p>
+    </div>
+  </div>
+
+  {message && <p class="adm-alert" data-kind={message.kind} role={message.kind === "error" ? "alert" : "status"}>{message.text}</p>}
+
+  {!authority ? (
+    <p class="adm-alert" role="status">{T.notConfigured}</p>
+  ) : apps.length === 0 ? (
+    <p class="adm-empty">{T.none}</p>
+  ) : (
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th scope="col">{T.app}</th><th scope="col">{T.account}</th><th scope="col">{T.scopes}</th>
+            <th scope="col">{T.since}</th><th scope="col">{T.expires}</th><th scope="col"><span class="sr-only">{T.revoke}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {apps.map((a) => (
+            <tr>
+              <td>
+                <strong>{a.meta.clientName ?? a.clientId}</strong><br />
+                <span class="adm-mono">{a.meta.clientDomain ?? a.clientId}</span>
+                {a.meta.redirectHost && <><br /><span class="adm-mono">→ {a.meta.redirectHost}</span></>}
+              </td>
+              <td>{a.email}</td>
+              <td class="adm-mono">{a.scope.join(", ")}</td>
+              <td class="adm-mono">{day(a.createdAt)}</td>
+              <td class="adm-mono">{day(a.expiresAt)}</td>
+              <td>
+                <form method="post" class="adm-inline-form" data-confirm={T.confirmRevoke}>
+                  <input type="hidden" name="csrf" value={auth.csrf} />
+                  <input type="hidden" name="grant" value={a.id} />
+                  <input type="hidden" name="owner" value={a.email} />
+                  <button class="btn btn--sm" type="submit"><Icon name="trash-2" />{T.revoke}</button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</AdminLayout>
+
+<script>
+  import { bindConfirmForms } from "~/components/admin/admin-ui-client";
+  bindConfirmForms();
+</script>

@@ -26,10 +26,14 @@ export function clientIp(Astro: Pick<AstroGlobal, "request" | "clientAddress">):
   }
 }
 
-/** Only same-site, path-only `next` targets inside /admin are honoured after sign-in. */
+/**
+ * Only same-site, path-only `next` targets inside /admin, or back to the OAuth consent page,
+ * are honoured after sign-in.
+ */
 export function safeNext(raw: string | null | undefined): string {
-  if (!raw || !raw.startsWith("/admin") || raw.startsWith("//") || raw.includes("\\")) return "/admin";
-  return raw;
+  if (!raw || raw.startsWith("//") || raw.includes("\\")) return "/admin";
+  if (raw.startsWith("/admin") || raw.startsWith("/oauth/authorize?")) return raw;
+  return "/admin";
 }
 
 /** The signed-in super admin, or a redirect to the sign-in page (returned for the page to send). */

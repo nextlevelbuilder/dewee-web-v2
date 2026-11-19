@@ -4,7 +4,7 @@ description: Go from sign-in to your first agent reply in the console, or start 
 section: get-started
 order: 5
 screens: [sign-in, providers, chat]
-updated: 2026-09-25
+updated: 2026-11-08
 ---
 
 There are two ways to start. Most teams use **the console path**: sign in, connect a model provider, and chat with the agent dewee creates for you. Operators who want to try the runtime on their own machine can take **the self-hosted path** further down. Both end with an agent answering a message.
@@ -51,6 +51,7 @@ Open **Chat**, pick `super-agent`, and ask it something, for example "What can y
 - Create more agents with their own instructions and tools: [Agents](/docs/console/agents).
 - Put an agent on Telegram, Slack, Zalo or another chat app: [Channels, pairing and contacts](/docs/console/channels-and-contacts).
 - Invite your team and set roles: [Members, roles and API keys](/docs/console/members-roles-and-api-keys).
+- Connect an AI client to [Workspace MCP](/docs/api/workspace-mcp) when your environment enables it. Eligible new and existing workspaces can sign in and consent to read access; an operator's workspace allowlist may restrict access, and elevated operations have separate controls.
 
 ## The self-hosted path
 
