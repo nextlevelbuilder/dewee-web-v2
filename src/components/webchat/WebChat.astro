@@ -1,0 +1,13 @@
+---
+/**
+ * Website chat: the `dewee-webchat` widget, talking to /api/dewee/* (CCP webchat ingress).
+ * Copy lives in src/content/webchat.ts; behaviour in webchat-client.ts. The widget mounts only when
+ * the backend answers /api/dewee/config, so a deployment without the integration shows no chat.
+ */
+import type { Locale } from "~/i18n/config";
+import { webchatStrings } from "~/content/webchat";
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+<div hidden data-webchat data-locale={locale} data-strings={JSON.stringify(webchatStrings(locale))}></div>
+<script>import "./webchat-client";</script>

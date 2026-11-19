@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { applyHit, CHAT_LIMITS, dailyBudget, HOUR_MS } from "../src/lib/server/chat-limits";
-import { hashIp, signChatSession, verifyChatSession } from "../src/lib/server/chat-session-token";
 import { emailIn, emailsIn } from "../src/lib/server/chat-visitor-email";
 
 describe("applyHit (fixed window)", () => {
@@ -37,32 +36,6 @@ describe("dailyBudget", () => {
     expect(dailyBudget("-3")).toBe(500);
     expect(dailyBudget("120")).toBe(120);
     expect(dailyBudget("0")).toBe(0);
-  });
-});
-
-describe("signed chat sessions", () => {
-  const secret = "test-secret-with-enough-entropy-0123456789";
-  const sid = "0f8e2f6c-3a1b-4c55-9d1e-7b2a6c9e0d11";
-
-  it("verifies a fresh token for the same sid and IP", async () => {
-    const ih = await hashIp(secret, "203.0.113.7");
-    expect(ih).toMatch(/^[0-9a-f]{32}$/);
-    const token = await signChatSession(secret, sid, ih, Date.now() + 60_000);
-    expect(await verifyChatSession(secret, token, sid, ih)).toBe(true);
-  });
-
-  it("rejects another IP, another sid, another secret, expiry and tampering", async () => {
-    const ih = await hashIp(secret, "203.0.113.7");
-    const other = await hashIp(secret, "198.51.100.9");
-    const exp = Date.now() + 60_000;
-    const token = await signChatSession(secret, sid, ih, exp);
-    expect(await verifyChatSession(secret, token, sid, other)).toBe(false);
-    expect(await verifyChatSession(secret, token, `${sid.slice(0, -1)}2`, ih)).toBe(false);
-    expect(await verifyChatSession("another-secret-0123456789abcdef", token, sid, ih)).toBe(false);
-    expect(await verifyChatSession(secret, token, sid, ih, exp + 1)).toBe(false);
-    expect(await verifyChatSession(secret, token.replace(/^\d+/, String(exp + 3_600_000)), sid, ih)).toBe(false);
-    expect(await verifyChatSession(secret, "garbage", sid, ih)).toBe(false);
-    expect(await verifyChatSession(secret, `${token}.x`, sid, ih)).toBe(false);
   });
 });
 

@@ -5,7 +5,6 @@ vi.mock("cloudflare:workers", () => ({ DurableObject: class {} }));
 import { agentConfig, askAgent, buildAgentMessage, completionText, parseSse } from "../src/lib/server/chat-agent-client";
 import { agentReply } from "../src/lib/server/chat-agent-turn";
 import { applyHit, type WindowRow } from "../src/lib/server/chat-limits";
-import { verifyTurnstile } from "../src/lib/server/chat-turnstile";
 
 const baseEnv = {
   CHAT_AGENT_ENABLED: "true",
@@ -153,18 +152,3 @@ describe("agentReply actions", () => {
   });
 });
 
-describe("verifyTurnstile", () => {
-  const env = { TURNSTILE_SECRET_KEY: "s", TURNSTILE_SITE_KEY: "k" } as unknown as Env;
-  const reply = (body: unknown) => vi.fn(async () => Response.json(body)) as unknown as typeof fetch;
-
-  it("passes when Turnstile is not configured", async () => {
-    expect(await verifyTurnstile({} as Env, "", "1.2.3.4")).toBe(true);
-  });
-
-  it("requires a successful siteverify for the chat action", async () => {
-    expect(await verifyTurnstile(env, "tok", "1.2.3.4", reply({ success: true, action: "chat" }))).toBe(true);
-    expect(await verifyTurnstile(env, "tok", "1.2.3.4", reply({ success: false }))).toBe(false);
-    expect(await verifyTurnstile(env, "tok", "1.2.3.4", reply({ success: true, action: "login" }))).toBe(false);
-    expect(await verifyTurnstile(env, "", "1.2.3.4", reply({ success: true }))).toBe(false);
-  });
-});

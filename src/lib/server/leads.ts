@@ -185,7 +185,7 @@ function json(body: { ok: boolean; error?: LeadError }, status: number, headers?
   return new Response(JSON.stringify(body), { status, headers: h });
 }
 
-function parseJsonObject(body: string): Record<string, unknown> | null {
+export function parseJsonObject(body: string): Record<string, unknown> | null {
   try {
     const v: unknown = JSON.parse(body);
     return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
@@ -194,7 +194,7 @@ function parseJsonObject(body: string): Record<string, unknown> | null {
   }
 }
 
-function sameHost(origin: string, requestUrl: string): boolean {
+export function sameHost(origin: string, requestUrl: string): boolean {
   try {
     return new URL(origin).host === new URL(requestUrl).host;
   } catch {
@@ -225,7 +225,7 @@ function notifyTitle(lead: Lead): string {
 }
 
 /** Fixed 10-minute windows keyed by a hash of the client IP (the raw IP is never stored). */
-async function rateLimitKey(request: Request): Promise<string> {
+export async function rateLimitKey(request: Request): Promise<string> {
   const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`dewee-leads:${ip}`));
   const hash = [...new Uint8Array(digest).slice(0, 12)].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -234,7 +234,7 @@ async function rateLimitKey(request: Request): Promise<string> {
 }
 
 // KV is a soft limiter: if it is unavailable we log and let the lead through rather than lose it.
-async function readCount(kv: KVNamespace, key: string): Promise<number> {
+export async function readCount(kv: KVNamespace, key: string): Promise<number> {
   try {
     return Number((await kv.get(key)) ?? "0") || 0;
   } catch (err) {
@@ -243,7 +243,7 @@ async function readCount(kv: KVNamespace, key: string): Promise<number> {
   }
 }
 
-async function writeCount(kv: KVNamespace, key: string, count: number): Promise<void> {
+export async function writeCount(kv: KVNamespace, key: string, count: number): Promise<void> {
   try {
     await kv.put(key, String(count), { expirationTtl: RATE_LIMIT.windowSeconds + 60 });
   } catch (err) {

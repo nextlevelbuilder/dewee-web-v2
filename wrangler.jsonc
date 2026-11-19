@@ -29,6 +29,9 @@
     "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
     "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_",
+    // Website chat widget: CCP "Website chat" integration (secrets: DEWEE_WEBCHAT_INTEGRATION_SECRET, DEWEE_WEBCHAT_SECRET).
+    "DEWEE_CCP_CHAT_URL": "https://app.dewee.sh/api/public/webchat/v1/wci_oq3bztpv2kuautmls56wioikge",
+    "DEWEE_WEBCHAT_INTEGRATION_ID": "wci_oq3bztpv2kuautmls56wioikge",
     // Docs change proposals open pull requests here (GitHub App secrets: DOCS_GITHUB_APP_*).
     "DOCS_GITHUB_REPO": "nextlevelbuilder/dewee-web-v2",
     "DOCS_GITHUB_BASE": "dev"
@@ -65,6 +68,9 @@
         "DEWEE_CHAT_AGENT_URL": "https://dewee.zuey.me",
         "DEWEE_CHAT_AGENT_ID": "01a0d84d-87a5-748b-addf-548ff26ac409",
         "TURNSTILE_SITE_KEY": "0x4AAAAAAFDSsllNUJs_W1u_",
+        // Website chat widget: CCP "Website chat" integration (secrets: DEWEE_WEBCHAT_INTEGRATION_SECRET, DEWEE_WEBCHAT_SECRET).
+        "DEWEE_CCP_CHAT_URL": "https://app.dewee.sh/api/public/webchat/v1/wci_oq3bztpv2kuautmls56wioikge",
+        "DEWEE_WEBCHAT_INTEGRATION_ID": "wci_oq3bztpv2kuautmls56wioikge",
         // Docs change proposals open pull requests here (GitHub App secrets: DOCS_GITHUB_APP_*).
         "DOCS_GITHUB_REPO": "nextlevelbuilder/dewee-web-v2",
         "DOCS_GITHUB_BASE": "dev"
