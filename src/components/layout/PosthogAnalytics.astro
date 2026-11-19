@@ -47,13 +47,13 @@ const config = {
         setTimeout(function () { posthog.capture("theme_toggled", { theme: document.documentElement.dataset.theme }); }, 0);
         return;
       }
-      if (target.closest("[data-chat-toggle], [data-open-chat]")) { posthog.capture("chat_opened"); }
       var link = target.closest("a[href]");
       if (!link) return;
       var url = new URL(link.href, location.href);
       var props = {
         href: url.href,
         text: (link.textContent || "").trim().slice(0, 80),
+        cta: link.dataset.trackCta,
         location: link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main",
       };
       if (link.dataset.trackPlan) posthog.capture("pricing_plan_cta_clicked", Object.assign({ plan: link.dataset.trackPlan }, props));

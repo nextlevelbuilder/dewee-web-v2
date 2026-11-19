@@ -1,7 +1,7 @@
 ---
 import { localePath, pick, type Locale } from "~/i18n/config";
 import { t } from "~/i18n/ui";
-import { NAV_COMPANY, NAV_PRODUCT, NAV_TOP } from "~/content/site";
+import { NAV_COMPANY, NAV_PRODUCT, NAV_TOP, SITE } from "~/content/site";
 import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
 import Wordmark from "~/components/ui/Wordmark.astro";
 import Icon from "~/components/ui/Icon.astro";
@@ -58,7 +58,8 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
         <span>{other.toUpperCase()}</span>
       </a>
       <ThemeToggle locale={locale} />
-      <a class="btn btn--primary btn--sm site-header__cta" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
+      <a class="btn btn--ghost btn--sm site-header__cta" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
+      <a class="btn btn--primary btn--sm site-header__try" href={SITE.appUrl} data-track-cta="header-try-now">{t(locale, "tryNow")}</a>
       <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" data-burger>
         <span class="sr-only">{t(locale, "menu")}</span>
         <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
@@ -87,7 +88,8 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
         </ul>
       </section>
       <div class="mobile-nav__cta">
-        <a class="btn btn--primary btn--lg" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
+        <a class="btn btn--primary btn--lg" href={SITE.appUrl} data-track-cta="mobile-nav-try-now">{t(locale, "tryNow")}</a>
+        <a class="btn btn--lg" href={localePath(locale, "/contact")}>{t(locale, "talkToUs")}</a>
         <a class="btn btn--lg" href={switchHref} hreflang={other}>{t(locale, "switchTo")}</a>
       </div>
     </div>
@@ -184,7 +186,8 @@ const isActive = (href: string) => path === href || (href !== "/" && path.starts
     .burger { display: inline-grid; }
   }
   @media (max-width: 420px) {
-    .lang span { display: none; }
+    /* Phones keep "Try now" in the bar; the language switch is also in the menu sheet. */
+    .lang { display: none; }
   }
   /* Touch screens get full 44px targets for every header control. */
   @media (max-width: 760px), (pointer: coarse) {

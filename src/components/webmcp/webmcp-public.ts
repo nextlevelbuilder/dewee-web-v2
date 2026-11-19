@@ -63,22 +63,16 @@ const tools: WebMcpTool[] = [
     description: "Opens the dewee support chat. An optional message is typed into the box for the visitor to review and send.",
     inputSchema: { type: "object", properties: { message: { type: "string", maxLength: 1000 } }, additionalProperties: false },
     execute: async (args) => {
-      const panel = document.querySelector<HTMLElement>("[data-chat-panel]");
-      if (!panel) return failure("The chat is not available on this page.");
+      if (!document.querySelector("dewee-chat")) return failure("The chat is not available on this page.");
+      const message = str(args, "message", 1000);
       const trigger = document.createElement("button");
       trigger.type = "button";
       trigger.hidden = true;
       trigger.dataset.openChat = "";
+      if (message) trigger.dataset.chatMessage = message;
       document.body.appendChild(trigger);
       trigger.click();
       trigger.remove();
-      const message = str(args, "message", 1000);
-      const input = panel.querySelector<HTMLTextAreaElement>("textarea");
-      if (message && input) {
-        input.value = message;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        input.focus();
-      }
       return text(message ? "Chat opened with the message ready to send." : "Chat opened.");
     },
   },
