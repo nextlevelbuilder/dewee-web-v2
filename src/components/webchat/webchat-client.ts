@@ -78,6 +78,7 @@ async function init() {
     title: strings.title,
     subtitle: strings.subtitle,
     greeting: strings.greeting,
+    intro: strings.intro,
     placeholder: strings.placeholder,
     suggestions: strings.suggestions,
     avatar: "/brand/dewee-icon-144.png",
