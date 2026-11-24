@@ -22,7 +22,7 @@ export default {
   async scheduled(_controller, env, ctx) {
     ctx.waitUntil(syncChangelog(env).catch((err) => console.error("changelog sync failed", err)));
     // Hourly cron; the digest itself decides whether today's post is due (once a day from 01:00 UTC).
-    ctx.waitUntil(runDailyDigest(env).then((run) => { if (run !== "not-due" && run !== "already-sent") console.log("chat digest", run); })
+    ctx.waitUntil(runDailyDigest(env).then((run) => { if (run !== "not-due" && run !== "already-sent" && run !== "not-production") console.log("chat digest", run); })
       .catch((err) => console.error("chat digest failed", err)));
   },
 } satisfies ExportedHandler<Env>;
