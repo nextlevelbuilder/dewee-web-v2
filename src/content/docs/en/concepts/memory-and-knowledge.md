@@ -82,6 +82,8 @@ dewee vault link create --from <doc-id> --to <doc-id>
 
 **Agent tools.** `vault_search` queries vault documents, session summaries and graph entities in parallel, weighted 0.4, 0.3 and 0.3, and returns 10 results by default. `vault_read` returns a document's full text by ID, including shared and team documents outside the agent's workspace, up to 500,000 bytes by default. There is no agent tool for creating links.
 
+**Saved documents.** A file a person asks the agent to keep with `vault_save` (shared or private) is copied into the vault's own store, outside every workspace. Only `vault_read` and `vault_search` reach it, after their access check. Shell commands cannot: a tenant's sandboxed or kernel-confined commands never see the store, and on a host that cannot confine shell commands, a tenant's `exec` is refused once that tenant has saved documents. Use the Docker sandbox, or a Linux host with Landlock (kernel 6.2+), to keep shell access for such tenants. When you upgrade, the gateway moves stores kept by earlier releases out of the workspaces at startup: stop replicas of the older release first, and mount every per-tenant volume before the first start.
+
 **Limits.** Only registered documents sync from disk, one way from file to vault, after a 500 ms debounce. Full-text search covers title and path; content is found through embeddings. The last write wins, and there is no version history yet.
 
 ## The knowledge graph
