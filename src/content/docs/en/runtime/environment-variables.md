@@ -22,7 +22,7 @@ These are read by `install.sh` while it installs or upgrades dewee. They are not
 
 | Variable | Default | What it does |
 |---|---|---|
-| `DEWEE_VERSION` | newest on the channel | Version to install, for example `3.60.0` (a leading `v` is fine). `latest` means the newest. |
+| `DEWEE_VERSION` | newest on the channel | Version to install, for example `3.63.2` (a leading `v` is fine). `latest` means the newest. |
 | `DEWEE_CHANNEL` | `stable` | `stable` or `beta`. |
 | `DEWEE_HOME` | `~/.dewee` | Install folder. Must be a dedicated folder, not `/` or your home folder. Same as `--dir`. The `dewee` CLI also uses it to find `dewee.env`. |
 | `DEWEE_APP_PORT` | `4321` | Port of the control panel. Any port except `18790`, which the runtime uses. Same as `--port`. |
@@ -215,7 +215,7 @@ Feature flags switch on parts of dewee that are new, experimental or only needed
 | `DEWEE_ROUTING_ACTIVE_ENABLED` | Lets presets actually route traffic: canaries and model routes take effect. | `DEWEE_ROUTING_PRESETS_ENABLED` |
 | `DEWEE_ROUTING_PUBLIC_LIBRARY_ENABLED` | The public preset library. | `DEWEE_ROUTING_PRESETS_ENABLED` |
 | `DEWEE_ROUTING_PRESET_SHARING_ENABLED` | Sharing presets. | `DEWEE_ROUTING_PRESETS_ENABLED` |
-| `DEWEE_ROUTING_EXPERIMENTS_ENABLED` | Checkpoints and fork experiments. | Its own switch; forks need PostgreSQL. |
+| `DEWEE_ROUTING_EXPERIMENTS_ENABLED` | Checkpoints and fork experiments. | Its own switch. On SQLite, checkpoints work but forks answer 503: forks need PostgreSQL. |
 | `DEWEE_ROUTING_CACHE_TTLS` | Not a switch. Overrides how long each provider's prompt cache is assumed to live, as `type=duration` pairs separated by commas. Defaults: `anthropic_native=5m`, `chatgpt_oauth=10m`; `0` removes one. Used only when active routing is on. | `DEWEE_ROUTING_ACTIVE_ENABLED` |
 
 See [Providers and routing](/docs/concepts/providers-and-routing) for what these do in practice.
@@ -280,7 +280,7 @@ The workspace management endpoint at `/mcp/workspace`. These switches are strict
 | `GOCLAW_MCP_WORKSPACE_DIRECT_EXECUTION` | `off`, `shadow` or `on`. | |
 | `GOCLAW_MCP_WORKSPACE_PLATFORM_OPERATOR` | Operator-only actions on the master workspace, approved by a second operator. | |
 | `GOCLAW_MCP_WORKSPACE_PLATFORM_WRITE` | Install-wide changes through the master workspace. | `_PLATFORM_OPERATOR` |
-| `GOCLAW_MCP_WORKSPACE_PLATFORM_OWNER_CONFIRMATION` | Lets the owner confirm their own operator request. | `_PLATFORM_OPERATOR` |
+| `GOCLAW_MCP_WORKSPACE_PLATFORM_OWNER_CONFIRMATION` | Lets a platform owner confirm their own operator or master-workspace request, instead of waiting for a second person. | |
 
 ### Identity
 
@@ -303,8 +303,8 @@ These control how agents use stored credentials. Use `true` or `1`.
 | `GOCLAW_CREDENTIAL_POLICY_READ_ENABLED`, `GOCLAW_CREDENTIAL_POLICY_WRITE_ENABLED` | Read and change the policy for running command-line tools with credentials. |
 | `GOCLAW_CREDENTIAL_FALLBACK_READ_ENABLED`, `GOCLAW_CREDENTIAL_FALLBACK_WRITE_ENABLED` | Read and change fallback credential grants. |
 | `GOCLAW_CREDENTIAL_FALLBACK_EFFECT_ENABLED` | Makes fallback grants apply to commands and remote MCP calls. |
-| `GOCLAW_SERVICE_BINDING_WRITE_ENABLED` | Change which service account a credential is bound to. |
-| `GOCLAW_SERVICE_CONSENT_ENABLED` | Ask for consent before a service credential is used. |
+| `GOCLAW_SERVICE_BINDING_WRITE_ENABLED` | Lets an admin propose and revoke service bindings: a shared credential that runs a command-line tool for another person. An admin cannot propose one for themselves. |
+| `GOCLAW_SERVICE_CONSENT_ENABLED` | Lets the person a service binding is for confirm it, and lets people add or change their own personal connections. |
 | `GOCLAW_JOB_GRANT_READ_ENABLED`, `GOCLAW_JOB_GRANT_WRITE_ENABLED` | Read and change delegation grants for background jobs. |
 
 ### Website chat, work requests and Vault
@@ -352,13 +352,65 @@ A change in review will let you turn these flags on and off in Settings and with
 | Variable | Default | What it does |
 |---|---|---|
 | `DEWEE_LICENSE_GATE` | `off` | `off`, `admission` or `channels`. A misspelt value stops startup. Self-install sets `channels`. Not the same as `DEWEE_LICENSE_MODE`. |
-| `DEWEE_LICENSE_REQUIRED` | off | Requires a licence before workspaces are admitted. |
+| `DEWEE_LICENSE_REQUIRED` | off | Required mode: the runtime must activate a licence with `DEWEE_LICENSE_SERVER` before it admits work. Needs `DEWEE_LICENSE_SERVER` and `DEWEE_LICENSE_RUNTIME_INSTANCE_ID` (1–128 letters, digits, dots, dashes or underscores). Goes with `DEWEE_LICENSE_GATE=admission`; it cannot be combined with `channels` or `off`. Strict: a misspelt value stops startup. |
+| `DEWEE_LICENSE_RUNTIME_INSTANCE_ID` | unset | Name of this runtime for the licence server, in required mode. |
 | `DEWEE_LICENSE_SERVER` | `https://app.dewee.sh` with `channels` | Licence authority. |
 | `DEWEE_LICENSE_STATE_FILE` | `<data dir>/license/state.json` with `channels` | Where licence state is kept. |
 | `DEWEE_LICENSE_KEY_FILE`, `DEWEE_LICENSE_KEY_FD` | unset | Read the licence key from a file or a file descriptor, for installs without a console. The key is **secret**. |
 | `DEWEE_LICENSE_WORKSPACE_ID` | unset | Workspace for a single-workspace licence. |
 
 See [Licence](/docs/runtime/licence).
+
+## Fleet, DevBox and operator keys
+
+These are for operators who run several runtimes, isolated workspaces or the hosted control plane. A single self-installed runtime does not need them.
+
+### Fleet
+
+| Variable | Default | What it does |
+|---|---|---|
+| `DEWEE_FLEET_CONTROLLER_ENABLED` | off | Runs the fleet controller that hands package jobs to workers. |
+| `DEWEE_FLEET_CONTROLLER_ID` | generated | Name of this controller instance. |
+| `DEWEE_FLEET_ENVIRONMENT` | unset | Fleet environment name, shared by the controller and its workers. |
+| `DEWEE_FLEET_ADMIN_KEY_ID` | unset | Key ID allowed to manage fleet workers. |
+| `DEWEE_FLEET_WORKER_REQUEST_KEYS`, `DEWEE_FLEET_WORKER_RESPONSE_KEYS` | unset | On the controller: the keys workers sign requests with and the keys used to sign replies. **Secret.** |
+| `DEWEE_FLEET_DEFAULT_WORKER` | off | Exactly `true` makes this runtime report itself as a fleet worker. `DEWEE_FLEET_DEFAULT_WORKER_MAX` caps its jobs. |
+
+The `dewee fleet-worker` command reads these on each worker machine:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `DEWEE_FLEET_CONTROLLER_URL` | unset | Controller address. |
+| `DEWEE_FLEET_WORKER_ID` | unset | Name of this worker. A worker runtime must use `GOCLAW_REPLICA_MODE=single`. |
+| `DEWEE_FLEET_WORKER_REQUEST_SECRET` or `_FILE`, `DEWEE_FLEET_WORKER_RESPONSE_SECRET` or `_FILE` | unset | The worker's signing keys, directly or from a file. **Secret.** |
+| `DEWEE_FLEET_WORKER_STATE_ROOT` | `/var/lib/dewee-fleet-worker` | Worker state folder. Must be an absolute path. |
+| `DEWEE_FLEET_PACKAGE_ROOT` | `/opt/dewee-runtime-packages` | Where packages are installed. Must be an absolute path. |
+| `DEWEE_FLEET_RUNTIME_SERVICE_NAME`, `DEWEE_FLEET_WORKER_SERVICE_NAME` | unset | Service names of the runtime and the worker, for restarts. |
+| `DEWEE_FLEET_RUNTIME_READY_URL` | unset | Address checked after a change to confirm the runtime is back. |
+| `DEWEE_FLEET_POLL_INTERVAL` | `5s` | How often the worker asks for jobs. At least `1s`. |
+| `DEWEE_FLEET_MAX_ASSET_MB` | `200` | Largest package download, 1 to 2048. |
+| `GOCLAW_PACKAGES_GITHUB_TOKEN` or `GOCLAW_PACKAGES_GITHUB_TOKEN_FILE` | unset | GitHub token for package downloads. **Secret.** |
+
+### DevBox
+
+| Variable | Default | What it does |
+|---|---|---|
+| `DEWEE_DEVBOX` | off | Exactly `true` turns DevBox on; until then every DevBox route answers 404. |
+| `DEWEE_DEVBOX_BACKEND` | unset | The isolation backend. The only value is `docker-gvisor`. Without it, anything that needs compute fails; there is no fallback to the host kernel. |
+| `DEWEE_DEVBOX_IMAGE` | `dewee-devbox:local` | Container image. |
+| `DEWEE_DEVBOX_NETWORK` | `dewee-devbox` | Docker network. |
+| `DEWEE_DEVBOX_DOCKER_RUNTIME` | `runsc` | Docker runtime (gVisor). |
+| `DEWEE_DEVBOX_BRIDGE` | `dwx-devbox0` | Network bridge name. |
+| `DEWEE_DEVBOX_RESOLV_CONF` | `/etc/dewee-devbox/resolv.conf` | DNS settings given to DevBoxes. |
+
+### Control plane and operator keys
+
+| Variable | Default | What it does |
+|---|---|---|
+| `DEWEE_GATEWAY_CCP_URL`, `DEWEE_GATEWAY_CCP_KEY_ID`, `DEWEE_GATEWAY_CCP_SECRET` | unset | Signed channel from the runtime to the control plane. All three are needed or the channel stays off. The URL must be HTTPS except on loopback; the secret has at least 32 characters and is **secret**. |
+| `DEWEE_OPS_KEY_ID`, `DEWEE_OPS_SECRET` | unset | Read-only key for the operations status endpoint. Both are needed. The secret is **secret**. |
+| `DEWEE_ROUTER_URL`, `ROUTER_OPERATOR_TOKEN` | unset | Router service address (HTTPS) and its operator token (**secret**). |
+| `DEWEE_RGD_MOUNT` | `root` | Where the runtime dashboard is served: `root`, `hidden` or `off`. Self-install sets `hidden`, because the control panel is the front door. |
 
 ## Control panel
 

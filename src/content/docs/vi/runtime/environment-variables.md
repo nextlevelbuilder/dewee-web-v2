@@ -22,7 +22,7 @@ Trang này liệt kê các biến môi trường dewee đọc, chia theo thành 
 
 | Biến | Mặc định | Tác dụng |
 |---|---|---|
-| `DEWEE_VERSION` | bản mới nhất của kênh | Phiên bản cần cài, ví dụ `3.60.0` (có `v` ở đầu cũng được). `latest` là bản mới nhất. |
+| `DEWEE_VERSION` | bản mới nhất của kênh | Phiên bản cần cài, ví dụ `3.63.2` (có `v` ở đầu cũng được). `latest` là bản mới nhất. |
 | `DEWEE_CHANNEL` | `stable` | `stable` hoặc `beta`. |
 | `DEWEE_HOME` | `~/.dewee` | Thư mục cài đặt. Phải là thư mục riêng, không phải `/` hay thư mục home. Tương đương `--dir`. CLI `dewee` cũng dùng nó để tìm `dewee.env`. |
 | `DEWEE_APP_PORT` | `4321` | Cổng của bảng điều khiển. Dùng cổng nào cũng được trừ `18790`, cổng của runtime. Tương đương `--port`. |
@@ -215,7 +215,7 @@ Feature flag bật những phần của dewee còn mới, đang thử nghiệm, 
 | `DEWEE_ROUTING_ACTIVE_ENABLED` | Cho preset thực sự điều hướng lưu lượng: canary và model route có hiệu lực. | `DEWEE_ROUTING_PRESETS_ENABLED` |
 | `DEWEE_ROUTING_PUBLIC_LIBRARY_ENABLED` | Thư viện preset công khai. | `DEWEE_ROUTING_PRESETS_ENABLED` |
 | `DEWEE_ROUTING_PRESET_SHARING_ENABLED` | Chia sẻ preset. | `DEWEE_ROUTING_PRESETS_ENABLED` |
-| `DEWEE_ROUTING_EXPERIMENTS_ENABLED` | Checkpoint và thử nghiệm fork. | Công tắc độc lập; fork cần PostgreSQL. |
+| `DEWEE_ROUTING_EXPERIMENTS_ENABLED` | Checkpoint và thử nghiệm fork. | Công tắc độc lập. Trên SQLite, checkpoint vẫn chạy nhưng fork trả 503: fork cần PostgreSQL. |
 | `DEWEE_ROUTING_CACHE_TTLS` | Không phải công tắc. Ghi đè thời gian sống giả định của prompt cache theo từng provider, dạng các cặp `type=duration` cách nhau bằng dấu phẩy. Mặc định: `anthropic_native=5m`, `chatgpt_oauth=10m`; `0` để bỏ một mục. Chỉ dùng khi định tuyến chủ động đang bật. | `DEWEE_ROUTING_ACTIVE_ENABLED` |
 
 Xem [Provider, fallback và suy luận](/docs/concepts/providers-and-routing) để biết chúng hoạt động ra sao trong thực tế.
@@ -280,7 +280,7 @@ Endpoint quản lý workspace tại `/mcp/workspace`. Các công tắc này ch�
 | `GOCLAW_MCP_WORKSPACE_DIRECT_EXECUTION` | `off`, `shadow` hoặc `on`. | |
 | `GOCLAW_MCP_WORKSPACE_PLATFORM_OPERATOR` | Thao tác chỉ dành cho người vận hành trên workspace master, cần một người vận hành khác duyệt. | |
 | `GOCLAW_MCP_WORKSPACE_PLATFORM_WRITE` | Thay đổi phạm vi toàn hệ thống qua workspace master. | `_PLATFORM_OPERATOR` |
-| `GOCLAW_MCP_WORKSPACE_PLATFORM_OWNER_CONFIRMATION` | Cho chủ sở hữu tự xác nhận yêu cầu vận hành của chính mình. | `_PLATFORM_OPERATOR` |
+| `GOCLAW_MCP_WORKSPACE_PLATFORM_OWNER_CONFIRMATION` | Cho chủ nền tảng tự xác nhận yêu cầu vận hành hoặc yêu cầu trên workspace master của chính mình, không phải chờ người thứ hai. | |
 
 ### Danh tính
 
@@ -303,8 +303,8 @@ Các flag này quyết định cách agent dùng thông tin đăng nhập đã l
 | `GOCLAW_CREDENTIAL_POLICY_READ_ENABLED`, `GOCLAW_CREDENTIAL_POLICY_WRITE_ENABLED` | Đọc và sửa chính sách chạy công cụ dòng lệnh kèm thông tin đăng nhập. |
 | `GOCLAW_CREDENTIAL_FALLBACK_READ_ENABLED`, `GOCLAW_CREDENTIAL_FALLBACK_WRITE_ENABLED` | Đọc và sửa các quyền dùng thông tin đăng nhập dự phòng. |
 | `GOCLAW_CREDENTIAL_FALLBACK_EFFECT_ENABLED` | Cho các quyền dự phòng có hiệu lực với lệnh và lệnh gọi MCP từ xa. |
-| `GOCLAW_SERVICE_BINDING_WRITE_ENABLED` | Đổi tài khoản dịch vụ mà một thông tin đăng nhập được gắn vào. |
-| `GOCLAW_SERVICE_CONSENT_ENABLED` | Hỏi đồng ý trước khi dùng thông tin đăng nhập của dịch vụ. |
+| `GOCLAW_SERVICE_BINDING_WRITE_ENABLED` | Cho admin đề xuất và thu hồi service binding: một thông tin đăng nhập dùng chung để chạy công cụ dòng lệnh thay cho người khác. Admin không tự đề xuất cho chính mình được. |
+| `GOCLAW_SERVICE_CONSENT_ENABLED` | Cho người được gắn service binding xác nhận nó, và cho mọi người tự thêm hoặc sửa kết nối cá nhân của mình. |
 | `GOCLAW_JOB_GRANT_READ_ENABLED`, `GOCLAW_JOB_GRANT_WRITE_ENABLED` | Đọc và sửa quyền uỷ quyền cho các job chạy nền. |
 
 ### Chat website, yêu cầu công việc và Vault
@@ -352,13 +352,65 @@ Một thay đổi đang được review sẽ cho phép bật tắt các flag nà
 | Biến | Mặc định | Tác dụng |
 |---|---|---|
 | `DEWEE_LICENSE_GATE` | `off` | `off`, `admission` hoặc `channels`. Gõ sai sẽ chặn khởi động. Bản tự cài đặt dùng `channels`. Khác với `DEWEE_LICENSE_MODE`. |
-| `DEWEE_LICENSE_REQUIRED` | tắt | Bắt buộc có giấy phép trước khi nhận workspace. |
+| `DEWEE_LICENSE_REQUIRED` | tắt | Chế độ bắt buộc: runtime phải kích hoạt giấy phép với `DEWEE_LICENSE_SERVER` trước khi nhận việc. Cần `DEWEE_LICENSE_SERVER` và `DEWEE_LICENSE_RUNTIME_INSTANCE_ID` (1–128 ký tự gồm chữ, số, dấu chấm, gạch ngang hoặc gạch dưới). Đi cùng `DEWEE_LICENSE_GATE=admission`; không dùng chung được với `channels` hay `off`. Chặt chẽ: gõ sai sẽ chặn khởi động. |
+| `DEWEE_LICENSE_RUNTIME_INSTANCE_ID` | chưa đặt | Tên của runtime này với máy chủ giấy phép, ở chế độ bắt buộc. |
 | `DEWEE_LICENSE_SERVER` | `https://app.dewee.sh` khi dùng `channels` | Máy chủ cấp giấy phép. |
 | `DEWEE_LICENSE_STATE_FILE` | `<thư mục dữ liệu>/license/state.json` khi dùng `channels` | Nơi lưu trạng thái giấy phép. |
 | `DEWEE_LICENSE_KEY_FILE`, `DEWEE_LICENSE_KEY_FD` | chưa đặt | Đọc khoá giấy phép từ file hoặc file descriptor, cho bản cài không có console. Khoá là **bí mật**. |
 | `DEWEE_LICENSE_WORKSPACE_ID` | chưa đặt | Workspace của giấy phép một workspace. |
 
 Xem [Giấy phép](/docs/runtime/licence).
+
+## Fleet, DevBox và khoá vận hành
+
+Nhóm này dành cho người vận hành nhiều runtime, workspace cách ly hoặc control plane hosted. Một runtime tự cài đặt đơn lẻ không cần đến.
+
+### Fleet
+
+| Biến | Mặc định | Tác dụng |
+|---|---|---|
+| `DEWEE_FLEET_CONTROLLER_ENABLED` | tắt | Chạy bộ điều phối fleet, giao job package cho các worker. |
+| `DEWEE_FLEET_CONTROLLER_ID` | tự tạo | Tên của bộ điều phối này. |
+| `DEWEE_FLEET_ENVIRONMENT` | chưa đặt | Tên môi trường fleet, dùng chung cho bộ điều phối và các worker. |
+| `DEWEE_FLEET_ADMIN_KEY_ID` | chưa đặt | Key ID được phép quản lý worker. |
+| `DEWEE_FLEET_WORKER_REQUEST_KEYS`, `DEWEE_FLEET_WORKER_RESPONSE_KEYS` | chưa đặt | Trên bộ điều phối: khoá mà worker dùng để ký yêu cầu và khoá dùng để ký phản hồi. **Bí mật.** |
+| `DEWEE_FLEET_DEFAULT_WORKER` | tắt | Đúng `true` thì runtime này tự báo mình là một worker. `DEWEE_FLEET_DEFAULT_WORKER_MAX` giới hạn số job của nó. |
+
+Lệnh `dewee fleet-worker` đọc các biến sau trên từng máy worker:
+
+| Biến | Mặc định | Tác dụng |
+|---|---|---|
+| `DEWEE_FLEET_CONTROLLER_URL` | chưa đặt | Địa chỉ bộ điều phối. |
+| `DEWEE_FLEET_WORKER_ID` | chưa đặt | Tên của worker này. Runtime của worker phải dùng `GOCLAW_REPLICA_MODE=single`. |
+| `DEWEE_FLEET_WORKER_REQUEST_SECRET` hoặc `_FILE`, `DEWEE_FLEET_WORKER_RESPONSE_SECRET` hoặc `_FILE` | chưa đặt | Khoá ký của worker, đặt thẳng hoặc đọc từ file. **Bí mật.** |
+| `DEWEE_FLEET_WORKER_STATE_ROOT` | `/var/lib/dewee-fleet-worker` | Thư mục trạng thái của worker. Phải là đường dẫn tuyệt đối. |
+| `DEWEE_FLEET_PACKAGE_ROOT` | `/opt/dewee-runtime-packages` | Nơi cài package. Phải là đường dẫn tuyệt đối. |
+| `DEWEE_FLEET_RUNTIME_SERVICE_NAME`, `DEWEE_FLEET_WORKER_SERVICE_NAME` | chưa đặt | Tên dịch vụ của runtime và của worker, để khởi động lại. |
+| `DEWEE_FLEET_RUNTIME_READY_URL` | chưa đặt | Địa chỉ được kiểm tra sau mỗi thay đổi để chắc runtime đã chạy lại. |
+| `DEWEE_FLEET_POLL_INTERVAL` | `5s` | Chu kỳ worker hỏi job mới. Tối thiểu `1s`. |
+| `DEWEE_FLEET_MAX_ASSET_MB` | `200` | Dung lượng tối đa của package tải về, từ 1 đến 2048. |
+| `GOCLAW_PACKAGES_GITHUB_TOKEN` hoặc `GOCLAW_PACKAGES_GITHUB_TOKEN_FILE` | chưa đặt | GitHub token để tải package. **Bí mật.** |
+
+### DevBox
+
+| Biến | Mặc định | Tác dụng |
+|---|---|---|
+| `DEWEE_DEVBOX` | tắt | Đúng `true` thì bật DevBox; trước đó mọi route của DevBox đều trả 404. |
+| `DEWEE_DEVBOX_BACKEND` | chưa đặt | Lớp cách ly. Giá trị duy nhất là `docker-gvisor`. Thiếu nó thì mọi thao tác cần tài nguyên tính toán đều lỗi; không có phương án dùng chung kernel của máy chủ. |
+| `DEWEE_DEVBOX_IMAGE` | `dewee-devbox:local` | Image của container. |
+| `DEWEE_DEVBOX_NETWORK` | `dewee-devbox` | Mạng Docker. |
+| `DEWEE_DEVBOX_DOCKER_RUNTIME` | `runsc` | Runtime của Docker (gVisor). |
+| `DEWEE_DEVBOX_BRIDGE` | `dwx-devbox0` | Tên network bridge. |
+| `DEWEE_DEVBOX_RESOLV_CONF` | `/etc/dewee-devbox/resolv.conf` | Cấu hình DNS cấp cho DevBox. |
+
+### Control plane và khoá vận hành
+
+| Biến | Mặc định | Tác dụng |
+|---|---|---|
+| `DEWEE_GATEWAY_CCP_URL`, `DEWEE_GATEWAY_CCP_KEY_ID`, `DEWEE_GATEWAY_CCP_SECRET` | chưa đặt | Kênh có ký từ runtime tới control plane. Cần đủ cả ba, nếu không kênh sẽ tắt. URL phải là HTTPS trừ loopback; secret dài ít nhất 32 ký tự và là **bí mật**. |
+| `DEWEE_OPS_KEY_ID`, `DEWEE_OPS_SECRET` | chưa đặt | Khoá chỉ đọc cho endpoint trạng thái vận hành. Cần cả hai. Secret là **bí mật**. |
+| `DEWEE_ROUTER_URL`, `ROUTER_OPERATOR_TOKEN` | chưa đặt | Địa chỉ dịch vụ router (HTTPS) và token vận hành của nó (**bí mật**). |
+| `DEWEE_RGD_MOUNT` | `root` | Nơi phục vụ dashboard của runtime: `root`, `hidden` hoặc `off`. Bản tự cài đặt đặt `hidden`, vì bảng điều khiển là cửa vào chính. |
 
 ## Bảng điều khiển
 
