@@ -18,6 +18,8 @@ import CtaBand from "~/components/blocks/CtaBand.astro";
 import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
 import PlatformChooser from "~/components/blocks/install/PlatformChooser.astro";
 import InstallSteps from "~/components/blocks/install/InstallSteps.astro";
+import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
+import { installAgentPrompt } from "~/content/install-agent-prompt";
 
 export const prerender = true;
 export const getStaticPaths = () => langPaths();
@@ -37,6 +39,7 @@ const routes = ROUTES.map((r) => {
   return { id: r.id, icon: r.icon, tab: c.tab, title: c.title, body: c.body, samples: [{ label: c.label, code: r.code.join("\n") }] };
 });
 
+const agentPrompt = installAgentPrompt(locale);
 const facts = { ...earlyAccessFacts(locale), url: SELF_INSTALL.dashboardUrl };
 const steps = t.steps.items.map((s) => ({ title: s.title, body: fillTemplate(s.body, facts) }));
 const earlyAccess = earlyAccessBlock(locale, { cta: contact("self-hosted") });
@@ -79,6 +82,16 @@ const jsonLd = [
     </div>
   </section>
 
+  <section class="section" id="agent">
+    <div class="container in-agent">
+      <SectionHead eyebrow={t.agent.eyebrow} title={t.agent.title} lede={t.agent.lede} />
+      <div class="in-agent__prompt">
+        <CodeSample label={t.agent.label} code={agentPrompt} copy={t.choose.copy} />
+        <p class="in-agent__note">{t.agent.note}</p>
+      </div>
+    </div>
+  </section>
+
   <section class="section band" id="steps">
     <div class="container in-stack">
       <SectionHead eyebrow={t.steps.eyebrow} title={t.steps.title} lede={t.steps.lede} />
@@ -116,6 +129,11 @@ const jsonLd = [
   .in-req__row { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-block-start: 1px dashed var(--rule); }
   .in-req__row dt { font-family: var(--font-mono-stack); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
   .in-req__row dd { margin: 0; font-size: var(--step--1); color: var(--ink); line-height: 1.5; }
+  .in-agent { display: grid; gap: var(--space-6); }
+  .in-agent__prompt { display: grid; gap: var(--space-3); min-inline-size: 0; }
+  /* The prompt is long: keep it a scrollable box so the copy button stays in view. */
+  .in-agent__prompt :global(.cs__pre) { max-block-size: 28rem; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .in-agent__note { font-size: var(--step--1); color: var(--ink-3); max-inline-size: var(--measure); }
   .in-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
   @media (max-width: 900px) {
     .in-split, .in-faq { grid-template-columns: minmax(0, 1fr); }
