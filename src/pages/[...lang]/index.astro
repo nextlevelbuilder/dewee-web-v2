@@ -2,7 +2,7 @@
 /**
  * Homepage, outcome first: the promise, one complete piece of work done by people and agents
  * together, why that matters, where it applies, the real console, what it connects to, the
- * security and engineering proof, pricing, questions, and the team behind it last.
+ * security and engineering proof, pricing, questions, how to get started, and the team behind it last.
  * Copy lives in src/content/pages/home*.ts; every section is a reusable block.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
@@ -13,7 +13,6 @@ import { useCaseBySlug, type UseCase } from "~/content/use-cases";
 import { CHANNELS, PROVIDERS } from "~/content/integrations";
 import { ccpShotProps } from "~/content/ccp-screens";
 import { plansFor } from "~/content/plans";
-import { earlyAccessBlock } from "~/content/early-access";
 import { faqJsonLd, productJsonLd } from "~/lib/json-ld";
 import Icon from "~/components/ui/Icon.astro";
 import type { IconName } from "~/components/ui/icon-paths";
@@ -29,7 +28,7 @@ import SecurityLayers from "~/components/blocks/SecurityLayers.astro";
 import HomeworkChecklist from "~/components/blocks/HomeworkChecklist.astro";
 import DeployPlans from "~/components/blocks/DeployPlans.astro";
 import Faq from "~/components/blocks/Faq.astro";
-import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
+import GettingStarted from "~/components/blocks/GettingStarted.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
 
 export const prerender = true;
@@ -58,7 +57,6 @@ const plans = plansFor(locale).map((p) => ({
 // Vietnam is offered Self-install and On-Premises only (DESIGN.md pricing rule), while app.dewee.sh
 // provisions a hosted workspace, so the VI "start" CTAs open the free self-install guide instead.
 const startHref = locale === "vi" ? href("/install") : SITE.appUrl;
-const earlyAccess = earlyAccessBlock(locale, { cta: `${href("/contact")}?plan=self-hosted`, secondary: href("/install") });
 const jsonLd = [
   productJsonLd({ description: t.meta.description, url: `${SITE.url}${href("/")}`, offers: plans.map((p) => ({ name: p.name, price: String(p.priceUsd) })) }),
   faqJsonLd(t.faq.items),
@@ -175,7 +173,7 @@ const shotSizes = "(min-width: 1200px) 34rem, (min-width: 901px) 45vw, 94vw";
     </div>
   </section>
 
-  <EarlyAccess {...earlyAccess} band />
+  <GettingStarted locale={locale} />
 
   <section class="section section--tight" id="company">
     <div class="container home-company">

@@ -28,7 +28,7 @@ Prices are also on the [pricing page](/pricing).
 You install dewee on your own Mac, Linux machine or server with our install script, as a standalone binary or with Docker, and set everything up yourself in the local dashboard.
 
 - **What you get:** the runtime and its dashboard at `http://localhost:4321`, where you create the owner account, add an LLM provider and build agents. Installing and using agents, providers and skills is free.
-- **Licence key:** connecting channels such as Zalo, Telegram, Discord or Slack needs a dewee licence at $500 per year, activated in the dashboard. Early Access takes 50% off the first year for the first 50 licences, until 15 October 2026; see [pricing](/pricing).
+- **Licence key:** connecting channels such as Zalo, Telegram, Discord or Slack needs a dewee licence at $500 per year, activated in the dashboard. See [pricing](/pricing).
 - **Trade-offs:** no setup help is included, and updates and backups are yours to run. If you want us to do the install, choose On-Premises.
 
 Choose Self-install when you want to try dewee on your own hardware today, or when you are comfortable operating the runtime yourself. [Install dewee yourself](/docs/get-started/self-install) walks through it.

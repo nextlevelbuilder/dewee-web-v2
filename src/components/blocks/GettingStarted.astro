@@ -1,0 +1,152 @@
+---
+/**
+ * Homepage "Getting started": four ways in, as cards. The install command and the coding-agent
+ * prompt come from their single sources (SELF_INSTALL, installAgentPrompt) and render through
+ * CodeSample, so the copy buttons and the page's Markdown twin behave like /install.
+ * Copy lives in src/content/pages/home-getting-started.ts.
+ */
+import { localePath, pick, type Locale } from "~/i18n/config";
+import { SELF_INSTALL, SITE } from "~/content/site";
+import { installAgentPrompt } from "~/content/install-agent-prompt";
+import { GETTING_STARTED, GETTING_STARTED_ANCHOR, MCP_SNIPPETS, MCP_URL } from "~/content/pages/home-getting-started";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
+import Icon from "~/components/ui/Icon.astro";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = pick(GETTING_STARTED, locale);
+const href = (p: string) => localePath(locale, p);
+/** Splits "… {terms} … {privacy} …" so the two names become links without HTML in the copy. */
+const legalParts = t.saas.legal.split(/(\{terms\}|\{privacy\})/);
+const legalLinks: Record<string, { label: string; href: string }> = {
+  "{terms}": { label: t.saas.terms, href: href("/terms") },
+  "{privacy}": { label: t.saas.privacy, href: href("/privacy") },
+};
+const [mcpBefore, mcpAfter] = t.mcp.body.split("{url}");
+---
+
+<section class="section band" id={GETTING_STARTED_ANCHOR} aria-labelledby="gs-title">
+  <div class="container gs">
+    <SectionHead eyebrow={t.eyebrow} title={t.title} lede={t.lede} id="gs-title" />
+
+    <div class="gs__grid">
+      <article class="gs__card gs__card--install" data-reveal>
+        <div class="gs__col">
+          <header class="gs__head">
+            <Icon name="terminal" size={20} />
+            <h3 class="gs__title">{t.install.title}</h3>
+            <span class="gs__badge">{t.recommended}</span>
+          </header>
+          <p class="gs__body">{t.install.body}</p>
+          <CodeSample label={t.install.scriptLabel} code={SELF_INSTALL.commands.script} copy={t.copy} />
+          <a class="btn btn--ink gs__cta" href={href("/install")}>{t.install.cta}<Icon name="arrow-right" class="arrow" /></a>
+        </div>
+        <div class="gs__col gs__col--agent">
+          <h4 class="gs__sub">{t.install.agentTitle}</h4>
+          <p class="gs__note">{t.install.agentBody}</p>
+          <div class="gs__prompt">
+            <CodeSample label={t.install.agentLabel} code={installAgentPrompt(locale)} copy={t.copy} />
+          </div>
+        </div>
+      </article>
+
+      <div class="gs__stack">
+        <article class="gs__card" data-reveal>
+          <header class="gs__head">
+            <Icon name="cloud" size={20} />
+            <h3 class="gs__title">{t.saas.title}</h3>
+          </header>
+          <p class="gs__body">{t.saas.body}</p>
+          <ol class="gs__steps">{t.saas.steps.map((s) => <li>{s}</li>)}</ol>
+          <div class="gs__fine">
+            <p>{t.saas.data}</p>
+            <p>{legalParts.map((part) => (legalLinks[part] ? <a href={legalLinks[part].href}>{legalLinks[part].label}</a> : part))}</p>
+          </div>
+          <a class="btn btn--ink gs__cta" href={SITE.appUrl} rel="noopener">{t.saas.cta}<Icon name="arrow-up-right" class="arrow" /></a>
+        </article>
+
+        <article class="gs__card" data-reveal>
+          <header class="gs__head">
+            <Icon name="book-open" size={20} />
+            <h3 class="gs__title">{t.humans.title}</h3>
+          </header>
+          <p class="gs__body">{t.humans.body}</p>
+          <div class="gs__links">
+            <a class="btn btn--ink" href={href("/docs")}>{t.humans.docs}<Icon name="arrow-right" class="arrow" /></a>
+            <a class="btn" href={href("/blog")}>{t.humans.blog}</a>
+          </div>
+        </article>
+      </div>
+
+      <article class="gs__card" data-reveal>
+        <header class="gs__head">
+          <Icon name="plug" size={20} />
+          <h3 class="gs__title">{t.mcp.title}</h3>
+        </header>
+        <p class="gs__body">{mcpBefore}<code>{MCP_URL}</code>{mcpAfter}</p>
+        <CodeSample label={t.mcp.snippets.claudeCode} code={MCP_SNIPPETS.claudeCode} copy={t.copy} />
+        <CodeSample label={t.mcp.snippets.cursor} code={MCP_SNIPPETS.cursor} copy={t.copy} />
+        <p class="gs__note"><strong>{t.mcp.snippets.claudeDesktop}:</strong> {t.mcp.desktopSteps}</p>
+        <div class="gs__fine">
+          <p>{t.mcp.access}</p>
+          <p>{t.mcp.tools}</p>
+          <p><a href="/llms.txt">{t.mcp.publicNote}</a></p>
+        </div>
+        <a class="btn gs__cta" href={href("/developers") + "#mcp"}>{t.mcp.cta}<Icon name="arrow-right" class="arrow" /></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .gs { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  /* Install spans the row; below it two columns end on one line. */
+  .gs__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); align-items: stretch; }
+  .gs__card {
+    display: flex; flex-direction: column; gap: var(--space-4); min-inline-size: 0; padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border: 1px solid var(--rule); border-radius: var(--radius-3); background: var(--surface); box-shadow: var(--shadow-1);
+  }
+  .gs__card--install {
+    grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(1.5rem, 1rem + 2vw, 3rem); border-color: var(--accent);
+  }
+  .gs__col { display: flex; flex-direction: column; gap: var(--space-4); min-inline-size: 0; }
+  .gs__col--agent { padding-inline-start: clamp(1.5rem, 1rem + 2vw, 3rem); border-inline-start: 1px dashed var(--rule); }
+  /* SaaS and the reading links stack beside the taller MCP card so both columns end together. */
+  .gs__stack { display: flex; flex-direction: column; gap: var(--space-5); min-inline-size: 0; }
+  .gs__stack > .gs__card:first-child { flex: 1; }
+  .gs__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .gs__head :global(svg) { color: var(--accent-ink); }
+  .gs__title { font-size: var(--step-1); }
+  .gs__badge {
+    margin-inline-start: auto; padding: var(--space-1) var(--space-2); border-radius: var(--radius-2);
+    background: var(--accent-soft); color: var(--accent-ink); font-family: var(--font-mono-stack);
+    font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .gs__sub { font-size: var(--step-0); }
+  .gs__body { color: var(--ink-2); max-inline-size: var(--measure); }
+  .gs__body code { font-family: var(--font-mono-stack); font-size: 0.9em; overflow-wrap: anywhere; }
+  .gs__note { font-size: var(--step--1); color: var(--ink-3); }
+  /* Fine print sits at the foot of paired cards so their notes and buttons share one baseline. */
+  .gs__card > .gs__fine { margin-block-start: auto; }
+  .gs__card > .gs__fine + .gs__cta { margin-block-start: 0; }
+  .gs__fine { display: grid; gap: var(--space-2); padding-block-start: var(--space-4); border-block-start: 1px dashed var(--rule); font-size: var(--step--1); color: var(--ink-3); }
+  .gs__fine a { color: var(--accent-ink); }
+  .gs__steps { display: grid; gap: var(--space-1); padding-inline-start: 1.25rem; color: var(--ink-2); }
+  .gs__prompt { min-inline-size: 0; }
+  /* The prompt is long: a bounded scroll box keeps the copy button in view, as on /install. */
+  .gs__prompt :global(.cs__pre) { max-block-size: 15rem; overflow-y: auto; }
+  .gs__card :global(.cs__pre) { white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* Pinning the CTA to the card's foot lines up the buttons of side-by-side cards. */
+  .gs__cta { align-self: flex-start; margin-block-start: auto; }
+  .gs__links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  @media (max-width: 900px) {
+    .gs__grid, .gs__card--install { grid-template-columns: minmax(0, 1fr); }
+    .gs__col--agent { padding-inline-start: 0; padding-block-start: var(--space-5); border-inline-start: 0; border-block-start: 1px dashed var(--rule); }
+  }
+  @media (max-width: 560px) {
+    .gs__cta { align-self: stretch; }
+    .gs__links .btn { flex: 1 1 100%; }
+  }
+</style>
