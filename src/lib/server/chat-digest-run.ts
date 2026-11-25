@@ -2,6 +2,7 @@
  * Posts the daily website-chat digest from the hourly cron. It is due from 01:00 UTC (08:00 in
  * Vietnam); a KV marker per UTC day makes it run once, and the marker is only written after
  * Discord accepts the post, so a failed post is retried by the next hourly run that day.
+ * Only production posts it: staging has no real visitors, so its digest is noise in the team channel.
  */
 import { composeDigest, type DigestData, type DigestLead, type DigestSession } from "./chat-digest";
 import { notifyTeam } from "./notify";
@@ -10,7 +11,7 @@ export const DIGEST_HOUR_UTC = 1;
 const WINDOW_MS = 24 * 60 * 60_000;
 const MARKER_TTL_SECONDS = 3 * 24 * 60 * 60;
 
-export type DigestRun = "sent" | "already-sent" | "not-due" | "not-configured" | "failed";
+export type DigestRun = "sent" | "already-sent" | "not-due" | "not-production" | "not-configured" | "failed";
 
 /** The KV key that marks today's digest as sent. */
 export const digestMarker = (now: Date) => `chat-digest:${now.toISOString().slice(0, 10)}`;
@@ -29,6 +30,7 @@ export async function loadDigestData(db: D1Database, since: string): Promise<Dig
 }
 
 export async function runDailyDigest(env: Env, now = new Date()): Promise<DigestRun> {
+  if (env.ENVIRONMENT !== "production") return "not-production";
   if (now.getUTCHours() < DIGEST_HOUR_UTC) return "not-due";
   if (!env.DISCORD_WEBHOOK_URL) return "not-configured";
   const marker = digestMarker(now);

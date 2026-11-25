@@ -22,6 +22,7 @@ export type InstallPage = {
     copy: { copy: string; copied: string; failed: string };
     routes: Record<InstallRouteId, { tab: string; title: string; body: string; label: string }>;
   };
+  agent: { eyebrow: string; title: string; lede: string; label: string; note: string };
   requirements: { title: string; items: { label: string; value: string }[] };
   steps: { eyebrow: string; title: string; lede: string; label: string; items: { title: string; body: string }[] };
   faq: { eyebrow: string; title: string; items: Faq[] };
@@ -69,6 +70,13 @@ export const INSTALL: Bi<InstallPage> = {
           label: "PowerShell",
         },
       },
+    },
+    agent: {
+      eyebrow: "Or let your agent do it",
+      title: "Hand the install to *your coding agent*.",
+      lede: "Paste this prompt into Claude Code, Codex, Cursor or any coding agent with a terminal. It checks your machine, picks the right method and installs dewee, and it stops to ask before sudo, anything destructive, exposing dewee to the internet or touching a secret.",
+      label: "Prompt for your coding agent",
+      note: "The prompt uses the same commands as the tabs above. Your agent never sees your API keys or licence: you add those in the dashboard yourself.",
     },
     requirements: {
       title: "Minimum requirements",
@@ -150,6 +158,13 @@ export const INSTALL: Bi<InstallPage> = {
           label: "PowerShell",
         },
       },
+    },
+    agent: {
+      eyebrow: "Hoặc để agent làm giúp",
+      title: "Giao việc cài đặt cho *coding agent của bạn*.",
+      lede: "Dán prompt này vào Claude Code, Codex, Cursor hoặc bất kỳ coding agent nào có terminal. Agent sẽ dò máy của bạn, chọn cách cài phù hợp và cài dewee, và sẽ dừng lại hỏi trước khi dùng sudo, làm việc có thể mất dữ liệu, mở dewee ra internet hay đụng tới bí mật.",
+      label: "Prompt cho coding agent",
+      note: "Prompt dùng đúng các lệnh ở các thẻ phía trên. Agent không bao giờ thấy API key hay license của bạn: bạn tự thêm chúng trên bảng điều khiển.",
     },
     requirements: {
       title: "Cấu hình tối thiểu",

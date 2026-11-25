@@ -55,7 +55,7 @@ describe("runDailyDigest (once per day)", () => {
     const { kv, map } = memoryKv();
     const discord = vi.fn(async (_url: string, _init: RequestInit) => new Response(null, { status }));
     vi.stubGlobal("fetch", discord);
-    const env = { DB: d1, KV: kv, DISCORD_WEBHOOK_URL: "https://discord.example/hook", ENVIRONMENT: "staging" } as unknown as Env;
+    const env = { DB: d1, KV: kv, DISCORD_WEBHOOK_URL: "https://discord.example/hook", ENVIRONMENT: "production" } as unknown as Env;
     return { env, map, discord };
   }
 
@@ -72,13 +72,20 @@ describe("runDailyDigest (once per day)", () => {
     expect(discord).toHaveBeenCalledTimes(1);
     expect(map.has(digestMarker(at))).toBe(true);
     const embed = JSON.parse(discord.mock.calls[0][1].body as string).embeds[0];
-    expect(embed.title).toMatch(/^\[staging\] Website chat digest/);
+    expect(embed.title).toMatch(/^Website chat digest/);
     expect(embed.fields).toEqual(expect.arrayContaining([{ name: "Agent", value: "1 FAQ fallbacks · 1 agent failures", inline: false }]));
   });
 
   it("does not mark the day when Discord refuses, so the next hour retries", async () => {
     const { env, map } = setup(500);
     expect(await runDailyDigest(env, NOW)).toBe("failed");
+    expect(map.size).toBe(0);
+  });
+
+  it("posts nothing outside production", async () => {
+    const { env, map, discord } = setup();
+    expect(await runDailyDigest({ ...env, ENVIRONMENT: "staging" }, NOW)).toBe("not-production");
+    expect(discord).not.toHaveBeenCalled();
     expect(map.size).toBe(0);
   });
 
