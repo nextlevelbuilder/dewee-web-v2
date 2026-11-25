@@ -3,21 +3,21 @@ title: Chrome extension
 description: "Chat with your dewee agents in Chrome's side panel and answer credential requests without pasting secrets into chat, on Dewee Cloud or a self-hosted gateway."
 section: integrations
 order: 4
-updated: 2026-10-31
+updated: 2026-11-25
 ---
 
 The [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) opens a side panel on the right of Chrome where you chat with your dewee agents. Super Agent is always pinned first. When an agent needs an API key or an OAuth connection, the panel shows a credential card, so you never paste a secret into the chat.
 
-The extension is a thin client. Your dewee server stays in charge of agents, sessions, permissions and the encrypted credential store, and the extension never reads the pages you visit, except text you select and send with **Ask Dewee**, and tabs an agent opened on a site you allowed under **Connected browser**.
+The extension is a thin client. Your dewee server stays in charge of agents, sessions, permissions and the encrypted credential store, and the extension never reads the pages you visit, except text you select and send with **Ask Dewee**, and tabs you shared or an agent opened on a site you allowed under **Connected browser**.
 
 ## Install
 
-You need Chrome 116 or newer. The extension is not on the Chrome Web Store yet, so you load it yourself:
+You need Chrome 116 or newer.
 
-1. Get the build. Build it from source with `pnpm install` and `pnpm build` (the output is `.output/chrome-mv3`), or, once releases are published, download the zip attached to a release on the repository's [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) page and unzip it.
-2. Open `chrome://extensions` and turn on **Developer mode**.
-3. Choose **Load unpacked** and select the unzipped folder (or `.output/chrome-mv3`).
-4. Pin the extension, then click its icon or press `Alt+Shift+D` to open the panel.
+1. Open [dewee on the Chrome Web Store](https://chromewebstore.google.com/detail/fckahaihlmpbcldmlopffgmocflpnjha) and select **Add to Chrome**.
+2. Pin the extension, then click its icon or press `Alt+Shift+D` to open the panel.
+
+To run a build from source instead, build it with `pnpm install` and `pnpm build` (the output is `.output/chrome-mv3`), open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and select that folder.
 
 > [!NOTE]
 > The extension needs a matching server: a dewee gateway that serves the browser extension API (`/v1/extension`), or Dewee Cloud with extension sign-in. If your gateway is older, update it before you connect.
@@ -37,10 +37,10 @@ The first screen, **Connect to Dewee**, offers two modes. You can add more conne
 1. Ask a gateway operator to allow the extension's origin. The gateway allows no extension by default; add the exact origin to `GOCLAW_ALLOWED_ORIGINS`:
 
    ```bash
-   GOCLAW_ALLOWED_ORIGINS=chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm
+   GOCLAW_ALLOWED_ORIGINS=chrome-extension://fckahaihlmpbcldmlopffgmocflpnjha
    ```
 
-   That id belongs to the release and source builds. A Chrome Web Store build will get its own id.
+   That id belongs to the Chrome Web Store build. A build from source has the id `poicgajeapmbcilfbeobdfedibiffbbm`; list both, separated by a comma, if people use both.
 
 2. Create a personal API key bound to your user and your tenant, with `operator.read` and `operator.write`:
 
@@ -115,7 +115,7 @@ Open **Settings** with the gear in the panel header.
 | **Show reasoning** | Show the agent's reasoning under each reply, collapsed. Off by default |
 | **Show tool call details** | Show each tool's input, output and error. Common key, token and password formats are hidden, but not every secret can be recognised. Off by default |
 | **Ask Dewee about selected text** | Show an **Ask Dewee** button on text you select on a web page. Off by default |
-| **Connected browser** | Let agents you allow use tabs in this browser. Self-hosted gateway only. Off by default |
+| **Connected browser** | Let agents use tabs in this browser: sites you allow (self-hosted gateway) or one tab you share (Dewee Cloud or self-hosted). Off by default |
 
 The `Alt+Shift+D` shortcut that opens the panel can be changed at `chrome://extensions/shortcuts`.
 
@@ -124,7 +124,7 @@ The `Alt+Shift+D` shortcut that opens the panel can be changed at `chrome://exte
 Both features are off until you turn them on, and Chrome asks for website access only at that point.
 
 - **Ask Dewee.** Select text on a web page and select **Ask Dewee**. The side panel opens with the quote, the page title and its address in the message box; nothing is sent until you press Send. It applies to pages opened after you turn it on. Turning it off removes the button; to remove site access too, use Chrome's extension settings.
-- **Connected browser** (self-hosted gateway only, not yet Dewee Cloud). Register this browser, then allow chosen agents on chosen sites for a limited time, even when you ask them from Telegram or another channel. Agents open, read and act only in tabs they open themselves, never in your other tabs. Risky clicks wait for your approval, password and payment fields are never read or typed, and pausing, stopping or revoking access is always one click away. Agent tabs carry an "AI" badge, and using one yourself pauses the agents. A workspace admin must also turn the feature on for the workspace.
+- **Connected browser.** Register this browser, then either share one tab with **Let the agent use this tab** (Dewee Cloud or a self-hosted gateway; the share ends when you stop, close the tab or leave the site, and within an hour at most), or, on a self-hosted gateway, allow chosen agents on chosen sites for 15 minutes to 8 hours, even when you ask them from Telegram or another channel. With a site grant, agents open, read and act only in tabs they open themselves, never in your other tabs. Risky clicks wait for your approval, password and payment fields are never read or typed, and pausing, stopping or revoking access is always one click away. Every tab an agent controls shows a glowing frame with a **Stop** button, tabs an agent opens are gathered in a **Dewee AI** tab group, and using one yourself pauses the agents. A workspace admin must also turn the feature on for the workspace.
 
 ## Troubleshooting
 
@@ -132,7 +132,7 @@ Both features are off until you turn them on, and Chrome asks for website access
 |---|---|
 | *Use HTTPS. Plain HTTP works only for localhost.* | Use the gateway's `https://` address. HTTP is only for a gateway on this computer. |
 | *Chrome did not grant access to this address…* | Select **Connect** again and allow access when Chrome asks. |
-| *Cannot reach the server. Check your connection.* on a self-hosted gateway | Check the URL and your network. If the gateway is reachable, its `GOCLAW_ALLOWED_ORIGINS` probably does not include `chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm`. |
+| *Cannot reach the server. Check your connection.* on a self-hosted gateway | Check the URL and your network. If the gateway is reachable, its `GOCLAW_ALLOWED_ORIGINS` probably does not include `chrome-extension://fckahaihlmpbcldmlopffgmocflpnjha` (or, for a build from source, `chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm`). |
 | *This key is not a personal key…* (`owner_binding_required`) | Create a key with both `--tenant-id` and `--owner-id`. |
 | *This key is missing a required scope…* (`scope_required`) | The key needs `operator.read` and `operator.write`. A read-only key can read but cannot chat or answer cards. |
 | *The API key was rejected or revoked.* / *This profile needs a new API key.* | Create a new personal key and reconnect the profile. |
