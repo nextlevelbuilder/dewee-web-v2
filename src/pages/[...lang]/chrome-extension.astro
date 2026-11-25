@@ -1,0 +1,87 @@
+---
+/**
+ * /chrome-extension: the dewee Chrome extension (side panel client and Connected browser).
+ * Copy lives in src/content/pages/chrome-extension.ts; the Store link in CHROME_EXTENSION.
+ */
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
+import { CHROME_EXTENSION, SITE } from "~/content/site";
+import { CHROME_EXTENSION_PAGE } from "~/content/pages/chrome-extension";
+import { faqJsonLd, howToJsonLd } from "~/lib/json-ld";
+import PageHero from "~/components/blocks/PageHero.astro";
+import SectionHead from "~/components/blocks/SectionHead.astro";
+import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
+import InstallSteps from "~/components/blocks/install/InstallSteps.astro";
+import Faq from "~/components/blocks/Faq.astro";
+import CtaBand from "~/components/blocks/CtaBand.astro";
+
+export const prerender = true;
+export const getStaticPaths = () => langPaths();
+
+const { locale } = Astro.props as { locale: Locale };
+const t = pick(CHROME_EXTENSION_PAGE, locale);
+const href = (p: string) => localePath(locale, p);
+const store = CHROME_EXTENSION.storeUrl;
+const docs = href("/docs/integrations/chrome-extension");
+
+const pageUrl = `${SITE.url}${href("/chrome-extension")}`;
+const jsonLd = [
+  howToJsonLd({ name: t.meta.title, description: t.meta.description, url: pageUrl, steps: t.steps.items.map((s) => ({ name: s.title, text: s.body })) }),
+  faqJsonLd(t.faq.items),
+];
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} locale={locale} path="/chrome-extension"
+  breadcrumbs={[{ name: t.meta.crumb, path: "/chrome-extension" }]} jsonLd={jsonLd}>
+  <PageHero
+    eyebrow={t.hero.eyebrow}
+    title={t.hero.title}
+    lede={t.hero.lede}
+    note={t.hero.note}
+    actions={[{ label: t.hero.primary, href: store, external: true }, { label: t.hero.secondary, href: "#panel" }]}
+    mascot={{ mood: "happy", accessory: "headset" }}
+  />
+
+  <section class="section" id="panel">
+    <div class="container ce-stack">
+      <SectionHead eyebrow={t.features.eyebrow} title={t.features.title} lede={t.features.lede} />
+      <FeatureGrid items={t.features.items} />
+    </div>
+  </section>
+
+  <section class="section band" id="connected-browser">
+    <div class="container ce-stack">
+      <SectionHead eyebrow={t.browser.eyebrow} title={t.browser.title} lede={t.browser.lede} />
+      <FeatureGrid items={t.browser.items} />
+    </div>
+  </section>
+
+  <section class="section" id="steps">
+    <div class="container ce-stack">
+      <SectionHead eyebrow={t.steps.eyebrow} title={t.steps.title} lede={t.steps.lede} />
+      <InstallSteps label={t.steps.label} items={t.steps.items} />
+      <p><a class="link" href={docs}>{t.steps.docs}</a></p>
+    </div>
+  </section>
+
+  <section class="section band" id="faq">
+    <div class="container ce-faq">
+      <SectionHead eyebrow={t.faq.eyebrow} title={t.faq.title} size="m" />
+      <Faq items={t.faq.items} />
+    </div>
+  </section>
+
+  <CtaBand
+    title={t.cta.title}
+    body={t.cta.body}
+    primary={{ label: t.cta.primary, href: store, external: true }}
+    secondary={{ label: t.cta.secondary, href: docs }}
+    note={t.cta.note}
+  />
+</BaseLayout>
+
+<style>
+  .ce-stack { display: grid; gap: clamp(2.5rem, 1.5rem + 3vw, 4rem); }
+  .ce-faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: start; }
+  @media (max-width: 900px) { .ce-faq { grid-template-columns: minmax(0, 1fr); } }
+</style>

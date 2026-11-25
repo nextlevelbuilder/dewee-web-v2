@@ -8,7 +8,8 @@ import { inlineMarkup } from "~/lib/inline-markup";
 import DeweeMascot from "~/components/mascot/DeweeMascot.astro";
 import Icon from "~/components/ui/Icon.astro";
 
-type Action = { label: string; href: string; variant?: "primary" | "ink" | "ghost"; chat?: boolean };
+/** `external` opens another site in a new tab, marked with an up-right arrow. */
+type Action = { label: string; href: string; variant?: "primary" | "ink" | "ghost"; chat?: boolean; external?: boolean };
 type Mood = "happy" | "awake" | "wink" | "sleepy" | "love" | "surprised" | "focused";
 type Accessory = "none" | "glasses" | "headset" | "cap";
 interface Props {
@@ -46,8 +47,8 @@ const hasAside = Astro.slots.has("aside");
                 <Icon name="message-circle" />{a.label}
               </button>
             ) : (
-              <a class:list={["btn", `btn--${a.variant ?? (i === 0 ? "primary" : "ghost")}`, "btn--lg"]} href={a.href}>
-                {a.label}{i === 0 && <Icon name="arrow-right" class="arrow" />}
+              <a class:list={["btn", `btn--${a.variant ?? (i === 0 ? "primary" : "ghost")}`, "btn--lg"]} href={a.href} {...(a.external ? { target: "_blank", rel: "noopener" } : {})}>
+                {a.label}{(i === 0 || a.external) && <Icon name={a.external ? "arrow-up-right" : "arrow-right"} class="arrow" />}
               </a>
             ),
           )}
