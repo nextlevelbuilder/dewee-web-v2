@@ -4,22 +4,21 @@
  *   operate (src/content/legal/terms.ts, src/content/legal/privacy.ts "where-stored").
  * - Install: the command is SELF_INSTALL.commands.script (src/content/site.ts) and the agent
  *   prompt is installAgentPrompt() (src/content/install-agent-prompt.ts); this file never copies them.
- * - MCP: /mcp accepts an API key or OAuth 2.1, and consent is granted only by a dewee.sh
- *   super admin (src/pages/admin/oauth/authorize.astro), so the copy says access is by invitation.
- *   Docs tools are in src/lib/server/docs/docs-mcp-tools.ts; posts are read with get_page.
- *   Anyone can read the public /llms.txt index instead.
+ * - MCP: /mcp/docs is public, needs no sign-in and serves search_docs and fetch_doc over the
+ *   deployed docs (src/pages/mcp/docs.ts, src/lib/server/docs/public-docs-mcp-tools.ts). The full
+ *   /mcp (blog, pages, docs proposals) needs OAuth or an API key granted by a dewee.sh super admin.
  */
 import type { Bi } from "~/i18n/config";
 
 export const GETTING_STARTED_ANCHOR = "getting-started";
-export const MCP_URL = "https://dewee.sh/mcp";
+export const MCP_URL = "https://dewee.sh/mcp/docs";
 
 /** Client snippets are code, identical in both locales. OAuth clients need no key in the config. */
 export const MCP_SNIPPETS = {
-  claudeCode: `claude mcp add --transport http dewee-web ${MCP_URL}`,
+  claudeCode: `claude mcp add --transport http dewee-docs ${MCP_URL}`,
   cursor: `{
   "mcpServers": {
-    "dewee-web": { "url": "${MCP_URL}" }
+    "dewee-docs": { "url": "${MCP_URL}" }
   }
 }`,
 } as const;
@@ -64,12 +63,12 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
     },
     mcp: {
       title: "Connect the MCP endpoint",
-      body: "Point Claude, Cursor or any MCP client at {url} so it can read dewee docs and blog posts while it works.",
-      access: "The endpoint signs you in with OAuth 2.1 or an API key. Access is granted by the dewee team, so ask us if you need it.",
-      tools: "Docs tools: list_docs, get_doc and validate_doc read pages; create_doc and update_doc propose changes as pull requests. Blog posts are read with get_page.",
-      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)" },
-      desktopSteps: "Settings → Connectors → Add custom connector, then paste the URL and sign in.",
-      publicNote: "No access? Any AI tool can read the public index at /llms.txt.",
+      body: "Point Claude, Cursor or any MCP client at {url} so it can search and read the dewee docs while it works. It is public: no sign-in, no key.",
+      access: "Need blog posts, pages or docs edits too? The full endpoint at /mcp signs in with OAuth 2.1 or an API key granted by the dewee team.",
+      tools: "Tools: search_docs finds pages in English or Vietnamese, fetch_doc reads one as Markdown.",
+      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code", cursor: "Cursor: ~/.cursor/mcp.json" },
+      desktopSteps: "Settings → Connectors → Add custom connector, then paste the URL.",
+      publicNote: "Prefer plain files? Any AI tool can read the index at /llms.txt.",
       cta: "Developer guide",
     },
     humans: {
@@ -106,12 +105,12 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
     },
     mcp: {
       title: "Kết nối MCP endpoint",
-      body: "Trỏ Claude, Cursor hay bất kỳ MCP client nào tới {url} để agent đọc tài liệu và bài blog của dewee khi làm việc.",
-      access: "Endpoint đăng nhập bằng OAuth 2.1 hoặc API key. Quyền truy cập do đội dewee cấp, hãy liên hệ nếu bạn cần.",
-      tools: "Công cụ tài liệu: list_docs, get_doc và validate_doc để đọc; create_doc và update_doc đề xuất thay đổi bằng pull request. Bài blog đọc bằng get_page.",
-      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)" },
-      desktopSteps: "Settings → Connectors → Add custom connector, dán URL rồi đăng nhập.",
-      publicNote: "Chưa có quyền? Công cụ AI nào cũng đọc được mục lục công khai tại /llms.txt.",
+      body: "Trỏ Claude, Cursor hay bất kỳ MCP client nào tới {url} để agent tìm và đọc tài liệu dewee khi làm việc. Endpoint công khai: không cần đăng nhập, không cần key.",
+      access: "Cần cả bài blog, trang hay sửa tài liệu? Endpoint đầy đủ /mcp đăng nhập bằng OAuth 2.1 hoặc API key do đội dewee cấp.",
+      tools: "Công cụ: search_docs tìm trang bằng tiếng Anh hoặc tiếng Việt, fetch_doc đọc một trang dạng Markdown.",
+      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code", cursor: "Cursor: ~/.cursor/mcp.json" },
+      desktopSteps: "Settings → Connectors → Add custom connector, rồi dán URL.",
+      publicNote: "Thích file thuần? Công cụ AI nào cũng đọc được mục lục tại /llms.txt.",
       cta: "Hướng dẫn cho developer",
     },
     humans: {
