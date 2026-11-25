@@ -69,6 +69,8 @@ Thiết lập đến từ một file cấu hình JSON và từ biến môi trư�
 
 API key của model provider thường được thêm trong dashboard hoặc console, nơi chúng được lưu ở dạng mã hoá. Gateway cũng đọc `GOCLAW_ANTHROPIC_API_KEY`, `GOCLAW_OPENAI_API_KEY` và `GOCLAW_OPENROUTER_API_KEY` khi khởi động.
 
+Danh sách đầy đủ biến môi trường mà gateway, trình cài đặt và bảng điều khiển đọc, kèm giá trị mặc định và điều kiện đi kèm, có ở trang [Biến môi trường](/docs/runtime/environment-variables).
+
 > [!WARNING]
 > Nếu thiếu `GOCLAW_ENCRYPTION_KEY`, gateway chỉ ghi một cảnh báo vào log và lưu API key của provider cùng các secret khác ở dạng không mã hoá. Hãy đặt khoá trước lần chạy đầu tiên và cất nó cùng bản sao lưu: thiếu khoá này, các secret đã mã hoá trong bản sao lưu sẽ không khôi phục được.
 

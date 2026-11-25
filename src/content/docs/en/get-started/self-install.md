@@ -70,6 +70,8 @@ Agents, providers and skills work without a licence. To connect channels such as
 
 If you put the dashboard behind a reverse proxy, such as nginx on another machine, a proxy container, a Kubernetes ingress or a cloud load balancer, tell dewee which addresses that proxy uses. Set `DEWEE_TRUSTED_PROXY_CIDRS` to a comma-separated list of IP addresses and CIDR ranges, for example `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. With Docker, set it in the shell or an `.env` file next to `docker-compose.yml`. With the standalone binary, add it to `dewee.env` in the install folder. Then restart dewee.
 
+Every other setting in `dewee.env`, and the installer options such as `DEWEE_APP_PORT` and `DEWEE_BIND_ADDR`, are listed in [Environment variables](/docs/runtime/environment-variables).
+
 dewee then takes each visitor's address, and whether they connected over https, from the `X-Forwarded-For` and `X-Forwarded-Proto` headers that proxy sends. It reads those headers from no other client. A proxy on the same machine (`127.0.0.1`) is always trusted. Without the setting, every visitor behind the proxy shares the proxy's address, so one busy visitor can use up sign-in and website chat limits for everyone. List only your proxies, as narrowly as you can, never the networks your visitors come from: a visitor inside a listed range can choose their own address. An invalid entry, or a range that covers every address, stops the dashboard from starting.
 
 ## Minimum requirements

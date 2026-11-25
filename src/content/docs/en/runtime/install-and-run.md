@@ -69,6 +69,8 @@ Settings come from a JSON config file and from environment variables, and the en
 
 Model provider keys are usually added in the dashboard or the console, where they are stored encrypted. `GOCLAW_ANTHROPIC_API_KEY`, `GOCLAW_OPENAI_API_KEY` and `GOCLAW_OPENROUTER_API_KEY` are also read at startup.
 
+For every variable the gateway, the installer and the control panel read, with defaults and dependencies, see [Environment variables](/docs/runtime/environment-variables).
+
 > [!WARNING]
 > Without `GOCLAW_ENCRYPTION_KEY` the gateway only logs a warning and stores provider keys and other secrets unencrypted. Set the key before the first start and store it with your backups: without it, encrypted secrets in a backup cannot be restored.
 
