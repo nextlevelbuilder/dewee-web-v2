@@ -13,10 +13,12 @@ dewee không kèm model riêng. Mỗi workspace kết nối các provider mà b�
 | Nhóm | Provider |
 |---|---|
 | Hãng làm model | Anthropic, OpenAI hoặc bất kỳ endpoint tương thích OpenAI nào, Google Gemini, Google Vertex AI, xAI (Grok), Mistral AI, DeepSeek, Cohere, Perplexity |
-| Nền tảng khu vực và gói coding | DashScope (Qwen), Bailian Coding, Z.ai và Z.ai Coding Plan, BytePlus ModelArk và BytePlus Coding Plan, Kimi Coding (Moonshot), MiniMax |
-| Router và gateway | OpenRouter, Groq, Novita AI, YesScale, Cloudflare Workers AI, Vercel AI Gateway, ClinePass, OpenCode Go |
+| Nền tảng khu vực và gói coding | DashScope (Qwen), Bailian Coding, Alibaba Token Plan, Z.ai và Z.ai Coding Plan, BytePlus ModelArk và BytePlus Coding Plan, Kimi Coding (Moonshot), MiniMax |
+| Router và gateway | OpenRouter, Groq, Novita AI, YesScale, Cloudflare Workers AI, Vercel AI Gateway, Atlas Cloud, ClinePass, OpenCode Go |
 | Chạy nội bộ và tự host | Ollama trên phần cứng của bạn, Ollama Cloud |
 | Gói thuê bao và coding agent | Gói ChatGPT (OAuth), Claude CLI, và các coding agent qua ACP như Claude Code, Codex CLI và Gemini CLI |
+
+Website dewee giới thiệu 22 provider trong số này theo tên. Bản thân runtime chấp nhận 32 loại provider: loại provider là một kiểu kết nối, và một hãng có thể có nhiều hơn một loại. Danh sách nằm ở [Provider, fallback và suy luận](/docs/concepts/providers-and-routing).
 
 Bên dưới, các provider này chạy trên sáu adapter: API gốc của Anthropic, một adapter tương thích OpenAI bao phần lớn danh sách, Claude CLI, backend của gói ChatGPT, ACP cho coding agent, và DashScope. Provider nào nói chuẩn API của OpenAI mà chưa có trong danh sách thì thêm được dưới dạng **OpenAI Compatible** với base URL của nó.
 

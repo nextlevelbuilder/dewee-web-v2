@@ -72,7 +72,7 @@ Use predefined agents for support desks and shared assistants; use open agents w
 - **Tool-result pruning** (opt-in, `contextPruning.mode: "cache-ttl"`). Past 25% of the context, old tool results are trimmed to their start and end; past 50%, large ones are replaced with a placeholder. System messages, the first user message and the last three assistant replies are never pruned.
 - **Mid-loop compaction.** The runtime reserves 20,000 tokens and compacts when history passes 85% of the remaining budget. The model writes a summary within 30 seconds; if it cannot, a deterministic fallback keeps the existing summary, complete tool call groups and the newest messages.
 - **Post-run summary.** After a run, a session with more than 50 messages or more than 75% of the context in use is summarised in the background. The last four messages are kept as they are.
-- **Memory flush.** Before that summary, the agent gets one short turn (at most 5 iterations, 90 seconds) to save durable notes to `memory/YYYY-MM-DD.md`. It is configured under `compaction.memory_flush`. See [Memory and knowledge vault](/docs/concepts/memory-and-knowledge).
+- **Memory flush.** Before that summary, the agent gets one short turn (at most 5 iterations, 90 seconds) to save durable notes to `memory/YYYY-MM-DD.md`. It is configured under `compaction.memory_flush`. That turn can use only the tools the run itself was allowed, so a channel or group tool list limits it too, and a run from a public website chat skips it. See [Memory and knowledge vault](/docs/concepts/memory-and-knowledge).
 
 ## Stopping and watching a run
 

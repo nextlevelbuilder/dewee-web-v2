@@ -1,12 +1,14 @@
 /**
  * Remote MCP server (Streamable HTTP, stateless, JSON responses). Clients POST JSON-RPC 2.0 with
- * `Authorization: Bearer dwk_…`; tools are defined in src/lib/server/mcp/mcp-tools.ts.
+ * `Authorization: Bearer dwk_…` (API key) or an OAuth access token from /oauth/token; tools are defined in src/lib/server/mcp/mcp-tools.ts.
  * There is no server-initiated stream, so GET and DELETE answer 405.
  */
 import type { APIRoute } from "astro";
 import { errorResponse, forbidden, json } from "~/lib/server/api/api-errors";
 import { platformEnv } from "~/lib/server/api/platform-env";
 import { authenticate } from "~/lib/server/auth/request-auth";
+import { siteOrigin } from "~/lib/server/seo/discovery-response";
+import { RESOURCE_METADATA_PATH } from "~/lib/server/auth/oauth-store";
 import { handlePayload, parseError, SUPPORTED_PROTOCOL_VERSIONS } from "~/lib/server/mcp/json-rpc";
 import { MCP_SERVER } from "~/lib/server/mcp/mcp-tools";
 
@@ -36,7 +38,7 @@ export const POST: APIRoute = async (ctx) => {
       return json({ error: { code: "bad_request", message: `Unsupported MCP-Protocol-Version ${version}. Supported: ${SUPPORTED_PROTOCOL_VERSIONS.join(", ")}.` } }, { status: 400 });
     }
 
-    const principal = await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false });
+    const principal = await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false, allowOAuth: true });
 
     if (Number(request.headers.get("content-length") ?? "0") > MAX_BODY_BYTES) {
       return json({ error: { code: "payload_too_large", message: "The request body is too large." } }, { status: 413 });
@@ -55,6 +57,9 @@ export const POST: APIRoute = async (ctx) => {
     if (result === null) return new Response(null, { status: 202, headers: { "cache-control": "no-store" } });
     return json(result);
   } catch (err) {
-    return errorResponse(err);
+    const res = errorResponse(err);
+    // RFC 9728: point OAuth clients (Claude, ChatGPT) at the protected resource metadata.
+    if (res.status === 401) res.headers.set("www-authenticate", `Bearer realm="dewee.sh", resource_metadata="${siteOrigin(platformEnv(), url)}${RESOURCE_METADATA_PATH}"`);
+    return res;
   }
 };

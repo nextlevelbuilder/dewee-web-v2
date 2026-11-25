@@ -22,6 +22,7 @@ export type InstallPage = {
     copy: { copy: string; copied: string; failed: string };
     routes: Record<InstallRouteId, { tab: string; title: string; body: string; label: string }>;
   };
+  agent: { eyebrow: string; title: string; lede: string; label: string; note: string };
   requirements: { title: string; items: { label: string; value: string }[] };
   steps: { eyebrow: string; title: string; lede: string; label: string; items: { title: string; body: string }[] };
   faq: { eyebrow: string; title: string; items: Faq[] };
@@ -70,6 +71,13 @@ export const INSTALL: Bi<InstallPage> = {
         },
       },
     },
+    agent: {
+      eyebrow: "Or let your agent do it",
+      title: "Hand the install to *your coding agent*.",
+      lede: "Paste this prompt into Claude Code, Codex, Cursor or any coding agent with a terminal. It checks your machine, picks the right method and installs dewee, and it stops to ask before sudo, anything destructive, exposing dewee to the internet or touching a secret.",
+      label: "Prompt for your coding agent",
+      note: "The prompt uses the same commands as the tabs above. Your agent never sees your API keys or licence: you add those in the dashboard yourself.",
+    },
     requirements: {
       title: "Minimum requirements",
       items: [
@@ -86,7 +94,7 @@ export const INSTALL: Bi<InstallPage> = {
       items: [
         { title: "Install", body: "Run the command for your platform above." },
         { title: "Open the dashboard", body: "Go to {url} in your browser. This is your dewee dashboard, running on your machine." },
-        { title: "Onboard", body: "Create the owner account, set up your workspace, add an LLM provider with your own API key and create your first agent. The dashboard guides you through each step." },
+        { title: "Onboard", body: "Create the owner account and say what you want help with. Guided setup connects an LLM provider with your own API key, checks that the model answers and gets your assistant ready. Then a fresh chat opens with suggested first tasks. Channels and other connections are optional and can wait." },
         { title: "Get a licence key", body: "Agents, providers and skills work without one. To connect Zalo, Telegram, Discord, Slack and other channels, buy a licence for {price} a year for each workspace. With Early Access, the first year is {discounted} for the first {total} licences, until 23:59 on {date}, Vietnam time (GMT+7)." },
         { title: "Paste the key", body: "Paste the licence key into the dashboard to activate it, then connect your first channel." },
       ],
@@ -151,6 +159,13 @@ export const INSTALL: Bi<InstallPage> = {
         },
       },
     },
+    agent: {
+      eyebrow: "Hoặc để agent làm giúp",
+      title: "Giao việc cài đặt cho *coding agent của bạn*.",
+      lede: "Dán prompt này vào Claude Code, Codex, Cursor hoặc bất kỳ coding agent nào có terminal. Agent sẽ dò máy của bạn, chọn cách cài phù hợp và cài dewee, và sẽ dừng lại hỏi trước khi dùng sudo, làm việc có thể mất dữ liệu, mở dewee ra internet hay đụng tới bí mật.",
+      label: "Prompt cho coding agent",
+      note: "Prompt dùng đúng các lệnh ở các thẻ phía trên. Agent không bao giờ thấy API key hay license của bạn: bạn tự thêm chúng trên bảng điều khiển.",
+    },
     requirements: {
       title: "Cấu hình tối thiểu",
       items: [
@@ -167,7 +182,7 @@ export const INSTALL: Bi<InstallPage> = {
       items: [
         { title: "Cài đặt", body: "Chạy lệnh dành cho nền tảng của bạn ở phía trên." },
         { title: "Mở bảng điều khiển", body: "Truy cập {url} trên trình duyệt. Đây là bảng điều khiển dewee, chạy ngay trên máy của bạn." },
-        { title: "Thiết lập ban đầu", body: "Tạo tài khoản chủ sở hữu, thiết lập workspace, thêm nhà cung cấp LLM bằng API key của bạn và tạo agent đầu tiên. Bảng điều khiển hướng dẫn bạn từng bước." },
+        { title: "Thiết lập ban đầu", body: "Tạo tài khoản chủ sở hữu và cho biết bạn cần hỗ trợ việc gì. Phần thiết lập có hướng dẫn sẽ kết nối nhà cung cấp LLM bằng API key của bạn, kiểm tra model trả lời được và chuẩn bị sẵn trợ lý. Sau đó một cuộc chat mới mở ra với vài việc gợi ý để bắt đầu. Kênh chat và các kết nối khác là tùy chọn, có thể làm sau." },
         { title: "Mua license key", body: "Agent, nhà cung cấp và skill đều dùng được khi chưa có license. Để kết nối Zalo, Telegram, Discord, Slack và các kênh khác, bạn cần license {price} mỗi năm cho mỗi workspace. Với Early Access, năm đầu chỉ {discounted} cho {total} license đầu tiên, đến 23:59 ngày {date} (giờ Việt Nam)." },
         { title: "Dán key", body: "Dán license key vào bảng điều khiển để kích hoạt, rồi kết nối kênh chat đầu tiên." },
       ],

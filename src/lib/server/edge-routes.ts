@@ -2,23 +2,24 @@
  * Requests the worker answers before Astro renders anything:
  *  - www.dewee.sh → dewee.sh (301, path and query kept)
  *  - brand links (/discord, /facebook, /x, /github) → 302 to the social profile
- *  - /api/chat/session → a signed chat session (Turnstile + per-IP limit), see chat-session-route
- *  - /api/chat/ws → the visitor's ChatRoom Durable Object (WebSocket, same origin, signed session)
+ *  - /api/dewee/* → the website chat widget backend (CCP webchat ingress), see webchat/webchat-backend
+ *  - /api/chat/lead → a lead the visitor confirmed in the chat, see webchat/webchat-lead
  *  - /ingest/* → PostHog (first-party analytics proxy), see posthog-proxy
  *  - /media/<key> → R2 bucket MEDIA
  *  - <any page>.md → the page's Markdown twin
+ *  - /oauth/token → MCP OAuth token endpoint, see auth/oauth-token-route
  *  - /_seo/* (build manifest for the discovery routes) → 404
  */
 import { BRAND_REDIRECTS } from "../../content/site";
-import { chatSessionRoute, sameOrigin, SID_RE } from "./chat-session-route";
-import { clientIp, hashIp, verifyChatSession } from "./chat-session-token";
-import { cleanCountry, readChatContext, writeChatContext } from "../chat-session-context";
+import { WEBCHAT_PREFIX, webchatRoute } from "./webchat/webchat-backend";
+import { handleChatLead } from "./webchat/webchat-lead";
 import { markdownTwin } from "./markdown-twin";
 import { POSTHOG_PROXY_PREFIX, proxyPosthog } from "./posthog-proxy";
+import { handleOAuthToken, OAUTH_TOKEN_PATH } from "./auth/oauth-token-route";
 
 type Render = (req: Request) => Promise<Response>;
 
-export async function handleEdge(request: Request, env: Env, _ctx: ExecutionContext, render: Render): Promise<Response | null> {
+export async function handleEdge(request: Request, env: Env, ctx: ExecutionContext, render: Render): Promise<Response | null> {
   const url = new URL(request.url);
 
   if (url.hostname.startsWith("www.")) {
@@ -36,8 +37,10 @@ export async function handleEdge(request: Request, env: Env, _ctx: ExecutionCont
     return withSecurityHeaders(new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } }), env);
   }
 
-  if (url.pathname === "/api/chat/session") return withSecurityHeaders(await chatSessionRoute(request, env, url), env);
-  if (url.pathname === "/api/chat/ws") return chatSocket(request, env, url);
+  if (url.pathname === OAUTH_TOKEN_PATH) return withSecurityHeaders(await handleOAuthToken(request, env.DB), env);
+
+  if (url.pathname.startsWith(WEBCHAT_PREFIX)) return webchatRoute(request, env);
+  if (url.pathname === "/api/chat/lead") return withSecurityHeaders(await handleChatLead(request, env, ctx), env);
 
   if (url.pathname.startsWith(`${POSTHOG_PROXY_PREFIX}/`)) return proxyPosthog(request);
 
@@ -50,39 +53,6 @@ export async function handleEdge(request: Request, env: Env, _ctx: ExecutionCont
   }
 
   return null;
-}
-
-async function chatSocket(request: Request, env: Env, url: URL): Promise<Response> {
-  if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
-    return new Response("Expected a WebSocket upgrade", { status: 426 });
-  }
-  // Browsers always send Origin; a missing one, "null" (sandboxed frames, file://) or another host is refused.
-  if (!sameOrigin(request, url)) return new Response("Forbidden origin", { status: 403 });
-  const sid = url.searchParams.get("sid") ?? "";
-  if (!SID_RE.test(sid)) return new Response("Bad session id", { status: 400 });
-  // With CHAT_SESSION_SECRET set, the socket needs a session signed for this sid and visitor IP.
-  let ipHash = "";
-  if (env.CHAT_SESSION_SECRET) {
-    ipHash = await hashIp(env.CHAT_SESSION_SECRET, clientIp(request));
-    const token = url.searchParams.get("token") ?? "";
-    if (!(await verifyChatSession(env.CHAT_SESSION_SECRET, token, sid, ipHash))) return new Response("Chat session expired", { status: 401 });
-  }
-  const stub = env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName(sid));
-  const forward = new URL("https://chat.internal/ws");
-  forward.searchParams.set("sid", sid);
-  forward.searchParams.set("locale", url.searchParams.get("locale") === "vi" ? "vi" : "en");
-  forward.searchParams.set("role", "visitor");
-  if (ipHash) forward.searchParams.set("ih", ipHash);
-  // Visit context from the widget is untrusted: re-validated here; the country comes from Cloudflare.
-  const country = (request as Request & { cf?: { country?: unknown } }).cf?.country;
-  const context = readChatContext(url.searchParams, siteHost(env));
-  writeChatContext(forward.searchParams, { ...context, country: cleanCountry(typeof country === "string" ? country : null) });
-  return stub.fetch(new Request(forward, request));
-}
-
-/** The site's apex host, so same-site referrers are not counted as sources. */
-function siteHost(env: Env): string | undefined {
-  return URL.parse(env.SITE_URL)?.hostname.replace(/^(www|staging)\./, "");
 }
 
 async function serveMedia(request: Request, env: Env, key: string): Promise<Response> {

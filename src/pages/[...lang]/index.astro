@@ -8,7 +8,7 @@
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
 import { SITE } from "~/content/site";
-import { HOME, HOME_UI, HOME_USE_CASE_SLUGS, HOME_WORKFLOW, HOME_WORKFLOW_ANCHOR } from "~/content/pages/home";
+import { HOME, HOME_H1_CATEGORY, HOME_UI, HOME_USE_CASE_SLUGS, HOME_WORKFLOW, HOME_WORKFLOW_ANCHOR } from "~/content/pages/home";
 import { useCaseBySlug, type UseCase } from "~/content/use-cases";
 import { CHANNELS, PROVIDERS } from "~/content/integrations";
 import { ccpShotProps } from "~/content/ccp-screens";
@@ -19,6 +19,7 @@ import Icon from "~/components/ui/Icon.astro";
 import type { IconName } from "~/components/ui/icon-paths";
 import SectionHead from "~/components/blocks/SectionHead.astro";
 import HomeHero from "~/components/blocks/HomeHero.astro";
+import { H1_TEST_ENABLED } from "~/lib/hero-h1-experiment";
 import MultiplayerWorkflow from "~/components/blocks/MultiplayerWorkflow.astro";
 import FeatureGrid from "~/components/blocks/FeatureGrid.astro";
 import TocIndex from "~/components/blocks/TocIndex.astro";
@@ -69,6 +70,7 @@ const shotSizes = "(min-width: 1200px) 34rem, (min-width: 901px) 45vw, 94vw";
   <HomeHero
     eyebrow={t.hero.eyebrow}
     title={t.hero.title}
+    altTitle={H1_TEST_ENABLED ? HOME_H1_CATEGORY[locale] : undefined}
     lede={t.hero.lede}
     primary={{ label: t.hero.primary, href: startHref }}
     secondary={{ label: t.hero.secondary, href: `#${HOME_WORKFLOW_ANCHOR}` }}

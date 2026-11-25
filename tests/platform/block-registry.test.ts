@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isSafeHref, isSafeImageSrc } from "../../src/lib/blocks/block-fields";
-import { BLOCK_TYPES, BLOCKS, blockJsonSchema, listBlocks, validateBlocks } from "../../src/lib/blocks/registry";
+import { BLOCK_TYPES, BLOCKS, blockContexts, blockJsonSchema, listBlocks, validateBlocks } from "../../src/lib/blocks/registry";
 import { markdownHeadings, readingMinutes, renderMarkdown } from "../../src/lib/blocks/safe-markdown";
 
 describe("block registry", () => {
@@ -14,7 +14,8 @@ describe("block registry", () => {
 
   it("every example validates against its own schema", () => {
     for (const def of BLOCKS) {
-      const res = validateBlocks([{ type: def.type, props: def.example }]);
+      const context = blockContexts(def)[0];
+      const res = validateBlocks([{ ...(def.requiresId ? { id: "example" } : {}), type: def.type, props: def.example }], { context });
       expect(res.ok, `${def.type}: ${JSON.stringify(!res.ok && res.issues)}`).toBe(true);
     }
   });

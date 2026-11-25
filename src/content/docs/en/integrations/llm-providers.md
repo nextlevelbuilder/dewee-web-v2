@@ -13,10 +13,12 @@ dewee does not ship its own model. Each workspace connects the providers it alre
 | Family | Providers |
 |---|---|
 | Model makers | Anthropic, OpenAI or any OpenAI-compatible endpoint, Google Gemini, Google Vertex AI, xAI (Grok), Mistral AI, DeepSeek, Cohere, Perplexity |
-| Regional platforms and coding plans | DashScope (Qwen), Bailian Coding, Z.ai and Z.ai Coding Plan, BytePlus ModelArk and BytePlus Coding Plan, Kimi Coding (Moonshot), MiniMax |
-| Routers and gateways | OpenRouter, Groq, Novita AI, YesScale, Cloudflare Workers AI, Vercel AI Gateway, ClinePass, OpenCode Go |
+| Regional platforms and coding plans | DashScope (Qwen), Bailian Coding, Alibaba Token Plan, Z.ai and Z.ai Coding Plan, BytePlus ModelArk and BytePlus Coding Plan, Kimi Coding (Moonshot), MiniMax |
+| Routers and gateways | OpenRouter, Groq, Novita AI, YesScale, Cloudflare Workers AI, Vercel AI Gateway, Atlas Cloud, ClinePass, OpenCode Go |
 | Local and self-hosted | Ollama on your own hardware, Ollama Cloud |
 | Subscriptions and coding agents | ChatGPT subscription (OAuth), Claude CLI, and ACP coding agents such as Claude Code, Codex CLI and Gemini CLI |
+
+The dewee website features 22 of these providers by name. The runtime itself accepts 32 provider types: a provider type is a kind of connection, and one vendor can have more than one. The list is in [Providers, fallback and reasoning](/docs/concepts/providers-and-routing).
 
 Under the hood these run on six adapters: Anthropic's native API, an OpenAI-compatible adapter that covers most of the list, the Claude CLI, the ChatGPT subscription backend, ACP for coding agents, and DashScope. A provider that speaks the OpenAI API but is not listed can be added as **OpenAI Compatible** with its base URL.
 

@@ -21,6 +21,12 @@ Without the encryption key, the gateway logs a warning at startup and stores the
 
 The HTTP API never returns a stored provider key; it shows `***` instead. API keys and webhook secrets are shown once, when you create them. If you lose one, create a new one and revoke the old one.
 
+### When an agent asks you for a credential
+
+An agent you allowed to request credentials never asks you to paste a key into the chat. In the console chat it shows a form; on a chat app it sends a single-use link to a form in the console, which works for 24 hours and only for the person who asked. The value goes straight to encrypted storage, and the agent only learns whether it was saved.
+
+If you ask from a group or a thread, the link is sent to you in a direct message, never to the group; the group only hears that a private message was sent. This works on Telegram, Discord and Slack. If the bot cannot message you privately (for example, you never started a chat with it, or the channel has no direct messages), the request is cancelled and the link revoked, and the agent asks you to continue in a direct chat or in the console. Scheduled and other automatic runs never send a credential link on a chat app.
+
 ## Workspace roles in the console
 
 The console has three built-in roles and any number of custom ones.

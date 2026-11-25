@@ -2,7 +2,7 @@
  * The dewee capability catalogue, EN + VI. The release list lives in src/content/releases.ts and is
  * re-exported here, so pages and tests keep importing both from one module.
  *
- * Sources (verified 2026-10-19): GitHub release notes v3.28.0 → v3.40.0 (stable only), and the dewee
+ * Sources (verified 2026-10-29): GitHub release notes v3.28.0 → v3.43.0 (stable only), and the dewee
  * repo docs: 01-agent-loop, 03-tools-system, 05-channels-messaging, 07-bootstrap-skills-memory,
  * 08-scheduling-cron, 09-security, 10-tracing-observability, 11-agent-teams, 23-multi-tenant-architecture,
  * 24-knowledge-vault, 25-workflows, ccp-usage-tasks-approvals.
@@ -122,13 +122,13 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
     id: "models",
     icon: "cpu",
     title: { en: "Models & providers", vi: "Model & nhà cung cấp" },
-    lede: { en: `${FACTS.providers} providers, one setting to switch, and a plan B when one fails.`, vi: `${FACTS.providers} nhà cung cấp, đổi bằng một thiết lập, và luôn có phương án B khi một hãng trục trặc.` },
+    lede: { en: `${FACTS.providers} featured providers, one setting to switch, and a plan B when one fails.`, vi: `${FACTS.providers} nhà cung cấp nổi bật, đổi bằng một thiết lập, và luôn có phương án B khi một hãng trục trặc.` },
     items: [
       {
-        title: { en: `${FACTS.providers} model providers`, vi: `${FACTS.providers} nhà cung cấp model` },
+        title: { en: `${FACTS.providers} featured model providers`, vi: `${FACTS.providers} nhà cung cấp model nổi bật` },
         body: {
-          en: "Model labs, cloud gateways, subscriptions you already pay for, and local models on Ollama.",
-          vi: "Các hãng model, cổng cloud, gói subscription bạn đang trả tiền, và model chạy local qua Ollama.",
+          en: `Model labs, cloud gateways, subscriptions you already pay for, and local models on Ollama. The runtime accepts ${FACTS.providerTypes} provider types in all.`,
+          vi: `Các hãng model, cổng cloud, gói subscription bạn đang trả tiền, và model chạy local qua Ollama. Runtime chấp nhận tất cả ${FACTS.providerTypes} loại provider.`,
         },
       },
       {
@@ -154,7 +154,7 @@ export const CAPABILITY_GROUPS: CapabilityGroup[] = [
       },
       {
         title: { en: "Vercel AI Gateway", vi: "Vercel AI Gateway" },
-        body: { en: "One more gateway, plus all 27 Workers AI text models.", vi: "Thêm một cổng nữa, cùng đủ 27 model text của Workers AI." },
+        body: { en: "One more gateway, plus the current Workers AI text models.", vi: "Thêm một cổng nữa, cùng các model text hiện hành của Workers AI." },
         since: "3.31",
       },
       {

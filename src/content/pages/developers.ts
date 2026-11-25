@@ -3,7 +3,7 @@
  * Markdown twins). Every fact here is read from the code that implements it:
  * src/lib/server/api/* (routes, errors, If-Match, Idempotency-Key, pagination, media limits),
  * src/lib/server/auth/api-key-format.ts (key format and scopes), src/pages/mcp.ts and
- * src/lib/server/mcp/mcp-tools.ts (16 tools), src/components/webmcp/* (browser tools),
+ * src/lib/server/mcp/mcp-tools.ts (29 tools), src/components/webmcp/* (browser tools),
  * cli/ (the dewee-web CLI) and SeoHead.astro (the `.md` twin and llms.txt links).
  * Code samples are shared by both languages; only the words around them are translated.
  */
@@ -123,11 +123,19 @@ locale: en
 tags: [release, agents]
 author: duy
 description: What shipped this week, in five minutes.
+blocks: ./launch-week.blocks.json   # widgets, each with an id
 ---
 
 ## What shipped
 
-Markdown body. Raw HTML is shown as text, never rendered.`,
+Markdown body. Raw HTML is shown as text, never rendered.
+
+::widget{id="demo-video"}
+
+A widget line places the block with that id: gallery,
+video, YouTube or Vimeo, social card, code, chart,
+Mermaid diagram, comparison table, before/after,
+poll, quiz, survey, sandboxed demo, callout, steps.`,
   claudeCode: `claude mcp add --transport http dewee-web https://dewee.sh/mcp \\
   --header "Authorization: Bearer ${KEY}"`,
   cursor: `{
@@ -149,7 +157,7 @@ Markdown body. Raw HTML is shown as text, never rendered.`,
 }`,
 };
 
-/** The 16 MCP tool names, in the order tools/list returns them. */
+/** The 29 MCP tool names, in the order tools/list returns them. */
 const MCP_NAMES = [
   "list_blocks",
   "get_block_schema",
@@ -159,20 +167,33 @@ const MCP_NAMES = [
   "update_page",
   "publish_page",
   "unpublish_page",
+  "archive_page",
+  "validate_page",
+  "delete_page",
   "list_posts",
   "create_post",
   "update_post",
   "publish_post",
+  "unpublish_post",
+  "archive_post",
+  "validate_post",
+  "delete_post",
   "upload_media",
   "list_leads",
   "list_revisions",
+  "get_revision",
   "restore_revision",
+  "list_docs",
+  "get_doc",
+  "validate_doc",
+  "create_doc",
+  "update_doc",
 ] as const;
 
 type McpName = (typeof MCP_NAMES)[number];
 const mcpTools = (body: Record<McpName, string>): DevTool[] => MCP_NAMES.map((name) => ({ name, body: body[name] }));
 
-const SCOPES = ["pages:read", "pages:write", "posts:read", "posts:write", "media:write", "leads:read"] as const;
+const SCOPES = ["pages:read", "pages:write", "posts:read", "posts:write", "media:write", "leads:read", "docs:read", "docs:write"] as const;
 type Scope = (typeof SCOPES)[number];
 const scopeRows = (body: Record<Scope, string>): string[][] => SCOPES.map((s) => [s, body[s]]);
 
@@ -199,7 +220,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
       items: [
         { title: "REST API", meta: "/api/v1 · OpenAPI 3.1", href: "#api", icon: "braces" },
         { title: "CLI", meta: "dewee-web · Node 22+", href: "#cli", icon: "square-terminal" },
-        { title: "MCP server", meta: "dewee.sh/mcp · 16 tools", href: "#mcp", icon: "plug" },
+        { title: "MCP server", meta: "dewee.sh/mcp · 29 tools", href: "#mcp", icon: "plug" },
         { title: "WebMCP", meta: "tools in the browser tab", href: "#webmcp", icon: "mouse-pointer-click" },
         { title: "Markdown and llms.txt", meta: "any page as .md", href: "#markdown", icon: "file-text" },
       ],
@@ -260,6 +281,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
           "posts:write": "Create, edit, publish, unpublish, archive, delete and restore posts",
           "media:write": "Upload PNG, JPEG, WebP, GIF or AVIF images up to 10 MB",
           "leads:read": "Read messages from the contact and partner forms",
+          "docs:read": "Read the /docs pages from Git and check a proposed change",
+          "docs:write": "Propose docs changes as a GitHub pull request into dev; never merges or publishes",
         }),
         note: "No key needed for GET /api/v1/blocks, GET /api/v1/blocks/{type} and /api/v1/openapi.json.",
       },
@@ -310,8 +333,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         body: "For clients that only launch local servers. The CLI bridges stdio to the remote server, so nothing else runs on your machine.",
         snippets: [{ label: "Any client that reads mcpServers", code: CODE.stdio }],
       },
-      toolsTitle: "The 16 tools",
-      toolsNote: "get_page, list_revisions and restore_revision work on blog posts too: pass kind: post.",
+      toolsTitle: "The 29 tools",
+      toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed.",
       tools: mcpTools({
         list_pages: "List or search custom pages",
         get_page: "Read one page or post in full",
@@ -319,16 +342,29 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         update_page: "Change a page, with version checks",
         publish_page: "Make a page public",
         unpublish_page: "Move a page back to draft",
+        archive_page: "Take a page down and mark it archived",
+        validate_page: "Check a page write without saving it",
+        delete_page: "Delete a page for good (prefer archive)",
         list_posts: "List or search blog posts",
-        create_post: "Write a post in Markdown",
+        create_post: "Write a post in Markdown, with inline widgets",
         update_post: "Change a post, with version checks",
         publish_post: "Make a post public",
+        unpublish_post: "Move a post back to draft",
+        archive_post: "Take a post down and mark it archived",
+        validate_post: "Check a post, its widgets and blocks, without saving",
+        delete_post: "Delete a post for good (prefer archive)",
         list_blocks: "Every block type with an example",
         get_block_schema: "The JSON Schema of one block",
         upload_media: "Upload an image, get its URL",
         list_leads: "Read contact and partner messages",
         list_revisions: "The saved history of a page or post",
+        get_revision: "Read one saved version in full",
         restore_revision: "Bring back an earlier version",
+        list_docs: "List the docs pages in Git, with blob SHAs",
+        get_doc: "Read a docs page in EN and VI from Git",
+        validate_doc: "Check a docs change and preview its diff",
+        create_doc: "Propose a new EN + VI docs page as a pull request",
+        update_doc: "Propose a docs edit as a pull request, with SHA checks",
       }),
     },
     webmcp: {
@@ -398,7 +434,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
       items: [
         { title: "REST API", meta: "/api/v1 · OpenAPI 3.1", href: "#api", icon: "braces" },
         { title: "CLI", meta: "dewee-web · Node 22+", href: "#cli", icon: "square-terminal" },
-        { title: "MCP server", meta: "dewee.sh/mcp · 16 công cụ", href: "#mcp", icon: "plug" },
+        { title: "MCP server", meta: "dewee.sh/mcp · 29 công cụ", href: "#mcp", icon: "plug" },
         { title: "WebMCP", meta: "công cụ ngay trong tab", href: "#webmcp", icon: "mouse-pointer-click" },
         { title: "Markdown và llms.txt", meta: "trang nào cũng có .md", href: "#markdown", icon: "file-text" },
       ],
@@ -459,6 +495,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
           "posts:write": "Tạo, sửa, xuất bản, gỡ xuất bản, lưu trữ, xoá và khôi phục bài viết",
           "media:write": "Upload ảnh PNG, JPEG, WebP, GIF hoặc AVIF, tối đa 10 MB",
           "leads:read": "Đọc tin nhắn từ form liên hệ và form đối tác",
+          "docs:read": "Đọc các trang /docs từ Git và kiểm tra một thay đổi đề xuất",
+          "docs:write": "Đề xuất thay đổi docs bằng pull request GitHub vào dev; không bao giờ merge hay xuất bản",
         }),
         note: "Không cần key với GET /api/v1/blocks, GET /api/v1/blocks/{type} và /api/v1/openapi.json.",
       },
@@ -509,8 +547,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         body: "Cho các client chỉ khởi chạy server cục bộ. CLI làm cầu nối stdio tới server từ xa, nên máy bạn không phải chạy thêm gì.",
         snippets: [{ label: "Mọi client đọc cấu hình mcpServers", code: CODE.stdio }],
       },
-      toolsTitle: "16 công cụ",
-      toolsNote: "get_page, list_revisions và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post.",
+      toolsTitle: "29 công cụ",
+      toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy.",
       tools: mcpTools({
         list_pages: "Liệt kê hoặc tìm trang tuỳ chỉnh",
         get_page: "Đọc đầy đủ một trang hoặc bài viết",
@@ -518,16 +556,29 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         update_page: "Sửa trang, có kiểm tra version",
         publish_page: "Xuất bản trang",
         unpublish_page: "Đưa trang về bản nháp",
+        archive_page: "Gỡ trang xuống và đánh dấu lưu trữ",
+        validate_page: "Kiểm tra trang trước khi lưu",
+        delete_page: "Xoá hẳn một trang (nên lưu trữ thay vì xoá)",
         list_posts: "Liệt kê hoặc tìm bài blog",
-        create_post: "Viết bài bằng Markdown",
+        create_post: "Viết bài bằng Markdown, kèm widget giữa bài",
         update_post: "Sửa bài, có kiểm tra version",
         publish_post: "Xuất bản bài viết",
+        unpublish_post: "Đưa bài viết về bản nháp",
+        archive_post: "Gỡ bài viết xuống và đánh dấu lưu trữ",
+        validate_post: "Kiểm tra bài, widget và block mà không lưu",
+        delete_post: "Xoá hẳn một bài viết (nên lưu trữ thay vì xoá)",
         list_blocks: "Mọi loại block, kèm ví dụ",
         get_block_schema: "JSON Schema của một block",
         upload_media: "Upload ảnh, nhận lại URL",
         list_leads: "Đọc tin nhắn liên hệ và đối tác",
         list_revisions: "Lịch sử các bản đã lưu",
+        get_revision: "Đọc đầy đủ một bản đã lưu",
         restore_revision: "Khôi phục một version cũ",
+        list_docs: "Liệt kê các trang docs trong Git, kèm blob SHA",
+        get_doc: "Đọc một trang docs bản EN và VI từ Git",
+        validate_doc: "Kiểm tra một thay đổi docs và xem trước diff",
+        create_doc: "Đề xuất trang docs mới (EN + VI) bằng pull request",
+        update_doc: "Đề xuất sửa docs bằng pull request, có kiểm tra SHA",
       }),
     },
     webmcp: {

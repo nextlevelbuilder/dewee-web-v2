@@ -8,18 +8,22 @@
  *   part="body": the <noscript> fallback, right after <body>
  * Named clicks reach the container as dataLayer events, so GTM tags (still bound by Consent Mode)
  * can use them: `hero_cta_clicked` {cta, locale} from `data-hero-cta`, and `app_cta_clicked`
- * {location, locale} for any link into app.dewee.sh.
+ * {location, locale} for any link into app.dewee.sh. Both add `h1_variant` while the homepage H1
+ * experiment enrolls the visitor (docs/experiments/homepage-h1.md); consent gating is the
+ * experiment's own, so the key is absent otherwise.
  */
 import { SITE } from "~/content/site";
+import { H1_VARIANT_DATASET_KEY } from "~/lib/hero-h1-experiment";
 interface Props { part: "head" | "body" }
 const { part } = Astro.props;
 const id = SITE.gtmId;
 const appHost = new URL(SITE.appUrl).hostname;
+const variantKey = H1_VARIANT_DATASET_KEY;
 const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
 ---
 
 {enabled && part === "head" && (
-  <script is:inline define:vars={{ id, appHost }}>
+  <script is:inline define:vars={{ id, appHost, variantKey }}>
     window.dataLayer = window.dataLayer || [];
     // Global so the cookie notice can send the consent update later.
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
@@ -38,13 +42,20 @@ const enabled = (Astro.site?.hostname ?? "") === SITE.domain;
       var link = target && target.closest("a[href]");
       if (!link) return;
       var locale = document.documentElement.lang || "en";
+      var h1Variant = document.documentElement.dataset[variantKey];
       var heroCta = link.getAttribute("data-hero-cta");
-      if (heroCta === "primary" || heroCta === "secondary") window.dataLayer.push({ event: "hero_cta_clicked", cta: heroCta, locale: locale });
+      if (heroCta === "primary" || heroCta === "secondary") {
+        var heroEvent = { event: "hero_cta_clicked", cta: heroCta, locale: locale };
+        if (h1Variant) heroEvent.h1_variant = h1Variant;
+        window.dataLayer.push(heroEvent);
+      }
       var url;
       try { url = new URL(link.href, location.href); } catch (e) { return; }
       if (url.hostname === appHost) {
         var where = link.closest("header") ? "nav" : link.closest("footer") ? "footer" : (link.closest("section") || {}).id || "main";
-        window.dataLayer.push({ event: "app_cta_clicked", location: where, locale: locale });
+        var appEvent = { event: "app_cta_clicked", location: where, locale: locale };
+        if (h1Variant) appEvent.h1_variant = h1Variant;
+        window.dataLayer.push(appEvent);
       }
     }, { capture: true });
   </script>

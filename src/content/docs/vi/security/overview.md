@@ -59,7 +59,7 @@ Mọi tin nhắn đến được kiểm tra với sáu mẫu prompt injection, n
 
 - **Nhóm lệnh shell bị chặn** gồm bảy loại: thao tác phá huỷ file và ổ đĩa, lệnh hệ thống, fork bomb, thực thi mã từ xa như `curl | sh`, reverse shell và eval injection.
 - **Bảo vệ đường dẫn** không cho tool ra khỏi workspace của agent.
-- **Chống SSRF** chặn địa chỉ nội bộ, loopback, link-local và metadata, cố định kết quả DNS và kiểm tra lại mọi lần chuyển hướng.
+- **Chống SSRF** chặn địa chỉ nội bộ, loopback, link-local, metadata và các dải dành riêng, kể cả địa chỉ IPv4 nằm bên trong địa chỉ IPv6 NAT64 hoặc 6to4. Cơ chế này cũng cố định kết quả DNS và kiểm tra lại mọi lần chuyển hướng.
 - **Phê duyệt lệnh** có thể giữ lệnh lại cho tới khi một người phê duyệt.
 
 ### Output
