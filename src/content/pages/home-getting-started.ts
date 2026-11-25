@@ -22,8 +22,6 @@ export const MCP_SNIPPETS = {
     "dewee-web": { "url": "${MCP_URL}" }
   }
 }`,
-  apiKey: `claude mcp add --transport http dewee-web ${MCP_URL} \\
-  --header "Authorization: Bearer <your API key>"`,
 } as const;
 
 export type GettingStartedCopy = {
@@ -34,7 +32,7 @@ export type GettingStartedCopy = {
   copy: { copy: string; copied: string; failed: string };
   saas: { title: string; body: string; steps: string[]; data: string; legal: string; terms: string; privacy: string; cta: string };
   install: { title: string; body: string; scriptLabel: string; agentTitle: string; agentBody: string; agentLabel: string; cta: string };
-  mcp: { title: string; body: string; access: string; tools: string; snippets: { claudeDesktop: string; claudeCode: string; cursor: string; apiKey: string }; desktopSteps: string; publicNote: string; cta: string };
+  mcp: { title: string; body: string; access: string; tools: string; snippets: { claudeDesktop: string; claudeCode: string; cursor: string }; desktopSteps: string; publicNote: string; cta: string };
   humans: { title: string; body: string; docs: string; blog: string };
 };
 
@@ -69,7 +67,7 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
       body: "Point Claude, Cursor or any MCP client at {url} so it can read dewee docs and blog posts while it works.",
       access: "The endpoint signs you in with OAuth 2.1 or an API key. Access is granted by the dewee team, so ask us if you need it.",
       tools: "Docs tools: list_docs, get_doc and validate_doc read pages; create_doc and update_doc propose changes as pull requests. Blog posts are read with get_page.",
-      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)", apiKey: "With an API key" },
+      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)" },
       desktopSteps: "Settings → Connectors → Add custom connector, then paste the URL and sign in.",
       publicNote: "No access? Any AI tool can read the public index at /llms.txt.",
       cta: "Developer guide",
@@ -111,7 +109,7 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
       body: "Trỏ Claude, Cursor hay bất kỳ MCP client nào tới {url} để agent đọc tài liệu và bài blog của dewee khi làm việc.",
       access: "Endpoint đăng nhập bằng OAuth 2.1 hoặc API key. Quyền truy cập do đội dewee cấp, hãy liên hệ nếu bạn cần.",
       tools: "Công cụ tài liệu: list_docs, get_doc và validate_doc để đọc; create_doc và update_doc đề xuất thay đổi bằng pull request. Bài blog đọc bằng get_page.",
-      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)", apiKey: "Dùng API key" },
+      snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code (OAuth)", cursor: "Cursor: ~/.cursor/mcp.json (OAuth)" },
       desktopSteps: "Settings → Connectors → Add custom connector, dán URL rồi đăng nhập.",
       publicNote: "Chưa có quyền? Công cụ AI nào cũng đọc được mục lục công khai tại /llms.txt.",
       cta: "Hướng dẫn cho developer",
