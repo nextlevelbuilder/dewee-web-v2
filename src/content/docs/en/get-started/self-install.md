@@ -63,9 +63,6 @@ The first visit walks you through onboarding:
 
 Agents, providers and skills work without a licence. To connect channels such as Zalo, Telegram, Discord or Slack, you need a dewee licence key for that workspace, which costs $500 per year; each workspace needs its own. Once you have the key, paste it into the dashboard to activate it; channels then become available to connect. [Licence activation](/docs/runtime/licence) explains what the key does.
 
-> [!TIP]
-> Early Access: the first 50 licences get 50% off the first year, $250 instead of $500, until 23:59 on 15 October 2026, Vietnam time (GMT+7). See [pricing](/pricing).
-
 ## Behind a reverse proxy
 
 If you put the dashboard behind a reverse proxy, such as nginx on another machine, a proxy container, a Kubernetes ingress or a cloud load balancer, tell dewee which addresses that proxy uses. Set `DEWEE_TRUSTED_PROXY_CIDRS` to a comma-separated list of IP addresses and CIDR ranges, for example `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. With Docker, set it in the shell or an `.env` file next to `docker-compose.yml`. With the standalone binary, add it to `dewee.env` in the install folder. Then restart dewee.
