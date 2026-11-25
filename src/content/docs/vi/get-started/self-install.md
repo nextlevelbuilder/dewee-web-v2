@@ -63,9 +63,6 @@ Lần mở đầu tiên sẽ dẫn bạn qua các bước onboarding:
 
 Agent, provider và skill dùng được mà không cần license. Để kết nối các kênh như Zalo, Telegram, Discord hay Slack, bạn cần license key của dewee cho workspace đó, giá $500/năm; mỗi workspace cần một license riêng. Khi có key, bạn dán nó vào dashboard để kích hoạt, sau đó có thể kết nối kênh. [Kích hoạt license](/docs/runtime/licence) giải thích key dùng để làm gì.
 
-> [!TIP]
-> Early Access: 50 license đầu tiên được giảm 50% năm đầu, còn $250 thay vì $500, đến 23:59 ngày 15/10/2026 (giờ Việt Nam). Xem [bảng giá](/pricing).
-
 ## Đặt sau reverse proxy
 
 Nếu bạn đặt dashboard sau một reverse proxy, chẳng hạn nginx trên máy khác, một container proxy, Kubernetes ingress hay load balancer trên cloud, hãy cho dewee biết proxy đó dùng những địa chỉ nào. Đặt `DEWEE_TRUSTED_PROXY_CIDRS` là danh sách địa chỉ IP và dải CIDR cách nhau bằng dấu phẩy, ví dụ `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. Với Docker, đặt biến này trong shell hoặc file `.env` cạnh `docker-compose.yml`. Với binary độc lập, thêm nó vào `dewee.env` trong thư mục cài đặt. Sau đó khởi động lại dewee.
