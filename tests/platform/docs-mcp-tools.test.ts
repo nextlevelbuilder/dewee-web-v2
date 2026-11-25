@@ -173,11 +173,15 @@ describe("proposing docs changes", () => {
     expect(denied.structuredContent.error.message).not.toContain(TOKEN);
   });
 
-  it("says when the deployment has no docs credentials", async () => {
-    const c = ctx(["docs:read"]);
+  it("hides the Git docs tools when the deployment has no docs credentials, leaving the published ones", async () => {
+    const c = ctx(["docs:read", "docs:write"]);
     delete (c.env as { DOCS_GITHUB_TOKEN?: string }).DOCS_GITHUB_TOKEN;
-    const res = (await handleMessage(MCP_SERVER, { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "list_docs", arguments: {} } }, c)) as { result: ToolResult };
-    expect(res.result.structuredContent.error.message).toContain("not configured");
+    const list = (await handleMessage(MCP_SERVER, { jsonrpc: "2.0", id: 1, method: "tools/list" }, c)) as { result: { tools: { name: string }[] } };
+    const names = list.result.tools.map((t) => t.name);
+    for (const gitTool of ["list_docs", "get_doc", "validate_doc", "create_doc", "update_doc"]) expect(names).not.toContain(gitTool);
+    expect(names).toEqual(expect.arrayContaining(["search_docs", "fetch_doc"]));
+    const res = (await handleMessage(MCP_SERVER, { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "list_docs", arguments: {} } }, c)) as { result?: ToolResult; error?: unknown };
+    expect(res.result?.structuredContent?.error ?? res.error).toBeTruthy();
   });
 });
 

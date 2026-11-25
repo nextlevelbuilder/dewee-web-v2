@@ -40,6 +40,11 @@ const WRITE_RULES =
   "Send whole files (front matter + body) per locale as { content, expected_sha }. Front matter: title (3–60 chars), description (140–160), section (matches the path), order, optional screens, updated (YYYY-MM-DD). " +
   "The result has status pr_opened with the pull request URL; nothing is published until a reviewer merges it. Repeating the same request returns the same pull request (replayed: true).";
 
+/** Git-backed docs tools need the docs repository; hide them where it is not configured, so callers use search_docs / fetch_doc. */
+function whenDocsRepo(scope: (ctx: McpCtx) => boolean): (ctx: McpCtx) => boolean {
+  return (ctx) => docsRepoConfig(ctx.env) !== null && scope(ctx);
+}
+
 export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
   {
     name: "list_docs",
@@ -47,7 +52,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
     description: "List the bilingual docs pages from Git (the docs base branch, not necessarily what is deployed): id (section/slug), locale, title, description, order, path, blob sha and site URL. For reading or searching the published docs, use search_docs and fetch_doc instead.",
     input: listDocsInput,
     annotations: { readOnlyHint: true, openWorldHint: true },
-    enabled: has("docs:read", "docs:write"),
+    enabled: whenDocsRepo(has("docs:read", "docs:write")),
     run: async (args, ctx) => {
       const gh = docsGitHub(ctx.env);
       return listDocsFromSnapshot(gh, await readDocsSnapshot(gh), listDocsInput.parse(args));
@@ -59,7 +64,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
     description: "Read one docs page in EN and VI from Git: the whole Markdown file (`content`), parsed front matter, body, blob `sha` (send it back as expected_sha to update) and URLs. Source content can differ from production until merged and deployed; use fetch_doc for the published page.",
     input: getDocInput,
     annotations: { readOnlyHint: true, openWorldHint: true },
-    enabled: has("docs:read", "docs:write"),
+    enabled: whenDocsRepo(has("docs:read", "docs:write")),
     run: async (args, ctx) => {
       const a = getDocInput.parse(args);
       const gh = docsGitHub(ctx.env);
@@ -72,7 +77,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
     description: `Dry run of create_doc or update_doc: runs every check and returns errors, warnings and a unified diff per file, without writing anything. ${WRITE_RULES}`,
     input: validateDocInput,
     annotations: { readOnlyHint: true, openWorldHint: true },
-    enabled: has("docs:read", "docs:write"),
+    enabled: whenDocsRepo(has("docs:read", "docs:write")),
     run: async (args, ctx) => {
       const { mode, ...input } = validateDocInput.parse(args);
       const gh = docsGitHub(ctx.env);
@@ -86,7 +91,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
     description: `Propose a new docs page as a pull request with both the en and vi files (same section and slug). Fails with 409 when the page exists. ${WRITE_RULES}`,
     input: proposalInput,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
-    enabled: has("docs:write"),
+    enabled: whenDocsRepo(has("docs:write")),
     run: async (args, ctx) => proposeDocChange(docsGitHub(ctx.env), ctx.env.DB, ctx.principal, "create", proposalInput.parse(args)),
   },
   {
@@ -95,7 +100,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
     description: `Propose an update to an existing docs page (en, vi or both) as a pull request. Each changed locale needs the expected_sha from get_doc; a newer file is a 409 version_conflict. ${WRITE_RULES}`,
     input: proposalInput,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
-    enabled: has("docs:write"),
+    enabled: whenDocsRepo(has("docs:write")),
     run: async (args, ctx) => proposeDocChange(docsGitHub(ctx.env), ctx.env.DB, ctx.principal, "update", proposalInput.parse(args)),
   },
 ];
