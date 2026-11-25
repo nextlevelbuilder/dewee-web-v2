@@ -45,6 +45,12 @@ export const SELF_INSTALL = {
   },
 } as const;
 
+/** The dewee Chrome extension (side panel client) on the Chrome Web Store. */
+export const CHROME_EXTENSION = {
+  id: "fckahaihlmpbcldmlopffgmocflpnjha",
+  storeUrl: "https://chromewebstore.google.com/detail/fckahaihlmpbcldmlopffgmocflpnjha",
+} as const;
+
 export const SOCIAL = {
   discord: { label: "Discord", href: "https://dewee.sh/discord", target: "https://discord.gg/eFtJerUrfw" },
   facebook: { label: "Facebook", href: "https://dewee.sh/facebook", target: "https://www.facebook.com/GoClawVietNam" },
@@ -72,6 +78,7 @@ export const NAV_PRODUCT: NavGroup = {
     { href: "/security", label: { en: "Security", vi: "Bảo mật" }, description: { en: "Shut at the door, five layers deep", vi: "Đóng từ cửa, phòng thủ 5 lớp" } },
     { href: "/integrations", label: { en: "Integrations", vi: "Tích hợp" }, description: { en: "Channels, LLM providers, MCP", vi: "Kênh chat, nhà cung cấp LLM, MCP" } },
     { href: "/install", label: { en: "Install", vi: "Cài đặt" }, description: { en: "Run dewee on your own machine, free", vi: "Tự cài dewee lên máy của bạn, miễn phí" } },
+    { href: "/chrome-extension", label: { en: "Chrome extension", vi: "Tiện ích Chrome" }, description: { en: "dewee in a side panel, next to your work", vi: "dewee trong khung bên, ngay cạnh công việc" } },
     { href: "/changelog", label: { en: "Changelog", vi: "Nhật ký thay đổi" }, description: { en: "Every stable and beta release, written down", vi: "Mọi bản stable và beta, ghi lại đầy đủ" } },
     { href: "/roadmap", label: { en: "Roadmap", vi: "Lộ trình" }, description: { en: "What we are building next", vi: "Những gì sắp ra lò" } },
   ],
@@ -105,6 +112,7 @@ export const FOOTER_COLUMNS: NavGroup[] = [
       { href: "/integrations", label: { en: "Integrations", vi: "Tích hợp" } },
       { href: "/pricing", label: { en: "Pricing & deployment", vi: "Bảng giá & triển khai" } },
       { href: "/install", label: { en: "Install dewee", vi: "Cài đặt dewee" } },
+      { href: "/chrome-extension", label: { en: "Chrome extension", vi: "Tiện ích Chrome" } },
     ],
   },
   {

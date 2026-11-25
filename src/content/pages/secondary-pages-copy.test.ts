@@ -18,6 +18,7 @@ import { ARCHITECTURE_PAGE } from "./architecture";
 import { SECURITY_PAGE } from "./security";
 import { PRICING } from "./pricing";
 import { INSTALL } from "./install";
+import { CHROME_EXTENSION_PAGE } from "./chrome-extension";
 
 const PAGES = {
   features: FEATURES_PAGE,
@@ -28,6 +29,7 @@ const PAGES = {
   security: SECURITY_PAGE,
   pricing: PRICING,
   install: INSTALL,
+  chromeExtension: CHROME_EXTENSION_PAGE,
 };
 
 /** Text that must never reach a visitor: stale figures and promises the product does not make. */
@@ -116,7 +118,7 @@ describe("page copy", () => {
     for (const pattern of FORBIDDEN) expect(text, String(pattern)).not.toMatch(pattern);
   });
 
-  for (const name of ["features", "integrations", "architecture", "security"] as const) {
+  for (const name of ["features", "integrations", "architecture", "security", "chromeExtension"] as const) {
     for (const locale of LOCALES) {
       it(`${name} (${locale}) has a title ≤ 60 and a description of 140–160 characters`, () => {
         const { title, description } = PAGES[name][locale].meta;
