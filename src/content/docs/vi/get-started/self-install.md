@@ -70,6 +70,8 @@ Agent, provider và skill dùng được mà không cần license. Để kết n
 
 Nếu bạn đặt dashboard sau một reverse proxy, chẳng hạn nginx trên máy khác, một container proxy, Kubernetes ingress hay load balancer trên cloud, hãy cho dewee biết proxy đó dùng những địa chỉ nào. Đặt `DEWEE_TRUSTED_PROXY_CIDRS` là danh sách địa chỉ IP và dải CIDR cách nhau bằng dấu phẩy, ví dụ `DEWEE_TRUSTED_PROXY_CIDRS=10.0.4.12`. Với Docker, đặt biến này trong shell hoặc file `.env` cạnh `docker-compose.yml`. Với binary độc lập, thêm nó vào `dewee.env` trong thư mục cài đặt. Sau đó khởi động lại dewee.
 
+Các thiết lập khác trong `dewee.env`, cùng các tuỳ chọn của trình cài đặt như `DEWEE_APP_PORT` và `DEWEE_BIND_ADDR`, được liệt kê ở trang [Biến môi trường](/docs/runtime/environment-variables).
+
 Khi đó dewee lấy địa chỉ của từng người dùng, và việc họ có kết nối qua https hay không, từ các header `X-Forwarded-For` và `X-Forwarded-Proto` mà proxy đó gửi. Với mọi client khác, các header này bị bỏ qua. Proxy chạy cùng máy (`127.0.0.1`) luôn được tin cậy. Nếu không đặt, mọi người dùng sau proxy chung một địa chỉ của proxy, nên một người dùng gửi nhiều request có thể dùng hết giới hạn đăng nhập và chat website của mọi người. Chỉ liệt kê proxy của bạn, càng hẹp càng tốt, không bao giờ liệt kê mạng mà người dùng truy cập từ đó: người dùng nằm trong một dải được liệt kê có thể tự chọn địa chỉ của mình. Một mục không hợp lệ, hoặc một dải bao trùm mọi địa chỉ, sẽ khiến dashboard không khởi động.
 
 ## Cấu hình tối thiểu

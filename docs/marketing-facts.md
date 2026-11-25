@@ -24,7 +24,7 @@ the latest stable tag (`gh release list --repo nextlevelbuilder/dewee --exclude-
 | Public MCP path | `/mcp/server` (legacy `/mcp` deprecated) | Integrations, Features | dewee `docs/18-http-api.md` at `v<tag>` | 2026-10-19 |
 | Five layers of defence, AES-256-GCM, seven denied shell categories | as written | Security | dewee `docs/09-security.md`, `internal/crypto/aes.go` | 2026-09-25 |
 | 8-stage agent loop, three memory tiers | as written | Architecture | dewee `docs/01-agent-loop.md`, `docs/07-bootstrap-skills-memory.md` | 2026-09-25 |
-| Prices ($500 a year licence, On-Premises from $5K) | as written | Pricing, Install | `src/content/plans.ts`, `src/content/early-access.ts` (the owners' decision, not derived) | 2026-09-25 |
+| Prices ($500 a year licence, On-Premises from $5K) | as written | Pricing, Install | `src/content/plans.ts` (the owners' decision, not derived) | 2026-09-25 |
 | NextLevelBuilder proof (130K+ stars, 115 contributors, 10,000+ businesses, 65K+ members) | as written | About | `plans/reports/scout-260924-2346-ecosystem-story.md`, GitHub counts read 2026-09-24 | 2026-09-24, not re-read in the last refresh |
 
 Rows dated before 2026-10-19 were not re-checked in the last refresh. The Roadmap Now, Next and Later columns were last checked on 2026-10-19; only their release references were updated on 2026-10-29. Treat them as due.

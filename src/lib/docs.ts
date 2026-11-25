@@ -7,6 +7,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { LOCALES, localePath, type Locale } from "~/i18n/config";
 import { ccpShotProps, ccpShotSrc, type CcpScreenId } from "~/content/ccp-screens";
 import { DOC_SECTION_IDS, type DocSectionId } from "~/content/pages/docs";
+import { SHOT_LINE_RE } from "./docs-plain-text";
 
 export type DocEntry = CollectionEntry<"docs">;
 
@@ -30,11 +31,7 @@ export interface DocSummary {
   body: string;
 }
 
-/**
- * A screenshot marker is a paragraph of its own: `::shot{id="agents"}`.
- * The HTML form tolerates the curly quotes that smart punctuation produces.
- */
-export const SHOT_LINE_RE = /^::shot\{id="([a-z0-9-]+)"\}[ \t]*$/gm;
+export { SHOT_LINE_RE };
 
 const sectionRank = (id: DocSectionId) => DOC_SECTION_IDS.indexOf(id);
 

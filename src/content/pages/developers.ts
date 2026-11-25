@@ -3,7 +3,7 @@
  * Markdown twins). Every fact here is read from the code that implements it:
  * src/lib/server/api/* (routes, errors, If-Match, Idempotency-Key, pagination, media limits),
  * src/lib/server/auth/api-key-format.ts (key format and scopes), src/pages/mcp.ts and
- * src/lib/server/mcp/mcp-tools.ts (29 tools), src/components/webmcp/* (browser tools),
+ * src/lib/server/mcp/mcp-tools.ts (31 tools), src/components/webmcp/* (browser tools),
  * cli/ (the dewee-web CLI) and SeoHead.astro (the `.md` twin and llms.txt links).
  * Code samples are shared by both languages; only the words around them are translated.
  */
@@ -157,7 +157,7 @@ poll, quiz, survey, sandboxed demo, callout, steps.`,
 }`,
 };
 
-/** The 29 MCP tool names, in the order tools/list returns them. */
+/** The 31 MCP tool names, in the order tools/list returns them. */
 const MCP_NAMES = [
   "list_blocks",
   "get_block_schema",
@@ -188,6 +188,8 @@ const MCP_NAMES = [
   "validate_doc",
   "create_doc",
   "update_doc",
+  "search_docs",
+  "fetch_doc",
 ] as const;
 
 type McpName = (typeof MCP_NAMES)[number];
@@ -220,7 +222,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
       items: [
         { title: "REST API", meta: "/api/v1 · OpenAPI 3.1", href: "#api", icon: "braces" },
         { title: "CLI", meta: "dewee-web · Node 22+", href: "#cli", icon: "square-terminal" },
-        { title: "MCP server", meta: "dewee.sh/mcp · 29 tools", href: "#mcp", icon: "plug" },
+        { title: "MCP server", meta: "dewee.sh/mcp · 31 tools", href: "#mcp", icon: "plug" },
         { title: "WebMCP", meta: "tools in the browser tab", href: "#webmcp", icon: "mouse-pointer-click" },
         { title: "Markdown and llms.txt", meta: "any page as .md", href: "#markdown", icon: "file-text" },
       ],
@@ -333,8 +335,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         body: "For clients that only launch local servers. The CLI bridges stdio to the remote server, so nothing else runs on your machine.",
         snippets: [{ label: "Any client that reads mcpServers", code: CODE.stdio }],
       },
-      toolsTitle: "The 29 tools",
-      toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed.",
+      toolsTitle: "The 31 tools",
+      toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs editing tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed. search_docs and fetch_doc read the published docs and need no scope; they are also served without sign-in at https://dewee.sh/mcp/docs.",
       tools: mcpTools({
         list_pages: "List or search custom pages",
         get_page: "Read one page or post in full",
@@ -365,6 +367,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         validate_doc: "Check a docs change and preview its diff",
         create_doc: "Propose a new EN + VI docs page as a pull request",
         update_doc: "Propose a docs edit as a pull request, with SHA checks",
+        search_docs: "Search the published docs, EN or VI",
+        fetch_doc: "Read a published docs page as Markdown",
       }),
     },
     webmcp: {
@@ -434,7 +438,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
       items: [
         { title: "REST API", meta: "/api/v1 · OpenAPI 3.1", href: "#api", icon: "braces" },
         { title: "CLI", meta: "dewee-web · Node 22+", href: "#cli", icon: "square-terminal" },
-        { title: "MCP server", meta: "dewee.sh/mcp · 29 công cụ", href: "#mcp", icon: "plug" },
+        { title: "MCP server", meta: "dewee.sh/mcp · 31 công cụ", href: "#mcp", icon: "plug" },
         { title: "WebMCP", meta: "công cụ ngay trong tab", href: "#webmcp", icon: "mouse-pointer-click" },
         { title: "Markdown và llms.txt", meta: "trang nào cũng có .md", href: "#markdown", icon: "file-text" },
       ],
@@ -547,8 +551,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         body: "Cho các client chỉ khởi chạy server cục bộ. CLI làm cầu nối stdio tới server từ xa, nên máy bạn không phải chạy thêm gì.",
         snippets: [{ label: "Mọi client đọc cấu hình mcpServers", code: CODE.stdio }],
       },
-      toolsTitle: "29 công cụ",
-      toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy.",
+      toolsTitle: "31 công cụ",
+      toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ sửa docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy. search_docs và fetch_doc đọc docs đã phát hành, không cần scope nào, và cũng dùng được không cần đăng nhập tại https://dewee.sh/mcp/docs.",
       tools: mcpTools({
         list_pages: "Liệt kê hoặc tìm trang tuỳ chỉnh",
         get_page: "Đọc đầy đủ một trang hoặc bài viết",
@@ -579,6 +583,8 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         validate_doc: "Kiểm tra một thay đổi docs và xem trước diff",
         create_doc: "Đề xuất trang docs mới (EN + VI) bằng pull request",
         update_doc: "Đề xuất sửa docs bằng pull request, có kiểm tra SHA",
+        search_docs: "Tìm trong docs đã phát hành, tiếng Anh hoặc tiếng Việt",
+        fetch_doc: "Đọc một trang docs đã phát hành dưới dạng Markdown",
       }),
     },
     webmcp: {

@@ -2,20 +2,19 @@
 /**
  * /install: install dewee yourself (the Self-install plan). Copy lives in
  * src/content/pages/install.ts; commands, the port and the dashboard URL come from SELF_INSTALL
- * in src/content/site.ts, and licence numbers from src/content/early-access.ts.
+ * in src/content/site.ts, and the licence price from src/content/plans.ts.
  */
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { langPaths, localePath, pick, type Locale } from "~/i18n/config";
 import { SELF_INSTALL, SITE } from "~/content/site";
 import { INSTALL, type InstallRouteId } from "~/content/pages/install";
-import { earlyAccessBlock, earlyAccessFacts } from "~/content/early-access";
-import { fillTemplate } from "~/lib/early-access";
+import { PLANS } from "~/content/plans";
+import { fillTemplate } from "~/lib/fill-template";
 import { faqJsonLd, howToJsonLd } from "~/lib/json-ld";
 import PageHero from "~/components/blocks/PageHero.astro";
 import SectionHead from "~/components/blocks/SectionHead.astro";
 import Faq from "~/components/blocks/Faq.astro";
 import CtaBand from "~/components/blocks/CtaBand.astro";
-import EarlyAccess from "~/components/blocks/EarlyAccess.astro";
 import PlatformChooser from "~/components/blocks/install/PlatformChooser.astro";
 import InstallSteps from "~/components/blocks/install/InstallSteps.astro";
 import CodeSample from "~/components/blocks/primitives/CodeSample.astro";
@@ -40,9 +39,9 @@ const routes = ROUTES.map((r) => {
 });
 
 const agentPrompt = installAgentPrompt(locale);
-const facts = { ...earlyAccessFacts(locale), url: SELF_INSTALL.dashboardUrl };
+const licencePrice = PLANS.find((p) => p.id === "self-hosted")?.priceUsd;
+const facts = { price: `$${licencePrice}`, url: SELF_INSTALL.dashboardUrl };
 const steps = t.steps.items.map((s) => ({ title: s.title, body: fillTemplate(s.body, facts) }));
-const earlyAccess = earlyAccessBlock(locale, { cta: contact("self-hosted") });
 
 const pageUrl = `${SITE.url}${href("/install")}`;
 const jsonLd = [
@@ -98,8 +97,6 @@ const jsonLd = [
       <InstallSteps label={t.steps.label} items={steps} />
     </div>
   </section>
-
-  <EarlyAccess {...earlyAccess} />
 
   <section class="section band" id="faq">
     <div class="container in-faq">
