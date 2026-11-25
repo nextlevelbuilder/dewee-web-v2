@@ -1,7 +1,7 @@
 /**
  * Public, read-only MCP server for the published docs (Streamable HTTP, stateless, JSON responses).
  * No credentials: it only offers search_docs and fetch_doc (src/lib/server/docs/public-docs-mcp-tools.ts).
- * It is a separate endpoint on purpose: /mcp must keep answering 401 so OAuth clients start sign-in.
+ * /mcp serves the same tools without credentials; this path stays so existing client configs keep working.
  */
 import type { APIRoute } from "astro";
 import { errorResponse, forbidden, json } from "~/lib/server/api/api-errors";

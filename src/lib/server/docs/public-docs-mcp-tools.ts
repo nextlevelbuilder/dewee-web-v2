@@ -1,6 +1,6 @@
 /**
  * search_docs and fetch_doc: read-only MCP tools over the published docs. They need no sign-in, so
- * they are served on the public endpoint /mcp/docs and also listed for every caller of /mcp.
+ * they are served to anonymous callers of /mcp (and the /mcp/docs alias) and listed for every signed-in caller.
  * Content comes from the deployed corpus (see src/pages/[...lang]/docs/corpus.json.ts), never Git.
  */
 import { z } from "zod";
@@ -84,7 +84,7 @@ export const PUBLIC_DOCS_TOOLS: readonly ToolDef<PublicDocsCtx>[] = [
   },
 ];
 
-/** The anonymous, read-only server behind /mcp/docs. */
+/** The anonymous, read-only server behind /mcp without credentials (and the /mcp/docs alias). */
 export const PUBLIC_DOCS_MCP_SERVER: McpServer<PublicDocsCtx> = {
   name: "dewee-docs",
   title: "dewee docs",
