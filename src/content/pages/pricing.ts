@@ -1,7 +1,7 @@
 /**
  * /pricing copy. Prices and per-plan facts live in src/content/plans.ts; this file holds the
  * page's words around them. The VI locale offers Self-install and On-Premises and never names
- * AaaS or TOSE. Early Access numbers live in src/content/early-access.ts, not here.
+ * AaaS or TOSE.
  * Sources: the founders' deployment diagram, dewee docs/commercial-runtime-control-plane.md,
  * docs/runbooks/license-activation-and-revocation.md (heartbeat: activation id + runtime token,
  * every 5 minutes, never the raw key) and cmd/root.go (`--server`, `--token` flags).
