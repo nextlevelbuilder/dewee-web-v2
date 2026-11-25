@@ -9,7 +9,8 @@ import Icon from "~/components/ui/Icon.astro";
 interface Props {
   title: string;
   body?: string;
-  primary: { label: string; href: string };
+  /** `external` opens another site in a new tab, marked with an up-right arrow. */
+  primary: { label: string; href: string; external?: boolean };
   secondary?: { label: string; href?: string; chat?: boolean };
   note?: string;
 }
@@ -23,7 +24,7 @@ const { title, body, primary, secondary, note } = Astro.props;
       <h2 class="cta__title" set:html={inlineMarkup(title)} />
       {body && <p class="lede cta__body">{body}</p>}
       <div class="cta__actions">
-        <a class="btn btn--primary btn--lg" href={primary.href}>{primary.label}<Icon name="arrow-right" class="arrow" /></a>
+        <a class="btn btn--primary btn--lg" href={primary.href} {...(primary.external ? { target: "_blank", rel: "noopener" } : {})}>{primary.label}<Icon name={primary.external ? "arrow-up-right" : "arrow-right"} class="arrow" /></a>
         {secondary && (secondary.chat ? (
           <button class="btn btn--lg" type="button" data-open-chat><Icon name="message-circle" />{secondary.label}</button>
         ) : (

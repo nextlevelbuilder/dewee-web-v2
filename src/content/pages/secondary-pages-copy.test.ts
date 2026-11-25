@@ -45,6 +45,7 @@ const FORBIDDEN: RegExp[] = [
   /live co-?edit/i,
   /shared cursors?/i,
   /real-?time (sync|co-?edit|collaboration)/i,
+  /not on the Chrome Web Store/i,
 ];
 
 const corpus = (value: unknown): string => JSON.stringify(value);

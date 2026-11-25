@@ -3,7 +3,7 @@ title: Extension cho Chrome
 description: "Trò chuyện với agent dewee trong side panel của Chrome và trả lời yêu cầu credential mà không dán secret vào chat, trên Dewee Cloud hoặc gateway tự host."
 section: integrations
 order: 4
-updated: 2026-10-31
+updated: 2026-11-25
 ---
 
 [Dewee Chrome extension](https://github.com/nextlevelbuilder/dewee-chrome-ext) (MIT) mở một side panel bên phải Chrome để bạn trò chuyện với các agent dewee. Super Agent luôn được ghim lên đầu. Khi agent cần một API key hay một kết nối OAuth, panel hiện thẻ credential, nên bạn không bao giờ phải dán secret vào chat.
@@ -12,12 +12,12 @@ Extension chỉ là một client mỏng. Server dewee của bạn vẫn nắm ag
 
 ## Cài extension
 
-Bạn cần Chrome 116 trở lên. Extension chưa có trên Chrome Web Store, nên bạn tự nạp vào:
+Bạn cần Chrome 116 trở lên.
 
-1. Lấy bản build. Tự build từ mã nguồn bằng `pnpm install` và `pnpm build` (kết quả nằm ở `.output/chrome-mv3`), hoặc, khi đã có bản phát hành, tải file zip đính kèm trên trang [Releases](https://github.com/nextlevelbuilder/dewee-chrome-ext/releases) của repository rồi giải nén.
-2. Mở `chrome://extensions` và bật **Developer mode** (Chế độ dành cho nhà phát triển).
-3. Chọn **Load unpacked** (Tải tiện ích đã giải nén) và chọn thư mục vừa giải nén (hoặc `.output/chrome-mv3`).
-4. Ghim extension, rồi bấm vào biểu tượng của nó hoặc nhấn `Alt+Shift+D` để mở panel.
+1. Mở [dewee trên Chrome Web Store](https://chromewebstore.google.com/detail/fckahaihlmpbcldmlopffgmocflpnjha) và chọn **Thêm vào Chrome**.
+2. Ghim extension, rồi bấm biểu tượng hoặc nhấn `Alt+Shift+D` để mở panel.
+
+Nếu muốn chạy bản build từ mã nguồn, build bằng `pnpm install` và `pnpm build` (kết quả nằm ở `.output/chrome-mv3`), mở `chrome://extensions`, bật **Developer mode** (Chế độ dành cho nhà phát triển), chọn **Load unpacked** (Tải tiện ích đã giải nén) rồi chọn thư mục đó.
 
 > [!NOTE]
 > Extension cần phía server tương ứng: một gateway dewee có browser extension API (`/v1/extension`), hoặc Dewee Cloud có hỗ trợ đăng nhập từ extension. Nếu gateway của bạn là bản cũ, hãy cập nhật trước khi kết nối.
@@ -37,10 +37,10 @@ Màn hình đầu tiên, **Kết nối Dewee**, có hai chế độ. Bạn có t
 1. Nhờ người vận hành gateway cho phép origin của extension. Mặc định gateway không cho extension nào truy cập; hãy thêm đúng origin này vào `GOCLAW_ALLOWED_ORIGINS`:
 
    ```bash
-   GOCLAW_ALLOWED_ORIGINS=chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm
+   GOCLAW_ALLOWED_ORIGINS=chrome-extension://fckahaihlmpbcldmlopffgmocflpnjha
    ```
 
-   Id này thuộc về bản phát hành và bản build từ mã nguồn. Bản trên Chrome Web Store sau này sẽ có id riêng.
+   Id này thuộc về bản trên Chrome Web Store. Bản build từ mã nguồn có id `poicgajeapmbcilfbeobdfedibiffbbm`; nếu dùng cả hai, liệt kê cả hai, cách nhau bằng dấu phẩy.
 
 2. Tạo một API key cá nhân gắn với người dùng và tenant của bạn, có `operator.read` và `operator.write`:
 
@@ -115,7 +115,7 @@ Mở **Cài đặt** bằng biểu tượng bánh răng trên đầu panel.
 | **Hiện phần suy luận** | Hiện suy nghĩ của agent bên dưới mỗi câu trả lời, ở dạng thu gọn. Mặc định tắt |
 | **Hiện chi tiết tool call** | Hiện đầu vào, kết quả và lỗi của từng tool. Các dạng key, token và mật khẩu phổ biến được ẩn, nhưng không phải bí mật nào cũng nhận ra được. Mặc định tắt |
 | **Hỏi Dewee về đoạn văn bản đã chọn** | Hiện nút **Hỏi Dewee** khi bạn bôi đen văn bản trên trang web. Mặc định tắt |
-| **Trình duyệt kết nối** | Cho phép các agent bạn chọn dùng tab trong trình duyệt này. Chỉ với gateway tự host. Mặc định tắt |
+| **Trình duyệt kết nối** | Cho agent dùng tab trong trình duyệt này: các trang bạn cho phép (gateway tự host) hoặc một tab bạn chia sẻ (Dewee Cloud hoặc tự host). Mặc định tắt |
 
 Phím tắt `Alt+Shift+D` để mở panel có thể đổi tại `chrome://extensions/shortcuts`.
 
@@ -124,7 +124,7 @@ Phím tắt `Alt+Shift+D` để mở panel có thể đổi tại `chrome://exte
 Cả hai tính năng đều tắt cho tới khi bạn bật, và chỉ lúc đó Chrome mới hỏi quyền truy cập website.
 
 - **Hỏi Dewee.** Bôi đen văn bản trên trang web rồi chọn **Hỏi Dewee**. Side panel mở ra, đưa trích dẫn, tiêu đề và địa chỉ trang vào ô nhập; không gửi gì cho tới khi bạn bấm Gửi. Tính năng áp dụng cho các trang mở sau khi bật. Tắt sẽ gỡ nút; muốn thu hồi cả quyền truy cập website, dùng phần cài đặt extension của Chrome.
-- **Trình duyệt kết nối** (chỉ với gateway tự host, chưa hỗ trợ Dewee Cloud). Đăng ký trình duyệt này, rồi cho phép các agent bạn chọn trên các trang bạn chọn trong một khoảng thời gian giới hạn, kể cả khi bạn nhờ agent từ Telegram hay kênh khác. Agent chỉ mở, đọc và thao tác trong tab do chính nó mở, không bao giờ trong các tab khác của bạn. Thao tác rủi ro phải chờ bạn duyệt, trường mật khẩu và thanh toán không bao giờ bị đọc hay gõ, và việc tạm dừng, dừng hay thu hồi quyền luôn chỉ cách một cú bấm. Tab của agent có huy hiệu "AI", và khi bạn tự dùng tab đó thì agent tạm dừng. Quản trị viên workspace cũng phải bật tính năng này cho workspace.
+- **Trình duyệt kết nối.** Đăng ký trình duyệt này, rồi chia sẻ một tab bằng **Cho agent dùng tab này** (Dewee Cloud hoặc gateway tự host; việc chia sẻ kết thúc khi bạn dừng, đóng tab hoặc rời trang, và tối đa sau một giờ), hoặc với gateway tự host, cho phép các agent bạn chọn trên các trang bạn chọn trong 15 phút đến 8 giờ, kể cả khi bạn nhờ agent từ Telegram hay kênh khác. Khi cấp quyền theo trang, agent chỉ mở, đọc và thao tác trong tab do chính nó mở, không bao giờ trong các tab khác của bạn. Thao tác rủi ro phải chờ bạn duyệt, trường mật khẩu và thanh toán không bao giờ bị đọc hay gõ, và việc tạm dừng, dừng hay thu hồi quyền luôn chỉ cách một cú bấm. Tab nào agent đang điều khiển cũng có viền phát sáng kèm nút **Dừng**, tab do agent mở được gom vào nhóm tab **Dewee AI**, và khi bạn tự dùng tab đó thì agent tạm dừng. Quản trị viên workspace cũng phải bật tính năng này cho workspace.
 
 ## Xử lý sự cố
 
@@ -132,7 +132,7 @@ Cả hai tính năng đều tắt cho tới khi bạn bật, và chỉ lúc đó
 |---|---|
 | *Hãy dùng HTTPS. HTTP thường chỉ dùng được cho localhost.* | Dùng địa chỉ `https://` của gateway. HTTP chỉ dành cho gateway chạy trên chính máy này. |
 | *Chrome chưa cấp quyền truy cập địa chỉ này…* | Chọn **Kết nối** lại và cho phép khi Chrome hỏi. |
-| *Không kết nối được máy chủ. Kiểm tra mạng của bạn.* với gateway tự host | Kiểm tra URL và mạng. Nếu gateway vẫn truy cập được, nhiều khả năng `GOCLAW_ALLOWED_ORIGINS` chưa có `chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm`. |
+| *Không kết nối được máy chủ. Kiểm tra mạng của bạn.* với gateway tự host | Kiểm tra URL và mạng. Nếu gateway vẫn truy cập được, nhiều khả năng `GOCLAW_ALLOWED_ORIGINS` chưa có `chrome-extension://fckahaihlmpbcldmlopffgmocflpnjha` (hoặc, với bản build từ mã nguồn, `chrome-extension://poicgajeapmbcilfbeobdfedibiffbbm`). |
 | *Key này không phải key cá nhân…* (`owner_binding_required`) | Tạo key có cả `--tenant-id` lẫn `--owner-id`. |
 | *Key này thiếu scope bắt buộc…* (`scope_required`) | Key cần `operator.read` và `operator.write`. Key chỉ đọc thì xem được nhưng không chat hay trả lời thẻ được. |
 | *API key bị từ chối hoặc đã bị thu hồi.* / *Hồ sơ này cần API key mới.* | Tạo key cá nhân mới và kết nối lại hồ sơ. |

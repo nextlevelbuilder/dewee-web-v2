@@ -13,7 +13,7 @@ const RULES: Array<[RegExp, SectionId]> = [
   [/^\/$/, "home"],
   [/^\/docs(\/|$)/, "docs"],
   [/^\/use-cases(\/|$)/, "use-cases"],
-  [/^\/(features|architecture|security|integrations|roadmap)(\/|$)/, "product"],
+  [/^\/(features|architecture|security|integrations|roadmap|chrome-extension)(\/|$)/, "product"],
   [/^\/changelog(\/|$)/, "changelog"],
   [/^\/(pricing|install)(\/|$)/, "pricing"],
   [/^\/(terms|policy|privacy|cookies|gdpr)(\/|$)/, "legal"],

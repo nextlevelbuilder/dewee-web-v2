@@ -48,7 +48,9 @@ export const SELF_INSTALL = {
 /** The dewee Chrome extension (side panel client) on the Chrome Web Store. */
 export const CHROME_EXTENSION = {
   id: "fckahaihlmpbcldmlopffgmocflpnjha",
-  storeUrl: "https://chromewebstore.google.com/detail/fckahaihlmpbcldmlopffgmocflpnjha",
+  get storeUrl() {
+    return `https://chromewebstore.google.com/detail/${this.id}`;
+  },
 } as const;
 
 export const SOCIAL = {
