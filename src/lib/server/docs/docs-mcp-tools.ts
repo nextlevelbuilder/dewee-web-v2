@@ -44,7 +44,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
   {
     name: "list_docs",
     title: "List docs pages",
-    description: "List the bilingual docs pages from Git (the docs base branch, not necessarily what is deployed): id (section/slug), locale, title, description, order, path, blob sha and site URL.",
+    description: "List the bilingual docs pages from Git (the docs base branch, not necessarily what is deployed): id (section/slug), locale, title, description, order, path, blob sha and site URL. For reading or searching the published docs, use search_docs and fetch_doc instead.",
     input: listDocsInput,
     annotations: { readOnlyHint: true, openWorldHint: true },
     enabled: has("docs:read", "docs:write"),
@@ -56,7 +56,7 @@ export const DOCS_MCP_TOOLS: readonly ToolDef<McpCtx>[] = [
   {
     name: "get_doc",
     title: "Get a docs page",
-    description: "Read one docs page in EN and VI from Git: the whole Markdown file (`content`), parsed front matter, body, blob `sha` (send it back as expected_sha to update) and URLs. Source content can differ from production until merged and deployed.",
+    description: "Read one docs page in EN and VI from Git: the whole Markdown file (`content`), parsed front matter, body, blob `sha` (send it back as expected_sha to update) and URLs. Source content can differ from production until merged and deployed; use fetch_doc for the published page.",
     input: getDocInput,
     annotations: { readOnlyHint: true, openWorldHint: true },
     enabled: has("docs:read", "docs:write"),

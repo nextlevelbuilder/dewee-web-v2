@@ -14,6 +14,7 @@ import { listRevisions, restoreRevision } from "../pages/page-revisions";
 import { createPageInput, kindSchema, updatePageInput, type PageKind } from "../pages/page-schema";
 import { changeStatus, createPage, updatePage } from "../pages/page-service";
 import { DOCS_MCP_TOOLS } from "../docs/docs-mcp-tools";
+import { PUBLIC_DOCS_TOOLS } from "../docs/public-docs-mcp-tools";
 import type { McpServer } from "./json-rpc";
 import { getRevisionTool, lifecycleTools, statusInput } from "./mcp-lifecycle-tools";
 import { has, idField, lookupLocale, refInput, resolveId, scopeFor, type McpCtx, type Tool } from "./mcp-tool-kit";
@@ -172,6 +173,8 @@ export const MCP_TOOLS: readonly Tool[] = [
     },
   },
   ...DOCS_MCP_TOOLS,
+  // Published docs, readable by every caller (no scope); also served anonymously at /mcp/docs.
+  ...(PUBLIC_DOCS_TOOLS as readonly Tool[]),
 ];
 
 export const MCP_SERVER: McpServer<McpCtx> = {
@@ -183,6 +186,6 @@ export const MCP_SERVER: McpServer<McpCtx> = {
     "Before composing a page, call list_blocks and get_block_schema. Posts are Markdown and may place widgets inline: call list_blocks with context post, then put ::widget{id} lines in body_md. New content is a draft until published. " +
     "Read one record with get_page (kind page or post). Check a write first with validate_page / validate_post (dry run, nothing saved). " +
     "Pass the `version` you last read when updating or changing status to avoid overwriting other edits; delete_* requires it. Prefer archive_* over delete_*. Link EN and VI versions with the same translation_key. " +
-    "Docs (/docs) live in Git: list_docs and get_doc read them, validate_doc previews a change, and create_doc / update_doc open a pull request for review instead of publishing.",
+    "To answer questions from the published docs, use search_docs and fetch_doc (what is deployed on dewee.sh). To change docs, which live in Git: list_docs and get_doc read the Git source with blob SHAs, validate_doc previews a change, and create_doc / update_doc open a pull request for review instead of publishing.",
   tools: MCP_TOOLS,
 };

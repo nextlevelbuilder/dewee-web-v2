@@ -51,9 +51,11 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("docs tool scopes", () => {
   it("shows read tools to docs:read and write tools only to docs:write", async () => {
-    expect(await listed(["docs:read"])).toEqual(["list_docs", "get_doc", "validate_doc"]);
-    expect(await listed(["docs:write"])).toEqual(["list_docs", "get_doc", "validate_doc", "create_doc", "update_doc"]);
-    expect(await listed(["pages:read", "pages:write", "posts:write"])).toEqual([]);
+    // search_docs and fetch_doc read the published docs and are listed for every caller.
+    const published = ["search_docs", "fetch_doc"];
+    expect(await listed(["docs:read"])).toEqual(["list_docs", "get_doc", "validate_doc", ...published]);
+    expect(await listed(["docs:write"])).toEqual(["list_docs", "get_doc", "validate_doc", "create_doc", "update_doc", ...published]);
+    expect(await listed(["pages:read", "pages:write", "posts:write"])).toEqual(published);
   });
 
   it("refuses writes without docs:write and makes no GitHub call", async () => {
