@@ -35,10 +35,10 @@ export const POLICY: Bi<LegalDoc> = {
       {
         id: "refunds",
         title: "Refund policy",
-        short: "AaaS and Self-install licences: a full refund within 14 days. Dedicated and On-Premises: as set out in your order form or contract.",
+        short: "AaaS and Self-install licences: a full refund within 14 days (AaaS: one self-service refund per account). Dedicated and On-Premises: as set out in your order form or contract.",
         body: [
           { sub: "AaaS" },
-          "If dewee is not right for you, ask for a refund within 14 days of your purchase and we will refund it in full, no questions asked. The only exception is fraud or clear abuse, such as chargeback abuse or reselling access.",
+          "If dewee is not right for you, ask for a refund within 14 days of your purchase and we will refund it in full, no questions asked. The workspace owner requests it from the workspace's Billing page. Each account can receive this self-service refund once, across all of its workspaces. The only exception is fraud or clear abuse, such as chargeback abuse or reselling access.",
           { sub: "Dedicated on TOSE.sh" },
           "A Dedicated order has two parts: the $500 yearly licence and the $99 TOSE credit deposit, which we pass to TOSE.sh as credit for your runtime. What we can refund depends on whether your runtime has already been provisioned and on the credit already passed on or used. The exact terms are in your order form.",
           { sub: "Self-install licence" },

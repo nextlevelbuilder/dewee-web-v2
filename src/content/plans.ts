@@ -55,8 +55,8 @@ export const PLANS: Plan[] = [
     period: { en: "per year · about $42 a month", vi: "mỗi năm" },
     tagline: { en: "AI as a Service: start today on our shared cloud.", vi: "Bắt đầu ngay trên cloud dùng chung." },
     includes: {
-      en: ["Hosted runtime gateway", "Customer control plane at app.dewee.sh", "Agent, channel and skill templates", "Role-based access for your team", "14-day refund, no questions asked"],
-      vi: ["Runtime gateway được vận hành sẵn", "Bảng điều khiển tại app.dewee.sh", "Mẫu agent, kênh và skill", "Phân quyền theo vai trò", "Hoàn tiền trong 14 ngày"],
+      en: ["Hosted runtime gateway", "Customer control plane at app.dewee.sh", "Up to 25 agents, 25 members and 50,000 messages a month", "Agent, channel and skill templates", "Role-based access for your team", "14-day refund, no questions asked (one per account)"],
+      vi: ["Runtime gateway được vận hành sẵn", "Bảng điều khiển tại app.dewee.sh", "Tối đa 25 agent, 25 thành viên và 50.000 tin nhắn mỗi tháng", "Mẫu agent, kênh và skill", "Phân quyền theo vai trò", "Hoàn tiền trong 14 ngày (một lần cho mỗi tài khoản)"],
     },
     tradeoffs: {
       en: ["Shared infrastructure, so a small chance of data exposure", "No custom runtime packages"],
