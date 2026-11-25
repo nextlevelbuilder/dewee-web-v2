@@ -1,16 +1,20 @@
 /**
  * Remote MCP server (Streamable HTTP, stateless, JSON responses). Clients POST JSON-RPC 2.0 with
  * `Authorization: Bearer dwk_…` (API key) or an OAuth access token from /oauth/token; tools are defined in src/lib/server/mcp/mcp-tools.ts.
+ * Without credentials it serves the public docs tools (search_docs, fetch_doc); `?login` or a call to
+ * any other tool answers 401 so OAuth clients start sign-in (src/lib/server/mcp/anonymous-mcp-access.ts).
  * There is no server-initiated stream, so GET and DELETE answer 405.
  */
 import type { APIRoute } from "astro";
-import { errorResponse, forbidden, json } from "~/lib/server/api/api-errors";
+import { errorResponse, forbidden, json, unauthorized } from "~/lib/server/api/api-errors";
 import { platformEnv } from "~/lib/server/api/platform-env";
 import { authenticate } from "~/lib/server/auth/request-auth";
 import { siteOrigin } from "~/lib/server/seo/discovery-response";
 import { RESOURCE_METADATA_PATH } from "~/lib/server/auth/oauth-store";
 import { handlePayload, parseError, SUPPORTED_PROTOCOL_VERSIONS } from "~/lib/server/mcp/json-rpc";
 import { MCP_SERVER } from "~/lib/server/mcp/mcp-tools";
+import { PUBLIC_DOCS_MCP_SERVER } from "~/lib/server/docs/public-docs-mcp-tools";
+import { ANONYMOUS_MAX_BODY_BYTES, callsPrivateTool, isAnonymous, wantsSignIn } from "~/lib/server/mcp/anonymous-mcp-access";
 
 export const prerender = false;
 
@@ -38,13 +42,18 @@ export const POST: APIRoute = async (ctx) => {
       return json({ error: { code: "bad_request", message: `Unsupported MCP-Protocol-Version ${version}. Supported: ${SUPPORTED_PROTOCOL_VERSIONS.join(", ")}.` } }, { status: 400 });
     }
 
-    const principal = await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false, allowOAuth: true });
+    const anonymous = isAnonymous(request);
+    if (anonymous && wantsSignIn(url)) throw unauthorized("Sign in to use the dewee.sh content tools.");
+    const principal = anonymous
+      ? null
+      : await authenticate({ request, cookies: ctx.cookies, locals: ctx.locals, clientAddress: ctx.clientAddress }, { allowSession: false, allowOAuth: true });
 
-    if (Number(request.headers.get("content-length") ?? "0") > MAX_BODY_BYTES) {
+    const maxBytes = anonymous ? ANONYMOUS_MAX_BODY_BYTES : MAX_BODY_BYTES;
+    if (Number(request.headers.get("content-length") ?? "0") > maxBytes) {
       return json({ error: { code: "payload_too_large", message: "The request body is too large." } }, { status: 413 });
     }
     const text = await request.text();
-    if (text.length > MAX_BODY_BYTES) return json({ error: { code: "payload_too_large", message: "The request body is too large." } }, { status: 413 });
+    if (text.length > maxBytes) return json({ error: { code: "payload_too_large", message: "The request body is too large." } }, { status: 413 });
 
     let payload: unknown;
     try {
@@ -53,7 +62,13 @@ export const POST: APIRoute = async (ctx) => {
       return json(parseError(), { status: 400 });
     }
 
-    const result = await handlePayload(MCP_SERVER, payload, { env: platformEnv(), principal });
+    let result;
+    if (principal) {
+      result = await handlePayload(MCP_SERVER, payload, { env: platformEnv(), principal });
+    } else {
+      if (callsPrivateTool(payload)) throw unauthorized("Sign in to use this tool.");
+      result = await handlePayload(PUBLIC_DOCS_MCP_SERVER, payload, { env: platformEnv() });
+    }
     if (result === null) return new Response(null, { status: 202, headers: { "cache-control": "no-store" } });
     return json(result);
   } catch (err) {

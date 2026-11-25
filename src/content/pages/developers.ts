@@ -336,7 +336,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         snippets: [{ label: "Any client that reads mcpServers", code: CODE.stdio }],
       },
       toolsTitle: "The 31 tools",
-      toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs editing tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed. search_docs and fetch_doc read the published docs and need no scope; they are also served without sign-in at https://dewee.sh/mcp/docs.",
+      toolsNote: "get_page, list_revisions, get_revision and restore_revision work on blog posts too: pass kind: post. Pass the version you last read on every update and status change; delete needs it, plus the slug typed back. Publish, unpublish and archive are safe to repeat; create, update, restore and delete are not, so re-read before you retry one. The docs editing tools read Git and open a pull request for review; nothing in /docs changes until it is merged and deployed. search_docs and fetch_doc read the published docs and need no scope; they also answer without sign-in: a request to /mcp with no credentials gets just these two. Add ?login to the URL (https://dewee.sh/mcp?login) so an OAuth client signs in for the rest.",
       tools: mcpTools({
         list_pages: "List or search custom pages",
         get_page: "Read one page or post in full",
@@ -552,7 +552,7 @@ export const DEVELOPERS: Bi<DevelopersPage> = {
         snippets: [{ label: "Mọi client đọc cấu hình mcpServers", code: CODE.stdio }],
       },
       toolsTitle: "31 công cụ",
-      toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ sửa docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy. search_docs và fetch_doc đọc docs đã phát hành, không cần scope nào, và cũng dùng được không cần đăng nhập tại https://dewee.sh/mcp/docs.",
+      toolsNote: "get_page, list_revisions, get_revision và restore_revision dùng được cho cả bài blog: chỉ cần truyền kind: post. Hãy gửi version bạn đọc gần nhất mỗi lần sửa hay đổi trạng thái; lệnh xoá bắt buộc có version và slug gõ lại để xác nhận. Publish, unpublish và archive gọi lại nhiều lần vẫn an toàn; create, update, restore và delete thì không, nên đọc lại trước khi thử lại. Các công cụ sửa docs đọc từ Git và mở pull request để review; /docs chỉ thay đổi sau khi PR được merge và deploy. search_docs và fetch_doc đọc docs đã phát hành, không cần scope nào, và dùng được không cần đăng nhập: request tới /mcp không kèm thông tin xác thực chỉ thấy hai công cụ này. Thêm ?login vào URL (https://dewee.sh/mcp?login) để OAuth client đăng nhập và dùng các công cụ còn lại.",
       tools: mcpTools({
         list_pages: "Liệt kê hoặc tìm trang tuỳ chỉnh",
         get_page: "Đọc đầy đủ một trang hoặc bài viết",

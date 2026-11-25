@@ -173,7 +173,7 @@ export const MCP_TOOLS: readonly Tool[] = [
     },
   },
   ...DOCS_MCP_TOOLS,
-  // Published docs, readable by every caller (no scope); also served anonymously at /mcp/docs.
+  // Published docs, readable by every caller (no scope); also served to callers of /mcp without credentials.
   ...(PUBLIC_DOCS_TOOLS as readonly Tool[]),
 ];
 

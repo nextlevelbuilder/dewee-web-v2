@@ -4,21 +4,21 @@
  *   operate (src/content/legal/terms.ts, src/content/legal/privacy.ts "where-stored").
  * - Install: the command is SELF_INSTALL.commands.script (src/content/site.ts) and the agent
  *   prompt is installAgentPrompt() (src/content/install-agent-prompt.ts); this file never copies them.
- * - MCP: /mcp/docs is public, needs no sign-in and serves search_docs and fetch_doc over the
- *   deployed docs (src/pages/mcp/docs.ts, src/lib/server/docs/public-docs-mcp-tools.ts). The full
+ * - MCP: /mcp without credentials serves search_docs and fetch_doc over the deployed docs
+ *   (src/lib/server/mcp/anonymous-mcp-access.ts). With `?login` OAuth clients sign in for the full
  *   /mcp (blog, pages, docs proposals) needs OAuth or an API key granted by a dewee.sh super admin.
  */
 import type { Bi } from "~/i18n/config";
 
 export const GETTING_STARTED_ANCHOR = "getting-started";
-export const MCP_URL = "https://dewee.sh/mcp/docs";
+export const MCP_URL = "https://dewee.sh/mcp";
 
 /** Client snippets are code, identical in both locales. OAuth clients need no key in the config. */
 export const MCP_SNIPPETS = {
-  claudeCode: `claude mcp add --transport http dewee-docs ${MCP_URL}`,
+  claudeCode: `claude mcp add --transport http dewee ${MCP_URL}`,
   cursor: `{
   "mcpServers": {
-    "dewee-docs": { "url": "${MCP_URL}" }
+    "dewee": { "url": "${MCP_URL}" }
   }
 }`,
 } as const;
@@ -64,7 +64,7 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
     mcp: {
       title: "Connect the MCP endpoint",
       body: "Point Claude, Cursor or any MCP client at {url} so it can search and read the dewee docs while it works. It is public: no sign-in, no key.",
-      access: "Need blog posts, pages or docs edits too? The full endpoint at /mcp signs in with OAuth 2.1 or an API key granted by the dewee team.",
+      access: "On the dewee team? Use https://dewee.sh/mcp?login to sign in with OAuth 2.1 (or send an API key) and get blog posts, pages and docs edits as well.",
       tools: "Tools: search_docs finds pages in English or Vietnamese, fetch_doc reads one as Markdown.",
       snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code", cursor: "Cursor: ~/.cursor/mcp.json" },
       desktopSteps: "Settings → Connectors → Add custom connector, then paste the URL.",
@@ -106,7 +106,7 @@ export const GETTING_STARTED: Bi<GettingStartedCopy> = {
     mcp: {
       title: "Kết nối MCP endpoint",
       body: "Trỏ Claude, Cursor hay bất kỳ MCP client nào tới {url} để agent tìm và đọc tài liệu dewee khi làm việc. Endpoint công khai: không cần đăng nhập, không cần key.",
-      access: "Cần cả bài blog, trang hay sửa tài liệu? Endpoint đầy đủ /mcp đăng nhập bằng OAuth 2.1 hoặc API key do đội dewee cấp.",
+      access: "Bạn trong đội dewee? Dùng https://dewee.sh/mcp?login để đăng nhập bằng OAuth 2.1 (hoặc gửi API key) và dùng thêm blog, trang và sửa tài liệu.",
       tools: "Công cụ: search_docs tìm trang bằng tiếng Anh hoặc tiếng Việt, fetch_doc đọc một trang dạng Markdown.",
       snippets: { claudeDesktop: "Claude desktop", claudeCode: "Claude Code", cursor: "Cursor: ~/.cursor/mcp.json" },
       desktopSteps: "Settings → Connectors → Add custom connector, rồi dán URL.",
