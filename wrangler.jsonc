@@ -86,6 +86,14 @@
       "durable_objects": {
         "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }, { "name": "CHAT_LIMITER", "class_name": "ChatLimiter" }]
       },
+      // Staging once ran a branch that added OAuthAuthority as v3, so its history is longer than
+      // production's. Replay it and retire the class, which no code exports any more.
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["ChatRoom"] },
+        { "tag": "v2", "new_sqlite_classes": ["ChatLimiter"] },
+        { "tag": "v3", "new_sqlite_classes": ["OAuthAuthority"] },
+        { "tag": "v4", "deleted_classes": ["OAuthAuthority"] }
+      ],
       "triggers": { "crons": ["23 * * * *"] }
     }
   }
