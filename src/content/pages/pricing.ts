@@ -100,7 +100,7 @@ export const PRICING: Bi<PricingPage> = {
       lede: "The short version of our refund policy. The full text has the details.",
       items: [
         { label: "Self-install", text: "Installing is free, so you can try dewee on your own machine before you buy a licence." },
-        { label: "AaaS", text: "Full refund within 14 days of purchase. No questions asked." },
+        { label: "AaaS", text: "Full refund within 14 days of purchase, no questions asked. The workspace owner asks from Billing; each account can get this refund once." },
         { label: "Dedicated on TOSE", text: "The $99 deposit becomes TOSE credit for your runtime. What can be refunded depends on what has been provisioned and used; see your order form." },
         { label: "On-Premises", text: "Set out in your quote and contract before any work starts." },
       ],
@@ -110,7 +110,8 @@ export const PRICING: Bi<PricingPage> = {
       eyebrow: "Money questions",
       title: "Asked before *every* purchase.",
       items: [
-        { q: "Is there a free trial?", a: "There is no trial, but Self-install is free: install dewee on your own machine and build agents without a licence. You need the $500-a-year licence only to connect chat channels. AaaS comes with a 14-day refund instead: email us within 14 days of purchase and we refund you in full." },
+        { q: "Is there a free trial?", a: "There is no trial, but Self-install is free: install dewee on your own machine and build agents without a licence. You need the $500-a-year licence only to connect chat channels. AaaS starts on a Free plan (1 agent, 1 member, 100 messages a month and 1 API key, without chat channels) and the paid plan comes with a 14-day refund: ask within 14 days of purchase and we refund you in full, once per account." },
+        { q: "What are the AaaS limits?", a: "Free: 1 agent, 1 workspace member, 100 messages a month and 1 API key; chat channels, custom roles and the audit log are not included. The $500-a-year plan: up to 25 agents, 25 members, 50,000 messages a month and 25 API keys, with chat channels, custom roles and the audit log. A Self-install workspace has no such limits." },
         { q: "Do the prices include AI model costs?", a: "No. You bring your own keys for Anthropic, OpenAI, Gemini or any of the 20+ supported providers and pay them directly, so there is no markup on your tokens." },
         { q: "What is the $99 TOSE deposit for?", a: "It is your first TOSE.sh credit. We collect it with your licence and pass it on to TOSE, where it pays for the servers your dedicated runtime runs on. When it runs low, TOSE emails you and you top up directly with them." },
         { q: "What does the On-Premises price include?", a: "Installing dewee on your VPS or Mac mini, 5 custom workflows built with your team, the $500 licence for the first year, and a year of maintenance and updates. Prices start at $5K; your quote depends on the work involved." },

@@ -51,7 +51,7 @@ On-Premises phù hợp khi dữ liệu không được phép ra khỏi mạng n�
 Ở các thị trường khác, dewee còn có hai hình thức nữa. Chúng không được cung cấp tại Việt Nam; chúng tôi nhắc tới để bạn hiểu các phần tài liệu có liên quan.
 
 - **AaaS:** workspace chạy trên runtime dùng chung, đa tenant, do chúng tôi vận hành. Không cần license key; màn hình Thanh toán trong console chỉ xuất hiện với workspace AaaS.
-- **Dedicated trên TOSE:** mỗi workspace có một runtime Docker riêng trên [TOSE.sh](https://tose.sh), kích hoạt bằng license key như On-Premises.
+- **Dedicated trên TOSE:** mỗi workspace có một runtime Docker riêng trên [TOSE.sh](https://tose.sh), cấu hình từ 1 vCPU / 2 GB, kích hoạt bằng license key như On-Premises.
 
 ## Những câu hỏi nên trả lời trước khi triển khai
 
